@@ -327,9 +327,6 @@ export class SyncEngine {
       entity,
       entityId,
       payload,
-      createdAt: Date.now(),
-      attempts: 0,
-      status: 'pending',
     });
   }
 

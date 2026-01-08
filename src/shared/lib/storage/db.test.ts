@@ -168,7 +168,6 @@ describe('LMSDatabase', () => {
         },
       ]);
 
-      const dirtyEntities = await db.getDirtyEntities();
       // Note: In fake-indexeddb, boolean queries may behave differently
       // We check that we can retrieve entities with isDirty flag
       const allCourses = await db.courses.toArray();

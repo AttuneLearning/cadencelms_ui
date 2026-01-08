@@ -118,8 +118,6 @@ export const QueryProvider: React.FC<QueryProviderProps> = ({
         {enableDevtools && (
           <ReactQueryDevtools
             initialIsOpen={false}
-            position="bottom-right"
-            buttonPosition="bottom-right"
           />
         )}
       </PersistQueryClientProvider>
@@ -132,8 +130,6 @@ export const QueryProvider: React.FC<QueryProviderProps> = ({
       {enableDevtools && (
         <ReactQueryDevtools
           initialIsOpen={false}
-          position="bottom-right"
-          buttonPosition="bottom-right"
         />
       )}
     </QueryClientProvider>

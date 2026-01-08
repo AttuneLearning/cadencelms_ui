@@ -69,15 +69,18 @@ export class SCORMFileManager {
 
     try {
       // Request directory picker
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.rootHandle = await (window as any).showDirectoryPicker({
         mode: 'readwrite',
         startIn: 'downloads',
       });
 
       // Create SCORM directory if it doesn't exist
-      this.scormDirHandle = await this.rootHandle.getDirectoryHandle('scorm-packages', {
-        create: true,
-      });
+      if (this.rootHandle) {
+        this.scormDirHandle = await this.rootHandle.getDirectoryHandle('scorm-packages', {
+          create: true,
+        });
+      }
 
       console.log('[SCORMFileManager] Initialized successfully');
       return true;
@@ -168,6 +171,7 @@ export class SCORMFileManager {
     const chunks: Uint8Array[] = [];
     let receivedLength = 0;
 
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;

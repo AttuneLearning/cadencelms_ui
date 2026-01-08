@@ -263,6 +263,7 @@ export async function registerServiceWorkerSync(): Promise<boolean> {
     return false;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if (!('sync' in (self as any).registration || {})) {
     console.warn('[OfflineSync] Background Sync not supported');
     return false;
@@ -270,6 +271,7 @@ export async function registerServiceWorkerSync(): Promise<boolean> {
 
   try {
     const registration = await navigator.serviceWorker.ready;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (registration as any).sync.register('sync-offline-data');
     console.log('[OfflineSync] Background sync registered');
     return true;
@@ -282,7 +284,7 @@ export async function registerServiceWorkerSync(): Promise<boolean> {
 /**
  * Initialize offline sync process
  */
-export async function initOfflineSync(config: OfflineSyncConfig = {}): Promise<void> {
+export async function initOfflineSync(_config: OfflineSyncConfig = {}): Promise<void> {
   console.log('[OfflineSync] Initializing offline sync process');
 
   // Register service worker for background sync

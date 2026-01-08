@@ -3,7 +3,7 @@
  * Provides convenient methods for querying LMS data from IndexedDB
  */
 
-import { db, type Course, type Lesson, type Enrollment, type Progress } from './db';
+import { db, type Course, type Lesson, type Enrollment, type Progress, type SCORMPackage, type SyncQueueEntry, type User } from './db';
 
 /**
  * Course queries
@@ -448,7 +448,7 @@ export const scormQueries = {
   /**
    * Upsert SCORM package
    */
-  upsert: async (scormPackage: typeof db.scormPackages extends Table<infer T> ? T : never) => {
+  upsert: async (scormPackage: SCORMPackage) => {
     await db.scormPackages.put(scormPackage);
     return scormPackage._id;
   },
@@ -462,7 +462,7 @@ export const syncQueueQueries = {
    * Add item to sync queue
    */
   add: async (
-    entry: Omit<typeof db.syncQueue extends Table<infer T> ? T : never, 'id'>
+    entry: Omit<SyncQueueEntry, 'id' | 'createdAt' | 'attempts' | 'status'>
   ): Promise<number> => {
     return await db.syncQueue.add({
       ...entry,
@@ -537,7 +537,7 @@ export const userQueries = {
   /**
    * Upsert user
    */
-  upsert: async (user: typeof db.users extends Table<infer T> ? T : never) => {
+  upsert: async (user: User) => {
     await db.users.put({
       ...user,
       syncedAt: Date.now(),
