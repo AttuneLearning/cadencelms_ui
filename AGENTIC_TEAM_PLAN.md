@@ -92,6 +92,8 @@
 
 ### Agent 2: Design System Engineer (UI Foundation)
 
+**Model:** Claude Opus 4.5 (for superior design system reasoning)
+
 **Primary Goal:** Set up Tailwind CSS, shadcn/ui, and base UI components
 
 **Responsibilities:**
@@ -645,6 +647,8 @@ Each agent must:
 ---
 
 ### Agent 2: Design System - Detailed Spec
+
+**Model:** Claude Opus 4.5
 
 **Task:** Set up Tailwind CSS, shadcn/ui, and base components
 
