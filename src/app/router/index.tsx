@@ -12,6 +12,16 @@ import { AdminPage } from '@/pages/admin';
 import { NotFoundPage } from '@/pages/not-found';
 import { ProtectedRoute } from './guards';
 
+// Staff pages
+import { StaffDashboardPage } from '@/pages/staff/dashboard';
+import { CourseAnalyticsPage } from '@/pages/staff/analytics';
+import { StudentProgressPage } from '@/pages/staff/students';
+
+// Admin pages
+import { AdminDashboardPage } from '@/pages/admin/dashboard/AdminDashboardPage';
+import { UserManagementPage } from '@/pages/admin/users/UserManagementPage';
+import { CourseManagementPage } from '@/pages/admin/courses/CourseManagementPage';
+
 // Unauthorized page component
 const UnauthorizedPage = () => (
   <div className="flex min-h-screen items-center justify-center">
@@ -62,12 +72,62 @@ export function AppRouter() {
         }
       />
 
+      {/* Staff-only routes */}
+      <Route
+        path="/staff/dashboard"
+        element={
+          <ProtectedRoute roles={['staff', 'global-admin']}>
+            <StaffDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/staff/analytics"
+        element={
+          <ProtectedRoute roles={['staff', 'global-admin']}>
+            <CourseAnalyticsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/staff/students"
+        element={
+          <ProtectedRoute roles={['staff', 'global-admin']}>
+            <StudentProgressPage />
+          </ProtectedRoute>
+        }
+      />
+
       {/* Admin-only routes */}
       <Route
         path="/admin"
         element={
           <ProtectedRoute roles={['global-admin']}>
-            <AdminPage />
+            <AdminDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/dashboard"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <AdminDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/users"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <UserManagementPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/courses"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <CourseManagementPage />
           </ProtectedRoute>
         }
       />

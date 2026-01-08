@@ -1,51 +1,53 @@
 /**
  * User Entity Types
- * Represents system users (students, instructors, admins)
+ * Represents a user in the LMS
  */
 
-export type UserRole = 'student' | 'instructor' | 'admin' | 'super_admin';
-export type UserStatus = 'active' | 'inactive' | 'suspended' | 'pending';
+export type Role = 'learner' | 'staff' | 'global-admin';
+
+export type UserStatus = 'active' | 'inactive' | 'suspended';
 
 export interface User {
   _id: string;
+  email: string;
   firstName: string;
   lastName: string;
-  email: string;
-  role: UserRole;
+  roles: Role[];
   status: UserStatus;
-  avatar?: string;
-  bio?: string;
-  department?: string;
   createdAt: string;
   updatedAt: string;
   lastLoginAt?: string;
+  avatar?: string;
+  phoneNumber?: string;
+  department?: string;
+  jobTitle?: string;
 }
 
 export interface UserListItem {
   _id: string;
+  email: string;
   firstName: string;
   lastName: string;
-  email: string;
-  role: UserRole;
+  roles: Role[];
   status: UserStatus;
-  avatar?: string;
   lastLoginAt?: string;
+  createdAt: string;
 }
 
 export interface UserFormData {
+  email: string;
   firstName: string;
   lastName: string;
-  email: string;
   password?: string;
-  role: UserRole;
-  status?: UserStatus;
+  roles: Role[];
+  status: UserStatus;
+  phoneNumber?: string;
   department?: string;
-  bio?: string;
+  jobTitle?: string;
 }
 
 export interface UserFilters {
-  role?: UserRole;
-  status?: UserStatus;
   search?: string;
-  department?: string;
+  role?: Role;
+  status?: UserStatus;
 }

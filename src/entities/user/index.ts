@@ -8,7 +8,7 @@ export type {
   UserListItem,
   UserFormData,
   UserFilters,
-  UserRole,
+  Role,
   UserStatus,
 } from './model/types';
 export { UserAvatar } from './ui';

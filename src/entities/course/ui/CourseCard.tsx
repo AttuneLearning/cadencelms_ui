@@ -1,10 +1,10 @@
 /**
- * CourseCard component
- * Displays a course in a card format
+ * CourseCard Component
+ * Displays a course as a card with thumbnail, title, and metadata
  */
 
-import * as React from 'react';
-import { Clock, BookOpen, User, TrendingUp } from 'lucide-react';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import {
   Card,
   CardContent,
@@ -14,217 +14,121 @@ import {
   CardTitle,
 } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
+import { BookOpen, Clock, TrendingUp, Users } from 'lucide-react';
+import { Progress as ProgressBar } from '@/shared/ui/progress';
+import type { CourseListItem } from '../model/types';
 import { cn } from '@/shared/lib/utils';
-import type { Course } from '../model/types';
 
-export interface CourseCardProps extends React.HTMLAttributes<HTMLDivElement> {
-  course: Course;
-  onEnroll?: (courseId: string) => void;
-  onView?: (courseId: string) => void;
+interface CourseCardProps {
+  course: CourseListItem;
+  className?: string;
   showProgress?: boolean;
-  showEnrollButton?: boolean;
+  showEnrollmentCount?: boolean;
 }
 
-/**
- * Format duration in minutes to human readable format
- */
-function formatDuration(minutes: number): string {
-  if (minutes < 60) {
-    return `${minutes}m`;
-  }
-  const hours = Math.floor(minutes / 60);
-  const remainingMinutes = minutes % 60;
-  return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
-}
+export const CourseCard: React.FC<CourseCardProps> = ({
+  course,
+  className,
+  showProgress = false,
+  showEnrollmentCount = false,
+}) => {
+  return (
+    <Link to={`/courses/${course._id}`} className="block">
+      <Card className={cn('h-full transition-shadow hover:shadow-lg', className)}>
+        {/* Thumbnail */}
+        {course.thumbnail && (
+          <div className="aspect-video w-full overflow-hidden rounded-t-lg">
+            <img
+              src={course.thumbnail}
+              alt={course.title}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        )}
 
-/**
- * Get initials from name
- */
-function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-}
+        <CardHeader>
+          <div className="flex items-start justify-between gap-2">
+            <CardTitle className="line-clamp-2">{course.title}</CardTitle>
+            {course.level && (
+              <Badge variant={getLevelVariant(course.level)}>{course.level}</Badge>
+            )}
+          </div>
+          {course.shortDescription && (
+            <CardDescription className="line-clamp-2">
+              {course.shortDescription}
+            </CardDescription>
+          )}
+        </CardHeader>
 
-/**
- * Get badge variant for course difficulty
- */
-function getDifficultyVariant(
-  difficulty: string
-): 'default' | 'secondary' | 'outline' {
-  switch (difficulty) {
+        <CardContent className="space-y-3">
+          {/* Progress Bar (for enrolled courses) */}
+          {showProgress && typeof course.progress === 'number' && (
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Progress</span>
+                <span className="font-medium">{course.progress}%</span>
+              </div>
+              <ProgressBar value={course.progress} className="h-2" />
+            </div>
+          )}
+
+          {/* Metadata */}
+          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+            {typeof course.lessonCount === 'number' && (
+              <div className="flex items-center gap-1">
+                <BookOpen className="h-4 w-4" />
+                <span>
+                  {course.lessonCount} {course.lessonCount === 1 ? 'Lesson' : 'Lessons'}
+                </span>
+              </div>
+            )}
+            {typeof course.duration === 'number' && (
+              <div className="flex items-center gap-1">
+                <Clock className="h-4 w-4" />
+                <span>{formatDuration(course.duration)}</span>
+              </div>
+            )}
+            {showEnrollmentCount && typeof course.enrollmentCount === 'number' && (
+              <div className="flex items-center gap-1">
+                <Users className="h-4 w-4" />
+                <span>{course.enrollmentCount} Enrolled</span>
+              </div>
+            )}
+          </div>
+        </CardContent>
+
+        {course.isEnrolled && (
+          <CardFooter>
+            <Badge variant="secondary" className="w-full justify-center">
+              <TrendingUp className="mr-1 h-3 w-3" />
+              Enrolled
+            </Badge>
+          </CardFooter>
+        )}
+      </Card>
+    </Link>
+  );
+};
+
+// Helper functions
+function getLevelVariant(level: string): 'default' | 'secondary' | 'destructive' {
+  switch (level) {
     case 'beginner':
       return 'secondary';
     case 'intermediate':
       return 'default';
     case 'advanced':
-      return 'outline';
+      return 'destructive';
     default:
       return 'default';
   }
 }
 
-/**
- * CourseCard component
- */
-export const CourseCard = React.forwardRef<HTMLDivElement, CourseCardProps>(
-  (
-    {
-      course,
-      onEnroll,
-      onView,
-      showProgress = false,
-      showEnrollButton = false,
-      className,
-      ...props
-    },
-    ref
-  ) => {
-    const handleCardClick = () => {
-      if (onView) {
-        onView(course.id);
-      }
-    };
-
-    const handleEnrollClick = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      if (onEnroll) {
-        onEnroll(course.id);
-      }
-    };
-
-    return (
-      <Card
-        ref={ref}
-        className={cn(
-          'group cursor-pointer transition-all hover:shadow-lg',
-          className
-        )}
-        onClick={handleCardClick}
-        role="article"
-        aria-label={`Course: ${course.title}`}
-        {...props}
-      >
-        {/* Thumbnail */}
-        {course.thumbnail && (
-          <div className="relative h-48 w-full overflow-hidden rounded-t-lg bg-muted">
-            <img
-              src={course.thumbnail}
-              alt={course.title}
-              className="h-full w-full object-cover transition-transform group-hover:scale-105"
-            />
-            {course.isEnrolled && (
-              <Badge className="absolute right-2 top-2" variant="default">
-                Enrolled
-              </Badge>
-            )}
-            {!course.thumbnail && (
-              <div className="flex h-full items-center justify-center">
-                <BookOpen className="h-12 w-12 text-muted-foreground" />
-              </div>
-            )}
-          </div>
-        )}
-
-        <CardHeader>
-          <div className="mb-2 flex items-center justify-between gap-2">
-            <Badge variant={getDifficultyVariant(course.metadata.skillLevel)}>
-              {course.metadata.skillLevel}
-            </Badge>
-            <Badge variant="outline">{course.category.name}</Badge>
-          </div>
-
-          <CardTitle className="line-clamp-2 text-xl">{course.title}</CardTitle>
-          <CardDescription className="line-clamp-2">
-            {course.description}
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent>
-          {/* Course Metadata */}
-          <div className="mb-4 grid grid-cols-2 gap-2 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <Clock className="h-4 w-4" />
-              <span>{formatDuration(course.metadata.duration)}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <BookOpen className="h-4 w-4" />
-              <span>{course.metadata.lessonsCount} lessons</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <User className="h-4 w-4" />
-              <span>{course.stats.totalEnrollments} enrolled</span>
-            </div>
-            {course.stats.averageRating && (
-              <div className="flex items-center gap-1">
-                <TrendingUp className="h-4 w-4" />
-                <span>{course.stats.averageRating.toFixed(1)} rating</span>
-              </div>
-            )}
-          </div>
-
-          {/* Progress Bar */}
-          {showProgress && course.progress !== undefined && (
-            <div className="mb-4">
-              <div className="mb-1 flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Progress</span>
-                <span className="font-medium">{course.progress}%</span>
-              </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-                <div
-                  className="h-full bg-primary transition-all"
-                  style={{ width: `${course.progress}%` }}
-                  role="progressbar"
-                  aria-valuenow={course.progress}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Instructor */}
-          <div className="flex items-center gap-2">
-            <Avatar className="h-8 w-8">
-              <AvatarImage
-                src={course.instructor.avatar}
-                alt={course.instructor.name}
-              />
-              <AvatarFallback>
-                {getInitials(course.instructor.name)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">
-                {course.instructor.name}
-              </p>
-              {course.instructor.title && (
-                <p className="truncate text-xs text-muted-foreground">
-                  {course.instructor.title}
-                </p>
-              )}
-            </div>
-          </div>
-        </CardContent>
-
-        {showEnrollButton && !course.isEnrolled && (
-          <CardFooter>
-            <button
-              onClick={handleEnrollClick}
-              className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-              aria-label={`Enroll in ${course.title}`}
-            >
-              Enroll Now
-            </button>
-          </CardFooter>
-        )}
-      </Card>
-    );
+function formatDuration(minutes: number): string {
+  if (minutes < 60) {
+    return `${minutes}m`;
   }
-);
-
-CourseCard.displayName = 'CourseCard';
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+}

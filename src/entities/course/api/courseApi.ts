@@ -1,146 +1,112 @@
 /**
  * Course API
- * API functions for course-related operations
+ * API methods for course operations
  */
 
 import { client } from '@/shared/api/client';
 import { endpoints } from '@/shared/api/endpoints';
-import type { PaginatedResponse, QueryParams } from '@/shared/api/types';
-import type {
-  Course,
-  CreateCourseInput,
-  UpdateCourseInput,
-  CourseQueryParams,
-} from '../model/types';
+import type { Course, CourseListItem, CourseFormData } from '../model/types';
+import type { ApiResponse, PaginatedResponse } from '@/shared/api/types';
 
-/**
- * Fetch a list of courses
- */
-export async function getCourses(
-  params?: CourseQueryParams
-): Promise<PaginatedResponse<Course>> {
-  const queryParams: QueryParams = {
-    page: params?.page,
-    pageSize: params?.pageSize,
-    sortBy: params?.sortBy,
-    sortOrder: params?.sortOrder,
-    search: params?.search,
-    filters: params?.categoryId ||
-      params?.instructorId ||
-      params?.status ||
-      params?.skillLevel ||
-      params?.enrolled !== undefined
-      ? {
-          ...(params?.categoryId && { categoryId: params.categoryId }),
-          ...(params?.instructorId && { instructorId: params.instructorId }),
-          ...(params?.status && { status: params.status }),
-          ...(params?.skillLevel && { skillLevel: params.skillLevel }),
-          ...(params?.enrolled !== undefined && { enrolled: params.enrolled }),
-        }
-      : undefined,
-  };
-
-  // Remove undefined values
-  const cleanParams = Object.fromEntries(
-    Object.entries(queryParams).filter(([, value]) => value !== undefined)
-  );
-
-  if (cleanParams.filters) {
-    cleanParams.filters = Object.fromEntries(
-      Object.entries(cleanParams.filters).filter(([, value]) => value !== undefined)
+export const courseApi = {
+  /**
+   * Get all courses (with pagination and filters)
+   */
+  getAll: async (params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    category?: string;
+    level?: string;
+    search?: string;
+  }): Promise<PaginatedResponse<CourseListItem>> => {
+    const response = await client.get<ApiResponse<PaginatedResponse<CourseListItem>>>(
+      endpoints.courses.list,
+      { params }
     );
-    if (Object.keys(cleanParams.filters).length === 0) {
-      delete cleanParams.filters;
-    }
-  }
+    return response.data.data;
+  },
 
-  const response = await client.get<PaginatedResponse<Course>>(
-    endpoints.courses.list,
-    { params: cleanParams }
-  );
+  /**
+   * Get a single course by ID
+   */
+  getById: async (id: string): Promise<Course> => {
+    const response = await client.get<ApiResponse<Course>>(`${endpoints.courses.list}/${id}`);
+    return response.data.data;
+  },
 
-  return response.data;
-}
+  /**
+   * Get courses for the current user (enrolled courses)
+   */
+  getMyCourses: async (params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+  }): Promise<PaginatedResponse<CourseListItem>> => {
+    const response = await client.get<ApiResponse<PaginatedResponse<CourseListItem>>>(
+      endpoints.courses.myCourses,
+      { params }
+    );
+    return response.data.data;
+  },
 
-/**
- * Fetch a single course by ID
- */
-export async function getCourse(id: string): Promise<Course> {
-  const response = await client.get<Course>(endpoints.courses.byId(id));
-  return response.data;
-}
+  /**
+   * Create a new course
+   */
+  create: async (data: CourseFormData): Promise<Course> => {
+    const response = await client.post<ApiResponse<Course>>(endpoints.courses.list, data);
+    return response.data.data;
+  },
 
-/**
- * Create a new course
- */
-export async function createCourse(input: CreateCourseInput): Promise<Course> {
-  const response = await client.post<Course>(endpoints.courses.list, input);
-  return response.data;
-}
+  /**
+   * Update an existing course
+   */
+  update: async (id: string, data: Partial<CourseFormData>): Promise<Course> => {
+    const response = await client.put<ApiResponse<Course>>(
+      `${endpoints.courses.list}/${id}`,
+      data
+    );
+    return response.data.data;
+  },
 
-/**
- * Update an existing course
- */
-export async function updateCourse(
-  id: string,
-  input: UpdateCourseInput
-): Promise<Course> {
-  const response = await client.put<Course>(endpoints.courses.byId(id), input);
-  return response.data;
-}
+  /**
+   * Delete a course
+   */
+  delete: async (id: string): Promise<void> => {
+    await client.delete(`${endpoints.courses.list}/${id}`);
+  },
 
-/**
- * Delete a course
- */
-export async function deleteCourse(id: string): Promise<void> {
-  await client.delete(endpoints.courses.byId(id));
-}
+  /**
+   * Publish a course
+   */
+  publish: async (id: string): Promise<Course> => {
+    const response = await client.post<ApiResponse<Course>>(
+      `${endpoints.courses.list}/${id}/publish`
+    );
+    return response.data.data;
+  },
 
-/**
- * Enroll in a course
- */
-export async function enrollInCourse(courseId: string): Promise<{
-  enrollmentId: string;
-  message: string;
-}> {
-  const response = await client.post<{ enrollmentId: string; message: string }>(
-    endpoints.courses.enroll(courseId)
-  );
-  return response.data;
-}
+  /**
+   * Unpublish a course
+   */
+  unpublish: async (id: string): Promise<Course> => {
+    const response = await client.post<ApiResponse<Course>>(
+      `${endpoints.courses.list}/${id}/unpublish`
+    );
+    return response.data.data;
+  },
 
-/**
- * Unenroll from a course
- */
-export async function unenrollFromCourse(courseId: string): Promise<void> {
-  await client.post(endpoints.courses.unenroll(courseId));
-}
-
-/**
- * Get course progress for the current user
- */
-export async function getCourseProgress(courseId: string): Promise<{
-  courseId: string;
-  progress: number;
-  completedLessons: number;
-  totalLessons: number;
-  lastAccessedAt: string;
-}> {
-  const response = await client.get<{
-    courseId: string;
-    progress: number;
-    completedLessons: number;
-    totalLessons: number;
-    lastAccessedAt: string;
-  }>(endpoints.courses.progress(courseId));
-  return response.data;
-}
-
-/**
- * Get enrolled courses for the current user
- */
-export async function getEnrolledCourses(
-  params?: CourseQueryParams
-): Promise<PaginatedResponse<Course>> {
-  return getCourses({ ...params, enrolled: true });
-}
+  /**
+   * Get course statistics
+   */
+  getStats: async (id: string): Promise<{
+    enrollmentCount: number;
+    completionCount: number;
+    averageProgress: number;
+    averageScore: number;
+    averageTimeSpent: number;
+  }> => {
+    const response = await client.get(`${endpoints.courses.list}/${id}/stats`);
+    return response.data.data;
+  },
+};
