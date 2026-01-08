@@ -57,7 +57,7 @@ export const useAuthStore = create<AuthState>()(
         set({ accessToken: response.accessToken });
       },
 
-      hasPermission: (permission) => {
+      hasPermission: (_permission) => {
         // TODO: Implement permission checking logic
         // For now, return true if authenticated
         return get().isAuthenticated;

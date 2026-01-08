@@ -4,6 +4,8 @@
  */
 
 import '@testing-library/jest-dom';
+import 'fake-indexeddb/auto';
+import { vi, beforeEach } from 'vitest';
 
 // Mock localStorage
 const localStorageMock = {
