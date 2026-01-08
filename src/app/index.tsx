@@ -6,13 +6,14 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { AppRouter } from './router';
-import { Toaster } from '@/shared/ui/toaster';
+import { AppLayout } from '@/widgets/layout/AppLayout';
 
 export const App: React.FC = () => {
   return (
     <BrowserRouter>
-      <AppRouter />
-      <Toaster />
+      <AppLayout>
+        <AppRouter />
+      </AppLayout>
     </BrowserRouter>
   );
 };
