@@ -22,13 +22,6 @@ interface DashboardStats {
   averageProgress: number;
 }
 
-interface RecentActivity {
-  id: string;
-  type: 'user_created' | 'course_created' | 'enrollment_created';
-  message: string;
-  timestamp: string;
-}
-
 const fetchDashboardData = async (): Promise<DashboardStats> => {
   const response = await client.get(endpoints.admin.reports.overview);
   return response.data;
@@ -42,7 +35,6 @@ export const AdminDashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-8 p-8">
-      {/* Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
         <p className="text-muted-foreground">
@@ -50,7 +42,6 @@ export const AdminDashboardPage: React.FC = () => {
         </p>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Total Users"
@@ -82,7 +73,6 @@ export const AdminDashboardPage: React.FC = () => {
         />
       </div>
 
-      {/* Quick Actions */}
       <Card>
         <CardHeader>
           <CardTitle>Quick Actions</CardTitle>
@@ -122,29 +112,6 @@ export const AdminDashboardPage: React.FC = () => {
               </div>
             </Button>
           </Link>
-        </CardContent>
-      </Card>
-
-      {/* Recent Activity */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>Latest system events and updates</CardDescription>
-          </div>
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/admin/activity">
-              View All
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="text-sm text-muted-foreground">
-              Activity feed coming soon...
-            </div>
-          </div>
         </CardContent>
       </Card>
     </div>
