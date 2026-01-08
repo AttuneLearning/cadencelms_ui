@@ -8,7 +8,6 @@ import { LoginPage } from '@/pages/auth/LoginPage';
 import { DashboardPage } from '@/pages/dashboard';
 import { CoursesPage } from '@/pages/courses';
 import { CourseViewerPage } from '@/pages/course-viewer';
-import { AdminPage } from '@/pages/admin';
 import { NotFoundPage } from '@/pages/not-found';
 import { ProtectedRoute } from './guards';
 
