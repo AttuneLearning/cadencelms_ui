@@ -13,6 +13,7 @@ interface AuthState {
   role: Role | null;
   roles: Role[];
   isAuthenticated: boolean;
+  user: { _id: string; email: string } | null;
 
   login: (credentials: LoginCredentials) => Promise<void>;
   logout: () => Promise<void>;
@@ -28,6 +29,7 @@ export const useAuthStore = create<AuthState>()(
       role: null,
       roles: [],
       isAuthenticated: false,
+      user: null,
 
       login: async (credentials) => {
         const response = await authApi.login(credentials);
@@ -36,6 +38,7 @@ export const useAuthStore = create<AuthState>()(
           role: response.role,
           roles: response.roles,
           isAuthenticated: true,
+          user: { _id: '', email: credentials.email },
         });
       },
 
@@ -48,6 +51,7 @@ export const useAuthStore = create<AuthState>()(
             role: null,
             roles: [],
             isAuthenticated: false,
+            user: null,
           });
         }
       },
@@ -72,6 +76,7 @@ export const useAuthStore = create<AuthState>()(
         role: state.role,
         roles: state.roles,
         isAuthenticated: state.isAuthenticated,
+        user: state.user,
       }),
     }
   )

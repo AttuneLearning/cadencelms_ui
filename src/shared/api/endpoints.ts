@@ -14,6 +14,7 @@ export const endpoints = {
   courses: {
     list: '/courses',
     byId: (id: string) => `/courses/${id}`,
+    myCourses: '/courses/my-courses',
     enroll: (id: string) => `/courses/${id}/enroll`,
     unenroll: (id: string) => `/courses/${id}/unenroll`,
     progress: (id: string) => `/courses/${id}/progress`,
@@ -72,5 +73,9 @@ export const endpoints = {
     userProgress: '/analytics/user-progress',
     courseStats: (courseId: string) => `/analytics/courses/${courseId}/stats`,
     learningPath: '/analytics/learning-path',
+  },
+
+  progress: {
+    stats: '/progress/stats',
   },
 } as const;
