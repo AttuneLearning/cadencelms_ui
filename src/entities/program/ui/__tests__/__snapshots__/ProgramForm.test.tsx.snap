@@ -1,0 +1,1468 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ProgramForm > Snapshot Tests > should match snapshot in create mode 1`] = `
+<form
+  class="space-y-6"
+>
+  <div
+    class="relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive"
+    role="alert"
+  >
+    <p>
+      Failed to update program
+    </p>
+  </div>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <h3
+        class="text-2xl font-semibold leading-none tracking-tight"
+      >
+        Create New Program
+      </h3>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Fill in the information to create a new program.
+      </p>
+    </div>
+    <div
+      class="p-6 pt-0 space-y-4"
+    >
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="name"
+        >
+          Program Name 
+          <span
+            class="text-destructive"
+          >
+            *
+          </span>
+        </label>
+        <input
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          disabled=""
+          id="name"
+          maxlength="200"
+          minlength="1"
+          placeholder="Certified Business Technician"
+          required=""
+          type="text"
+          value=""
+        />
+        <p
+          class="text-xs text-muted-foreground"
+        >
+          Full name of the program (1-200 characters)
+        </p>
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="code"
+        >
+          Program Code 
+          <span
+            class="text-destructive"
+          >
+            *
+          </span>
+        </label>
+        <input
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 uppercase"
+          disabled=""
+          id="code"
+          maxlength="20"
+          minlength="2"
+          pattern="[A-Z0-9-]+"
+          placeholder="CBT-101"
+          required=""
+          type="text"
+          value=""
+        />
+        <p
+          class="text-xs text-muted-foreground"
+        >
+          Unique code: uppercase letters, numbers, and hyphens only (2-20 characters)
+        </p>
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="description"
+        >
+          Description
+        </label>
+        <textarea
+          class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          disabled=""
+          id="description"
+          maxlength="2000"
+          placeholder="Comprehensive business technology certification program"
+          rows="3"
+        />
+        <p
+          class="text-xs text-muted-foreground"
+        >
+          0
+          /2000 characters
+        </p>
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="department"
+        >
+          Department 
+          <span
+            class="text-destructive"
+          >
+            *
+          </span>
+        </label>
+        <button
+          aria-autocomplete="none"
+          aria-controls="radix-:rop:"
+          aria-expanded="false"
+          class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+          data-disabled=""
+          data-state="closed"
+          dir="ltr"
+          disabled=""
+          id="department"
+          role="combobox"
+          type="button"
+        >
+          <span
+            style="pointer-events: none;"
+          >
+            Business Technology
+             (
+            BT
+            )
+          </span>
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m6 9 6 6 6-6"
+            />
+          </svg>
+        </button>
+        <select
+          aria-hidden="true"
+          disabled=""
+          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+          tabindex="-1"
+        >
+          <option
+            selected=""
+            value="dept-1"
+          >
+            Business Technology (BT)
+          </option>
+          <option
+            value="dept-2"
+          >
+            Computer Science (CS)
+          </option>
+          <option
+            value="dept-3"
+          >
+            Healthcare (HC)
+          </option>
+          <option
+            value="dept-4"
+          >
+            Marketing (MKT)
+          </option>
+        </select>
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 gap-4"
+      >
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="credential"
+          >
+            Credential Type 
+            <span
+              class="text-destructive"
+            >
+              *
+            </span>
+          </label>
+          <button
+            aria-autocomplete="none"
+            aria-controls="radix-:roq:"
+            aria-expanded="false"
+            class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+            data-disabled=""
+            data-state="closed"
+            dir="ltr"
+            disabled=""
+            id="credential"
+            role="combobox"
+            type="button"
+          >
+            <span
+              style="pointer-events: none;"
+            >
+              Certificate
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </button>
+          <select
+            aria-hidden="true"
+            disabled=""
+            style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+            tabindex="-1"
+          >
+            <option
+              selected=""
+              value="certificate"
+            >
+              Certificate
+            </option>
+            <option
+              value="diploma"
+            >
+              Diploma
+            </option>
+            <option
+              value="degree"
+            >
+              Degree
+            </option>
+          </select>
+        </div>
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="duration"
+          >
+            Duration 
+            <span
+              class="text-destructive"
+            >
+              *
+            </span>
+          </label>
+          <div
+            class="flex gap-2"
+          >
+            <input
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 flex-1"
+              disabled=""
+              id="duration"
+              min="1"
+              placeholder="6"
+              required=""
+              type="number"
+              value="1"
+            />
+            <button
+              aria-autocomplete="none"
+              aria-controls="radix-:ror:"
+              aria-expanded="false"
+              class="flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[120px]"
+              data-disabled=""
+              data-state="closed"
+              dir="ltr"
+              disabled=""
+              role="combobox"
+              type="button"
+            >
+              <span
+                style="pointer-events: none;"
+              >
+                Months
+              </span>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m6 9 6 6 6-6"
+                />
+              </svg>
+            </button>
+            <select
+              aria-hidden="true"
+              disabled=""
+              style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+              tabindex="-1"
+            >
+              <option
+                value="hours"
+              >
+                Hours
+              </option>
+              <option
+                value="weeks"
+              >
+                Weeks
+              </option>
+              <option
+                selected=""
+                value="months"
+              >
+                Months
+              </option>
+              <option
+                value="years"
+              >
+                Years
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="isPublished"
+        >
+          Publication Status
+        </label>
+        <button
+          aria-autocomplete="none"
+          aria-controls="radix-:ros:"
+          aria-expanded="false"
+          class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+          data-disabled=""
+          data-state="closed"
+          dir="ltr"
+          disabled=""
+          id="isPublished"
+          role="combobox"
+          type="button"
+        >
+          <span
+            style="pointer-events: none;"
+          >
+            Draft (Not visible to learners)
+          </span>
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m6 9 6 6 6-6"
+            />
+          </svg>
+        </button>
+        <select
+          aria-hidden="true"
+          disabled=""
+          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+          tabindex="-1"
+        >
+          <option
+            selected=""
+            value="draft"
+          >
+            Draft (Not visible to learners)
+          </option>
+          <option
+            value="published"
+          >
+            Published (Visible to learners)
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div
+    class="flex items-center justify-end gap-4"
+  >
+    <button
+      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+      disabled=""
+      type="submit"
+    >
+      <svg
+        class="lucide lucide-loader-circle mr-2 h-4 w-4 animate-spin"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M21 12a9 9 0 1 1-6.219-8.56"
+        />
+      </svg>
+      Saving...
+    </button>
+  </div>
+</form>
+`;
+
+exports[`ProgramForm > Snapshot Tests > should match snapshot in edit mode 1`] = `
+<form
+  class="space-y-6"
+>
+  <div
+    class="relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive"
+    role="alert"
+  >
+    <p>
+      Failed to update program
+    </p>
+  </div>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <h3
+        class="text-2xl font-semibold leading-none tracking-tight"
+      >
+        Edit Program
+      </h3>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Update the program information below.
+      </p>
+    </div>
+    <div
+      class="p-6 pt-0 space-y-4"
+    >
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="name"
+        >
+          Program Name 
+          <span
+            class="text-destructive"
+          >
+            *
+          </span>
+        </label>
+        <input
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          disabled=""
+          id="name"
+          maxlength="200"
+          minlength="1"
+          placeholder="Certified Business Technician"
+          required=""
+          type="text"
+          value="Certified Business Technician"
+        />
+        <p
+          class="text-xs text-muted-foreground"
+        >
+          Full name of the program (1-200 characters)
+        </p>
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="code"
+        >
+          Program Code 
+          <span
+            class="text-destructive"
+          >
+            *
+          </span>
+        </label>
+        <input
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 uppercase"
+          disabled=""
+          id="code"
+          maxlength="20"
+          minlength="2"
+          pattern="[A-Z0-9-]+"
+          placeholder="CBT-101"
+          required=""
+          type="text"
+          value="CBT-101"
+        />
+        <p
+          class="text-xs text-muted-foreground"
+        >
+          Unique code: uppercase letters, numbers, and hyphens only (2-20 characters)
+        </p>
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="description"
+        >
+          Description
+        </label>
+        <textarea
+          class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          disabled=""
+          id="description"
+          maxlength="2000"
+          placeholder="Comprehensive business technology certification program"
+          rows="3"
+        >
+          Comprehensive business technology certification program
+        </textarea>
+        <p
+          class="text-xs text-muted-foreground"
+        >
+          55
+          /2000 characters
+        </p>
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="department"
+        >
+          Department 
+          <span
+            class="text-destructive"
+          >
+            *
+          </span>
+        </label>
+        <button
+          aria-autocomplete="none"
+          aria-controls="radix-:rpa:"
+          aria-expanded="false"
+          class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+          data-disabled=""
+          data-state="closed"
+          dir="ltr"
+          disabled=""
+          id="department"
+          role="combobox"
+          type="button"
+        >
+          <span
+            style="pointer-events: none;"
+          >
+            Business Technology
+             (
+            BT
+            )
+          </span>
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m6 9 6 6 6-6"
+            />
+          </svg>
+        </button>
+        <select
+          aria-hidden="true"
+          disabled=""
+          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+          tabindex="-1"
+        >
+          <option
+            selected=""
+            value="dept-1"
+          >
+            Business Technology (BT)
+          </option>
+          <option
+            value="dept-2"
+          >
+            Computer Science (CS)
+          </option>
+          <option
+            value="dept-3"
+          >
+            Healthcare (HC)
+          </option>
+          <option
+            value="dept-4"
+          >
+            Marketing (MKT)
+          </option>
+        </select>
+        <p
+          class="text-xs text-muted-foreground"
+        >
+          Department cannot be changed after creation
+        </p>
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 gap-4"
+      >
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="credential"
+          >
+            Credential Type 
+            <span
+              class="text-destructive"
+            >
+              *
+            </span>
+          </label>
+          <button
+            aria-autocomplete="none"
+            aria-controls="radix-:rpb:"
+            aria-expanded="false"
+            class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+            data-disabled=""
+            data-state="closed"
+            dir="ltr"
+            disabled=""
+            id="credential"
+            role="combobox"
+            type="button"
+          >
+            <span
+              style="pointer-events: none;"
+            >
+              Certificate
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </button>
+          <select
+            aria-hidden="true"
+            disabled=""
+            style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+            tabindex="-1"
+          >
+            <option
+              selected=""
+              value="certificate"
+            >
+              Certificate
+            </option>
+            <option
+              value="diploma"
+            >
+              Diploma
+            </option>
+            <option
+              value="degree"
+            >
+              Degree
+            </option>
+          </select>
+        </div>
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="duration"
+          >
+            Duration 
+            <span
+              class="text-destructive"
+            >
+              *
+            </span>
+          </label>
+          <div
+            class="flex gap-2"
+          >
+            <input
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 flex-1"
+              disabled=""
+              id="duration"
+              min="1"
+              placeholder="6"
+              required=""
+              type="number"
+              value="6"
+            />
+            <button
+              aria-autocomplete="none"
+              aria-controls="radix-:rpc:"
+              aria-expanded="false"
+              class="flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[120px]"
+              data-disabled=""
+              data-state="closed"
+              dir="ltr"
+              disabled=""
+              role="combobox"
+              type="button"
+            >
+              <span
+                style="pointer-events: none;"
+              >
+                Months
+              </span>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m6 9 6 6 6-6"
+                />
+              </svg>
+            </button>
+            <select
+              aria-hidden="true"
+              disabled=""
+              style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+              tabindex="-1"
+            >
+              <option
+                value="hours"
+              >
+                Hours
+              </option>
+              <option
+                value="weeks"
+              >
+                Weeks
+              </option>
+              <option
+                selected=""
+                value="months"
+              >
+                Months
+              </option>
+              <option
+                value="years"
+              >
+                Years
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="isPublished"
+        >
+          Publication Status
+        </label>
+        <button
+          aria-autocomplete="none"
+          aria-controls="radix-:rpd:"
+          aria-expanded="false"
+          class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+          data-disabled=""
+          data-state="closed"
+          dir="ltr"
+          disabled=""
+          id="isPublished"
+          role="combobox"
+          type="button"
+        >
+          <span
+            style="pointer-events: none;"
+          >
+            Published (Visible to learners)
+          </span>
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m6 9 6 6 6-6"
+            />
+          </svg>
+        </button>
+        <select
+          aria-hidden="true"
+          disabled=""
+          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+          tabindex="-1"
+        >
+          <option
+            value="draft"
+          >
+            Draft (Not visible to learners)
+          </option>
+          <option
+            selected=""
+            value="published"
+          >
+            Published (Visible to learners)
+          </option>
+        </select>
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="status"
+        >
+          Status
+        </label>
+        <button
+          aria-autocomplete="none"
+          aria-controls="radix-:rpe:"
+          aria-expanded="false"
+          class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+          data-disabled=""
+          data-state="closed"
+          dir="ltr"
+          disabled=""
+          id="status"
+          role="combobox"
+          type="button"
+        >
+          <span
+            style="pointer-events: none;"
+          >
+            Active (Accepting enrollments)
+          </span>
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m6 9 6 6 6-6"
+            />
+          </svg>
+        </button>
+        <select
+          aria-hidden="true"
+          disabled=""
+          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+          tabindex="-1"
+        >
+          <option
+            selected=""
+            value="active"
+          >
+            Active (Accepting enrollments)
+          </option>
+          <option
+            value="inactive"
+          >
+            Inactive (Paused)
+          </option>
+          <option
+            value="archived"
+          >
+            Archived (Historical)
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div
+    class="flex items-center justify-end gap-4"
+  >
+    <button
+      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+      disabled=""
+      type="submit"
+    >
+      <svg
+        class="lucide lucide-loader-circle mr-2 h-4 w-4 animate-spin"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M21 12a9 9 0 1 1-6.219-8.56"
+        />
+      </svg>
+      Saving...
+    </button>
+  </div>
+</form>
+`;
+
+exports[`ProgramForm > Snapshot Tests > should match snapshot with error 1`] = `
+<form
+  class="space-y-6"
+>
+  <div
+    class="relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive"
+    role="alert"
+  >
+    <p>
+      Test error
+    </p>
+  </div>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <h3
+        class="text-2xl font-semibold leading-none tracking-tight"
+      >
+        Create New Program
+      </h3>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Fill in the information to create a new program.
+      </p>
+    </div>
+    <div
+      class="p-6 pt-0 space-y-4"
+    >
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="name"
+        >
+          Program Name 
+          <span
+            class="text-destructive"
+          >
+            *
+          </span>
+        </label>
+        <input
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="name"
+          maxlength="200"
+          minlength="1"
+          placeholder="Certified Business Technician"
+          required=""
+          type="text"
+          value=""
+        />
+        <p
+          class="text-xs text-muted-foreground"
+        >
+          Full name of the program (1-200 characters)
+        </p>
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="code"
+        >
+          Program Code 
+          <span
+            class="text-destructive"
+          >
+            *
+          </span>
+        </label>
+        <input
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 uppercase"
+          id="code"
+          maxlength="20"
+          minlength="2"
+          pattern="[A-Z0-9-]+"
+          placeholder="CBT-101"
+          required=""
+          type="text"
+          value=""
+        />
+        <p
+          class="text-xs text-muted-foreground"
+        >
+          Unique code: uppercase letters, numbers, and hyphens only (2-20 characters)
+        </p>
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="description"
+        >
+          Description
+        </label>
+        <textarea
+          class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="description"
+          maxlength="2000"
+          placeholder="Comprehensive business technology certification program"
+          rows="3"
+        />
+        <p
+          class="text-xs text-muted-foreground"
+        >
+          0
+          /2000 characters
+        </p>
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="department"
+        >
+          Department 
+          <span
+            class="text-destructive"
+          >
+            *
+          </span>
+        </label>
+        <button
+          aria-autocomplete="none"
+          aria-controls="radix-:rpv:"
+          aria-expanded="false"
+          class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+          data-state="closed"
+          dir="ltr"
+          id="department"
+          role="combobox"
+          type="button"
+        >
+          <span
+            style="pointer-events: none;"
+          >
+            Business Technology
+             (
+            BT
+            )
+          </span>
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m6 9 6 6 6-6"
+            />
+          </svg>
+        </button>
+        <select
+          aria-hidden="true"
+          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+          tabindex="-1"
+        >
+          <option
+            selected=""
+            value="dept-1"
+          >
+            Business Technology (BT)
+          </option>
+          <option
+            value="dept-2"
+          >
+            Computer Science (CS)
+          </option>
+          <option
+            value="dept-3"
+          >
+            Healthcare (HC)
+          </option>
+          <option
+            value="dept-4"
+          >
+            Marketing (MKT)
+          </option>
+        </select>
+      </div>
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 gap-4"
+      >
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="credential"
+          >
+            Credential Type 
+            <span
+              class="text-destructive"
+            >
+              *
+            </span>
+          </label>
+          <button
+            aria-autocomplete="none"
+            aria-controls="radix-:rq0:"
+            aria-expanded="false"
+            class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+            data-state="closed"
+            dir="ltr"
+            id="credential"
+            role="combobox"
+            type="button"
+          >
+            <span
+              style="pointer-events: none;"
+            >
+              Certificate
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </button>
+          <select
+            aria-hidden="true"
+            style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+            tabindex="-1"
+          >
+            <option
+              selected=""
+              value="certificate"
+            >
+              Certificate
+            </option>
+            <option
+              value="diploma"
+            >
+              Diploma
+            </option>
+            <option
+              value="degree"
+            >
+              Degree
+            </option>
+          </select>
+        </div>
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="duration"
+          >
+            Duration 
+            <span
+              class="text-destructive"
+            >
+              *
+            </span>
+          </label>
+          <div
+            class="flex gap-2"
+          >
+            <input
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 flex-1"
+              id="duration"
+              min="1"
+              placeholder="6"
+              required=""
+              type="number"
+              value="1"
+            />
+            <button
+              aria-autocomplete="none"
+              aria-controls="radix-:rq1:"
+              aria-expanded="false"
+              class="flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[120px]"
+              data-state="closed"
+              dir="ltr"
+              role="combobox"
+              type="button"
+            >
+              <span
+                style="pointer-events: none;"
+              >
+                Months
+              </span>
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m6 9 6 6 6-6"
+                />
+              </svg>
+            </button>
+            <select
+              aria-hidden="true"
+              style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+              tabindex="-1"
+            >
+              <option
+                value="hours"
+              >
+                Hours
+              </option>
+              <option
+                value="weeks"
+              >
+                Weeks
+              </option>
+              <option
+                selected=""
+                value="months"
+              >
+                Months
+              </option>
+              <option
+                value="years"
+              >
+                Years
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="isPublished"
+        >
+          Publication Status
+        </label>
+        <button
+          aria-autocomplete="none"
+          aria-controls="radix-:rq2:"
+          aria-expanded="false"
+          class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+          data-state="closed"
+          dir="ltr"
+          id="isPublished"
+          role="combobox"
+          type="button"
+        >
+          <span
+            style="pointer-events: none;"
+          >
+            Draft (Not visible to learners)
+          </span>
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m6 9 6 6 6-6"
+            />
+          </svg>
+        </button>
+        <select
+          aria-hidden="true"
+          style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+          tabindex="-1"
+        >
+          <option
+            selected=""
+            value="draft"
+          >
+            Draft (Not visible to learners)
+          </option>
+          <option
+            value="published"
+          >
+            Published (Visible to learners)
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div
+    class="flex items-center justify-end gap-4"
+  >
+    <button
+      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+      type="submit"
+    >
+      <svg
+        class="lucide lucide-save mr-2 h-4 w-4"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+        />
+        <polyline
+          points="17 21 17 13 7 13 7 21"
+        />
+        <polyline
+          points="7 3 7 8 15 8"
+        />
+      </svg>
+      Create
+       Program
+    </button>
+  </div>
+</form>
+`;

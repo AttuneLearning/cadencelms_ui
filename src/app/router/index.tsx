@@ -19,7 +19,9 @@ import { StudentProgressPage } from '@/pages/staff/students';
 // Admin pages
 import { AdminDashboardPage } from '@/pages/admin/dashboard/AdminDashboardPage';
 import { UserManagementPage } from '@/pages/admin/users/UserManagementPage';
-// import { CourseManagementPage } from '@/pages/admin/courses/CourseManagementPage';
+import { ProgramManagementPage } from '@/pages/admin/programs';
+import { CourseManagementPage } from '@/pages/admin/courses';
+import { ClassManagementPage } from '@/pages/admin/classes';
 // TODO: Uncomment when these pages are implemented
 // import { StaffManagementPage } from '@/pages/admin/staff/StaffManagementPage';
 // import { LearnerManagementPage } from '@/pages/admin/learners/LearnerManagementPage';
@@ -139,15 +141,30 @@ export function AppRouter() {
           </ProtectedRoute>
         }
       />
-      {/* Archived old course management */}
-      {/* <Route
+      <Route
+        path="/admin/programs"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <ProgramManagementPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/admin/courses"
         element={
           <ProtectedRoute roles={['global-admin']}>
             <CourseManagementPage />
           </ProtectedRoute>
         }
-      /> */}
+      />
+      <Route
+        path="/admin/classes"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <ClassManagementPage />
+          </ProtectedRoute>
+        }
+      />
       {/* TODO: Uncomment when these pages are implemented */}
       {/* <Route
         path="/admin/staff"

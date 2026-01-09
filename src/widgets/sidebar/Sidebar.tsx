@@ -20,6 +20,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Shield,
+  Layers,
 } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import type { Role } from '@/features/auth/model/types';
@@ -96,6 +97,24 @@ const navItems: NavItem[] = [
     label: 'User Management',
     path: '/admin/users',
     icon: Users,
+    roles: ['global-admin'],
+  },
+  {
+    label: 'Program Management',
+    path: '/admin/programs',
+    icon: Layers,
+    roles: ['global-admin'],
+  },
+  {
+    label: 'Course Management',
+    path: '/admin/courses',
+    icon: BookOpen,
+    roles: ['global-admin'],
+  },
+  {
+    label: 'Class Management',
+    path: '/admin/classes',
+    icon: Calendar,
     roles: ['global-admin'],
   },
   {

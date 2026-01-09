@@ -1,0 +1,407 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ProgramLevelForm > Snapshot Tests > should match snapshot in create mode 1`] = `
+<form
+  class="space-y-6"
+>
+  <div
+    class="space-y-2"
+  >
+    <label
+      class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      for="name"
+    >
+      Level Name 
+      <span
+        class="text-destructive"
+      >
+        *
+      </span>
+    </label>
+    <input
+      class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+      id="name"
+      maxlength="200"
+      placeholder="e.g., Level 1: Foundation, Year 1, Beginner Level"
+      value=""
+    />
+    <p
+      class="text-xs text-muted-foreground"
+    >
+      Descriptive name for this level within the program (1-200 characters)
+    </p>
+  </div>
+  <div
+    class="space-y-2"
+  >
+    <label
+      class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      for="description"
+    >
+      Description
+    </label>
+    <textarea
+      class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+      id="description"
+      maxlength="2000"
+      placeholder="Describe what learners will accomplish in this level..."
+      rows="4"
+    />
+    <p
+      class="text-xs text-muted-foreground"
+    >
+      Optional description of this level (max 2000 characters)
+    </p>
+  </div>
+  <div
+    class="space-y-2"
+  >
+    <label
+      class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      for="requiredCredits"
+    >
+      Required Credits
+    </label>
+    <input
+      class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+      id="requiredCredits"
+      min="0"
+      placeholder="e.g., 15, 18, 24"
+      step="1"
+      type="number"
+      value=""
+    />
+    <p
+      class="text-xs text-muted-foreground"
+    >
+      Optional number of credits required to complete this level
+    </p>
+  </div>
+  <div
+    class="flex justify-end gap-3 pt-4"
+  >
+    <button
+      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+      type="submit"
+    >
+      Create Level
+    </button>
+  </div>
+</form>
+`;
+
+exports[`ProgramLevelForm > Snapshot Tests > should match snapshot in edit mode 1`] = `
+<form
+  class="space-y-6"
+>
+  <div
+    class="space-y-2"
+  >
+    <label
+      class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      for="name"
+    >
+      Level Name 
+      <span
+        class="text-destructive"
+      >
+        *
+      </span>
+    </label>
+    <input
+      class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+      id="name"
+      maxlength="200"
+      placeholder="e.g., Level 1: Foundation, Year 1, Beginner Level"
+      value="Year 1: Foundation (Updated)"
+    />
+    <p
+      class="text-xs text-muted-foreground"
+    >
+      Descriptive name for this level within the program (1-200 characters)
+    </p>
+  </div>
+  <div
+    class="space-y-2"
+  >
+    <label
+      class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      for="description"
+    >
+      Description
+    </label>
+    <textarea
+      class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+      id="description"
+      maxlength="2000"
+      placeholder="Describe what learners will accomplish in this level..."
+      rows="4"
+    >
+      Updated description for the foundation year
+    </textarea>
+    <p
+      class="text-xs text-muted-foreground"
+    >
+      Optional description of this level (max 2000 characters)
+    </p>
+  </div>
+  <div
+    class="space-y-2"
+  >
+    <label
+      class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      for="requiredCredits"
+    >
+      Required Credits
+    </label>
+    <input
+      class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+      id="requiredCredits"
+      min="0"
+      placeholder="e.g., 15, 18, 24"
+      step="1"
+      type="number"
+      value="32"
+    />
+    <p
+      class="text-xs text-muted-foreground"
+    >
+      Optional number of credits required to complete this level
+    </p>
+  </div>
+  <div
+    class="flex justify-end gap-3 pt-4"
+  >
+    <button
+      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+      type="submit"
+    >
+      Update Level
+    </button>
+  </div>
+</form>
+`;
+
+exports[`ProgramLevelForm > Snapshot Tests > should match snapshot in loading state 1`] = `
+<form
+  class="space-y-6"
+>
+  <div
+    class="space-y-2"
+  >
+    <label
+      class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      for="name"
+    >
+      Level Name 
+      <span
+        class="text-destructive"
+      >
+        *
+      </span>
+    </label>
+    <input
+      class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+      disabled=""
+      id="name"
+      maxlength="200"
+      placeholder="e.g., Level 1: Foundation, Year 1, Beginner Level"
+      value=""
+    />
+    <p
+      class="text-xs text-muted-foreground"
+    >
+      Descriptive name for this level within the program (1-200 characters)
+    </p>
+  </div>
+  <div
+    class="space-y-2"
+  >
+    <label
+      class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      for="description"
+    >
+      Description
+    </label>
+    <textarea
+      class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+      disabled=""
+      id="description"
+      maxlength="2000"
+      placeholder="Describe what learners will accomplish in this level..."
+      rows="4"
+    />
+    <p
+      class="text-xs text-muted-foreground"
+    >
+      Optional description of this level (max 2000 characters)
+    </p>
+  </div>
+  <div
+    class="space-y-2"
+  >
+    <label
+      class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      for="requiredCredits"
+    >
+      Required Credits
+    </label>
+    <input
+      class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+      disabled=""
+      id="requiredCredits"
+      min="0"
+      placeholder="e.g., 15, 18, 24"
+      step="1"
+      type="number"
+      value=""
+    />
+    <p
+      class="text-xs text-muted-foreground"
+    >
+      Optional number of credits required to complete this level
+    </p>
+  </div>
+  <div
+    class="flex justify-end gap-3 pt-4"
+  >
+    <button
+      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+      disabled=""
+      type="submit"
+    >
+      Saving...
+    </button>
+  </div>
+</form>
+`;
+
+exports[`ProgramLevelForm > Snapshot Tests > should match snapshot with error 1`] = `
+<form
+  class="space-y-6"
+>
+  <div
+    class="relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive"
+    role="alert"
+  >
+    <svg
+      class="lucide lucide-circle-alert h-4 w-4"
+      fill="none"
+      height="24"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle
+        cx="12"
+        cy="12"
+        r="10"
+      />
+      <line
+        x1="12"
+        x2="12"
+        y1="8"
+        y2="12"
+      />
+      <line
+        x1="12"
+        x2="12.01"
+        y1="16"
+        y2="16"
+      />
+    </svg>
+    <div
+      class="text-sm [&_p]:leading-relaxed"
+    >
+      Test error message
+    </div>
+  </div>
+  <div
+    class="space-y-2"
+  >
+    <label
+      class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      for="name"
+    >
+      Level Name 
+      <span
+        class="text-destructive"
+      >
+        *
+      </span>
+    </label>
+    <input
+      class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+      id="name"
+      maxlength="200"
+      placeholder="e.g., Level 1: Foundation, Year 1, Beginner Level"
+      value=""
+    />
+    <p
+      class="text-xs text-muted-foreground"
+    >
+      Descriptive name for this level within the program (1-200 characters)
+    </p>
+  </div>
+  <div
+    class="space-y-2"
+  >
+    <label
+      class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      for="description"
+    >
+      Description
+    </label>
+    <textarea
+      class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+      id="description"
+      maxlength="2000"
+      placeholder="Describe what learners will accomplish in this level..."
+      rows="4"
+    />
+    <p
+      class="text-xs text-muted-foreground"
+    >
+      Optional description of this level (max 2000 characters)
+    </p>
+  </div>
+  <div
+    class="space-y-2"
+  >
+    <label
+      class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      for="requiredCredits"
+    >
+      Required Credits
+    </label>
+    <input
+      class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+      id="requiredCredits"
+      min="0"
+      placeholder="e.g., 15, 18, 24"
+      step="1"
+      type="number"
+      value=""
+    />
+    <p
+      class="text-xs text-muted-foreground"
+    >
+      Optional number of credits required to complete this level
+    </p>
+  </div>
+  <div
+    class="flex justify-end gap-3 pt-4"
+  >
+    <button
+      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+      type="submit"
+    >
+      Create Level
+    </button>
+  </div>
+</form>
+`;
