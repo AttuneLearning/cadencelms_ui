@@ -1,37 +1,92 @@
 /**
- * Content entity public exports
- * Following FSD architecture - only exports what's needed by other layers
+ * Content Entity - Public API
+ * Generated from: content.contract.ts v1.0.0
  */
 
-// Types
+// =====================
+// TYPE EXPORTS
+// =====================
+
 export type {
-  Content,
+  // Core types
   ContentType,
   ContentStatus,
-  VideoContent,
-  DocumentContent,
-  SCORMContent,
-  QuizContent,
-  QuizQuestion,
+  ScormVersion,
+  MediaType,
+  Pagination,
+  UserReference,
+  DepartmentReference,
+  // Content overview
   ContentListItem,
-  CreateContentPayload,
-  UpdateContentPayload,
-  ContentFilterParams,
+  Content,
+  ContentFilters,
+  ContentListResponse,
+  // SCORM types
+  ScormManifestMetadata,
+  ScormManifestData,
+  ScormPackageListItem,
+  ScormPackage,
+  ScormPackageFilters,
+  ScormPackagesListResponse,
+  UploadScormPackagePayload,
+  UploadScormPackageResponse,
+  UpdateScormPackagePayload,
+  ScormLaunchPayload,
+  ScormLaunchResponse,
+  PublishScormPackagePayload,
+  PublishScormPackageResponse,
+  UnpublishScormPackageResponse,
+  // Media types
+  MediaMetadata,
+  MediaFileListItem,
+  MediaFile,
+  MediaFileFilters,
+  MediaFilesListResponse,
+  UploadMediaFilePayload,
+  UploadMediaFileResponse,
+  UpdateMediaFilePayload,
+  // Form types
+  ContentFormData,
+  ScormFormData,
+  MediaFormData,
 } from './model/types';
 
-// API
+// =====================
+// HOOKS EXPORTS
+// =====================
+
 export {
-  getContent,
-  getContentList,
-  getContentByCourseId,
-  createContent,
-  updateContent,
-  deleteContent,
-} from './api/contentApi';
+  // Content overview hooks
+  useContents,
+  useContent,
+  // SCORM package hooks
+  useScormPackages,
+  useScormPackage,
+  useUploadScormPackage,
+  useUpdateScormPackage,
+  useDeleteScormPackage,
+  useLaunchScormPackage,
+  usePublishScormPackage,
+  useUnpublishScormPackage,
+  // Media library hooks
+  useMediaFiles,
+  useMediaFile,
+  useUploadMediaFile,
+  useUpdateMediaFile,
+  useDeleteMediaFile,
+} from './hooks';
 
-// Hooks
-export { useContent } from './model/useContent';
-export { useContentList } from './model/useContentList';
+// Query keys
+export { contentKeys } from './model/contentKeys';
 
-// UI Components
-export { ContentTypeBadge } from './ui/ContentTypeBadge';
+// =====================
+// API EXPORTS (for advanced use)
+// =====================
+
+export * as contentApi from './api/contentApi';
+
+// =====================
+// UI COMPONENT EXPORTS
+// =====================
+
+export { ContentCard, ContentList, ContentForm, ContentTypeBadge } from './ui';
