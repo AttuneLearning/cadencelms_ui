@@ -1,6 +1,6 @@
 /**
  * CourseList Component
- * Displays a grid or list of courses
+ * Displays a grid or list of courses with filtering
  */
 
 import React from 'react';
@@ -12,7 +12,6 @@ interface CourseListProps {
   courses: CourseListItem[];
   className?: string;
   variant?: 'grid' | 'list';
-  showProgress?: boolean;
   showEnrollmentCount?: boolean;
   emptyMessage?: string;
 }
@@ -21,8 +20,7 @@ export const CourseList: React.FC<CourseListProps> = ({
   courses,
   className,
   variant = 'grid',
-  showProgress = false,
-  showEnrollmentCount = false,
+  showEnrollmentCount = true,
   emptyMessage = 'No courses found',
 }) => {
   if (courses.length === 0) {
@@ -44,9 +42,8 @@ export const CourseList: React.FC<CourseListProps> = ({
     >
       {courses.map((course) => (
         <CourseCard
-          key={course._id}
+          key={course.id}
           course={course}
-          showProgress={showProgress}
           showEnrollmentCount={showEnrollmentCount}
         />
       ))}

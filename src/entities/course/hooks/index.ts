@@ -5,12 +5,18 @@
 export {
   useCourses,
   useCourse,
-  useMyCourses,
-  useCourseStats,
+  useExportCourse,
   useCreateCourse,
   useUpdateCourse,
+  usePatchCourse,
   useDeleteCourse,
   usePublishCourse,
   useUnpublishCourse,
-  COURSE_KEYS,
-} from './useCourses';
+  useArchiveCourse,
+  useUnarchiveCourse,
+  useDuplicateCourse,
+  useMoveDepartment,
+  useAssignProgram,
+} from '../model/useCourse';
+
+export { courseKeys } from '../model/courseKeys';

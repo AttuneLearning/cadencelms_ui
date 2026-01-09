@@ -6,8 +6,8 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { HomePage } from '@/pages/home';
 import { LoginPage } from '@/pages/auth/LoginPage';
 import { DashboardPage } from '@/pages/dashboard';
-import { CoursesPage } from '@/pages/courses';
-import { CourseViewerPage } from '@/pages/course-viewer';
+// import { CoursesPage } from '@/pages/courses';
+// import { CourseViewerPage } from '@/pages/course-viewer';
 import { NotFoundPage } from '@/pages/not-found';
 import { ProtectedRoute } from './guards';
 
@@ -19,7 +19,7 @@ import { StudentProgressPage } from '@/pages/staff/students';
 // Admin pages
 import { AdminDashboardPage } from '@/pages/admin/dashboard/AdminDashboardPage';
 import { UserManagementPage } from '@/pages/admin/users/UserManagementPage';
-import { CourseManagementPage } from '@/pages/admin/courses/CourseManagementPage';
+// import { CourseManagementPage } from '@/pages/admin/courses/CourseManagementPage';
 // TODO: Uncomment when these pages are implemented
 // import { StaffManagementPage } from '@/pages/admin/staff/StaffManagementPage';
 // import { LearnerManagementPage } from '@/pages/admin/learners/LearnerManagementPage';
@@ -62,22 +62,23 @@ export function AppRouter() {
           </ProtectedRoute>
         }
       />
-      <Route
+      {/* Archived old course page */}
+      {/* <Route
         path="/courses"
         element={
           <ProtectedRoute>
             <CoursesPage />
           </ProtectedRoute>
         }
-      />
-      <Route
+      /> */}
+      {/* <Route
         path="/courses/:courseId"
         element={
           <ProtectedRoute>
             <CourseViewerPage />
           </ProtectedRoute>
         }
-      />
+      /> */}
       <Route
         path="/profile"
         element={
@@ -138,14 +139,15 @@ export function AppRouter() {
           </ProtectedRoute>
         }
       />
-      <Route
+      {/* Archived old course management */}
+      {/* <Route
         path="/admin/courses"
         element={
           <ProtectedRoute roles={['global-admin']}>
             <CourseManagementPage />
           </ProtectedRoute>
         }
-      />
+      /> */}
       {/* TODO: Uncomment when these pages are implemented */}
       {/* <Route
         path="/admin/staff"

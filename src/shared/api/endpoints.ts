@@ -20,6 +20,15 @@ export const endpoints = {
     progress: (id: string) => `/courses/${id}/progress`,
   },
 
+  courseSegments: {
+    list: (courseId: string) => `/api/v2/courses/${courseId}/modules`,
+    byId: (courseId: string, moduleId: string) => `/api/v2/courses/${courseId}/modules/${moduleId}`,
+    create: (courseId: string) => `/api/v2/courses/${courseId}/modules`,
+    update: (courseId: string, moduleId: string) => `/api/v2/courses/${courseId}/modules/${moduleId}`,
+    delete: (courseId: string, moduleId: string) => `/api/v2/courses/${courseId}/modules/${moduleId}`,
+    reorder: (courseId: string) => `/api/v2/courses/${courseId}/modules/reorder`,
+  },
+
   lessons: {
     list: (courseId: string) => `/courses/${courseId}/lessons`,
     byId: (courseId: string, lessonId: string) =>
@@ -107,5 +116,14 @@ export const endpoints = {
 
   progress: {
     stats: '/progress/stats',
+  },
+
+  classes: {
+    list: '/api/v2/classes',
+    byId: (id: string) => `/api/v2/classes/${id}`,
+    roster: (id: string) => `/api/v2/classes/${id}/roster`,
+    enrollments: (id: string) => `/api/v2/classes/${id}/enrollments`,
+    enrollment: (id: string, enrollmentId: string) => `/api/v2/classes/${id}/enrollments/${enrollmentId}`,
+    progress: (id: string) => `/api/v2/classes/${id}/progress`,
   },
 } as const;
