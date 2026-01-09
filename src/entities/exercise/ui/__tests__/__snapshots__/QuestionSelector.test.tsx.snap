@@ -1,0 +1,1129 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`QuestionSelector > Snapshot Tests > should match snapshot with empty state 1`] = `
+<div
+  class="space-y-6"
+>
+  <div
+    class="flex items-center justify-between rounded-lg border p-4"
+  >
+    <div
+      class="space-y-1"
+    >
+      <p
+        class="text-sm font-medium"
+      >
+        Questions Summary
+      </p>
+      <div
+        class="flex gap-4 text-sm text-muted-foreground"
+      >
+        <span>
+          0
+           
+          Questions
+        </span>
+        <span>
+          0
+           Total Points
+        </span>
+      </div>
+    </div>
+    <button
+      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+    >
+      <svg
+        class="lucide lucide-plus mr-2 h-4 w-4"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M5 12h14"
+        />
+        <path
+          d="M12 5v14"
+        />
+      </svg>
+      Add Question
+    </button>
+  </div>
+  <div
+    class="space-y-3"
+  >
+    <div
+      class="flex min-h-[200px] items-center justify-center rounded-lg border border-dashed"
+    >
+      <p
+        class="text-muted-foreground"
+      >
+        No questions added yet
+      </p>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`QuestionSelector > Snapshot Tests > should match snapshot with questions 1`] = `
+<div
+  class="space-y-6"
+>
+  <div
+    class="flex items-center justify-between rounded-lg border p-4"
+  >
+    <div
+      class="space-y-1"
+    >
+      <p
+        class="text-sm font-medium"
+      >
+        Questions Summary
+      </p>
+      <div
+        class="flex gap-4 text-sm text-muted-foreground"
+      >
+        <span>
+          5
+           
+          Questions
+        </span>
+        <span>
+          55
+           Total Points
+        </span>
+      </div>
+    </div>
+    <button
+      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+    >
+      <svg
+        class="lucide lucide-plus mr-2 h-4 w-4"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M5 12h14"
+        />
+        <path
+          d="M12 5v14"
+        />
+      </svg>
+      Add Question
+    </button>
+  </div>
+  <div
+    class="space-y-3"
+  >
+    <div
+      class="rounded-lg border bg-card text-card-foreground shadow-sm"
+    >
+      <div
+        class="p-6 pt-6"
+      >
+        <div
+          class="flex gap-4"
+        >
+          <div
+            class="flex items-start"
+          >
+            <svg
+              class="lucide lucide-grip-vertical h-5 w-5 text-muted-foreground cursor-move"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="9"
+                cy="12"
+                r="1"
+              />
+              <circle
+                cx="9"
+                cy="5"
+                r="1"
+              />
+              <circle
+                cx="9"
+                cy="19"
+                r="1"
+              />
+              <circle
+                cx="15"
+                cy="12"
+                r="1"
+              />
+              <circle
+                cx="15"
+                cy="5"
+                r="1"
+              />
+              <circle
+                cx="15"
+                cy="19"
+                r="1"
+              />
+            </svg>
+          </div>
+          <div
+            class="flex-1 space-y-2"
+          >
+            <div
+              class="flex items-start justify-between gap-2"
+            >
+              <div
+                class="flex-1"
+              >
+                <div
+                  class="flex items-center gap-2 mb-2"
+                >
+                  <div
+                    class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-foreground"
+                  >
+                    Q
+                    1
+                  </div>
+                  <div
+                    class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  >
+                    multiple_choice
+                  </div>
+                  <div
+                    class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground hover:bg-primary/80"
+                  >
+                    easy
+                  </div>
+                  <span
+                    class="text-sm text-muted-foreground"
+                  >
+                    10
+                     pts
+                  </span>
+                </div>
+                <p
+                  class="text-sm font-medium"
+                >
+                  What is the correct way to declare a variable in JavaScript?
+                </p>
+              </div>
+              <button
+                class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10"
+              >
+                <svg
+                  class="lucide lucide-trash2 h-4 w-4 text-destructive"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M3 6h18"
+                  />
+                  <path
+                    d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"
+                  />
+                  <path
+                    d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
+                  />
+                  <line
+                    x1="10"
+                    x2="10"
+                    y1="11"
+                    y2="17"
+                  />
+                  <line
+                    x1="14"
+                    x2="14"
+                    y1="11"
+                    y2="17"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div
+              class="mt-3 space-y-1 pl-4 border-l-2"
+            >
+              <div
+                class="flex items-center gap-2 text-sm"
+              >
+                <svg
+                  class="lucide lucide-circle-x h-4 w-4 text-muted-foreground"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                  />
+                  <path
+                    d="m15 9-6 6"
+                  />
+                  <path
+                    d="m9 9 6 6"
+                  />
+                </svg>
+                <span
+                  class=""
+                >
+                  var x = 5;
+                </span>
+              </div>
+              <div
+                class="flex items-center gap-2 text-sm"
+              >
+                <svg
+                  class="lucide lucide-circle-x h-4 w-4 text-muted-foreground"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                  />
+                  <path
+                    d="m15 9-6 6"
+                  />
+                  <path
+                    d="m9 9 6 6"
+                  />
+                </svg>
+                <span
+                  class=""
+                >
+                  let x = 5;
+                </span>
+              </div>
+              <div
+                class="flex items-center gap-2 text-sm"
+              >
+                <svg
+                  class="lucide lucide-circle-x h-4 w-4 text-muted-foreground"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                  />
+                  <path
+                    d="m15 9-6 6"
+                  />
+                  <path
+                    d="m9 9 6 6"
+                  />
+                </svg>
+                <span
+                  class=""
+                >
+                  const x = 5;
+                </span>
+              </div>
+              <div
+                class="flex items-center gap-2 text-sm"
+              >
+                <svg
+                  class="lucide lucide-circle-check h-4 w-4 text-green-600"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                  />
+                  <path
+                    d="m9 12 2 2 4-4"
+                  />
+                </svg>
+                <span
+                  class="font-medium text-green-700"
+                >
+                  All of the above
+                </span>
+              </div>
+            </div>
+            <div
+              class="mt-2 rounded-md bg-muted p-3 text-sm"
+            >
+              <p
+                class="font-medium mb-1"
+              >
+                Explanation:
+              </p>
+              <p
+                class="text-muted-foreground"
+              >
+                JavaScript supports var, let, and const for variable declarations.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="rounded-lg border bg-card text-card-foreground shadow-sm"
+    >
+      <div
+        class="p-6 pt-6"
+      >
+        <div
+          class="flex gap-4"
+        >
+          <div
+            class="flex items-start"
+          >
+            <svg
+              class="lucide lucide-grip-vertical h-5 w-5 text-muted-foreground cursor-move"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="9"
+                cy="12"
+                r="1"
+              />
+              <circle
+                cx="9"
+                cy="5"
+                r="1"
+              />
+              <circle
+                cx="9"
+                cy="19"
+                r="1"
+              />
+              <circle
+                cx="15"
+                cy="12"
+                r="1"
+              />
+              <circle
+                cx="15"
+                cy="5"
+                r="1"
+              />
+              <circle
+                cx="15"
+                cy="19"
+                r="1"
+              />
+            </svg>
+          </div>
+          <div
+            class="flex-1 space-y-2"
+          >
+            <div
+              class="flex items-start justify-between gap-2"
+            >
+              <div
+                class="flex-1"
+              >
+                <div
+                  class="flex items-center gap-2 mb-2"
+                >
+                  <div
+                    class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-foreground"
+                  >
+                    Q
+                    2
+                  </div>
+                  <div
+                    class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  >
+                    true_false
+                  </div>
+                  <div
+                    class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground hover:bg-primary/80"
+                  >
+                    easy
+                  </div>
+                  <span
+                    class="text-sm text-muted-foreground"
+                  >
+                    5
+                     pts
+                  </span>
+                </div>
+                <p
+                  class="text-sm font-medium"
+                >
+                  JavaScript is a compiled language.
+                </p>
+              </div>
+              <button
+                class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10"
+              >
+                <svg
+                  class="lucide lucide-trash2 h-4 w-4 text-destructive"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M3 6h18"
+                  />
+                  <path
+                    d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"
+                  />
+                  <path
+                    d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
+                  />
+                  <line
+                    x1="10"
+                    x2="10"
+                    y1="11"
+                    y2="17"
+                  />
+                  <line
+                    x1="14"
+                    x2="14"
+                    y1="11"
+                    y2="17"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div
+              class="mt-2 rounded-md bg-muted p-3 text-sm"
+            >
+              <p
+                class="font-medium mb-1"
+              >
+                Explanation:
+              </p>
+              <p
+                class="text-muted-foreground"
+              >
+                JavaScript is an interpreted language, not compiled.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="rounded-lg border bg-card text-card-foreground shadow-sm"
+    >
+      <div
+        class="p-6 pt-6"
+      >
+        <div
+          class="flex gap-4"
+        >
+          <div
+            class="flex items-start"
+          >
+            <svg
+              class="lucide lucide-grip-vertical h-5 w-5 text-muted-foreground cursor-move"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="9"
+                cy="12"
+                r="1"
+              />
+              <circle
+                cx="9"
+                cy="5"
+                r="1"
+              />
+              <circle
+                cx="9"
+                cy="19"
+                r="1"
+              />
+              <circle
+                cx="15"
+                cy="12"
+                r="1"
+              />
+              <circle
+                cx="15"
+                cy="5"
+                r="1"
+              />
+              <circle
+                cx="15"
+                cy="19"
+                r="1"
+              />
+            </svg>
+          </div>
+          <div
+            class="flex-1 space-y-2"
+          >
+            <div
+              class="flex items-start justify-between gap-2"
+            >
+              <div
+                class="flex-1"
+              >
+                <div
+                  class="flex items-center gap-2 mb-2"
+                >
+                  <div
+                    class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-foreground"
+                  >
+                    Q
+                    3
+                  </div>
+                  <div
+                    class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  >
+                    short_answer
+                  </div>
+                  <div
+                    class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground hover:bg-primary/80"
+                  >
+                    easy
+                  </div>
+                  <span
+                    class="text-sm text-muted-foreground"
+                  >
+                    5
+                     pts
+                  </span>
+                </div>
+                <p
+                  class="text-sm font-medium"
+                >
+                  What is the keyword used to define a function in JavaScript?
+                </p>
+              </div>
+              <button
+                class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10"
+              >
+                <svg
+                  class="lucide lucide-trash2 h-4 w-4 text-destructive"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M3 6h18"
+                  />
+                  <path
+                    d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"
+                  />
+                  <path
+                    d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
+                  />
+                  <line
+                    x1="10"
+                    x2="10"
+                    y1="11"
+                    y2="17"
+                  />
+                  <line
+                    x1="14"
+                    x2="14"
+                    y1="11"
+                    y2="17"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="rounded-lg border bg-card text-card-foreground shadow-sm"
+    >
+      <div
+        class="p-6 pt-6"
+      >
+        <div
+          class="flex gap-4"
+        >
+          <div
+            class="flex items-start"
+          >
+            <svg
+              class="lucide lucide-grip-vertical h-5 w-5 text-muted-foreground cursor-move"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="9"
+                cy="12"
+                r="1"
+              />
+              <circle
+                cx="9"
+                cy="5"
+                r="1"
+              />
+              <circle
+                cx="9"
+                cy="19"
+                r="1"
+              />
+              <circle
+                cx="15"
+                cy="12"
+                r="1"
+              />
+              <circle
+                cx="15"
+                cy="5"
+                r="1"
+              />
+              <circle
+                cx="15"
+                cy="19"
+                r="1"
+              />
+            </svg>
+          </div>
+          <div
+            class="flex-1 space-y-2"
+          >
+            <div
+              class="flex items-start justify-between gap-2"
+            >
+              <div
+                class="flex-1"
+              >
+                <div
+                  class="flex items-center gap-2 mb-2"
+                >
+                  <div
+                    class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-foreground"
+                  >
+                    Q
+                    4
+                  </div>
+                  <div
+                    class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  >
+                    essay
+                  </div>
+                  <div
+                    class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground hover:bg-primary/80"
+                  >
+                    hard
+                  </div>
+                  <span
+                    class="text-sm text-muted-foreground"
+                  >
+                    20
+                     pts
+                  </span>
+                </div>
+                <p
+                  class="text-sm font-medium"
+                >
+                  Explain the concept of closures in JavaScript and provide an example.
+                </p>
+              </div>
+              <button
+                class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10"
+              >
+                <svg
+                  class="lucide lucide-trash2 h-4 w-4 text-destructive"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M3 6h18"
+                  />
+                  <path
+                    d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"
+                  />
+                  <path
+                    d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
+                  />
+                  <line
+                    x1="10"
+                    x2="10"
+                    y1="11"
+                    y2="17"
+                  />
+                  <line
+                    x1="14"
+                    x2="14"
+                    y1="11"
+                    y2="17"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="rounded-lg border bg-card text-card-foreground shadow-sm"
+    >
+      <div
+        class="p-6 pt-6"
+      >
+        <div
+          class="flex gap-4"
+        >
+          <div
+            class="flex items-start"
+          >
+            <svg
+              class="lucide lucide-grip-vertical h-5 w-5 text-muted-foreground cursor-move"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="9"
+                cy="12"
+                r="1"
+              />
+              <circle
+                cx="9"
+                cy="5"
+                r="1"
+              />
+              <circle
+                cx="9"
+                cy="19"
+                r="1"
+              />
+              <circle
+                cx="15"
+                cy="12"
+                r="1"
+              />
+              <circle
+                cx="15"
+                cy="5"
+                r="1"
+              />
+              <circle
+                cx="15"
+                cy="19"
+                r="1"
+              />
+            </svg>
+          </div>
+          <div
+            class="flex-1 space-y-2"
+          >
+            <div
+              class="flex items-start justify-between gap-2"
+            >
+              <div
+                class="flex-1"
+              >
+                <div
+                  class="flex items-center gap-2 mb-2"
+                >
+                  <div
+                    class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-foreground"
+                  >
+                    Q
+                    5
+                  </div>
+                  <div
+                    class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  >
+                    matching
+                  </div>
+                  <div
+                    class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground hover:bg-primary/80"
+                  >
+                    medium
+                  </div>
+                  <span
+                    class="text-sm text-muted-foreground"
+                  >
+                    15
+                     pts
+                  </span>
+                </div>
+                <p
+                  class="text-sm font-medium"
+                >
+                  Match the JavaScript array method to its purpose
+                </p>
+              </div>
+              <button
+                class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10"
+              >
+                <svg
+                  class="lucide lucide-trash2 h-4 w-4 text-destructive"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M3 6h18"
+                  />
+                  <path
+                    d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"
+                  />
+                  <path
+                    d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
+                  />
+                  <line
+                    x1="10"
+                    x2="10"
+                    y1="11"
+                    y2="17"
+                  />
+                  <line
+                    x1="14"
+                    x2="14"
+                    y1="11"
+                    y2="17"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div
+              class="mt-3 space-y-1 pl-4 border-l-2"
+            >
+              <div
+                class="flex items-center gap-2 text-sm"
+              >
+                <svg
+                  class="lucide lucide-circle-x h-4 w-4 text-muted-foreground"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                  />
+                  <path
+                    d="m15 9-6 6"
+                  />
+                  <path
+                    d="m9 9 6 6"
+                  />
+                </svg>
+                <span
+                  class=""
+                >
+                  map()
+                </span>
+              </div>
+              <div
+                class="flex items-center gap-2 text-sm"
+              >
+                <svg
+                  class="lucide lucide-circle-x h-4 w-4 text-muted-foreground"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                  />
+                  <path
+                    d="m15 9-6 6"
+                  />
+                  <path
+                    d="m9 9 6 6"
+                  />
+                </svg>
+                <span
+                  class=""
+                >
+                  filter()
+                </span>
+              </div>
+              <div
+                class="flex items-center gap-2 text-sm"
+              >
+                <svg
+                  class="lucide lucide-circle-x h-4 w-4 text-muted-foreground"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                  />
+                  <path
+                    d="m15 9-6 6"
+                  />
+                  <path
+                    d="m9 9 6 6"
+                  />
+                </svg>
+                <span
+                  class=""
+                >
+                  reduce()
+                </span>
+              </div>
+              <div
+                class="flex items-center gap-2 text-sm"
+              >
+                <svg
+                  class="lucide lucide-circle-x h-4 w-4 text-muted-foreground"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                  />
+                  <path
+                    d="m15 9-6 6"
+                  />
+                  <path
+                    d="m9 9 6 6"
+                  />
+                </svg>
+                <span
+                  class=""
+                >
+                  forEach()
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

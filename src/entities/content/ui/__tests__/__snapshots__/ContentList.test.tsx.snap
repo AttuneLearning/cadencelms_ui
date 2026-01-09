@@ -1,0 +1,2049 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ContentList > Snapshot Tests > should match snapshot with content list 1`] = `
+<div
+  class="space-y-4"
+>
+  <div
+    class="flex flex-col gap-4 md:flex-row md:items-center"
+  >
+    <div
+      class="flex-1 flex gap-2"
+    >
+      <input
+        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 flex-1"
+        placeholder="Search content..."
+        value=""
+      />
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2"
+      >
+        <svg
+          class="lucide lucide-search h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle
+            cx="11"
+            cy="11"
+            r="8"
+          />
+          <path
+            d="m21 21-4.3-4.3"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="flex gap-2"
+    >
+      <button
+        aria-autocomplete="none"
+        aria-controls="radix-:rb8:"
+        aria-expanded="false"
+        class="flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[140px]"
+        data-state="closed"
+        dir="ltr"
+        role="combobox"
+        type="button"
+      >
+        <span
+          style="pointer-events: none;"
+        >
+          All Types
+        </span>
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m6 9 6 6 6-6"
+          />
+        </svg>
+      </button>
+      <button
+        aria-autocomplete="none"
+        aria-controls="radix-:rb9:"
+        aria-expanded="false"
+        class="flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[140px]"
+        data-state="closed"
+        dir="ltr"
+        role="combobox"
+        type="button"
+      >
+        <span
+          style="pointer-events: none;"
+        >
+          All Status
+        </span>
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m6 9 6 6 6-6"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+  <div
+    class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+  >
+    <div
+      class="rounded-lg border bg-card text-card-foreground shadow-sm"
+    >
+      <div
+        class="flex flex-col space-y-1.5 p-6"
+      >
+        <div
+          class="flex items-start justify-between gap-4"
+        >
+          <div
+            class="flex-1 min-w-0"
+          >
+            <h3
+              class="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2 flex-wrap"
+            >
+              <svg
+                class="lucide lucide-package h-5 w-5 flex-shrink-0"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m7.5 4.27 9 5.15"
+                />
+                <path
+                  d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"
+                />
+                <path
+                  d="m3.3 7 8.7 5 8.7-5"
+                />
+                <path
+                  d="M12 22V12"
+                />
+              </svg>
+              <span
+                class="truncate"
+              >
+                Introduction to Business Technology
+              </span>
+            </h3>
+            <p
+              class="text-sm text-muted-foreground mt-2 line-clamp-2"
+            >
+              A comprehensive introduction to modern business technology
+            </p>
+          </div>
+          <div
+            class="flex flex-col gap-2"
+          >
+            <div
+              class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-green-500/10 text-green-500"
+            >
+              published
+            </div>
+            <div
+              class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-purple-500/10 text-purple-500"
+            >
+              scorm
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="p-6 pt-0"
+      >
+        <div
+          class="space-y-4"
+        >
+          <div
+            class="flex items-center gap-2 text-sm"
+          >
+            <svg
+              class="lucide lucide-building2 h-4 w-4 text-muted-foreground"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"
+              />
+              <path
+                d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"
+              />
+              <path
+                d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"
+              />
+              <path
+                d="M10 6h4"
+              />
+              <path
+                d="M10 10h4"
+              />
+              <path
+                d="M10 14h4"
+              />
+              <path
+                d="M10 18h4"
+              />
+            </svg>
+            <span
+              class="font-medium"
+            >
+              Business Technology
+            </span>
+          </div>
+          <div
+            class="rounded-md overflow-hidden bg-muted"
+          >
+            <img
+              alt="Introduction to Business Technology"
+              class="w-full h-32 object-cover"
+              src="https://example.com/thumbnails/scorm-1.jpg"
+            />
+          </div>
+          <div
+            class="flex items-center gap-4 flex-wrap text-sm"
+          />
+          <div
+            class="pt-4 border-t flex items-center gap-2 text-xs text-muted-foreground"
+          >
+            <svg
+              class="lucide lucide-calendar h-3 w-3"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8 2v4"
+              />
+              <path
+                d="M16 2v4"
+              />
+              <rect
+                height="18"
+                rx="2"
+                width="18"
+                x="3"
+                y="4"
+              />
+              <path
+                d="M3 10h18"
+              />
+            </svg>
+            <span>
+              Created 
+              12/1/2025
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="rounded-lg border bg-card text-card-foreground shadow-sm"
+    >
+      <div
+        class="flex flex-col space-y-1.5 p-6"
+      >
+        <div
+          class="flex items-start justify-between gap-4"
+        >
+          <div
+            class="flex-1 min-w-0"
+          >
+            <h3
+              class="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2 flex-wrap"
+            >
+              <svg
+                class="lucide lucide-video h-5 w-5 flex-shrink-0"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m22 8-6 4 6 4V8Z"
+                />
+                <rect
+                  height="12"
+                  rx="2"
+                  ry="2"
+                  width="14"
+                  x="2"
+                  y="6"
+                />
+              </svg>
+              <span
+                class="truncate"
+              >
+                Introduction to Programming
+              </span>
+            </h3>
+            <p
+              class="text-sm text-muted-foreground mt-2 line-clamp-2"
+            >
+              A comprehensive introduction to programming concepts
+            </p>
+          </div>
+          <div
+            class="flex flex-col gap-2"
+          >
+            <div
+              class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-green-500/10 text-green-500"
+            >
+              published
+            </div>
+            <div
+              class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-blue-500/10 text-blue-500"
+            >
+              media
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="p-6 pt-0"
+      >
+        <div
+          class="space-y-4"
+        >
+          <div
+            class="flex items-center gap-2 text-sm"
+          >
+            <svg
+              class="lucide lucide-building2 h-4 w-4 text-muted-foreground"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"
+              />
+              <path
+                d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"
+              />
+              <path
+                d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"
+              />
+              <path
+                d="M10 6h4"
+              />
+              <path
+                d="M10 10h4"
+              />
+              <path
+                d="M10 14h4"
+              />
+              <path
+                d="M10 18h4"
+              />
+            </svg>
+            <span
+              class="font-medium"
+            >
+              Computer Science
+            </span>
+          </div>
+          <div
+            class="rounded-md overflow-hidden bg-muted"
+          >
+            <img
+              alt="Introduction to Programming"
+              class="w-full h-32 object-cover"
+              src="https://example.com/thumbnails/intro-programming.jpg"
+            />
+          </div>
+          <div
+            class="flex items-center gap-4 flex-wrap text-sm"
+          />
+          <div
+            class="pt-4 border-t flex items-center gap-2 text-xs text-muted-foreground"
+          >
+            <svg
+              class="lucide lucide-calendar h-3 w-3"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8 2v4"
+              />
+              <path
+                d="M16 2v4"
+              />
+              <rect
+                height="18"
+                rx="2"
+                width="18"
+                x="3"
+                y="4"
+              />
+              <path
+                d="M3 10h18"
+              />
+            </svg>
+            <span>
+              Created 
+              12/1/2025
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="rounded-lg border bg-card text-card-foreground shadow-sm"
+    >
+      <div
+        class="flex flex-col space-y-1.5 p-6"
+      >
+        <div
+          class="flex items-start justify-between gap-4"
+        >
+          <div
+            class="flex-1 min-w-0"
+          >
+            <h3
+              class="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2 flex-wrap"
+            >
+              <svg
+                class="lucide lucide-video h-5 w-5 flex-shrink-0"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m22 8-6 4 6 4V8Z"
+                />
+                <rect
+                  height="12"
+                  rx="2"
+                  ry="2"
+                  width="14"
+                  x="2"
+                  y="6"
+                />
+              </svg>
+              <span
+                class="truncate"
+              >
+                Business Communication Essentials
+              </span>
+            </h3>
+            <p
+              class="text-sm text-muted-foreground mt-2 line-clamp-2"
+            >
+              Essential business communication skills
+            </p>
+          </div>
+          <div
+            class="flex flex-col gap-2"
+          >
+            <div
+              class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-green-500/10 text-green-500"
+            >
+              published
+            </div>
+            <div
+              class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-blue-500/10 text-blue-500"
+            >
+              media
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="p-6 pt-0"
+      >
+        <div
+          class="space-y-4"
+        >
+          <div
+            class="flex items-center gap-2 text-sm"
+          >
+            <svg
+              class="lucide lucide-building2 h-4 w-4 text-muted-foreground"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"
+              />
+              <path
+                d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"
+              />
+              <path
+                d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"
+              />
+              <path
+                d="M10 6h4"
+              />
+              <path
+                d="M10 10h4"
+              />
+              <path
+                d="M10 14h4"
+              />
+              <path
+                d="M10 18h4"
+              />
+            </svg>
+            <span
+              class="font-medium"
+            >
+              Business Technology
+            </span>
+          </div>
+          <div
+            class="flex items-center gap-4 flex-wrap text-sm"
+          />
+          <div
+            class="pt-4 border-t flex items-center gap-2 text-xs text-muted-foreground"
+          >
+            <svg
+              class="lucide lucide-calendar h-3 w-3"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8 2v4"
+              />
+              <path
+                d="M16 2v4"
+              />
+              <rect
+                height="18"
+                rx="2"
+                width="18"
+                x="3"
+                y="4"
+              />
+              <path
+                d="M3 10h18"
+              />
+            </svg>
+            <span>
+              Created 
+              11/20/2025
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="rounded-lg border bg-card text-card-foreground shadow-sm"
+    >
+      <div
+        class="flex flex-col space-y-1.5 p-6"
+      >
+        <div
+          class="flex items-start justify-between gap-4"
+        >
+          <div
+            class="flex-1 min-w-0"
+          >
+            <h3
+              class="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2 flex-wrap"
+            >
+              <svg
+                class="lucide lucide-package h-5 w-5 flex-shrink-0"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m7.5 4.27 9 5.15"
+                />
+                <path
+                  d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"
+                />
+                <path
+                  d="m3.3 7 8.7 5 8.7-5"
+                />
+                <path
+                  d="M12 22V12"
+                />
+              </svg>
+              <span
+                class="truncate"
+              >
+                Healthcare Administration Basics
+              </span>
+            </h3>
+            <p
+              class="text-sm text-muted-foreground mt-2 line-clamp-2"
+            >
+              Essential healthcare administration concepts
+            </p>
+          </div>
+          <div
+            class="flex flex-col gap-2"
+          >
+            <div
+              class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-yellow-500/10 text-yellow-500"
+            >
+              draft
+            </div>
+            <div
+              class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-purple-500/10 text-purple-500"
+            >
+              scorm
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="p-6 pt-0"
+      >
+        <div
+          class="space-y-4"
+        >
+          <div
+            class="flex items-center gap-2 text-sm"
+          >
+            <svg
+              class="lucide lucide-building2 h-4 w-4 text-muted-foreground"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"
+              />
+              <path
+                d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"
+              />
+              <path
+                d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"
+              />
+              <path
+                d="M10 6h4"
+              />
+              <path
+                d="M10 10h4"
+              />
+              <path
+                d="M10 14h4"
+              />
+              <path
+                d="M10 18h4"
+              />
+            </svg>
+            <span
+              class="font-medium"
+            >
+              Healthcare
+            </span>
+          </div>
+          <div
+            class="flex items-center gap-4 flex-wrap text-sm"
+          />
+          <div
+            class="pt-4 border-t flex items-center gap-2 text-xs text-muted-foreground"
+          >
+            <svg
+              class="lucide lucide-calendar h-3 w-3"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8 2v4"
+              />
+              <path
+                d="M16 2v4"
+              />
+              <rect
+                height="18"
+                rx="2"
+                width="18"
+                x="3"
+                y="4"
+              />
+              <path
+                d="M3 10h18"
+              />
+            </svg>
+            <span>
+              Created 
+              12/20/2025
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="rounded-lg border bg-card text-card-foreground shadow-sm"
+    >
+      <div
+        class="flex flex-col space-y-1.5 p-6"
+      >
+        <div
+          class="flex items-start justify-between gap-4"
+        >
+          <div
+            class="flex-1 min-w-0"
+          >
+            <h3
+              class="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2 flex-wrap"
+            >
+              <svg
+                class="lucide lucide-package h-5 w-5 flex-shrink-0"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m7.5 4.27 9 5.15"
+                />
+                <path
+                  d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"
+                />
+                <path
+                  d="m3.3 7 8.7 5 8.7-5"
+                />
+                <path
+                  d="M12 22V12"
+                />
+              </svg>
+              <span
+                class="truncate"
+              >
+                Advanced Software Engineering
+              </span>
+            </h3>
+            <p
+              class="text-sm text-muted-foreground mt-2 line-clamp-2"
+            >
+              Advanced concepts in software engineering
+            </p>
+          </div>
+          <div
+            class="flex flex-col gap-2"
+          >
+            <div
+              class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-green-500/10 text-green-500"
+            >
+              published
+            </div>
+            <div
+              class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-purple-500/10 text-purple-500"
+            >
+              scorm
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="p-6 pt-0"
+      >
+        <div
+          class="space-y-4"
+        >
+          <div
+            class="flex items-center gap-2 text-sm"
+          >
+            <svg
+              class="lucide lucide-building2 h-4 w-4 text-muted-foreground"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"
+              />
+              <path
+                d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"
+              />
+              <path
+                d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"
+              />
+              <path
+                d="M10 6h4"
+              />
+              <path
+                d="M10 10h4"
+              />
+              <path
+                d="M10 14h4"
+              />
+              <path
+                d="M10 18h4"
+              />
+            </svg>
+            <span
+              class="font-medium"
+            >
+              Computer Science
+            </span>
+          </div>
+          <div
+            class="rounded-md overflow-hidden bg-muted"
+          >
+            <img
+              alt="Advanced Software Engineering"
+              class="w-full h-32 object-cover"
+              src="https://example.com/thumbnails/scorm-2.jpg"
+            />
+          </div>
+          <div
+            class="flex items-center gap-4 flex-wrap text-sm"
+          />
+          <div
+            class="pt-4 border-t flex items-center gap-2 text-xs text-muted-foreground"
+          >
+            <svg
+              class="lucide lucide-calendar h-3 w-3"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8 2v4"
+              />
+              <path
+                d="M16 2v4"
+              />
+              <rect
+                height="18"
+                rx="2"
+                width="18"
+                x="3"
+                y="4"
+              />
+              <path
+                d="M3 10h18"
+              />
+            </svg>
+            <span>
+              Created 
+              11/15/2025
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ContentList > Snapshot Tests > should match snapshot with empty state 1`] = `
+<div
+  class="space-y-4"
+>
+  <div
+    class="flex flex-col gap-4 md:flex-row md:items-center"
+  >
+    <div
+      class="flex-1 flex gap-2"
+    >
+      <input
+        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 flex-1"
+        placeholder="Search content..."
+        value=""
+      />
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2"
+      >
+        <svg
+          class="lucide lucide-search h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle
+            cx="11"
+            cy="11"
+            r="8"
+          />
+          <path
+            d="m21 21-4.3-4.3"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="flex gap-2"
+    >
+      <button
+        aria-autocomplete="none"
+        aria-controls="radix-:rbi:"
+        aria-expanded="false"
+        class="flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[140px]"
+        data-state="closed"
+        dir="ltr"
+        role="combobox"
+        type="button"
+      >
+        <span
+          style="pointer-events: none;"
+        >
+          All Types
+        </span>
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m6 9 6 6 6-6"
+          />
+        </svg>
+      </button>
+      <button
+        aria-autocomplete="none"
+        aria-controls="radix-:rbj:"
+        aria-expanded="false"
+        class="flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[140px]"
+        data-state="closed"
+        dir="ltr"
+        role="combobox"
+        type="button"
+      >
+        <span
+          style="pointer-events: none;"
+        >
+          All Status
+        </span>
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m6 9 6 6 6-6"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+  <div
+    class="text-center py-12"
+  >
+    <svg
+      class="lucide lucide-filter h-12 w-12 mx-auto text-muted-foreground mb-4"
+      fill="none"
+      height="24"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+      width="24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <polygon
+        points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"
+      />
+    </svg>
+    <p
+      class="text-muted-foreground"
+    >
+      No content found
+    </p>
+  </div>
+</div>
+`;
+
+exports[`ContentList > Snapshot Tests > should match snapshot with loading state 1`] = `
+<div
+  class="space-y-4"
+>
+  <div
+    class="flex flex-col gap-4 md:flex-row md:items-center"
+  >
+    <div
+      class="flex-1 flex gap-2"
+    >
+      <input
+        class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 flex-1"
+        placeholder="Search content..."
+        value=""
+      />
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2"
+      >
+        <svg
+          class="lucide lucide-search h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle
+            cx="11"
+            cy="11"
+            r="8"
+          />
+          <path
+            d="m21 21-4.3-4.3"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="flex gap-2"
+    >
+      <button
+        aria-autocomplete="none"
+        aria-controls="radix-:rbs:"
+        aria-expanded="false"
+        class="flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[140px]"
+        data-state="closed"
+        dir="ltr"
+        role="combobox"
+        type="button"
+      >
+        <span
+          style="pointer-events: none;"
+        >
+          All Types
+        </span>
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m6 9 6 6 6-6"
+          />
+        </svg>
+      </button>
+      <button
+        aria-autocomplete="none"
+        aria-controls="radix-:rbt:"
+        aria-expanded="false"
+        class="flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[140px]"
+        data-state="closed"
+        dir="ltr"
+        role="combobox"
+        type="button"
+      >
+        <span
+          style="pointer-events: none;"
+        >
+          All Status
+        </span>
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m6 9 6 6 6-6"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+  <div
+    class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+  >
+    <div
+      class="h-64 bg-muted animate-pulse rounded-lg"
+    />
+    <div
+      class="h-64 bg-muted animate-pulse rounded-lg"
+    />
+    <div
+      class="h-64 bg-muted animate-pulse rounded-lg"
+    />
+  </div>
+</div>
+`;
+
+exports[`ContentList > Snapshot Tests > should match snapshot without filters 1`] = `
+<div
+  class="space-y-4"
+>
+  <div
+    class="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+  >
+    <div
+      class="rounded-lg border bg-card text-card-foreground shadow-sm"
+    >
+      <div
+        class="flex flex-col space-y-1.5 p-6"
+      >
+        <div
+          class="flex items-start justify-between gap-4"
+        >
+          <div
+            class="flex-1 min-w-0"
+          >
+            <h3
+              class="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2 flex-wrap"
+            >
+              <svg
+                class="lucide lucide-package h-5 w-5 flex-shrink-0"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m7.5 4.27 9 5.15"
+                />
+                <path
+                  d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"
+                />
+                <path
+                  d="m3.3 7 8.7 5 8.7-5"
+                />
+                <path
+                  d="M12 22V12"
+                />
+              </svg>
+              <span
+                class="truncate"
+              >
+                Introduction to Business Technology
+              </span>
+            </h3>
+            <p
+              class="text-sm text-muted-foreground mt-2 line-clamp-2"
+            >
+              A comprehensive introduction to modern business technology
+            </p>
+          </div>
+          <div
+            class="flex flex-col gap-2"
+          >
+            <div
+              class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-green-500/10 text-green-500"
+            >
+              published
+            </div>
+            <div
+              class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-purple-500/10 text-purple-500"
+            >
+              scorm
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="p-6 pt-0"
+      >
+        <div
+          class="space-y-4"
+        >
+          <div
+            class="flex items-center gap-2 text-sm"
+          >
+            <svg
+              class="lucide lucide-building2 h-4 w-4 text-muted-foreground"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"
+              />
+              <path
+                d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"
+              />
+              <path
+                d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"
+              />
+              <path
+                d="M10 6h4"
+              />
+              <path
+                d="M10 10h4"
+              />
+              <path
+                d="M10 14h4"
+              />
+              <path
+                d="M10 18h4"
+              />
+            </svg>
+            <span
+              class="font-medium"
+            >
+              Business Technology
+            </span>
+          </div>
+          <div
+            class="rounded-md overflow-hidden bg-muted"
+          >
+            <img
+              alt="Introduction to Business Technology"
+              class="w-full h-32 object-cover"
+              src="https://example.com/thumbnails/scorm-1.jpg"
+            />
+          </div>
+          <div
+            class="flex items-center gap-4 flex-wrap text-sm"
+          />
+          <div
+            class="pt-4 border-t flex items-center gap-2 text-xs text-muted-foreground"
+          >
+            <svg
+              class="lucide lucide-calendar h-3 w-3"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8 2v4"
+              />
+              <path
+                d="M16 2v4"
+              />
+              <rect
+                height="18"
+                rx="2"
+                width="18"
+                x="3"
+                y="4"
+              />
+              <path
+                d="M3 10h18"
+              />
+            </svg>
+            <span>
+              Created 
+              12/1/2025
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="rounded-lg border bg-card text-card-foreground shadow-sm"
+    >
+      <div
+        class="flex flex-col space-y-1.5 p-6"
+      >
+        <div
+          class="flex items-start justify-between gap-4"
+        >
+          <div
+            class="flex-1 min-w-0"
+          >
+            <h3
+              class="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2 flex-wrap"
+            >
+              <svg
+                class="lucide lucide-video h-5 w-5 flex-shrink-0"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m22 8-6 4 6 4V8Z"
+                />
+                <rect
+                  height="12"
+                  rx="2"
+                  ry="2"
+                  width="14"
+                  x="2"
+                  y="6"
+                />
+              </svg>
+              <span
+                class="truncate"
+              >
+                Introduction to Programming
+              </span>
+            </h3>
+            <p
+              class="text-sm text-muted-foreground mt-2 line-clamp-2"
+            >
+              A comprehensive introduction to programming concepts
+            </p>
+          </div>
+          <div
+            class="flex flex-col gap-2"
+          >
+            <div
+              class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-green-500/10 text-green-500"
+            >
+              published
+            </div>
+            <div
+              class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-blue-500/10 text-blue-500"
+            >
+              media
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="p-6 pt-0"
+      >
+        <div
+          class="space-y-4"
+        >
+          <div
+            class="flex items-center gap-2 text-sm"
+          >
+            <svg
+              class="lucide lucide-building2 h-4 w-4 text-muted-foreground"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"
+              />
+              <path
+                d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"
+              />
+              <path
+                d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"
+              />
+              <path
+                d="M10 6h4"
+              />
+              <path
+                d="M10 10h4"
+              />
+              <path
+                d="M10 14h4"
+              />
+              <path
+                d="M10 18h4"
+              />
+            </svg>
+            <span
+              class="font-medium"
+            >
+              Computer Science
+            </span>
+          </div>
+          <div
+            class="rounded-md overflow-hidden bg-muted"
+          >
+            <img
+              alt="Introduction to Programming"
+              class="w-full h-32 object-cover"
+              src="https://example.com/thumbnails/intro-programming.jpg"
+            />
+          </div>
+          <div
+            class="flex items-center gap-4 flex-wrap text-sm"
+          />
+          <div
+            class="pt-4 border-t flex items-center gap-2 text-xs text-muted-foreground"
+          >
+            <svg
+              class="lucide lucide-calendar h-3 w-3"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8 2v4"
+              />
+              <path
+                d="M16 2v4"
+              />
+              <rect
+                height="18"
+                rx="2"
+                width="18"
+                x="3"
+                y="4"
+              />
+              <path
+                d="M3 10h18"
+              />
+            </svg>
+            <span>
+              Created 
+              12/1/2025
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="rounded-lg border bg-card text-card-foreground shadow-sm"
+    >
+      <div
+        class="flex flex-col space-y-1.5 p-6"
+      >
+        <div
+          class="flex items-start justify-between gap-4"
+        >
+          <div
+            class="flex-1 min-w-0"
+          >
+            <h3
+              class="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2 flex-wrap"
+            >
+              <svg
+                class="lucide lucide-video h-5 w-5 flex-shrink-0"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m22 8-6 4 6 4V8Z"
+                />
+                <rect
+                  height="12"
+                  rx="2"
+                  ry="2"
+                  width="14"
+                  x="2"
+                  y="6"
+                />
+              </svg>
+              <span
+                class="truncate"
+              >
+                Business Communication Essentials
+              </span>
+            </h3>
+            <p
+              class="text-sm text-muted-foreground mt-2 line-clamp-2"
+            >
+              Essential business communication skills
+            </p>
+          </div>
+          <div
+            class="flex flex-col gap-2"
+          >
+            <div
+              class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-green-500/10 text-green-500"
+            >
+              published
+            </div>
+            <div
+              class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-blue-500/10 text-blue-500"
+            >
+              media
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="p-6 pt-0"
+      >
+        <div
+          class="space-y-4"
+        >
+          <div
+            class="flex items-center gap-2 text-sm"
+          >
+            <svg
+              class="lucide lucide-building2 h-4 w-4 text-muted-foreground"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"
+              />
+              <path
+                d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"
+              />
+              <path
+                d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"
+              />
+              <path
+                d="M10 6h4"
+              />
+              <path
+                d="M10 10h4"
+              />
+              <path
+                d="M10 14h4"
+              />
+              <path
+                d="M10 18h4"
+              />
+            </svg>
+            <span
+              class="font-medium"
+            >
+              Business Technology
+            </span>
+          </div>
+          <div
+            class="flex items-center gap-4 flex-wrap text-sm"
+          />
+          <div
+            class="pt-4 border-t flex items-center gap-2 text-xs text-muted-foreground"
+          >
+            <svg
+              class="lucide lucide-calendar h-3 w-3"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8 2v4"
+              />
+              <path
+                d="M16 2v4"
+              />
+              <rect
+                height="18"
+                rx="2"
+                width="18"
+                x="3"
+                y="4"
+              />
+              <path
+                d="M3 10h18"
+              />
+            </svg>
+            <span>
+              Created 
+              11/20/2025
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="rounded-lg border bg-card text-card-foreground shadow-sm"
+    >
+      <div
+        class="flex flex-col space-y-1.5 p-6"
+      >
+        <div
+          class="flex items-start justify-between gap-4"
+        >
+          <div
+            class="flex-1 min-w-0"
+          >
+            <h3
+              class="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2 flex-wrap"
+            >
+              <svg
+                class="lucide lucide-package h-5 w-5 flex-shrink-0"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m7.5 4.27 9 5.15"
+                />
+                <path
+                  d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"
+                />
+                <path
+                  d="m3.3 7 8.7 5 8.7-5"
+                />
+                <path
+                  d="M12 22V12"
+                />
+              </svg>
+              <span
+                class="truncate"
+              >
+                Healthcare Administration Basics
+              </span>
+            </h3>
+            <p
+              class="text-sm text-muted-foreground mt-2 line-clamp-2"
+            >
+              Essential healthcare administration concepts
+            </p>
+          </div>
+          <div
+            class="flex flex-col gap-2"
+          >
+            <div
+              class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-yellow-500/10 text-yellow-500"
+            >
+              draft
+            </div>
+            <div
+              class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-purple-500/10 text-purple-500"
+            >
+              scorm
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="p-6 pt-0"
+      >
+        <div
+          class="space-y-4"
+        >
+          <div
+            class="flex items-center gap-2 text-sm"
+          >
+            <svg
+              class="lucide lucide-building2 h-4 w-4 text-muted-foreground"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"
+              />
+              <path
+                d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"
+              />
+              <path
+                d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"
+              />
+              <path
+                d="M10 6h4"
+              />
+              <path
+                d="M10 10h4"
+              />
+              <path
+                d="M10 14h4"
+              />
+              <path
+                d="M10 18h4"
+              />
+            </svg>
+            <span
+              class="font-medium"
+            >
+              Healthcare
+            </span>
+          </div>
+          <div
+            class="flex items-center gap-4 flex-wrap text-sm"
+          />
+          <div
+            class="pt-4 border-t flex items-center gap-2 text-xs text-muted-foreground"
+          >
+            <svg
+              class="lucide lucide-calendar h-3 w-3"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8 2v4"
+              />
+              <path
+                d="M16 2v4"
+              />
+              <rect
+                height="18"
+                rx="2"
+                width="18"
+                x="3"
+                y="4"
+              />
+              <path
+                d="M3 10h18"
+              />
+            </svg>
+            <span>
+              Created 
+              12/20/2025
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="rounded-lg border bg-card text-card-foreground shadow-sm"
+    >
+      <div
+        class="flex flex-col space-y-1.5 p-6"
+      >
+        <div
+          class="flex items-start justify-between gap-4"
+        >
+          <div
+            class="flex-1 min-w-0"
+          >
+            <h3
+              class="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2 flex-wrap"
+            >
+              <svg
+                class="lucide lucide-package h-5 w-5 flex-shrink-0"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m7.5 4.27 9 5.15"
+                />
+                <path
+                  d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"
+                />
+                <path
+                  d="m3.3 7 8.7 5 8.7-5"
+                />
+                <path
+                  d="M12 22V12"
+                />
+              </svg>
+              <span
+                class="truncate"
+              >
+                Advanced Software Engineering
+              </span>
+            </h3>
+            <p
+              class="text-sm text-muted-foreground mt-2 line-clamp-2"
+            >
+              Advanced concepts in software engineering
+            </p>
+          </div>
+          <div
+            class="flex flex-col gap-2"
+          >
+            <div
+              class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-green-500/10 text-green-500"
+            >
+              published
+            </div>
+            <div
+              class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-purple-500/10 text-purple-500"
+            >
+              scorm
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="p-6 pt-0"
+      >
+        <div
+          class="space-y-4"
+        >
+          <div
+            class="flex items-center gap-2 text-sm"
+          >
+            <svg
+              class="lucide lucide-building2 h-4 w-4 text-muted-foreground"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"
+              />
+              <path
+                d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"
+              />
+              <path
+                d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"
+              />
+              <path
+                d="M10 6h4"
+              />
+              <path
+                d="M10 10h4"
+              />
+              <path
+                d="M10 14h4"
+              />
+              <path
+                d="M10 18h4"
+              />
+            </svg>
+            <span
+              class="font-medium"
+            >
+              Computer Science
+            </span>
+          </div>
+          <div
+            class="rounded-md overflow-hidden bg-muted"
+          >
+            <img
+              alt="Advanced Software Engineering"
+              class="w-full h-32 object-cover"
+              src="https://example.com/thumbnails/scorm-2.jpg"
+            />
+          </div>
+          <div
+            class="flex items-center gap-4 flex-wrap text-sm"
+          />
+          <div
+            class="pt-4 border-t flex items-center gap-2 text-xs text-muted-foreground"
+          >
+            <svg
+              class="lucide lucide-calendar h-3 w-3"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8 2v4"
+              />
+              <path
+                d="M16 2v4"
+              />
+              <rect
+                height="18"
+                rx="2"
+                width="18"
+                x="3"
+                y="4"
+              />
+              <path
+                d="M3 10h18"
+              />
+            </svg>
+            <span>
+              Created 
+              11/15/2025
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

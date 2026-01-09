@@ -1,0 +1,1037 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ExerciseForm > Snapshot Tests > should match snapshot for create mode 1`] = `
+<form
+  class="space-y-6"
+>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <h3
+        class="text-2xl font-semibold leading-none tracking-tight"
+      >
+        Basic Information
+      </h3>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Create a new exercise or exam.
+      </p>
+    </div>
+    <div
+      class="p-6 pt-0 space-y-4"
+    >
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="title"
+        >
+          Title 
+          <span
+            class="text-destructive"
+          >
+            *
+          </span>
+        </label>
+        <input
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="title"
+          maxlength="200"
+          minlength="1"
+          placeholder="e.g., Module 1 Quiz - Introduction to CBT"
+          required=""
+          value=""
+        />
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="description"
+        >
+          Description
+        </label>
+        <textarea
+          class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="description"
+          maxlength="2000"
+          placeholder="Describe what this exercise covers"
+          rows="3"
+        />
+      </div>
+      <div
+        class="grid grid-cols-1 gap-4 sm:grid-cols-2"
+      >
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="type"
+          >
+            Type 
+            <span
+              class="text-destructive"
+            >
+              *
+            </span>
+          </label>
+          <button
+            aria-autocomplete="none"
+            aria-controls="radix-:rft:"
+            aria-expanded="false"
+            class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+            data-state="closed"
+            dir="ltr"
+            id="type"
+            role="combobox"
+            type="button"
+          >
+            <span
+              style="pointer-events: none;"
+            >
+              Quiz
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </button>
+          <select
+            aria-hidden="true"
+            style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+            tabindex="-1"
+          >
+            <option
+              selected=""
+              value="quiz"
+            >
+              Quiz
+            </option>
+            <option
+              value="exam"
+            >
+              Exam
+            </option>
+            <option
+              value="practice"
+            >
+              Practice
+            </option>
+            <option
+              value="assessment"
+            >
+              Assessment
+            </option>
+          </select>
+        </div>
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="difficulty"
+          >
+            Difficulty
+          </label>
+          <button
+            aria-autocomplete="none"
+            aria-controls="radix-:rfu:"
+            aria-expanded="false"
+            class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+            data-state="closed"
+            dir="ltr"
+            id="difficulty"
+            role="combobox"
+            type="button"
+          >
+            <span
+              style="pointer-events: none;"
+            >
+              Medium
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </button>
+          <select
+            aria-hidden="true"
+            style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+            tabindex="-1"
+          >
+            <option
+              value="easy"
+            >
+              Easy
+            </option>
+            <option
+              selected=""
+              value="medium"
+            >
+              Medium
+            </option>
+            <option
+              value="hard"
+            >
+              Hard
+            </option>
+          </select>
+        </div>
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="department"
+        >
+          Department 
+          <span
+            class="text-destructive"
+          >
+            *
+          </span>
+        </label>
+        <input
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="department"
+          placeholder="Department ID"
+          required=""
+          value=""
+        />
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="instructions"
+        >
+          Instructions
+        </label>
+        <textarea
+          class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="instructions"
+          placeholder="Instructions displayed before starting the exercise"
+          rows="3"
+        />
+      </div>
+    </div>
+  </div>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <h3
+        class="text-2xl font-semibold leading-none tracking-tight"
+      >
+        Exercise Settings
+      </h3>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Configure time limits, scoring, and behavior options
+      </p>
+    </div>
+    <div
+      class="p-6 pt-0 space-y-4"
+    >
+      <div
+        class="grid grid-cols-1 gap-4 sm:grid-cols-2"
+      >
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="timeLimit"
+          >
+            Time Limit (minutes)
+          </label>
+          <input
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            id="timeLimit"
+            min="0"
+            placeholder="0 for unlimited"
+            type="number"
+            value="0"
+          />
+          <p
+            class="text-xs text-muted-foreground"
+          >
+            Set to 0 for unlimited time
+          </p>
+        </div>
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="passingScore"
+          >
+            Passing Score (%)
+          </label>
+          <input
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            id="passingScore"
+            max="100"
+            min="0"
+            type="number"
+            value="70"
+          />
+        </div>
+      </div>
+      <div
+        class="space-y-3 rounded-lg border p-4"
+      >
+        <div
+          class="flex items-center space-x-2"
+        >
+          <button
+            aria-checked="false"
+            class="grid place-content-center peer h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+            data-state="unchecked"
+            id="shuffleQuestions"
+            role="checkbox"
+            type="button"
+            value="on"
+          />
+          <input
+            aria-hidden="true"
+            style="position: absolute; pointer-events: none; opacity: 0; margin: 0px; transform: translateX(-100%); width: 0px; height: 0px;"
+            tabindex="-1"
+            type="checkbox"
+            value="on"
+          />
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+            for="shuffleQuestions"
+          >
+            Shuffle Questions
+          </label>
+        </div>
+        <p
+          class="text-xs text-muted-foreground pl-6"
+        >
+          Randomize question order for each attempt
+        </p>
+        <div
+          class="flex items-center space-x-2"
+        >
+          <button
+            aria-checked="true"
+            class="grid place-content-center peer h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+            data-state="checked"
+            id="showFeedback"
+            role="checkbox"
+            type="button"
+            value="on"
+          >
+            <span
+              class="grid place-content-center text-current"
+              data-state="checked"
+              style="pointer-events: none;"
+            >
+              <svg
+                class="lucide lucide-check h-4 w-4"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M20 6 9 17l-5-5"
+                />
+              </svg>
+            </span>
+          </button>
+          <input
+            aria-hidden="true"
+            checked=""
+            style="position: absolute; pointer-events: none; opacity: 0; margin: 0px; transform: translateX(-100%); width: 0px; height: 0px;"
+            tabindex="-1"
+            type="checkbox"
+            value="on"
+          />
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+            for="showFeedback"
+          >
+            Show Feedback
+          </label>
+        </div>
+        <p
+          class="text-xs text-muted-foreground pl-6"
+        >
+          Display feedback after submission
+        </p>
+        <div
+          class="flex items-center space-x-2"
+        >
+          <button
+            aria-checked="true"
+            class="grid place-content-center peer h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+            data-state="checked"
+            id="allowReview"
+            role="checkbox"
+            type="button"
+            value="on"
+          >
+            <span
+              class="grid place-content-center text-current"
+              data-state="checked"
+              style="pointer-events: none;"
+            >
+              <svg
+                class="lucide lucide-check h-4 w-4"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M20 6 9 17l-5-5"
+                />
+              </svg>
+            </span>
+          </button>
+          <input
+            aria-hidden="true"
+            checked=""
+            style="position: absolute; pointer-events: none; opacity: 0; margin: 0px; transform: translateX(-100%); width: 0px; height: 0px;"
+            tabindex="-1"
+            type="checkbox"
+            value="on"
+          />
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+            for="allowReview"
+          >
+            Allow Review
+          </label>
+        </div>
+        <p
+          class="text-xs text-muted-foreground pl-6"
+        >
+          Let learners review answers after completion
+        </p>
+      </div>
+      <div
+        class="relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground bg-background text-foreground"
+        role="alert"
+      >
+        <svg
+          class="lucide lucide-info h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle
+            cx="12"
+            cy="12"
+            r="10"
+          />
+          <path
+            d="M12 16v-4"
+          />
+          <path
+            d="M12 8h.01"
+          />
+        </svg>
+        <div
+          class="ml-2"
+        >
+          <p
+            class="text-sm"
+          >
+            After creating the exercise, you'll be able to add questions from the question bank.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="flex justify-end gap-4"
+  >
+    <button
+      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+      type="button"
+    >
+      Cancel
+    </button>
+    <button
+      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+      type="submit"
+    >
+      Create Exercise
+    </button>
+  </div>
+</form>
+`;
+
+exports[`ExerciseForm > Snapshot Tests > should match snapshot for edit mode 1`] = `
+<form
+  class="space-y-6"
+>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <h3
+        class="text-2xl font-semibold leading-none tracking-tight"
+      >
+        Basic Information
+      </h3>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Update the exercise details below.
+      </p>
+    </div>
+    <div
+      class="p-6 pt-0 space-y-4"
+    >
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="title"
+        >
+          Title 
+          <span
+            class="text-destructive"
+          >
+            *
+          </span>
+        </label>
+        <input
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="title"
+          maxlength="200"
+          minlength="1"
+          placeholder="e.g., Module 1 Quiz - Introduction to CBT"
+          required=""
+          value="JavaScript Fundamentals Quiz"
+        />
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="description"
+        >
+          Description
+        </label>
+        <textarea
+          class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="description"
+          maxlength="2000"
+          placeholder="Describe what this exercise covers"
+          rows="3"
+        >
+          Test your knowledge of basic JavaScript concepts
+        </textarea>
+      </div>
+      <div
+        class="grid grid-cols-1 gap-4 sm:grid-cols-2"
+      >
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="type"
+          >
+            Type 
+            <span
+              class="text-destructive"
+            >
+              *
+            </span>
+          </label>
+          <button
+            aria-autocomplete="none"
+            aria-controls="radix-:rg6:"
+            aria-expanded="false"
+            class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+            data-state="closed"
+            dir="ltr"
+            id="type"
+            role="combobox"
+            type="button"
+          >
+            <span
+              style="pointer-events: none;"
+            >
+              Quiz
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </button>
+          <select
+            aria-hidden="true"
+            style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+            tabindex="-1"
+          >
+            <option
+              selected=""
+              value="quiz"
+            >
+              Quiz
+            </option>
+            <option
+              value="exam"
+            >
+              Exam
+            </option>
+            <option
+              value="practice"
+            >
+              Practice
+            </option>
+            <option
+              value="assessment"
+            >
+              Assessment
+            </option>
+          </select>
+        </div>
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="difficulty"
+          >
+            Difficulty
+          </label>
+          <button
+            aria-autocomplete="none"
+            aria-controls="radix-:rg7:"
+            aria-expanded="false"
+            class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+            data-state="closed"
+            dir="ltr"
+            id="difficulty"
+            role="combobox"
+            type="button"
+          >
+            <span
+              style="pointer-events: none;"
+            >
+              Easy
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </button>
+          <select
+            aria-hidden="true"
+            style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+            tabindex="-1"
+          >
+            <option
+              selected=""
+              value="easy"
+            >
+              Easy
+            </option>
+            <option
+              value="medium"
+            >
+              Medium
+            </option>
+            <option
+              value="hard"
+            >
+              Hard
+            </option>
+          </select>
+        </div>
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="department"
+        >
+          Department 
+          <span
+            class="text-destructive"
+          >
+            *
+          </span>
+        </label>
+        <input
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          disabled=""
+          id="department"
+          placeholder="Department ID"
+          required=""
+          value="dept-1"
+        />
+        <p
+          class="text-xs text-muted-foreground"
+        >
+          Department cannot be changed
+        </p>
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="instructions"
+        >
+          Instructions
+        </label>
+        <textarea
+          class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="instructions"
+          placeholder="Instructions displayed before starting the exercise"
+          rows="3"
+        >
+          Read each question carefully. You have 30 minutes to complete this quiz.
+        </textarea>
+      </div>
+    </div>
+  </div>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <h3
+        class="text-2xl font-semibold leading-none tracking-tight"
+      >
+        Exercise Settings
+      </h3>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Configure time limits, scoring, and behavior options
+      </p>
+    </div>
+    <div
+      class="p-6 pt-0 space-y-4"
+    >
+      <div
+        class="grid grid-cols-1 gap-4 sm:grid-cols-2"
+      >
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="timeLimit"
+          >
+            Time Limit (minutes)
+          </label>
+          <input
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            id="timeLimit"
+            min="0"
+            placeholder="0 for unlimited"
+            type="number"
+            value="30"
+          />
+          <p
+            class="text-xs text-muted-foreground"
+          >
+            Set to 0 for unlimited time
+          </p>
+        </div>
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="passingScore"
+          >
+            Passing Score (%)
+          </label>
+          <input
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            id="passingScore"
+            max="100"
+            min="0"
+            type="number"
+            value="70"
+          />
+        </div>
+      </div>
+      <div
+        class="space-y-3 rounded-lg border p-4"
+      >
+        <div
+          class="flex items-center space-x-2"
+        >
+          <button
+            aria-checked="true"
+            class="grid place-content-center peer h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+            data-state="checked"
+            id="shuffleQuestions"
+            role="checkbox"
+            type="button"
+            value="on"
+          >
+            <span
+              class="grid place-content-center text-current"
+              data-state="checked"
+              style="pointer-events: none;"
+            >
+              <svg
+                class="lucide lucide-check h-4 w-4"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M20 6 9 17l-5-5"
+                />
+              </svg>
+            </span>
+          </button>
+          <input
+            aria-hidden="true"
+            checked=""
+            style="position: absolute; pointer-events: none; opacity: 0; margin: 0px; transform: translateX(-100%); width: 0px; height: 0px;"
+            tabindex="-1"
+            type="checkbox"
+            value="on"
+          />
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+            for="shuffleQuestions"
+          >
+            Shuffle Questions
+          </label>
+        </div>
+        <p
+          class="text-xs text-muted-foreground pl-6"
+        >
+          Randomize question order for each attempt
+        </p>
+        <div
+          class="flex items-center space-x-2"
+        >
+          <button
+            aria-checked="true"
+            class="grid place-content-center peer h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+            data-state="checked"
+            id="showFeedback"
+            role="checkbox"
+            type="button"
+            value="on"
+          >
+            <span
+              class="grid place-content-center text-current"
+              data-state="checked"
+              style="pointer-events: none;"
+            >
+              <svg
+                class="lucide lucide-check h-4 w-4"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M20 6 9 17l-5-5"
+                />
+              </svg>
+            </span>
+          </button>
+          <input
+            aria-hidden="true"
+            checked=""
+            style="position: absolute; pointer-events: none; opacity: 0; margin: 0px; transform: translateX(-100%); width: 0px; height: 0px;"
+            tabindex="-1"
+            type="checkbox"
+            value="on"
+          />
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+            for="showFeedback"
+          >
+            Show Feedback
+          </label>
+        </div>
+        <p
+          class="text-xs text-muted-foreground pl-6"
+        >
+          Display feedback after submission
+        </p>
+        <div
+          class="flex items-center space-x-2"
+        >
+          <button
+            aria-checked="true"
+            class="grid place-content-center peer h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+            data-state="checked"
+            id="allowReview"
+            role="checkbox"
+            type="button"
+            value="on"
+          >
+            <span
+              class="grid place-content-center text-current"
+              data-state="checked"
+              style="pointer-events: none;"
+            >
+              <svg
+                class="lucide lucide-check h-4 w-4"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M20 6 9 17l-5-5"
+                />
+              </svg>
+            </span>
+          </button>
+          <input
+            aria-hidden="true"
+            checked=""
+            style="position: absolute; pointer-events: none; opacity: 0; margin: 0px; transform: translateX(-100%); width: 0px; height: 0px;"
+            tabindex="-1"
+            type="checkbox"
+            value="on"
+          />
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+            for="allowReview"
+          >
+            Allow Review
+          </label>
+        </div>
+        <p
+          class="text-xs text-muted-foreground pl-6"
+        >
+          Let learners review answers after completion
+        </p>
+      </div>
+    </div>
+  </div>
+  <div
+    class="flex justify-end gap-4"
+  >
+    <button
+      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+      type="button"
+    >
+      Cancel
+    </button>
+    <button
+      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+      type="submit"
+    >
+      Update Exercise
+    </button>
+  </div>
+</form>
+`;
