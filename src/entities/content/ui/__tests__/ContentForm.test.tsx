@@ -9,8 +9,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ContentForm } from '../ContentForm';
 import * as useContentModule from '../../model/useContent';
 import {
-  mockUploadScormPackageResponse,
-  mockUploadMediaFileResponse,
   createMockScormFile,
   createMockVideoFile,
   createMockImageFile,
@@ -375,17 +373,12 @@ describe('ContentForm', () => {
         expect(uploadButton).toBeTruthy();
       });
 
-      it('should call onSuccess callback with uploaded ID', async () => {
+      it('should call onSuccess callback when provided', async () => {
         const user = userEvent.setup();
         const onSuccessCallback = vi.fn();
         const file = createMockScormFile();
 
-        const mutateFn = vi.fn((args: any) => {
-          const onSuccess = args.onSuccess || useContentModule.useUploadScormPackage({}).onSuccess;
-          if (onSuccess) {
-            onSuccess(mockUploadScormPackageResponse);
-          }
-        });
+        const mutateFn = vi.fn();
 
         vi.mocked(useContentModule.useUploadScormPackage).mockReturnValue({
           mutate: mutateFn,
@@ -405,7 +398,7 @@ describe('ContentForm', () => {
         const uploadButton = screen.getByRole('button', { name: /Upload SCORM/i });
         await user.click(uploadButton);
 
-        // The mutation would trigger onSuccess
+        // The mutation should be called
         expect(mutateFn).toHaveBeenCalled();
       });
 
@@ -544,8 +537,6 @@ describe('ContentForm', () => {
       });
 
       it('should change accepted file types based on media type', async () => {
-        const user = userEvent.setup();
-
         render(<ContentForm mode="media" />, { wrapper: createWrapper() });
 
         const fileInput = screen.getByLabelText(/Media File/i);

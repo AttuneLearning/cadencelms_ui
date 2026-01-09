@@ -100,8 +100,9 @@ describe('questionApi', () => {
       const result = await getQuestions({ page: 1, limit: 2 });
 
       expect(result).toEqual(mockResponse);
-      expect(capturedParams?.get('page')).toBe('1');
-      expect(capturedParams?.get('limit')).toBe('2');
+      expect(capturedParams).not.toBeNull();
+      expect(capturedParams!.get('page')).toBe('1');
+      expect(capturedParams!.get('limit')).toBe('2');
     });
 
     it('should fetch questions with question type filter', async () => {
@@ -136,7 +137,8 @@ describe('questionApi', () => {
       const result = await getQuestions({ questionType: 'multiple_choice' });
 
       expect(result.questions).toEqual(multipleChoiceQuestions);
-      expect(capturedParams?.get('questionType')).toBe('multiple_choice');
+      expect(capturedParams).not.toBeNull();
+      expect(capturedParams!.get('questionType')).toBe('multiple_choice');
     });
 
     it('should fetch questions with difficulty filter', async () => {
@@ -169,7 +171,8 @@ describe('questionApi', () => {
       const result = await getQuestions({ difficulty: 'easy' });
 
       expect(result.questions).toEqual(easyQuestions);
-      expect(capturedParams?.get('difficulty')).toBe('easy');
+      expect(capturedParams).not.toBeNull();
+      expect(capturedParams!.get('difficulty')).toBe('easy');
     });
 
     it('should fetch questions with tag filter', async () => {
@@ -204,7 +207,8 @@ describe('questionApi', () => {
       const result = await getQuestions({ tag: 'javascript' });
 
       expect(result.questions).toEqual(javascriptQuestions);
-      expect(capturedParams?.get('tag')).toBe('javascript');
+      expect(capturedParams).not.toBeNull();
+      expect(capturedParams!.get('tag')).toBe('javascript');
     });
 
     it('should fetch questions with search query', async () => {
@@ -236,7 +240,8 @@ describe('questionApi', () => {
       const result = await getQuestions({ search: 'JavaScript' });
 
       expect(result.questions).toHaveLength(1);
-      expect(capturedParams?.get('search')).toBe('JavaScript');
+      expect(capturedParams).not.toBeNull();
+      expect(capturedParams!.get('search')).toBe('JavaScript');
     });
 
     it('should fetch questions with sort parameter', async () => {
@@ -268,7 +273,8 @@ describe('questionApi', () => {
       const result = await getQuestions({ sort: '-createdAt' });
 
       expect(result).toEqual(mockResponse);
-      expect(capturedParams?.get('sort')).toBe('-createdAt');
+      expect(capturedParams).not.toBeNull();
+      expect(capturedParams!.get('sort')).toBe('-createdAt');
     });
 
     it('should handle empty results', async () => {

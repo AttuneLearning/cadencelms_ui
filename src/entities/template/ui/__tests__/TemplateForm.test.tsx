@@ -9,7 +9,6 @@ import {
   mockMasterTemplate,
   mockDepartmentTemplate,
   mockCustomTemplate,
-  mockDraftTemplate,
   mockDepartments,
 } from '@/test/mocks/data/templates';
 

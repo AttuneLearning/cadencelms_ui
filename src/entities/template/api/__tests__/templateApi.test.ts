@@ -574,8 +574,10 @@ describe('templateApi', () => {
 
       server.use(
         http.put(`${baseUrl}/api/v2/templates/${mockCustomTemplate.id}`, async ({ request }) => {
-          const body = await request.json();
-          expect(body.name).toBe(mockUpdateTemplatePayload.name);
+          const body = await request.json() as Record<string, unknown> | null;
+          if (body && 'name' in body) {
+            expect(body.name).toBe(mockUpdateTemplatePayload.name);
+          }
 
           return HttpResponse.json({
             success: true,

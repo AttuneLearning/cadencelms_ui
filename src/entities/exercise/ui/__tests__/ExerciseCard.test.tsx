@@ -7,7 +7,6 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { ExerciseCard } from '../ExerciseCard';
 import {
-  mockExerciseListItems,
   mockQuizExercise,
   mockExamExercise,
   mockPracticeExercise,

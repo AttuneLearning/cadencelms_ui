@@ -28,8 +28,6 @@ import {
   mockScormLaunchResponse,
   mockPublishScormPackageResponse,
   mockUnpublishScormPackageResponse,
-  createMockScormPackage,
-  createMockMediaFile,
   createMockScormFile,
   createMockVideoFile,
   createMockImageFile,

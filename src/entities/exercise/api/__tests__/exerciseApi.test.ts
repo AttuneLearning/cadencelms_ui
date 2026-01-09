@@ -550,7 +550,10 @@ describe('exerciseApi', () => {
         allowReview: false,
       };
 
-      const newExercise = createMockExercise(examPayload);
+      const newExercise = createMockExercise({
+        ...examPayload,
+        department: { id: 'dept-1', name: 'Test Dept' },
+      });
 
       server.use(
         http.post(`${baseUrl}/api/v2/content/exercises`, () => {

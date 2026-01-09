@@ -10,7 +10,6 @@ import { TemplateList } from '../TemplateList';
 import * as useTemplateHook from '../../model/useTemplate';
 import {
   mockTemplateListItems,
-  createMockTemplateListItem,
 } from '@/test/mocks/data/templates';
 import type { TemplatesListResponse } from '../../model/types';
 
@@ -279,7 +278,7 @@ describe('TemplateList', () => {
         error: null,
       } as any);
 
-      const { container } = render(<TemplateList />, { wrapper: createWrapper() });
+      render(<TemplateList />, { wrapper: createWrapper() });
 
       // Check for select comboboxes
       const selects = screen.getAllByRole('combobox');
@@ -341,7 +340,7 @@ describe('TemplateList', () => {
         error: null,
       } as any);
 
-      const { container } = render(<TemplateList />, { wrapper: createWrapper() });
+      render(<TemplateList />, { wrapper: createWrapper() });
 
       // Check for select comboboxes
       const selects = screen.getAllByRole('combobox');
@@ -388,7 +387,7 @@ describe('TemplateList', () => {
         error: null,
       } as any);
 
-      const { container } = render(<TemplateList />, { wrapper: createWrapper() });
+      render(<TemplateList />, { wrapper: createWrapper() });
 
       // Check for select comboboxes (type, status, sort)
       const selects = screen.getAllByRole('combobox');

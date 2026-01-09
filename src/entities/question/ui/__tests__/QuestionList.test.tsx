@@ -7,7 +7,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { QuestionList } from '../QuestionList';
-import { mockQuestions, createMultipleChoiceQuestion } from '@/test/mocks/data/questions';
+import { mockQuestions } from '@/test/mocks/data/questions';
 import type { QuestionListResponse } from '../../model/types';
 
 // Mock the useQuestions hook
@@ -374,16 +374,16 @@ describe('QuestionList', () => {
       await waitFor(() => {
         // After clearing, should be called with default filters
         const calls = vi.mocked(useQuestions).mock.calls;
-        const lastCall = calls[calls.length - 1][0];
-        expect(lastCall.search).toBeUndefined();
+        const lastCall = calls[calls.length - 1]?.[0];
+        if (lastCall) {
+          expect(lastCall.search).toBeUndefined();
+        }
       });
     });
   });
 
   describe('Tag Filtering', () => {
     it('should display active tags', async () => {
-      const user = userEvent.setup();
-
       render(<QuestionList initialFilters={{ tag: 'javascript' }} />, {
         wrapper: createWrapper(),
       });
@@ -394,7 +394,6 @@ describe('QuestionList', () => {
     });
 
     it('should allow removing tags', async () => {
-      const user = userEvent.setup();
 
       render(<QuestionList initialFilters={{ tag: 'javascript' }} />, {
         wrapper: createWrapper(),

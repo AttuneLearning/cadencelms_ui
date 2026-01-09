@@ -2,8 +2,8 @@
  * Tests for QuestionSelector Component
  */
 
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QuestionSelector } from '../QuestionSelector';
 import {

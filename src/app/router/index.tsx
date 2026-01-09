@@ -22,6 +22,10 @@ import { UserManagementPage } from '@/pages/admin/users/UserManagementPage';
 import { ProgramManagementPage } from '@/pages/admin/programs';
 import { CourseManagementPage } from '@/pages/admin/courses';
 import { ClassManagementPage } from '@/pages/admin/classes';
+import { ContentManagementPage } from '@/pages/admin/content';
+import { TemplateManagementPage } from '@/pages/admin/templates';
+import { ExerciseManagementPage } from '@/pages/admin/exercises';
+import { QuestionBankPage } from '@/pages/admin/questions';
 // TODO: Uncomment when these pages are implemented
 // import { StaffManagementPage } from '@/pages/admin/staff/StaffManagementPage';
 // import { LearnerManagementPage } from '@/pages/admin/learners/LearnerManagementPage';
@@ -162,6 +166,38 @@ export function AppRouter() {
         element={
           <ProtectedRoute roles={['global-admin']}>
             <ClassManagementPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/content"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <ContentManagementPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/templates"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <TemplateManagementPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/exercises"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <ExerciseManagementPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/questions"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <QuestionBankPage />
           </ProtectedRoute>
         }
       />

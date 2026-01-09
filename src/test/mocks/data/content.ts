@@ -18,7 +18,6 @@ import type {
   PublishScormPackageResponse,
   UnpublishScormPackageResponse,
   ScormManifestData,
-  MediaMetadata,
   UserReference,
   DepartmentReference,
   Pagination,

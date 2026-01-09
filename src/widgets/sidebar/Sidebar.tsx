@@ -21,6 +21,10 @@ import {
   ChevronRight,
   Shield,
   Layers,
+  Package,
+  FileCode,
+  ListChecks,
+  HelpCircle,
 } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import type { Role } from '@/features/auth/model/types';
@@ -115,6 +119,30 @@ const navItems: NavItem[] = [
     label: 'Class Management',
     path: '/admin/classes',
     icon: Calendar,
+    roles: ['global-admin'],
+  },
+  {
+    label: 'Content Library',
+    path: '/admin/content',
+    icon: Package,
+    roles: ['global-admin'],
+  },
+  {
+    label: 'Templates',
+    path: '/admin/templates',
+    icon: FileCode,
+    roles: ['global-admin'],
+  },
+  {
+    label: 'Exercises',
+    path: '/admin/exercises',
+    icon: ListChecks,
+    roles: ['global-admin'],
+  },
+  {
+    label: 'Question Bank',
+    path: '/admin/questions',
+    icon: HelpCircle,
     roles: ['global-admin'],
   },
   {
