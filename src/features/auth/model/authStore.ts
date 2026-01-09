@@ -13,7 +13,12 @@ interface AuthState {
   role: Role | null;
   roles: Role[];
   isAuthenticated: boolean;
-  user: { _id: string; email: string } | null;
+  user: {
+    _id: string;
+    email: string;
+    firstName?: string;
+    lastName?: string;
+  } | null;
 
   login: (credentials: LoginCredentials) => Promise<void>;
   logout: () => Promise<void>;
@@ -33,12 +38,22 @@ export const useAuthStore = create<AuthState>()(
 
       login: async (credentials) => {
         const response = await authApi.login(credentials);
+        // Backend returns: { success, data: { user, token, refreshToken, expiresIn } }
+        // Extract token and user from nested data structure
+        const { data } = response as any;
+        const userRole = data.user.role as Role;
+
         set({
-          accessToken: response.accessToken,
-          role: response.role,
-          roles: response.roles,
+          accessToken: data.token, // Backend uses "token", not "accessToken"
+          role: userRole,
+          roles: [userRole], // Convert single role to array
           isAuthenticated: true,
-          user: { _id: '', email: credentials.email },
+          user: {
+            _id: data.user.id,
+            email: data.user.email,
+            firstName: data.user.firstName,
+            lastName: data.user.lastName
+          },
         });
       },
 

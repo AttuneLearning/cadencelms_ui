@@ -35,6 +35,9 @@ import { QuestionBankPage } from '@/pages/admin/questions';
 // Profile page
 import { ProfilePage } from '@/pages/profile/ProfilePage';
 
+// Learner pages
+import { LearnerDashboardPage } from '@/pages/learner/dashboard';
+
 // Unauthorized page component
 const UnauthorizedPage = () => (
   <div className="flex min-h-screen items-center justify-center">
@@ -90,6 +93,16 @@ export function AppRouter() {
         element={
           <ProtectedRoute>
             <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Learner-only routes */}
+      <Route
+        path="/learner/dashboard"
+        element={
+          <ProtectedRoute roles={['learner']}>
+            <LearnerDashboardPage />
           </ProtectedRoute>
         }
       />
