@@ -3,6 +3,7 @@
  */
 
 export { userApi } from './api/userApi';
+export * from './hooks';
 export type {
   User,
   UserListItem,
@@ -11,4 +12,4 @@ export type {
   Role,
   UserStatus,
 } from './model/types';
-export { UserAvatar } from './ui';
+export { UserAvatar, UserProfileCard, UserProfileForm } from './ui';

@@ -1,0 +1,37 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`UserAvatar > Snapshot Tests > should match snapshot with avatar image 1`] = `
+<span
+  class="relative flex shrink-0 overflow-hidden rounded-full h-10 w-10"
+>
+  <span
+    class="flex h-full w-full items-center justify-center rounded-full bg-muted"
+  >
+    JD
+  </span>
+</span>
+`;
+
+exports[`UserAvatar > Snapshot Tests > should match snapshot with custom className 1`] = `
+<span
+  class="relative flex shrink-0 overflow-hidden rounded-full h-16 w-16 border-2 border-primary"
+>
+  <span
+    class="flex h-full w-full items-center justify-center rounded-full bg-muted"
+  >
+    JD
+  </span>
+</span>
+`;
+
+exports[`UserAvatar > Snapshot Tests > should match snapshot with initials only 1`] = `
+<span
+  class="relative flex shrink-0 overflow-hidden rounded-full h-10 w-10"
+>
+  <span
+    class="flex h-full w-full items-center justify-center rounded-full bg-muted"
+  >
+    JD
+  </span>
+</span>
+`;

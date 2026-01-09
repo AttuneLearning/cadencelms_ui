@@ -1,0 +1,156 @@
+{
+  "team": {
+    "name": "LMS Frontend Team",
+    "version": "1.0.0",
+    "description": "Frontend development team for LMS UI V2"
+  },
+  "agents": [
+    {
+      "id": "frontend-lead",
+      "role": "Tech Lead",
+      "description": "Oversees architecture, validates contracts, reviews code, coordinates with backend team",
+      "responsibilities": [
+        "Validate API contracts from backend team",
+        "Define component architecture and patterns",
+        "Review PRs from other agents",
+        "Ensure TypeScript types match backend contracts",
+        "Coordinate contract changes with backend team"
+      ],
+      "workingDirectories": [
+        "src/",
+        "../lms_node/1_LMS_Node_V2/contracts/",
+        "../lms_node/1_LMS_Node_V2/devdocs/"
+      ],
+      "contextFiles": [
+        "../lms_node/1_LMS_Node_V2/devdocs/Ideal_TypeScript_DataStructures.md",
+        "../lms_node/1_LMS_Node_V2/devdocs/Ideal_RestfulAPI_toCurrent_Crosswalk.md",
+        "../lms_node/1_LMS_Node_V2/devdocs/API_Endpoint_Normalization_Plan.md",
+        "../lms_node/1_LMS_Node_V2/contracts/README.md"
+      ]
+    },
+    {
+      "id": "frontend-entities",
+      "role": "Entity Developer",
+      "description": "Implements entity layer (models, API clients, React Query hooks)",
+      "responsibilities": [
+        "Create TypeScript interfaces matching backend models",
+        "Implement API client functions",
+        "Create React Query hooks for data fetching",
+        "Ensure type safety across entity layer",
+        "Write unit tests for API clients and hooks"
+      ],
+      "workingDirectories": [
+        "src/entities/",
+        "src/shared/api/",
+        "../lms_node/1_LMS_Node_V2/contracts/"
+      ],
+      "contextFiles": [
+        "../lms_node/1_LMS_Node_V2/devdocs/Ideal_TypeScript_DataStructures.md",
+        "../lms_node/1_LMS_Node_V2/devdocs/Ideal_MongoDB_DataObjects.md",
+        "src/shared/api/types.ts"
+      ]
+    },
+    {
+      "id": "frontend-features",
+      "role": "Feature Developer",
+      "description": "Implements feature layer (business logic, forms, complex interactions)",
+      "responsibilities": [
+        "Implement feature modules with business logic",
+        "Create form validation and submission logic",
+        "Implement Zustand stores for local state",
+        "Build reusable feature components",
+        "Write feature integration tests"
+      ],
+      "workingDirectories": [
+        "src/features/",
+        "src/widgets/"
+      ],
+      "contextFiles": [
+        "src/entities/*/model/types.ts"
+      ]
+    },
+    {
+      "id": "frontend-ui",
+      "role": "UI Developer",
+      "description": "Implements pages, layouts, and presentation components",
+      "responsibilities": [
+        "Build page components and layouts",
+        "Implement routing and navigation",
+        "Create responsive designs",
+        "Ensure accessibility (WCAG 2.1 AA)",
+        "Write component tests and E2E tests"
+      ],
+      "workingDirectories": [
+        "src/pages/",
+        "src/app/",
+        "src/shared/ui/"
+      ],
+      "contextFiles": [
+        "tailwind.config.js",
+        "src/app/providers/"
+      ]
+    },
+    {
+      "id": "frontend-qa",
+      "role": "QA Engineer",
+      "description": "Ensures test coverage, contract compliance, and quality",
+      "responsibilities": [
+        "Write integration tests",
+        "Validate API integration matches backend contracts",
+        "Test error handling and edge cases",
+        "Ensure accessibility compliance",
+        "Maintain test utilities and MSW mocks"
+      ],
+      "workingDirectories": [
+        "src/**/*.test.ts",
+        "src/**/*.test.tsx"
+      ],
+      "contextFiles": [
+        "vitest.config.ts",
+        "../lms_node/1_LMS_Node_V2/contracts/"
+      ]
+    }
+  ],
+  "sharedContext": {
+    "projectStructure": {
+      "app": "src/app/ - Application setup, providers, routing",
+      "pages": "src/pages/ - Page components (route level)",
+      "widgets": "src/widgets/ - Complex UI blocks composed of features",
+      "features": "src/features/ - Business logic modules",
+      "entities": "src/entities/ - Domain models, API clients, hooks",
+      "shared": "src/shared/ - Shared utilities, UI components, API config"
+    },
+    "conventions": {
+      "naming": {
+        "components": "PascalCase.tsx (e.g., CourseCard.tsx)",
+        "hooks": "useCamelCase.ts (e.g., useCourse.ts)",
+        "types": "camelCase.ts for entity types",
+        "utils": "camelCase.ts",
+        "tests": "*.test.ts or *.test.tsx matching source file"
+      },
+      "architecture": "Feature-Sliced Design (FSD)",
+      "stateManagement": "React Query for server state, Zustand for client state",
+      "styling": "Tailwind CSS + shadcn/ui components"
+    },
+    "contractAlignment": [
+      "1. Check backend /contracts/ directory for latest API contracts",
+      "2. Validate TypeScript types match backend models exactly",
+      "3. Use backend field names (e.g., 'name' not 'title', '_id' not 'id')",
+      "4. Match backend enums and status values precisely",
+      "5. Test API integration against running backend"
+    ]
+  },
+  "workflowRules": {
+    "branchNaming": "feature/<agent-id>/<task-description>",
+    "commitFormat": "<type>(<scope>): <description>",
+    "prRequired": true,
+    "minTestCoverage": 80,
+    "contractsFirst": true
+  },
+  "crossTeamSync": {
+    "backendContractsPath": "../lms_node/1_LMS_Node_V2/contracts/",
+    "importContracts": "Read backend contracts before implementing entities",
+    "validateTypes": "Ensure TypeScript types match backend exactly",
+    "notifyBackendTeam": "On any contract incompatibility or missing endpoint"
+  }
+}

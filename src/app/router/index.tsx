@@ -20,6 +20,14 @@ import { StudentProgressPage } from '@/pages/staff/students';
 import { AdminDashboardPage } from '@/pages/admin/dashboard/AdminDashboardPage';
 import { UserManagementPage } from '@/pages/admin/users/UserManagementPage';
 import { CourseManagementPage } from '@/pages/admin/courses/CourseManagementPage';
+// TODO: Uncomment when these pages are implemented
+// import { StaffManagementPage } from '@/pages/admin/staff/StaffManagementPage';
+// import { LearnerManagementPage } from '@/pages/admin/learners/LearnerManagementPage';
+// import { DepartmentManagementPage } from '@/pages/admin/departments/DepartmentManagementPage';
+// import { AcademicYearManagementPage } from '@/pages/admin/academic-years/AcademicYearManagementPage';
+
+// Profile page
+import { ProfilePage } from '@/pages/profile/ProfilePage';
 
 // Unauthorized page component
 const UnauthorizedPage = () => (
@@ -67,6 +75,14 @@ export function AppRouter() {
         element={
           <ProtectedRoute>
             <CourseViewerPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <ProfilePage />
           </ProtectedRoute>
         }
       />
@@ -130,6 +146,39 @@ export function AppRouter() {
           </ProtectedRoute>
         }
       />
+      {/* TODO: Uncomment when these pages are implemented */}
+      {/* <Route
+        path="/admin/staff"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <StaffManagementPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/learners"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <LearnerManagementPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/departments"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <DepartmentManagementPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/academic-years"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <AcademicYearManagementPage />
+          </ProtectedRoute>
+        }
+      /> */}
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/404" replace />} />
