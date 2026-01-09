@@ -52,3 +52,12 @@ export interface CourseFormData {
   prerequisites?: string[];
   learningObjectives?: string[];
 }
+
+export interface CourseQueryParams {
+  page?: number;
+  limit?: number;
+  status?: string;
+  category?: string;
+  level?: string;
+  search?: string;
+}

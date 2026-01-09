@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { courseApi } from '@/entities/course/api/courseApi';
+import { getCourses } from '@/entities/course';
 import { CourseList } from '@/entities/course/ui/CourseList';
 import { Card, CardContent } from '@/shared/ui/card';
 import { Input } from '@/shared/ui/input';
@@ -42,7 +42,7 @@ export const CourseCatalogPage: React.FC = () => {
   } = useQuery({
     queryKey: ['courses', 'catalog', debouncedSearch, selectedLevel, selectedCategory, page],
     queryFn: () =>
-      courseApi.getAll({
+      getCourses({
         page,
         limit: 12,
         search: debouncedSearch || undefined,

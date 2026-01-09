@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { Users, BookOpen, TrendingUp, Activity, ArrowRight } from 'lucide-react';
+import { Users, BookOpen, TrendingUp, Activity } from 'lucide-react';
 import { client } from '@/shared/api/client';
 import { endpoints } from '@/shared/api/endpoints';
 

@@ -38,7 +38,7 @@ export const UserManagementPage: React.FC = () => {
   const { toast } = useToast();
 
   // Fetch users
-  const { data, isLoading } = useQuery({
+  const { data } = useQuery({
     queryKey: ['admin', 'users'],
     queryFn: () => userApi.list(),
   });

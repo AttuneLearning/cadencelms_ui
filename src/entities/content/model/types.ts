@@ -80,3 +80,33 @@ export interface ContentListItem {
   fileSize?: number;
   isDownloadable?: boolean;
 }
+
+export interface CreateContentPayload {
+  title: string;
+  description?: string;
+  type: ContentType;
+  fileUrl?: string;
+  externalUrl?: string;
+  mimeType?: string;
+  duration?: number;
+  metadata?: Record<string, unknown>;
+  thumbnailUrl?: string;
+}
+
+export interface UpdateContentPayload {
+  title?: string;
+  description?: string;
+  fileUrl?: string;
+  externalUrl?: string;
+  mimeType?: string;
+  duration?: number;
+  metadata?: Record<string, unknown>;
+  thumbnailUrl?: string;
+}
+
+export interface ContentFilterParams {
+  type?: ContentType;
+  status?: ContentStatus;
+  search?: string;
+  courseId?: string;
+}

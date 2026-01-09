@@ -3,7 +3,17 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { courseApi } from '../api/courseApi';
+import {
+  getCourses,
+  getCourse,
+  getEnrolledCourses,
+  createCourse,
+  updateCourse,
+  deleteCourse,
+  publishCourse,
+  unpublishCourse,
+  getCourseStats,
+} from '../api/courseApi';
 import type { CourseFormData } from '../model/types';
 
 export const COURSE_KEYS = {
@@ -29,7 +39,7 @@ export function useCourses(params?: {
 }) {
   return useQuery({
     queryKey: COURSE_KEYS.list(params),
-    queryFn: () => courseApi.getAll(params),
+    queryFn: () => getCourses(params),
   });
 }
 
@@ -39,7 +49,7 @@ export function useCourses(params?: {
 export function useCourse(id: string) {
   return useQuery({
     queryKey: COURSE_KEYS.detail(id),
-    queryFn: () => courseApi.getById(id),
+    queryFn: () => getCourse(id),
     enabled: !!id,
   });
 }
@@ -54,7 +64,7 @@ export function useMyCourses(params?: {
 }) {
   return useQuery({
     queryKey: COURSE_KEYS.myCourses(params),
-    queryFn: () => courseApi.getMyCourses(params),
+    queryFn: () => getEnrolledCourses(params),
   });
 }
 
@@ -64,7 +74,7 @@ export function useMyCourses(params?: {
 export function useCourseStats(id: string) {
   return useQuery({
     queryKey: COURSE_KEYS.stats(id),
-    queryFn: () => courseApi.getStats(id),
+    queryFn: () => getCourseStats(id),
     enabled: !!id,
   });
 }
@@ -76,7 +86,7 @@ export function useCreateCourse() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CourseFormData) => courseApi.create(data),
+    mutationFn: (data: CourseFormData) => createCourse(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: COURSE_KEYS.lists() });
     },
@@ -91,7 +101,7 @@ export function useUpdateCourse() {
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<CourseFormData> }) =>
-      courseApi.update(id, data),
+      updateCourse(id, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: COURSE_KEYS.detail(variables.id) });
       queryClient.invalidateQueries({ queryKey: COURSE_KEYS.lists() });
@@ -106,7 +116,7 @@ export function useDeleteCourse() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => courseApi.delete(id),
+    mutationFn: (id: string) => deleteCourse(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: COURSE_KEYS.lists() });
     },
@@ -120,7 +130,7 @@ export function usePublishCourse() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => courseApi.publish(id),
+    mutationFn: (id: string) => publishCourse(id),
     onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: COURSE_KEYS.detail(id) });
       queryClient.invalidateQueries({ queryKey: COURSE_KEYS.lists() });
@@ -135,7 +145,7 @@ export function useUnpublishCourse() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => courseApi.unpublish(id),
+    mutationFn: (id: string) => unpublishCourse(id),
     onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: COURSE_KEYS.detail(id) });
       queryClient.invalidateQueries({ queryKey: COURSE_KEYS.lists() });

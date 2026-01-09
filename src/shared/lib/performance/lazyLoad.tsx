@@ -9,7 +9,7 @@ import { Loader2 } from 'lucide-react';
 /**
  * Lazy load a component with a loading fallback
  */
-export function lazyLoad<T extends ComponentType<unknown>>(
+export function lazyLoad<T extends ComponentType<any>>(
   importFn: () => Promise<{ default: T }>,
   fallback?: React.ReactNode
 ) {
@@ -33,7 +33,7 @@ export function lazyLoad<T extends ComponentType<unknown>>(
 /**
  * Preload a lazy component
  */
-export function preloadComponent<T extends ComponentType<unknown>>(
+export function preloadComponent<T extends ComponentType<any>>(
   importFn: () => Promise<{ default: T }>
 ) {
   importFn();

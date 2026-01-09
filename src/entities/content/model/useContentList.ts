@@ -134,7 +134,7 @@ export function useCreateContent(
       // Invalidate all content list queries
       queryClient.invalidateQueries({ queryKey: contentKeys.lists() });
       // Set the new content in the cache
-      queryClient.setQueryData(contentKeys.detail(data.id), data);
+      queryClient.setQueryData(contentKeys.detail(data._id), data);
     },
     ...options,
   });

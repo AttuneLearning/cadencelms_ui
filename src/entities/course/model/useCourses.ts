@@ -6,7 +6,7 @@
 import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
 import type { PaginatedResponse } from '@/shared/api/types';
 import { getCourses, getEnrolledCourses } from '../api/courseApi';
-import type { Course, CourseQueryParams } from './types';
+import type { CourseListItem, CourseQueryParams } from './types';
 import { courseKeys } from './useCourse';
 
 /**
@@ -16,9 +16,9 @@ export function useCourses(
   params?: CourseQueryParams,
   options?: Omit<
     UseQueryOptions<
-      PaginatedResponse<Course>,
+      PaginatedResponse<CourseListItem>,
       Error,
-      PaginatedResponse<Course>,
+      PaginatedResponse<CourseListItem>,
       ReturnType<typeof courseKeys.list>
     >,
     'queryKey' | 'queryFn'
@@ -38,9 +38,9 @@ export function useEnrolledCourses(
   params?: CourseQueryParams,
   options?: Omit<
     UseQueryOptions<
-      PaginatedResponse<Course>,
+      PaginatedResponse<CourseListItem>,
       Error,
-      PaginatedResponse<Course>,
+      PaginatedResponse<CourseListItem>,
       ReturnType<typeof courseKeys.list>
     >,
     'queryKey' | 'queryFn'

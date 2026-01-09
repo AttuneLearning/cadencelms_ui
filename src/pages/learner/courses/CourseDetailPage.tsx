@@ -6,7 +6,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { courseApi } from '@/entities/course/api/courseApi';
+import { getCourse } from '@/entities/course';
 import { lessonApi } from '@/entities/lesson/api/lessonApi';
 import { enrollmentApi } from '@/entities/enrollment/api/enrollmentApi';
 import { EnrollButton } from '@/features/course-enrollment';
@@ -45,7 +45,7 @@ export const CourseDetailPage: React.FC = () => {
     error: courseError,
   } = useQuery({
     queryKey: ['courses', courseId],
-    queryFn: () => courseApi.getById(courseId),
+    queryFn: () => getCourse(courseId),
     enabled: !!courseId,
   });
 
@@ -192,7 +192,7 @@ export const CourseDetailPage: React.FC = () => {
                   <div>
                     <h3 className="text-lg font-semibold mb-3">What you'll learn</h3>
                     <ul className="space-y-2">
-                      {course.learningObjectives.map((objective, index) => (
+                      {course.learningObjectives.map((objective: string, index: number) => (
                         <li key={index} className="flex items-start gap-2">
                           <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
                           <span className="text-muted-foreground">{objective}</span>
@@ -210,7 +210,7 @@ export const CourseDetailPage: React.FC = () => {
                   <div>
                     <h3 className="text-lg font-semibold mb-3">Prerequisites</h3>
                     <ul className="space-y-2">
-                      {course.prerequisites.map((prereq, index) => (
+                      {course.prerequisites.map((prereq: string, index: number) => (
                         <li key={index} className="flex items-start gap-2">
                           <TrendingUp className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
                           <span className="text-muted-foreground">{prereq}</span>

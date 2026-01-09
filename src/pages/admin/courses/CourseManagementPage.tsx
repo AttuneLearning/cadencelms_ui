@@ -62,7 +62,7 @@ export const CourseManagementPage: React.FC = () => {
   const { toast } = useToast();
 
   // Fetch courses
-  const { data, isLoading } = useQuery({
+  const { data } = useQuery({
     queryKey: ['admin', 'courses'],
     queryFn: fetchCourses,
   });
