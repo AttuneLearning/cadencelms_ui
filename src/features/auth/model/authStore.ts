@@ -37,24 +37,37 @@ export const useAuthStore = create<AuthState>()(
       user: null,
 
       login: async (credentials) => {
-        const response = await authApi.login(credentials);
-        // Backend returns: { success, data: { user, token, refreshToken, expiresIn } }
-        // Extract token and user from nested data structure
-        const { data } = response as any;
-        const userRole = data.user.role as Role;
+        try {
+          const response = await authApi.login(credentials);
+          console.log('Auth response:', response);
 
-        set({
-          accessToken: data.token, // Backend uses "token", not "accessToken"
-          role: userRole,
-          roles: [userRole], // Convert single role to array
-          isAuthenticated: true,
-          user: {
-            _id: data.user.id,
-            email: data.user.email,
-            firstName: data.user.firstName,
-            lastName: data.user.lastName
-          },
-        });
+          // Backend returns: { success, data: { user, token, refreshToken, expiresIn } }
+          // Extract token and user from nested data structure
+          const { data } = response as any;
+          console.log('Extracted data:', data);
+
+          if (!data || !data.user || !data.token) {
+            throw new Error('Invalid response format from server');
+          }
+
+          const userRole = data.user.role as Role;
+
+          set({
+            accessToken: data.token, // Backend uses "token", not "accessToken"
+            role: userRole,
+            roles: [userRole], // Convert single role to array
+            isAuthenticated: true,
+            user: {
+              _id: data.user.id,
+              email: data.user.email,
+              firstName: data.user.firstName,
+              lastName: data.user.lastName
+            },
+          });
+        } catch (error) {
+          console.error('Login failed in authStore:', error);
+          throw error;
+        }
       },
 
       logout: async () => {

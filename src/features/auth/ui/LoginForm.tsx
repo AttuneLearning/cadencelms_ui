@@ -38,8 +38,15 @@ export const LoginForm: React.FC = () => {
       setError(null);
       await login(data);
       navigate('/dashboard');
-    } catch (err) {
-      setError('Invalid email or password');
+    } catch (err: any) {
+      console.error('Login error:', err);
+      // ApiClientError has message property directly
+      // Also check for axios error format as fallback
+      const errorMessage =
+        err?.message ||
+        err?.response?.data?.message ||
+        'Invalid email or password';
+      setError(errorMessage);
     }
   };
 
