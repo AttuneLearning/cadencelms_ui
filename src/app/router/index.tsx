@@ -15,12 +15,16 @@ import { ProtectedRoute } from './guards';
 import { StaffDashboardPage } from '@/pages/staff/dashboard';
 import { CourseAnalyticsPage } from '@/pages/staff/analytics';
 import { StudentProgressPage } from '@/pages/staff/students';
+import { StudentDetailPage } from '@/pages/staff/students/StudentDetailPage';
 import { StaffCoursesPage } from '@/pages/staff/courses/StaffCoursesPage';
 import { CourseEditorPage } from '@/pages/staff/courses/CourseEditorPage';
 import { ModuleEditorPage } from '@/pages/staff/courses/ModuleEditorPage';
 import { ContentUploaderPage } from '@/pages/staff/courses/ContentUploaderPage';
 import { ExerciseBuilderPage } from '@/pages/staff/courses/ExerciseBuilderPage';
 import { CoursePreviewPage } from '@/pages/staff/courses/CoursePreviewPage';
+import { ClassManagementPage as StaffClassManagementPage } from '@/pages/staff/classes/ClassManagementPage';
+import { ClassDetailsPage as StaffClassDetailsPage } from '@/pages/staff/classes/ClassDetailsPage';
+import { GradingPage, GradingDetailPage } from '@/pages/staff/grading';
 
 // Admin pages
 import { AdminDashboardPage } from '@/pages/admin/dashboard/AdminDashboardPage';
@@ -213,6 +217,14 @@ export function AppRouter() {
         }
       />
       <Route
+        path="/staff/students/:studentId"
+        element={
+          <ProtectedRoute roles={['staff', 'global-admin']}>
+            <StudentDetailPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/staff/courses/:courseId/modules/:moduleId/edit"
         element={
           <ProtectedRoute roles={['staff', 'global-admin']}>
@@ -281,6 +293,38 @@ export function AppRouter() {
         element={
           <ProtectedRoute roles={['staff', 'global-admin']}>
             <CoursePreviewPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/staff/classes"
+        element={
+          <ProtectedRoute roles={['staff', 'global-admin']}>
+            <StaffClassManagementPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/staff/classes/:classId"
+        element={
+          <ProtectedRoute roles={['staff', 'global-admin']}>
+            <StaffClassDetailsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/staff/grading"
+        element={
+          <ProtectedRoute roles={['staff', 'global-admin']}>
+            <GradingPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/staff/grading/:attemptId"
+        element={
+          <ProtectedRoute roles={['staff', 'global-admin']}>
+            <GradingDetailPage />
           </ProtectedRoute>
         }
       />
