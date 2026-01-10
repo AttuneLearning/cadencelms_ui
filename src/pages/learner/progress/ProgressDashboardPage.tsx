@@ -56,7 +56,8 @@ export const ProgressDashboardPage: React.FC = () => {
       { label: 'Dashboard', path: '/learner/dashboard' },
       { label: 'My Progress', path: '/learner/progress' },
     ]);
-  }, [updateBreadcrumbs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Map filter status to API status
   const getApiStatus = (): EnrollmentStatus | undefined => {

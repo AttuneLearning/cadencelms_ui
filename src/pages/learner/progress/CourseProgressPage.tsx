@@ -28,7 +28,8 @@ export function CourseProgressPage() {
         { label: 'Progress', path: '#' },
       ]);
     }
-  }, [progress, courseId, updateBreadcrumbs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [progress, courseId]);
 
   // Loading state
   if (isLoading) {

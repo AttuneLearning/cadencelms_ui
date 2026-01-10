@@ -69,7 +69,8 @@ export function ExerciseTakingPage() {
         { label: attempt.examTitle, path: '#' },
       ]);
     }
-  }, [attempt, updateBreadcrumbs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [attempt]);
 
   // Auto-submit when time expires
   useEffect(() => {

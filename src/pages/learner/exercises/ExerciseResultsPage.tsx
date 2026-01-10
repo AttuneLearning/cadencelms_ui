@@ -26,7 +26,8 @@ export function ExerciseResultsPage() {
         { label: 'Results', path: '#' },
       ]);
     }
-  }, [result, updateBreadcrumbs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [result]);
 
   // Loading state
   if (isLoading) {
