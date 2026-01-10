@@ -47,3 +47,21 @@ export async function exportAuditLogs(
   );
   return response.data.data;
 }
+
+/**
+ * Export a single audit log
+ */
+export async function exportSingleAuditLog(
+  id: string,
+  format: 'csv' | 'excel' | 'json'
+): Promise<ExportAuditLogsResponse> {
+  const response = await client.post<{ success: boolean; data: ExportAuditLogsResponse }>(
+    endpoints.auditLogs.export,
+    {
+      logIds: [id],
+      format,
+      applyFilters: false,
+    }
+  );
+  return response.data.data;
+}
