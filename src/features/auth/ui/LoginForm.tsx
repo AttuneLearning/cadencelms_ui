@@ -36,16 +36,24 @@ export const LoginForm: React.FC = () => {
   const onSubmit = async (data: LoginFormData) => {
     try {
       setError(null);
+      console.log('[LoginForm] Attempting login with:', data.email);
       await login(data);
+      console.log('[LoginForm] Login successful, navigating to dashboard');
       navigate('/dashboard');
     } catch (err: any) {
-      console.error('Login error:', err);
+      console.error('[LoginForm] Login error:', err);
+      console.error('[LoginForm] Error details:', {
+        message: err?.message,
+        response: err?.response?.data,
+        status: err?.status,
+      });
       // ApiClientError has message property directly
       // Also check for axios error format as fallback
       const errorMessage =
         err?.message ||
         err?.response?.data?.message ||
         'Invalid email or password';
+      console.error('[LoginForm] Setting error message:', errorMessage);
       setError(errorMessage);
     }
   };
@@ -78,7 +86,11 @@ export const LoginForm: React.FC = () => {
         )}
       </div>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && (
+        <div className="p-3 bg-destructive/10 border border-destructive rounded-md">
+          <p className="text-sm font-medium text-destructive">{error}</p>
+        </div>
+      )}
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
         {isSubmitting ? 'Logging in...' : 'Log in'}
