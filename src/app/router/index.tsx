@@ -48,11 +48,13 @@ import { ProfilePage } from '@/pages/profile/ProfilePage';
 import { LearnerDashboardPage } from '@/pages/learner/dashboard';
 import { ExerciseTakingPage } from '@/pages/learner/exercises/ExerciseTakingPage';
 import { ExerciseResultsPage } from '@/pages/learner/exercises/ExerciseResultsPage';
-import { CourseProgressPage } from '@/pages/learner/progress/CourseProgressPage';
+import { ProgressDashboardPage, CourseProgressPage } from '@/pages/learner/progress';
 import { CourseCatalogPage } from '@/pages/learner/catalog/CourseCatalogPage';
 import { CourseDetailsPage } from '@/pages/learner/catalog/CourseDetailsPage';
 import { CoursePlayerPage } from '@/pages/learner/player/CoursePlayerPage';
 import { MyCoursesPage } from '@/pages/learner/courses/MyCoursesPage';
+import { MyLearningPage } from '@/pages/learner/learning';
+import { CertificatesPage } from '@/pages/learner/certificates';
 
 // Unauthorized page component
 const UnauthorizedPage = () => (
@@ -122,6 +124,15 @@ export function AppRouter() {
           </ProtectedRoute>
         }
       />
+      {/* My Learning Route */}
+      <Route
+        path="/learner/learning"
+        element={
+          <ProtectedRoute roles={['learner']}>
+            <MyLearningPage />
+          </ProtectedRoute>
+        }
+      />
       {/* Course Catalog Routes */}
       <Route
         path="/learner/catalog"
@@ -181,11 +192,29 @@ export function AppRouter() {
           </ProtectedRoute>
         }
       />
+      {/* Progress Routes */}
+      <Route
+        path="/learner/progress"
+        element={
+          <ProtectedRoute roles={['learner']}>
+            <ProgressDashboardPage />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/learner/courses/:courseId/progress"
         element={
           <ProtectedRoute roles={['learner']}>
             <CourseProgressPage />
+          </ProtectedRoute>
+        }
+      />
+      {/* Certificates Route */}
+      <Route
+        path="/learner/certificates"
+        element={
+          <ProtectedRoute roles={['learner']}>
+            <CertificatesPage />
           </ProtectedRoute>
         }
       />
