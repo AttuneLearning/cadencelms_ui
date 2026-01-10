@@ -22,11 +22,13 @@ export {
   listAuditLogs,
   getAuditLog,
   exportAuditLogs,
+  exportSingleAuditLog,
 } from './api/auditLogApi';
 
 // React Query Hooks
 export { useAuditLogs } from './hooks/useAuditLogs';
 export { useAuditLog } from './hooks/useAuditLog';
+export { useRelatedAuditLogs } from './hooks/useRelatedAuditLogs';
 export { useExportAuditLogs, useExportSingleAuditLog } from './hooks/useExportAuditLogs';
 
 // Query Keys
