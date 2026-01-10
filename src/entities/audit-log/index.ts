@@ -23,6 +23,7 @@ export {
   getAuditLog,
   exportAuditLogs,
   exportSingleAuditLog,
+  getRelatedAuditLogs,
 } from './api/auditLogApi';
 
 // React Query Hooks

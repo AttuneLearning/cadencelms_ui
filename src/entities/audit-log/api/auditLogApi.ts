@@ -65,3 +65,38 @@ export async function exportSingleAuditLog(
   );
   return response.data.data;
 }
+
+/**
+ * Get related audit logs (same user or entity within time window)
+ */
+export async function getRelatedAuditLogs(
+  logId: string,
+  options?: { limit?: number; timeWindow?: number }
+): Promise<AuditLog[]> {
+  const log = await getAuditLog(logId);
+  const filters: AuditLogFilters = {
+    limit: options?.limit || 10,
+  };
+
+  // Get logs from the same user or related to the same entity
+  // within a time window (default 1 hour before and after)
+  const timeWindow = options?.timeWindow || 3600000; // 1 hour in milliseconds
+  const logTime = new Date(log.timestamp).getTime();
+
+  filters.dateFrom = new Date(logTime - timeWindow).toISOString();
+  filters.dateTo = new Date(logTime + timeWindow).toISOString();
+
+  // Filter by either same user or same entity
+  if (log.userId) {
+    filters.userId = log.userId;
+  }
+  if (log.entityType && log.entityId) {
+    filters.entityType = log.entityType;
+    filters.entityId = log.entityId;
+  }
+
+  const response = await listAuditLogs(filters);
+
+  // Filter out the current log and return related ones
+  return response.logs.filter(l => l.id !== logId);
+}
