@@ -1,107 +1,239 @@
 /**
- * React Query hooks for fetching enrollments
+ * React Query hooks for Enrollments
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { enrollmentApi } from '../api/enrollmentApi';
-import type { EnrollmentFormData } from '../model/types';
+import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
+import {
+  listEnrollments,
+  getEnrollment,
+  enrollInProgram,
+  enrollInCourse,
+  enrollInClass,
+  updateEnrollmentStatus,
+  withdrawFromEnrollment,
+  listProgramEnrollments,
+  listCourseEnrollments,
+  listClassEnrollments,
+} from '../api/enrollmentApi';
+import { enrollmentKeys } from '../model/enrollmentKeys';
+import type {
+  Enrollment,
+  EnrollmentsListResponse,
+  EnrollmentFilters,
+  EnrollProgramPayload,
+  EnrollCoursePayload,
+  EnrollClassPayload,
+  UpdateEnrollmentStatusPayload,
+  ProgramEnrollmentsResponse,
+  CourseEnrollmentsResponse,
+  ClassEnrollmentsResponse,
+} from '../model/types';
 
-export const ENROLLMENT_KEYS = {
-  all: ['enrollments'] as const,
-  lists: () => [...ENROLLMENT_KEYS.all, 'list'] as const,
-  list: (params?: Record<string, unknown>) => [...ENROLLMENT_KEYS.lists(), params] as const,
-  details: () => [...ENROLLMENT_KEYS.all, 'detail'] as const,
-  detail: (id: string) => [...ENROLLMENT_KEYS.details(), id] as const,
-  byCourse: (courseId: string) => [...ENROLLMENT_KEYS.all, 'course', courseId] as const,
-  stats: () => [...ENROLLMENT_KEYS.all, 'stats'] as const,
-  check: (courseId: string) => [...ENROLLMENT_KEYS.all, 'check', courseId] as const,
-};
+// =====================
+// QUERY HOOKS
+// =====================
 
 /**
- * Hook to fetch user's enrollments
+ * Hook to fetch list of enrollments
  */
-export function useEnrollments(params?: {
-  page?: number;
-  limit?: number;
-  status?: string;
-}) {
+export function useEnrollments(
+  filters?: EnrollmentFilters,
+  options?: Omit<
+    UseQueryOptions<
+      EnrollmentsListResponse,
+      Error,
+      EnrollmentsListResponse,
+      ReturnType<typeof enrollmentKeys.list>
+    >,
+    'queryKey' | 'queryFn'
+  >
+) {
   return useQuery({
-    queryKey: ENROLLMENT_KEYS.list(params),
-    queryFn: () => enrollmentApi.getMyEnrollments(params),
+    queryKey: enrollmentKeys.list(filters),
+    queryFn: () => listEnrollments(filters),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    ...options,
   });
 }
 
 /**
- * Hook to fetch a single enrollment by ID
+ * Hook to fetch single enrollment
  */
-export function useEnrollment(id: string) {
+export function useEnrollment(
+  id: string,
+  options?: Omit<
+    UseQueryOptions<Enrollment, Error, Enrollment, ReturnType<typeof enrollmentKeys.detail>>,
+    'queryKey' | 'queryFn'
+  >
+) {
   return useQuery({
-    queryKey: ENROLLMENT_KEYS.detail(id),
-    queryFn: () => enrollmentApi.getById(id),
+    queryKey: enrollmentKeys.detail(id),
+    queryFn: () => getEnrollment(id),
     enabled: !!id,
+    staleTime: 5 * 60 * 1000,
+    ...options,
   });
 }
 
 /**
- * Hook to fetch enrollment for a specific course
+ * Hook to fetch current user's enrollments
+ * Convenience wrapper around useEnrollments
  */
-export function useEnrollmentByCourse(courseId: string) {
+export function useMyEnrollments(
+  filters?: EnrollmentFilters,
+  options?: Omit<
+    UseQueryOptions<
+      EnrollmentsListResponse,
+      Error,
+      EnrollmentsListResponse,
+      ReturnType<typeof enrollmentKeys.myEnrollments>
+    >,
+    'queryKey' | 'queryFn'
+  >
+) {
   return useQuery({
-    queryKey: ENROLLMENT_KEYS.byCourse(courseId),
-    queryFn: () => enrollmentApi.getByCourseId(courseId),
+    queryKey: enrollmentKeys.myEnrollments(filters),
+    queryFn: () => listEnrollments(filters),
+    staleTime: 2 * 60 * 1000, // 2 minutes - fresher for user's own data
+    ...options,
+  });
+}
+
+/**
+ * Hook to fetch program enrollments
+ */
+export function useProgramEnrollments(
+  programId: string,
+  filters?: { page?: number; limit?: number; status?: string; sort?: string },
+  options?: Omit<
+    UseQueryOptions<
+      ProgramEnrollmentsResponse,
+      Error,
+      ProgramEnrollmentsResponse,
+      ReturnType<typeof enrollmentKeys.programEnrollments>
+    >,
+    'queryKey' | 'queryFn'
+  >
+) {
+  return useQuery({
+    queryKey: enrollmentKeys.programEnrollments(programId, filters),
+    queryFn: () => listProgramEnrollments(programId, filters),
+    enabled: !!programId,
+    staleTime: 5 * 60 * 1000,
+    ...options,
+  });
+}
+
+/**
+ * Hook to fetch course enrollments
+ */
+export function useCourseEnrollments(
+  courseId: string,
+  filters?: { page?: number; limit?: number; status?: string; sort?: string },
+  options?: Omit<
+    UseQueryOptions<
+      CourseEnrollmentsResponse,
+      Error,
+      CourseEnrollmentsResponse,
+      ReturnType<typeof enrollmentKeys.courseEnrollments>
+    >,
+    'queryKey' | 'queryFn'
+  >
+) {
+  return useQuery({
+    queryKey: enrollmentKeys.courseEnrollments(courseId, filters),
+    queryFn: () => listCourseEnrollments(courseId, filters),
     enabled: !!courseId,
+    staleTime: 5 * 60 * 1000,
+    ...options,
   });
 }
 
 /**
- * Hook to check if user is enrolled in a course
+ * Hook to fetch class enrollments
  */
-export function useCheckEnrollment(courseId: string) {
+export function useClassEnrollments(
+  classId: string,
+  filters?: { page?: number; limit?: number; status?: string; sort?: string },
+  options?: Omit<
+    UseQueryOptions<
+      ClassEnrollmentsResponse,
+      Error,
+      ClassEnrollmentsResponse,
+      ReturnType<typeof enrollmentKeys.classEnrollments>
+    >,
+    'queryKey' | 'queryFn'
+  >
+) {
   return useQuery({
-    queryKey: ENROLLMENT_KEYS.check(courseId),
-    queryFn: () => enrollmentApi.checkEnrollment(courseId),
+    queryKey: enrollmentKeys.classEnrollments(classId, filters),
+    queryFn: () => listClassEnrollments(classId, filters),
+    enabled: !!classId,
+    staleTime: 5 * 60 * 1000,
+    ...options,
+  });
+}
+
+/**
+ * Hook to check enrollment status for a specific course
+ * Returns the enrollment if enrolled, null otherwise
+ */
+export function useEnrollmentStatus(courseId: string) {
+  return useQuery({
+    queryKey: enrollmentKeys.enrollmentStatus(courseId),
+    queryFn: async () => {
+      const result = await listEnrollments({ course: courseId, limit: 1 });
+      return result.enrollments[0] || null;
+    },
     enabled: !!courseId,
+    staleTime: 2 * 60 * 1000,
   });
 }
 
+// =====================
+// MUTATION HOOKS
+// =====================
+
 /**
- * Hook to fetch enrollment statistics
+ * Hook to enroll in a program
  */
-export function useEnrollmentStats() {
-  return useQuery({
-    queryKey: ENROLLMENT_KEYS.stats(),
-    queryFn: () => enrollmentApi.getStats(),
+export function useEnrollInProgram() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: EnrollProgramPayload) => enrollInProgram(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: enrollmentKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: enrollmentKeys.all });
+    },
   });
 }
 
 /**
  * Hook to enroll in a course
  */
-export function useEnroll() {
+export function useEnrollInCourse() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: EnrollmentFormData) => enrollmentApi.enroll(data),
+    mutationFn: (payload: EnrollCoursePayload) => enrollInCourse(payload),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ENROLLMENT_KEYS.lists() });
-      queryClient.invalidateQueries({ queryKey: ENROLLMENT_KEYS.byCourse(variables.courseId) });
-      queryClient.invalidateQueries({ queryKey: ENROLLMENT_KEYS.check(variables.courseId) });
-      queryClient.invalidateQueries({ queryKey: ENROLLMENT_KEYS.stats() });
+      queryClient.invalidateQueries({ queryKey: enrollmentKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: enrollmentKeys.enrollmentStatus(variables.courseId) });
     },
   });
 }
 
 /**
- * Hook to unenroll from a course
+ * Hook to enroll in a class
  */
-export function useUnenroll() {
+export function useEnrollInClass() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (enrollmentId: string) => enrollmentApi.unenroll(enrollmentId),
+    mutationFn: (payload: EnrollClassPayload) => enrollInClass(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ENROLLMENT_KEYS.lists() });
-      queryClient.invalidateQueries({ queryKey: ENROLLMENT_KEYS.stats() });
+      queryClient.invalidateQueries({ queryKey: enrollmentKeys.lists() });
     },
   });
 }
@@ -113,17 +245,27 @@ export function useUpdateEnrollmentStatus() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      enrollmentId,
-      status,
-    }: {
-      enrollmentId: string;
-      status: 'active' | 'completed' | 'dropped';
-    }) => enrollmentApi.updateStatus(enrollmentId, status),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ENROLLMENT_KEYS.detail(data._id) });
-      queryClient.invalidateQueries({ queryKey: ENROLLMENT_KEYS.lists() });
-      queryClient.invalidateQueries({ queryKey: ENROLLMENT_KEYS.stats() });
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateEnrollmentStatusPayload }) =>
+      updateEnrollmentStatus(id, payload),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: enrollmentKeys.detail(variables.id) });
+      queryClient.invalidateQueries({ queryKey: enrollmentKeys.lists() });
+    },
+  });
+}
+
+/**
+ * Hook to withdraw from an enrollment
+ */
+export function useWithdraw() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
+      withdrawFromEnrollment(id, reason ? { reason } : undefined),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: enrollmentKeys.detail(variables.id) });
+      queryClient.invalidateQueries({ queryKey: enrollmentKeys.lists() });
     },
   });
 }

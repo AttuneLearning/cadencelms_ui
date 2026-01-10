@@ -1,157 +1,181 @@
 /**
- * React Query hooks for fetching and updating progress
+ * React Query hooks for Progress entity
+ * Based on progress.contract.ts v1.0.0
+ * Includes debounced progress updates (30s interval)
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { progressApi } from '../api/progressApi';
-import type { ProgressUpdate } from '../model/types';
+import { useRef, useCallback } from 'react';
+import {
+  getProgramProgress,
+  getCourseProgress,
+  getClassProgress,
+  getLearnerProgress,
+  getLearnerProgramProgress,
+  updateProgress,
+  getProgressSummary,
+  getDetailedProgressReport,
+} from '../api/progressApi';
+import type {
+  UpdateProgressRequest,
+  ProgressSummaryFilters,
+  DetailedProgressReportFilters,
+} from '../model/types';
+
+// =====================
+// QUERY KEYS
+// =====================
 
 export const PROGRESS_KEYS = {
   all: ['progress'] as const,
-  stats: () => [...PROGRESS_KEYS.all, 'stats'] as const,
-  course: (courseId: string) => [...PROGRESS_KEYS.all, 'course', courseId] as const,
-  lesson: (courseId: string, lessonId: string) =>
-    [...PROGRESS_KEYS.course(courseId), 'lesson', lessonId] as const,
-  batch: (courseId: string, lessonIds: string[]) =>
-    [...PROGRESS_KEYS.course(courseId), 'batch', ...lessonIds] as const,
+  program: (programId: string, learnerId?: string) =>
+    [...PROGRESS_KEYS.all, 'program', programId, learnerId] as const,
+  course: (courseId: string, learnerId?: string) =>
+    [...PROGRESS_KEYS.all, 'course', courseId, learnerId] as const,
+  class: (classId: string, learnerId?: string) =>
+    [...PROGRESS_KEYS.all, 'class', classId, learnerId] as const,
+  learner: (learnerId: string) => [...PROGRESS_KEYS.all, 'learner', learnerId] as const,
+  learnerProgram: (learnerId: string, programId: string) =>
+    [...PROGRESS_KEYS.learner(learnerId), 'program', programId] as const,
+  summary: (filters?: ProgressSummaryFilters) => [...PROGRESS_KEYS.all, 'summary', filters] as const,
+  detailedReport: (filters?: DetailedProgressReportFilters) =>
+    [...PROGRESS_KEYS.all, 'detailed-report', filters] as const,
 };
 
+// =====================
+// QUERY HOOKS
+// =====================
+
 /**
- * Hook to fetch progress for a specific lesson
+ * Hook to fetch program progress
  */
-export function useLessonProgress(courseId: string, lessonId: string) {
+export function useProgramProgress(programId: string, learnerId?: string) {
   return useQuery({
-    queryKey: PROGRESS_KEYS.lesson(courseId, lessonId),
-    queryFn: () => progressApi.getLessonProgress(courseId, lessonId),
-    enabled: !!courseId && !!lessonId,
+    queryKey: PROGRESS_KEYS.program(programId, learnerId),
+    queryFn: () => getProgramProgress(programId, learnerId),
+    enabled: !!programId,
   });
 }
 
 /**
- * Hook to fetch progress for all lessons in a course
+ * Hook to fetch detailed course progress
  */
-export function useCourseProgress(courseId: string) {
+export function useCourseProgress(courseId: string, learnerId?: string) {
   return useQuery({
-    queryKey: PROGRESS_KEYS.course(courseId),
-    queryFn: () => progressApi.getCourseProgress(courseId),
+    queryKey: PROGRESS_KEYS.course(courseId, learnerId),
+    queryFn: () => getCourseProgress(courseId, learnerId),
     enabled: !!courseId,
   });
 }
 
 /**
- * Hook to fetch overall progress statistics
+ * Hook to fetch class progress with attendance
  */
-export function useProgressStats() {
+export function useClassProgress(classId: string, learnerId?: string) {
   return useQuery({
-    queryKey: PROGRESS_KEYS.stats(),
-    queryFn: () => progressApi.getStats(),
+    queryKey: PROGRESS_KEYS.class(classId, learnerId),
+    queryFn: () => getClassProgress(classId, learnerId),
+    enabled: !!classId,
   });
 }
 
 /**
- * Hook to fetch progress for multiple lessons (batch)
+ * Hook to fetch comprehensive learner progress
  */
-export function useBatchProgress(courseId: string, lessonIds: string[]) {
+export function useLearnerProgress(learnerId: string) {
   return useQuery({
-    queryKey: PROGRESS_KEYS.batch(courseId, lessonIds),
-    queryFn: () => progressApi.getBatchProgress(courseId, lessonIds),
-    enabled: !!courseId && lessonIds.length > 0,
+    queryKey: PROGRESS_KEYS.learner(learnerId),
+    queryFn: () => getLearnerProgress(learnerId),
+    enabled: !!learnerId,
   });
 }
 
 /**
- * Hook to update progress for a lesson
+ * Hook to fetch learner's program progress
+ */
+export function useLearnerProgramProgress(learnerId: string, programId: string) {
+  return useQuery({
+    queryKey: PROGRESS_KEYS.learnerProgram(learnerId, programId),
+    queryFn: () => getLearnerProgramProgress(learnerId, programId),
+    enabled: !!learnerId && !!programId,
+  });
+}
+
+/**
+ * Hook to fetch progress summary report
+ */
+export function useProgressSummary(filters?: ProgressSummaryFilters) {
+  return useQuery({
+    queryKey: PROGRESS_KEYS.summary(filters),
+    queryFn: () => getProgressSummary(filters),
+  });
+}
+
+/**
+ * Hook to fetch detailed progress report
+ */
+export function useDetailedProgressReport(
+  filters?: DetailedProgressReportFilters,
+  enabled: boolean = true
+) {
+  return useQuery({
+    queryKey: PROGRESS_KEYS.detailedReport(filters),
+    queryFn: () => getDetailedProgressReport(filters),
+    enabled,
+  });
+}
+
+// =====================
+// MUTATION HOOKS
+// =====================
+
+/**
+ * Hook to update progress with debouncing (30 second delay)
+ * Accumulates rapid updates and sends only the last one after 30s
  */
 export function useUpdateProgress() {
   const queryClient = useQueryClient();
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const pendingUpdateRef = useRef<UpdateProgressRequest | null>(null);
 
-  return useMutation({
-    mutationFn: ({
-      courseId,
-      lessonId,
-      data,
-    }: {
-      courseId: string;
-      lessonId: string;
-      data: ProgressUpdate;
-    }) => progressApi.updateLessonProgress(courseId, lessonId, data),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: PROGRESS_KEYS.lesson(variables.courseId, variables.lessonId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: PROGRESS_KEYS.course(variables.courseId),
-      });
-      queryClient.invalidateQueries({ queryKey: PROGRESS_KEYS.stats() });
+  const mutation = useMutation({
+    mutationFn: (payload: UpdateProgressRequest) => updateProgress(payload),
+    onSuccess: () => {
+      // Invalidate all relevant progress queries
+      queryClient.invalidateQueries({ queryKey: PROGRESS_KEYS.all });
     },
   });
-}
 
-/**
- * Hook to start a lesson
- */
-export function useStartLesson() {
-  const queryClient = useQueryClient();
+  const debouncedMutate = useCallback(
+    (payload: UpdateProgressRequest) => {
+      // Store the latest update
+      pendingUpdateRef.current = payload;
 
-  return useMutation({
-    mutationFn: ({ courseId, lessonId }: { courseId: string; lessonId: string }) =>
-      progressApi.startLesson(courseId, lessonId),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: PROGRESS_KEYS.lesson(variables.courseId, variables.lessonId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: PROGRESS_KEYS.course(variables.courseId),
-      });
+      // Clear existing timer
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+
+      // Set new timer for 30 seconds (30000ms)
+      debounceTimerRef.current = setTimeout(() => {
+        if (pendingUpdateRef.current) {
+          mutation.mutate(pendingUpdateRef.current);
+          pendingUpdateRef.current = null;
+        }
+      }, 30000);
     },
-  });
-}
+    [mutation]
+  );
 
-/**
- * Hook to complete a lesson
- */
-export function useCompleteLesson() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      courseId,
-      lessonId,
-      data,
-    }: {
-      courseId: string;
-      lessonId: string;
-      data?: { score?: number; timeSpent?: number };
-    }) => progressApi.completeLesson(courseId, lessonId, data),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: PROGRESS_KEYS.lesson(variables.courseId, variables.lessonId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: PROGRESS_KEYS.course(variables.courseId),
-      });
-      queryClient.invalidateQueries({ queryKey: PROGRESS_KEYS.stats() });
+  // Return a modified mutation object with debounced mutate
+  return {
+    ...mutation,
+    mutate: debouncedMutate,
+    mutateAsync: async (payload: UpdateProgressRequest) => {
+      debouncedMutate(payload);
+      // Note: This won't wait for the actual mutation due to debouncing
+      // If you need to wait, use the regular mutation.mutateAsync
+      return Promise.resolve();
     },
-  });
-}
-
-/**
- * Hook to reset progress for a lesson
- */
-export function useResetProgress() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ courseId, lessonId }: { courseId: string; lessonId: string }) =>
-      progressApi.resetLessonProgress(courseId, lessonId),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: PROGRESS_KEYS.lesson(variables.courseId, variables.lessonId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: PROGRESS_KEYS.course(variables.courseId),
-      });
-      queryClient.invalidateQueries({ queryKey: PROGRESS_KEYS.stats() });
-    },
-  });
+  };
 }

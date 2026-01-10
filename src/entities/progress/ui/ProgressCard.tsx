@@ -22,12 +22,12 @@ import {
   PlayCircle,
   Minus,
 } from 'lucide-react';
-import type { LessonProgress } from '../model/types';
+import type { ModuleProgress } from '../model/types';
 import { cn } from '@/shared/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 
 interface ProgressCardProps {
-  progress: LessonProgress;
+  progress: ModuleProgress;
   className?: string;
   showDetails?: boolean;
 }
@@ -42,7 +42,7 @@ export const ProgressCard: React.FC<ProgressCardProps> = ({
       <CardHeader>
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1">
-            <CardTitle className="text-base">{progress.lessonTitle}</CardTitle>
+            <CardTitle className="text-base">{progress.moduleTitle}</CardTitle>
             <CardDescription className="mt-1">
               {progress.lastAccessedAt && (
                 <span className="text-xs">
@@ -66,9 +66,9 @@ export const ProgressCard: React.FC<ProgressCardProps> = ({
               <TrendingUp className="h-4 w-4" />
               <span>Progress</span>
             </div>
-            <span className="font-medium">{progress.progress}%</span>
+            <span className="font-medium">{progress.completionPercent}%</span>
           </div>
-          <Progress value={progress.progress} className="h-2" />
+          <Progress value={progress.completionPercent} className="h-2" />
         </div>
 
         {showDetails && (

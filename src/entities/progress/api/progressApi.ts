@@ -1,110 +1,155 @@
 /**
- * Progress API
- * API methods for progress tracking operations
+ * Progress API Client
+ * Implements endpoints from progress.contract.ts v1.0.0
+ *
+ * Covers all 8 progress tracking endpoints
  */
 
 import { client } from '@/shared/api/client';
-import { endpoints } from '@/shared/api/endpoints';
 import type {
-  Progress,
+  ProgramProgress,
   CourseProgress,
-  LessonProgress,
-  ProgressUpdate,
-  ProgressStats,
+  ClassProgress,
+  LearnerProgress,
+  UpdateProgressRequest,
+  UpdateProgressResponse,
+  ProgressSummaryFilters,
+  ProgressSummaryResponse,
+  DetailedProgressReportFilters,
+  DetailedProgressReport,
+  ApiResponse,
 } from '../model/types';
-import type { ApiResponse } from '@/shared/api/types';
 
-export const progressApi = {
-  /**
-   * Get progress for a specific lesson
-   */
-  getLessonProgress: async (courseId: string, lessonId: string): Promise<Progress | null> => {
-    const response = await client.get<ApiResponse<Progress | null>>(
-      `${endpoints.courses.list}/${courseId}/lessons/${lessonId}/progress`
-    );
-    return response.data.data;
-  },
+// =====================
+// PROGRAM PROGRESS
+// =====================
 
-  /**
-   * Get progress for all lessons in a course
-   */
-  getCourseProgress: async (courseId: string): Promise<CourseProgress> => {
-    const response = await client.get<ApiResponse<CourseProgress>>(
-      `${endpoints.courses.list}/${courseId}/progress`
-    );
-    return response.data.data;
-  },
+/**
+ * GET /api/v2/progress/program/:programId - Get program progress
+ */
+export async function getProgramProgress(
+  programId: string,
+  learnerId?: string
+): Promise<ProgramProgress> {
+  const response = await client.get<ApiResponse<ProgramProgress>>(
+    `/api/v2/progress/program/${programId}`,
+    { params: learnerId ? { learnerId } : undefined }
+  );
+  return response.data.data;
+}
 
-  /**
-   * Update progress for a lesson
-   */
-  updateLessonProgress: async (
-    courseId: string,
-    lessonId: string,
-    data: ProgressUpdate
-  ): Promise<Progress> => {
-    const response = await client.post<ApiResponse<Progress>>(
-      `${endpoints.courses.list}/${courseId}/lessons/${lessonId}/progress`,
-      data
-    );
-    return response.data.data;
-  },
+// =====================
+// COURSE PROGRESS
+// =====================
 
-  /**
-   * Mark lesson as started
-   */
-  startLesson: async (courseId: string, lessonId: string): Promise<Progress> => {
-    const response = await client.post<ApiResponse<Progress>>(
-      `${endpoints.courses.list}/${courseId}/lessons/${lessonId}/progress/start`
-    );
-    return response.data.data;
-  },
+/**
+ * GET /api/v2/progress/course/:courseId - Get detailed course progress
+ */
+export async function getCourseProgress(
+  courseId: string,
+  learnerId?: string
+): Promise<CourseProgress> {
+  const response = await client.get<ApiResponse<CourseProgress>>(
+    `/api/v2/progress/course/${courseId}`,
+    { params: learnerId ? { learnerId } : undefined }
+  );
+  return response.data.data;
+}
 
-  /**
-   * Mark lesson as completed
-   */
-  completeLesson: async (
-    courseId: string,
-    lessonId: string,
-    data?: { score?: number; timeSpent?: number }
-  ): Promise<Progress> => {
-    const response = await client.post<ApiResponse<Progress>>(
-      `${endpoints.courses.list}/${courseId}/lessons/${lessonId}/progress/complete`,
-      data
-    );
-    return response.data.data;
-  },
+// =====================
+// CLASS PROGRESS
+// =====================
 
-  /**
-   * Get overall progress statistics
-   */
-  getStats: async (): Promise<ProgressStats> => {
-    const response = await client.get<ApiResponse<ProgressStats>>(
-      endpoints.progress.stats || '/api/v2/progress/stats'
-    );
-    return response.data.data;
-  },
+/**
+ * GET /api/v2/progress/class/:classId - Get class progress with attendance
+ */
+export async function getClassProgress(
+  classId: string,
+  learnerId?: string
+): Promise<ClassProgress> {
+  const response = await client.get<ApiResponse<ClassProgress>>(
+    `/api/v2/progress/class/${classId}`,
+    { params: learnerId ? { learnerId } : undefined }
+  );
+  return response.data.data;
+}
 
-  /**
-   * Get progress for multiple lessons
-   */
-  getBatchProgress: async (
-    courseId: string,
-    lessonIds: string[]
-  ): Promise<Record<string, LessonProgress>> => {
-    const response = await client.post<ApiResponse<Record<string, LessonProgress>>>(
-      `${endpoints.courses.list}/${courseId}/progress/batch`,
-      { lessonIds }
-    );
-    return response.data.data;
-  },
+// =====================
+// LEARNER PROGRESS
+// =====================
 
-  /**
-   * Reset progress for a lesson
-   */
-  resetLessonProgress: async (courseId: string, lessonId: string): Promise<void> => {
-    await client.delete(
-      `${endpoints.courses.list}/${courseId}/lessons/${lessonId}/progress`
-    );
-  },
-};
+/**
+ * GET /api/v2/progress/learner/:learnerId - Get comprehensive learner progress
+ */
+export async function getLearnerProgress(learnerId: string): Promise<LearnerProgress> {
+  const response = await client.get<ApiResponse<LearnerProgress>>(
+    `/api/v2/progress/learner/${learnerId}`
+  );
+  return response.data.data;
+}
+
+/**
+ * GET /api/v2/progress/learner/:learnerId/program/:programId - Get learner's program progress
+ */
+export async function getLearnerProgramProgress(
+  learnerId: string,
+  programId: string
+): Promise<ProgramProgress> {
+  const response = await client.get<ApiResponse<ProgramProgress>>(
+    `/api/v2/progress/learner/${learnerId}/program/${programId}`
+  );
+  return response.data.data;
+}
+
+// =====================
+// UPDATE PROGRESS
+// =====================
+
+/**
+ * POST /api/v2/progress/update - Manual progress update (instructor/admin override)
+ */
+export async function updateProgress(
+  payload: UpdateProgressRequest
+): Promise<UpdateProgressResponse> {
+  // Default notifyLearner to true if not specified
+  const requestPayload = {
+    ...payload,
+    notifyLearner: payload.notifyLearner !== undefined ? payload.notifyLearner : true,
+  };
+
+  const response = await client.post<ApiResponse<UpdateProgressResponse>>(
+    '/api/v2/progress/update',
+    requestPayload
+  );
+  return response.data.data;
+}
+
+// =====================
+// PROGRESS REPORTS
+// =====================
+
+/**
+ * GET /api/v2/progress/reports/summary - Get progress summary report
+ */
+export async function getProgressSummary(
+  filters?: ProgressSummaryFilters
+): Promise<ProgressSummaryResponse> {
+  const response = await client.get<ApiResponse<ProgressSummaryResponse>>(
+    '/api/v2/progress/reports/summary',
+    { params: filters }
+  );
+  return response.data.data;
+}
+
+/**
+ * GET /api/v2/progress/reports/detailed - Get detailed progress report
+ */
+export async function getDetailedProgressReport(
+  filters?: DetailedProgressReportFilters
+): Promise<DetailedProgressReport> {
+  const response = await client.get<ApiResponse<DetailedProgressReport>>(
+    '/api/v2/progress/reports/detailed',
+    { params: filters }
+  );
+  return response.data.data;
+}

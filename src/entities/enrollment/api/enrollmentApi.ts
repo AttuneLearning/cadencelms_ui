@@ -1,103 +1,162 @@
 /**
- * Enrollment API
- * API methods for enrollment operations
+ * Enrollment API Client
+ * Implements endpoints from enrollments.contract.ts v1.0.0
+ *
+ * Covers all enrollment management endpoints
  */
 
 import { client } from '@/shared/api/client';
-import { endpoints } from '@/shared/api/endpoints';
 import type {
   Enrollment,
-  EnrollmentWithCourse,
-  EnrollmentFormData,
-  EnrollmentStats,
+  EnrollmentsListResponse,
+  EnrollmentFilters,
+  EnrollProgramPayload,
+  EnrollCoursePayload,
+  EnrollClassPayload,
+  UpdateEnrollmentStatusPayload,
+  WithdrawEnrollmentPayload,
+  ProgramEnrollment,
+  CourseEnrollment,
+  ClassEnrollment,
+  UpdateStatusResponse,
+  WithdrawResponse,
+  ProgramEnrollmentsResponse,
+  CourseEnrollmentsResponse,
+  ClassEnrollmentsResponse,
 } from '../model/types';
-import type { ApiResponse, PaginatedResponse } from '@/shared/api/types';
 
-export const enrollmentApi = {
-  /**
-   * Get all enrollments for the current user
-   */
-  getMyEnrollments: async (params?: {
-    page?: number;
-    limit?: number;
-    status?: string;
-  }): Promise<PaginatedResponse<EnrollmentWithCourse>> => {
-    const response = await client.get<ApiResponse<PaginatedResponse<EnrollmentWithCourse>>>(
-      endpoints.enrollments.list,
-      { params }
-    );
-    return response.data.data;
-  },
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
 
-  /**
-   * Get a single enrollment by ID
-   */
-  getById: async (id: string): Promise<Enrollment> => {
-    const response = await client.get<ApiResponse<Enrollment>>(
-      `${endpoints.enrollments.list}/${id}`
-    );
-    return response.data.data;
-  },
+// =====================
+// ENROLLMENTS
+// =====================
 
-  /**
-   * Get enrollment for a specific course
-   */
-  getByCourseId: async (courseId: string): Promise<Enrollment | null> => {
-    const response = await client.get<ApiResponse<Enrollment | null>>(
-      `${endpoints.enrollments.list}/course/${courseId}`
-    );
-    return response.data.data;
-  },
+/**
+ * GET /api/v2/enrollments - List all enrollments
+ */
+export async function listEnrollments(
+  filters?: EnrollmentFilters
+): Promise<EnrollmentsListResponse> {
+  const response = await client.get<ApiResponse<EnrollmentsListResponse>>(
+    '/api/v2/enrollments',
+    { params: filters }
+  );
+  return response.data.data;
+}
 
-  /**
-   * Enroll in a course
-   */
-  enroll: async (data: EnrollmentFormData): Promise<Enrollment> => {
-    const response = await client.post<ApiResponse<Enrollment>>(
-      endpoints.enrollments.list,
-      data
-    );
-    return response.data.data;
-  },
+/**
+ * GET /api/v2/enrollments/:id - Get enrollment details
+ */
+export async function getEnrollment(id: string): Promise<Enrollment> {
+  const response = await client.get<ApiResponse<Enrollment>>(`/api/v2/enrollments/${id}`);
+  return response.data.data;
+}
 
-  /**
-   * Unenroll from a course
-   */
-  unenroll: async (enrollmentId: string): Promise<void> => {
-    await client.delete(`${endpoints.enrollments.list}/${enrollmentId}`);
-  },
+/**
+ * POST /api/v2/enrollments/program - Enroll in program
+ */
+export async function enrollInProgram(
+  payload: EnrollProgramPayload
+): Promise<ProgramEnrollment> {
+  const response = await client.post<ApiResponse<{ enrollment: ProgramEnrollment }>>(
+    '/api/v2/enrollments/program',
+    payload
+  );
+  return response.data.data.enrollment;
+}
 
-  /**
-   * Update enrollment status
-   */
-  updateStatus: async (
-    enrollmentId: string,
-    status: 'active' | 'completed' | 'dropped'
-  ): Promise<Enrollment> => {
-    const response = await client.patch<ApiResponse<Enrollment>>(
-      `${endpoints.enrollments.list}/${enrollmentId}/status`,
-      { status }
-    );
-    return response.data.data;
-  },
+/**
+ * POST /api/v2/enrollments/course - Enroll in course
+ */
+export async function enrollInCourse(payload: EnrollCoursePayload): Promise<CourseEnrollment> {
+  const response = await client.post<ApiResponse<{ enrollment: CourseEnrollment }>>(
+    '/api/v2/enrollments/course',
+    payload
+  );
+  return response.data.data.enrollment;
+}
 
-  /**
-   * Get enrollment statistics
-   */
-  getStats: async (): Promise<EnrollmentStats> => {
-    const response = await client.get<ApiResponse<EnrollmentStats>>(
-      `${endpoints.enrollments.list}/stats`
-    );
-    return response.data.data;
-  },
+/**
+ * POST /api/v2/enrollments/class - Enroll in class
+ */
+export async function enrollInClass(payload: EnrollClassPayload): Promise<ClassEnrollment> {
+  const response = await client.post<ApiResponse<{ enrollment: ClassEnrollment }>>(
+    '/api/v2/enrollments/class',
+    payload
+  );
+  return response.data.data.enrollment;
+}
 
-  /**
-   * Check if user is enrolled in a course
-   */
-  checkEnrollment: async (courseId: string): Promise<{ isEnrolled: boolean; enrollment?: Enrollment }> => {
-    const response = await client.get<ApiResponse<{ isEnrolled: boolean; enrollment?: Enrollment }>>(
-      `${endpoints.enrollments.list}/check/${courseId}`
-    );
-    return response.data.data;
-  },
-};
+/**
+ * PATCH /api/v2/enrollments/:id/status - Update enrollment status
+ */
+export async function updateEnrollmentStatus(
+  id: string,
+  payload: UpdateEnrollmentStatusPayload
+): Promise<UpdateStatusResponse> {
+  const response = await client.patch<ApiResponse<UpdateStatusResponse>>(
+    `/api/v2/enrollments/${id}/status`,
+    payload
+  );
+  return response.data.data;
+}
+
+/**
+ * DELETE /api/v2/enrollments/:id - Withdraw from enrollment
+ */
+export async function withdrawFromEnrollment(
+  id: string,
+  payload?: WithdrawEnrollmentPayload
+): Promise<WithdrawResponse> {
+  const response = await client.delete<ApiResponse<WithdrawResponse>>(
+    `/api/v2/enrollments/${id}`,
+    { data: payload }
+  );
+  return response.data.data;
+}
+
+/**
+ * GET /api/v2/enrollments/program/:programId - List program enrollments
+ */
+export async function listProgramEnrollments(
+  programId: string,
+  filters?: { page?: number; limit?: number; status?: string; sort?: string }
+): Promise<ProgramEnrollmentsResponse> {
+  const response = await client.get<ApiResponse<ProgramEnrollmentsResponse>>(
+    `/api/v2/enrollments/program/${programId}`,
+    { params: filters }
+  );
+  return response.data.data;
+}
+
+/**
+ * GET /api/v2/enrollments/course/:courseId - List course enrollments
+ */
+export async function listCourseEnrollments(
+  courseId: string,
+  filters?: { page?: number; limit?: number; status?: string; sort?: string }
+): Promise<CourseEnrollmentsResponse> {
+  const response = await client.get<ApiResponse<CourseEnrollmentsResponse>>(
+    `/api/v2/enrollments/course/${courseId}`,
+    { params: filters }
+  );
+  return response.data.data;
+}
+
+/**
+ * GET /api/v2/enrollments/class/:classId - List class enrollments
+ */
+export async function listClassEnrollments(
+  classId: string,
+  filters?: { page?: number; limit?: number; status?: string; sort?: string }
+): Promise<ClassEnrollmentsResponse> {
+  const response = await client.get<ApiResponse<ClassEnrollmentsResponse>>(
+    `/api/v2/enrollments/class/${classId}`,
+    { params: filters }
+  );
+  return response.data.data;
+}

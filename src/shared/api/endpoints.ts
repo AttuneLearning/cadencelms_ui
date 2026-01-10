@@ -126,4 +126,26 @@ export const endpoints = {
     enrollment: (id: string, enrollmentId: string) => `/api/v2/classes/${id}/enrollments/${enrollmentId}`,
     progress: (id: string) => `/api/v2/classes/${id}/progress`,
   },
+
+  learningEvents: {
+    list: '/api/v2/learning-events',
+    byId: (id: string) => `/api/v2/learning-events/${id}`,
+    create: '/api/v2/learning-events',
+    createBatch: '/api/v2/learning-events/batch',
+    learnerActivity: (learnerId: string) => `/api/v2/learning-events/learner/${learnerId}`,
+    courseActivity: (courseId: string) => `/api/v2/learning-events/course/${courseId}`,
+    classActivity: (classId: string) => `/api/v2/learning-events/class/${classId}`,
+    stats: '/api/v2/learning-events/stats',
+  },
+
+  examAttempts: {
+    list: '/api/v2/exam-attempts',
+    byId: (id: string) => `/api/v2/exam-attempts/${id}`,
+    create: '/api/v2/exam-attempts',
+    submitAnswers: (id: string) => `/api/v2/exam-attempts/${id}/answers`,
+    submit: (id: string) => `/api/v2/exam-attempts/${id}/submit`,
+    results: (id: string) => `/api/v2/exam-attempts/${id}/results`,
+    grade: (id: string) => `/api/v2/exam-attempts/${id}/grade`,
+    byExam: (examId: string) => `/api/v2/exam-attempts/exam/${examId}`,
+  },
 } as const;

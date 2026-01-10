@@ -20,7 +20,10 @@ import {
   Flame,
   Target,
 } from 'lucide-react';
-import type { ProgressStats as ProgressStatsType } from '../model/types';
+// Using LearnerProgress.summary for stats display
+import type { LearnerProgress } from '../model/types';
+
+type ProgressStatsType = LearnerProgress['summary'];
 import { cn } from '@/shared/lib/utils';
 
 interface ProgressStatsProps {
@@ -38,8 +41,8 @@ export const ProgressStats: React.FC<ProgressStatsProps> = ({ stats, className }
           <CheckCircle className="h-4 w-4 text-green-500" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{stats.totalLessonsCompleted}</div>
-          <CardDescription className="text-xs">Total lessons finished</CardDescription>
+          <div className="text-2xl font-bold">{stats.coursesCompleted}</div>
+          <CardDescription className="text-xs">Total courses finished</CardDescription>
         </CardContent>
       </Card>
 
@@ -67,15 +70,15 @@ export const ProgressStats: React.FC<ProgressStatsProps> = ({ stats, className }
         </CardContent>
       </Card>
 
-      {/* Courses In Progress */}
+      {/* Programs Enrolled */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">In Progress</CardTitle>
+          <CardTitle className="text-sm font-medium">Programs</CardTitle>
           <TrendingUp className="h-4 w-4 text-purple-500" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{stats.coursesInProgress}</div>
-          <CardDescription className="text-xs">Active courses</CardDescription>
+          <div className="text-2xl font-bold">{stats.programsEnrolled}</div>
+          <CardDescription className="text-xs">Programs enrolled</CardDescription>
         </CardContent>
       </Card>
 
@@ -135,7 +138,7 @@ export const DetailedProgressStats: React.FC<DetailedProgressStatsProps> = ({
               <CheckCircle className="h-4 w-4" />
               <span>Lessons Completed</span>
             </div>
-            <p className="text-3xl font-bold">{stats.totalLessonsCompleted}</p>
+            <p className="text-3xl font-bold">{stats.coursesCompleted}</p>
           </div>
 
           <div className="space-y-2">
@@ -170,7 +173,7 @@ export const DetailedProgressStats: React.FC<DetailedProgressStatsProps> = ({
               <TrendingUp className="h-4 w-4" />
               <span>Active Courses</span>
             </div>
-            <span className="text-lg font-semibold">{stats.coursesInProgress}</span>
+            <span className="text-lg font-semibold">{stats.coursesEnrolled - stats.coursesCompleted}</span>
           </div>
 
           <div className="flex items-center justify-between">

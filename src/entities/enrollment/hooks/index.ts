@@ -5,11 +5,16 @@
 export {
   useEnrollments,
   useEnrollment,
-  useEnrollmentByCourse,
-  useCheckEnrollment,
-  useEnrollmentStats,
-  useEnroll,
-  useUnenroll,
+  useMyEnrollments,
+  useEnrollmentStatus,
+  useProgramEnrollments,
+  useCourseEnrollments,
+  useClassEnrollments,
+  useEnrollInProgram,
+  useEnrollInCourse,
+  useEnrollInClass,
   useUpdateEnrollmentStatus,
-  ENROLLMENT_KEYS,
+  useWithdraw,
 } from './useEnrollments';
+
+export { enrollmentKeys } from '../model/enrollmentKeys';

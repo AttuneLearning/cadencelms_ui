@@ -1,15 +1,16 @@
 /**
  * Progress hooks exports
+ * Based on progress.contract.ts v1.0.0
  */
 
 export {
-  useLessonProgress,
+  useProgramProgress,
   useCourseProgress,
-  useProgressStats,
-  useBatchProgress,
+  useClassProgress,
+  useLearnerProgress,
+  useLearnerProgramProgress,
   useUpdateProgress,
-  useStartLesson,
-  useCompleteLesson,
-  useResetProgress,
+  useProgressSummary,
+  useDetailedProgressReport,
   PROGRESS_KEYS,
 } from './useProgress';
