@@ -10,6 +10,8 @@ import {
   updateCourseSegment,
   deleteCourseSegment,
   reorderCourseSegments,
+  linkContentToModule,
+  type LinkContentToModulePayload,
 } from '../api/courseSegmentApi';
 import { courseSegmentKeys } from '../model/courseSegmentKeys';
 import type {
@@ -144,6 +146,33 @@ export function useReorderCourseSegments() {
       });
       queryClient.invalidateQueries({
         queryKey: courseSegmentKeys.lists(),
+      });
+    },
+  });
+}
+
+/**
+ * Hook to link content to a course module
+ */
+export function useLinkContentToModule() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      courseId,
+      moduleId,
+      payload,
+    }: {
+      courseId: string;
+      moduleId: string;
+      payload: LinkContentToModulePayload;
+    }) => linkContentToModule(courseId, moduleId, payload),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: courseSegmentKeys.detail(variables.courseId, variables.moduleId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: courseSegmentKeys.list(variables.courseId),
       });
     },
   });

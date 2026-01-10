@@ -39,6 +39,7 @@ import {
   type ContentListItem,
 } from '@/entities/content';
 import { useDepartments } from '@/entities/department';
+import { useLinkContentToModule } from '@/entities/course-segment';
 
 type TabValue = 'scorm' | 'media' | 'document' | 'library';
 
@@ -97,6 +98,9 @@ export const ContentUploaderPage: React.FC = () => {
 
   // Fetch departments
   const { data: departmentsData } = useDepartments({ limit: 1000 });
+
+  // Link content mutation
+  const linkContent = useLinkContentToModule();
 
   // Upload mutations
   const uploadScorm = useUploadScormPackage({
@@ -375,19 +379,49 @@ export const ContentUploaderPage: React.FC = () => {
       return;
     }
 
-    // TODO: Implement API call to link content to module
-    toast({
-      title: 'Content linked',
-      description: `${selectedContent.title} has been linked to the module.`,
-    });
-
-    // Navigate back to course/module
-    if (courseId) {
-      navigate(`/staff/courses/${courseId}`);
+    if (!courseId) {
+      toast({
+        title: 'No course specified',
+        description: 'Course ID is required to link content.',
+        variant: 'destructive',
+      });
+      return;
     }
+
+    linkContent.mutate(
+      {
+        courseId,
+        moduleId,
+        payload: {
+          contentId: selectedContent.id,
+          contentType: selectedContent.type as 'scorm' | 'video' | 'document' | 'audio' | 'image',
+        },
+      },
+      {
+        onSuccess: () => {
+          toast({
+            title: 'Content linked',
+            description: `${selectedContent.title} has been successfully linked to the module.`,
+          });
+
+          // Navigate back to course/module
+          if (courseId) {
+            navigate(`/staff/courses/${courseId}`);
+          }
+        },
+        onError: (error: any) => {
+          toast({
+            title: 'Failed to link content',
+            description: error.message || 'An error occurred while linking the content.',
+            variant: 'destructive',
+          });
+        },
+      }
+    );
   };
 
   const isUploading = uploadScorm.isPending || uploadMedia.isPending;
+  const isLinking = linkContent.isPending;
 
   return (
     <div className="container mx-auto p-6 max-w-6xl space-y-6">
@@ -807,8 +841,15 @@ export const ContentUploaderPage: React.FC = () => {
                       </div>
                     </div>
                     {moduleId && (
-                      <Button onClick={handleLinkToModule} size="sm">
-                        Link to Module
+                      <Button onClick={handleLinkToModule} size="sm" disabled={isLinking}>
+                        {isLinking ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Linking...
+                          </>
+                        ) : (
+                          'Link to Module'
+                        )}
                       </Button>
                     )}
                   </div>

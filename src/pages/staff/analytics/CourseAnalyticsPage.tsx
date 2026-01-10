@@ -10,6 +10,7 @@ import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
+import { useToast } from '@/shared/ui/use-toast';
 import {
   Users,
   TrendingUp,
@@ -17,7 +18,9 @@ import {
   Clock,
   Download,
   BarChart3,
+  Loader2,
 } from 'lucide-react';
+import { exportAnalyticsReport, type AnalyticsExportData } from '@/shared/utils/exportUtils';
 
 // Mock data - Replace with actual API calls
 const mockCourses = [
@@ -61,10 +64,62 @@ const mockTimeSpentData = [
 export const CourseAnalyticsPage: React.FC = () => {
   const [selectedCourse, setSelectedCourse] = useState('1');
   const [timeRange, setTimeRange] = useState('6months');
+  const [isExporting, setIsExporting] = useState(false);
+  const { toast } = useToast();
 
-  const handleExportReport = (format: 'pdf' | 'csv' | 'excel') => {
-    console.log(`Exporting report in ${format} format...`);
-    // TODO: Implement actual export functionality
+  const handleExportReport = async (format: 'pdf' | 'csv' | 'excel') => {
+    setIsExporting(true);
+
+    try {
+      // Get selected course name
+      const course = mockCourses.find(c => c.id === selectedCourse);
+
+      // Prepare analytics data for export
+      const analyticsData: AnalyticsExportData = {
+        courseTitle: course?.name || 'Course Analytics',
+        timeRange: getTimeRangeLabel(timeRange),
+        metrics: {
+          totalEnrollments: 198,
+          completionRate: '68%',
+          averageScore: '82.5',
+          avgTimeSpent: '4.2h',
+        },
+        enrollmentTrends: mockEnrollmentTrends,
+        completionData: mockCompletionData.map(item => ({
+          status: item.name,
+          count: item.value,
+          percentage: `${item.value}%`,
+        })),
+        scoreDistribution: mockScoreDistribution,
+      };
+
+      // Export the report
+      exportAnalyticsReport(analyticsData, format);
+
+      toast({
+        title: 'Export successful',
+        description: `Analytics report has been exported as ${format.toUpperCase()}.`,
+      });
+    } catch (error) {
+      toast({
+        title: 'Export failed',
+        description: 'Failed to export analytics report. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const getTimeRangeLabel = (range: string): string => {
+    const labels: Record<string, string> = {
+      '7days': 'Last 7 Days',
+      '30days': 'Last 30 Days',
+      '3months': 'Last 3 Months',
+      '6months': 'Last 6 Months',
+      '1year': 'Last Year',
+    };
+    return labels[range] || range;
   };
 
   return (
@@ -78,16 +133,40 @@ export const CourseAnalyticsPage: React.FC = () => {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => handleExportReport('pdf')}>
-            <Download className="mr-2 h-4 w-4" />
+          <Button
+            variant="outline"
+            onClick={() => handleExportReport('pdf')}
+            disabled={isExporting}
+          >
+            {isExporting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Download className="mr-2 h-4 w-4" />
+            )}
             Export PDF
           </Button>
-          <Button variant="outline" onClick={() => handleExportReport('csv')}>
-            <Download className="mr-2 h-4 w-4" />
+          <Button
+            variant="outline"
+            onClick={() => handleExportReport('csv')}
+            disabled={isExporting}
+          >
+            {isExporting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Download className="mr-2 h-4 w-4" />
+            )}
             Export CSV
           </Button>
-          <Button variant="outline" onClick={() => handleExportReport('excel')}>
-            <Download className="mr-2 h-4 w-4" />
+          <Button
+            variant="outline"
+            onClick={() => handleExportReport('excel')}
+            disabled={isExporting}
+          >
+            {isExporting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Download className="mr-2 h-4 w-4" />
+            )}
             Export Excel
           </Button>
         </div>

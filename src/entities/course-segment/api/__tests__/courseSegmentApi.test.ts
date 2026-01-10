@@ -13,6 +13,7 @@ import {
   updateCourseSegment,
   deleteCourseSegment,
   reorderCourseSegments,
+  linkContentToModule,
 } from '../courseSegmentApi';
 import type {
   CourseSegmentsListResponse,
@@ -720,6 +721,125 @@ describe('courseSegmentApi', () => {
       );
 
       await expect(reorderCourseSegments(courseId, { moduleIds })).rejects.toThrow();
+    });
+  });
+
+  describe('linkContentToModule', () => {
+    it('should successfully link content to module', async () => {
+      const contentId = 'content-123';
+      const mockResponse = {
+        moduleId,
+        contentId,
+        contentType: 'scorm',
+        linkedAt: new Date().toISOString(),
+        message: 'Content linked successfully',
+      };
+
+      let capturedRequestBody: any = null;
+
+      server.use(
+        http.post(
+          `${baseUrl}/courses/${courseId}/modules/${moduleId}/link-content`,
+          async ({ request }) => {
+            capturedRequestBody = await request.json();
+            return HttpResponse.json({ data: mockResponse });
+          }
+        )
+      );
+
+      const result = await linkContentToModule(courseId, moduleId, { contentId });
+
+      expect(result).toEqual(mockResponse);
+      expect(capturedRequestBody.contentId).toBe(contentId);
+      expect(result.moduleId).toBe(moduleId);
+    });
+
+    it('should link content with specified content type', async () => {
+      const contentId = 'video-456';
+      const contentType = 'video';
+      const mockResponse = {
+        moduleId,
+        contentId,
+        contentType,
+        linkedAt: new Date().toISOString(),
+        message: 'Video linked successfully',
+      };
+
+      server.use(
+        http.post(
+          `${baseUrl}/courses/${courseId}/modules/${moduleId}/link-content`,
+          () => {
+            return HttpResponse.json({ data: mockResponse });
+          }
+        )
+      );
+
+      const result = await linkContentToModule(courseId, moduleId, {
+        contentId,
+        contentType,
+      });
+
+      expect(result.contentType).toBe(contentType);
+    });
+
+    it('should handle content not found error', async () => {
+      const contentId = 'invalid-content';
+
+      server.use(
+        http.post(
+          `${baseUrl}/courses/${courseId}/modules/${moduleId}/link-content`,
+          () => {
+            return HttpResponse.json(
+              { message: 'Content not found' },
+              { status: 404 }
+            );
+          }
+        )
+      );
+
+      await expect(
+        linkContentToModule(courseId, moduleId, { contentId })
+      ).rejects.toThrow();
+    });
+
+    it('should handle module not found error', async () => {
+      const contentId = 'content-123';
+
+      server.use(
+        http.post(
+          `${baseUrl}/courses/${courseId}/modules/${moduleId}/link-content`,
+          () => {
+            return HttpResponse.json(
+              { message: 'Module not found' },
+              { status: 404 }
+            );
+          }
+        )
+      );
+
+      await expect(
+        linkContentToModule(courseId, moduleId, { contentId })
+      ).rejects.toThrow();
+    });
+
+    it('should handle already linked error', async () => {
+      const contentId = 'content-123';
+
+      server.use(
+        http.post(
+          `${baseUrl}/courses/${courseId}/modules/${moduleId}/link-content`,
+          () => {
+            return HttpResponse.json(
+              { message: 'Content already linked to this module' },
+              { status: 409 }
+            );
+          }
+        )
+      );
+
+      await expect(
+        linkContentToModule(courseId, moduleId, { contentId })
+      ).rejects.toThrow();
     });
   });
 });

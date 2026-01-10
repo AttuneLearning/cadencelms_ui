@@ -192,4 +192,20 @@ export const endpoints = {
     setDefault: (id: string) => `/report-templates/${id}/set-default`,
     toggleShared: (id: string) => `/report-templates/${id}/toggle-shared`,
   },
+
+  settings: {
+    get: '/settings',
+    updateGeneral: '/settings/general',
+    updateEmail: '/settings/email',
+    updateNotifications: '/settings/notifications',
+    updateSecurity: '/settings/security',
+    updateAppearance: '/settings/appearance',
+    testEmail: '/settings/email/test',
+  },
+
+  auditLogs: {
+    list: '/audit-logs',
+    byId: (id: string) => `/audit-logs/${id}`,
+    export: '/audit-logs/export',
+  },
 } as const;

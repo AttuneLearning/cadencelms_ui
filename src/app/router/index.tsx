@@ -44,6 +44,15 @@ import { AcademicYearManagementPage } from '@/pages/admin/academic-years/Academi
 import { CertificateTemplateManagementPage } from '@/pages/admin/certificates/CertificateTemplateManagementPage';
 import { ReportBuilderPage } from '@/pages/admin/reports/ReportBuilderPage';
 import { ReportTemplatesPage, ReportViewerPage } from '@/pages/admin/reports';
+import {
+  SettingsDashboardPage,
+  GeneralSettingsPage,
+  EmailSettingsPage,
+  NotificationSettingsPage,
+  SecuritySettingsPage,
+  AppearanceSettingsPage,
+} from '@/pages/admin/settings';
+import { AuditLogsPage, AuditLogDetailPage } from '@/pages/admin/audit-logs';
 
 // Profile page
 import { ProfilePage } from '@/pages/profile/ProfilePage';
@@ -519,6 +528,70 @@ export function AppRouter() {
         element={
           <ProtectedRoute roles={['global-admin']}>
             <ReportViewerPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/audit-logs"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <AuditLogsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/audit-logs/:logId"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <AuditLogDetailPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/settings"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <SettingsDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/settings/general"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <GeneralSettingsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/settings/email"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <EmailSettingsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/settings/notifications"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <NotificationSettingsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/settings/security"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <SecuritySettingsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/settings/appearance"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <AppearanceSettingsPage />
           </ProtectedRoute>
         }
       />

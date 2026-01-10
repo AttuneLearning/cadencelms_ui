@@ -39,6 +39,9 @@ export {
   updateCourseSegment,
   deleteCourseSegment,
   reorderCourseSegments,
+  linkContentToModule,
+  type LinkContentToModulePayload,
+  type LinkContentToModuleResponse,
 } from './api/courseSegmentApi';
 
 // Query Keys
@@ -52,6 +55,7 @@ export {
   useUpdateCourseSegment,
   useDeleteCourseSegment,
   useReorderCourseSegments,
+  useLinkContentToModule,
 } from './hooks/useCourseSegments';
 
 // UI Components

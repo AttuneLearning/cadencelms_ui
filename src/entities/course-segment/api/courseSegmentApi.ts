@@ -101,3 +101,31 @@ export async function reorderCourseSegments(
   );
   return response.data.data;
 }
+
+/**
+ * Link content to a course module
+ */
+export interface LinkContentToModulePayload {
+  contentId: string;
+  contentType?: 'scorm' | 'video' | 'document' | 'audio' | 'image';
+}
+
+export interface LinkContentToModuleResponse {
+  moduleId: string;
+  contentId: string;
+  contentType: string;
+  linkedAt: string;
+  message: string;
+}
+
+export async function linkContentToModule(
+  courseId: string,
+  moduleId: string,
+  payload: LinkContentToModulePayload
+): Promise<LinkContentToModuleResponse> {
+  const response = await client.post<ApiResponse<LinkContentToModuleResponse>>(
+    `${endpoints.courseSegments.byId(courseId, moduleId)}/link-content`,
+    payload
+  );
+  return response.data.data;
+}

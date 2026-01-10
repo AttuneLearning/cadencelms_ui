@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
 import { Progress } from '@/shared/ui/progress';
+import { useToast } from '@/shared/ui/use-toast';
 import {
   Dialog,
   DialogContent,
@@ -18,7 +19,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/ui/dialog';
-import { Search, Filter, Download, User, BookOpen, TrendingUp, Clock } from 'lucide-react';
+import { Search, Filter, Download, User, BookOpen, TrendingUp, Clock, Loader2 } from 'lucide-react';
+import { useExportStudentProgress } from '@/entities/student';
 
 // Mock data - Replace with actual API calls
 const mockCourses = [
@@ -161,6 +163,10 @@ export const StudentProgressPage: React.FC = () => {
   const [selectedCourse, setSelectedCourse] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedStudent, setSelectedStudent] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const { toast } = useToast();
+
+  const exportProgress = useExportStudentProgress();
 
   // Filter students based on search and filters
   const filteredStudents = useMemo(() => {
@@ -181,9 +187,42 @@ export const StudentProgressPage: React.FC = () => {
     setSelectedStudent(student.id);
   };
 
-  const handleExportData = () => {
-    console.log('Exporting student data...');
-    // TODO: Implement actual export functionality
+  const handleExportData = async () => {
+    setIsExporting(true);
+
+    try {
+      const filters: any = {};
+      if (selectedCourse !== 'all') {
+        filters.courseId = selectedCourse;
+      }
+      if (selectedStatus !== 'all') {
+        filters.status = selectedStatus;
+      }
+
+      const result = await exportProgress.mutateAsync({
+        format: 'excel',
+        filters,
+        includeDetails: true,
+      });
+
+      // Download the file from the URL
+      if (result.downloadUrl) {
+        window.open(result.downloadUrl, '_blank');
+
+        toast({
+          title: 'Export successful',
+          description: `Exported ${result.recordCount} student records. File: ${result.filename}`,
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: 'Export failed',
+        description: error.message || 'Failed to export student progress data.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const studentDetails = selectedStudent ? getStudentDetails(selectedStudent) : null;
@@ -198,9 +237,18 @@ export const StudentProgressPage: React.FC = () => {
             Monitor and manage individual student progress
           </p>
         </div>
-        <Button onClick={handleExportData}>
-          <Download className="mr-2 h-4 w-4" />
-          Export Data
+        <Button onClick={handleExportData} disabled={isExporting}>
+          {isExporting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Exporting...
+            </>
+          ) : (
+            <>
+              <Download className="mr-2 h-4 w-4" />
+              Export Data
+            </>
+          )}
         </Button>
       </div>
 

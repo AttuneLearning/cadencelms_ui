@@ -51,8 +51,10 @@ import {
   useClassRoster,
   useClassEnrollments,
   useDropLearner,
+  useEnrollLearners,
   ClassForm,
 } from '@/entities/class';
+import { useLearnerList } from '@/entities/learner';
 import {
   MoreHorizontal,
   Plus,
@@ -61,6 +63,7 @@ import {
   Users,
   UserPlus,
   UserMinus,
+  Loader2,
 } from 'lucide-react';
 
 export const ClassManagementPage: React.FC = () => {
@@ -75,6 +78,9 @@ export const ClassManagementPage: React.FC = () => {
   const [enrollmentClassId, setEnrollmentClassId] = React.useState<string | null>(null);
   const [learnerToDropId, setLearnerToDropId] = React.useState<string | null>(null);
   const [enrollmentIdToDrop, setEnrollmentIdToDrop] = React.useState<string | null>(null);
+  const [isAddLearnersDialogOpen, setIsAddLearnersDialogOpen] = React.useState(false);
+  const [selectedLearners, setSelectedLearners] = React.useState<string[]>([]);
+  const [learnerSearchQuery, setLearnerSearchQuery] = React.useState('');
 
   // Filters state
   const [filters, setFilters] = React.useState({
@@ -119,6 +125,15 @@ export const ClassManagementPage: React.FC = () => {
 
   // Drop learner mutation
   const dropMutation = useDropLearner();
+
+  // Enroll learners mutation
+  const enrollMutation = useEnrollLearners();
+
+  // Fetch all learners for enrollment dialog
+  const { data: learnersData } = useLearnerList({
+    pageSize: 1000,
+    filters: learnerSearchQuery ? { search: learnerSearchQuery } : undefined,
+  });
 
   const handleDelete = (id: string) => {
     setClassToDelete(id);
@@ -246,6 +261,53 @@ export const ClassManagementPage: React.FC = () => {
         }
       );
     }
+  };
+
+  const handleAddLearners = () => {
+    if (!enrollmentClassId || selectedLearners.length === 0) {
+      toast({
+        title: 'No learners selected',
+        description: 'Please select at least one learner to enroll.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    enrollMutation.mutate(
+      {
+        id: enrollmentClassId,
+        payload: {
+          learnerIds: selectedLearners,
+          enrollmentDate: new Date().toISOString(),
+        },
+      },
+      {
+        onSuccess: (result) => {
+          toast({
+            title: 'Learners enrolled',
+            description: `Successfully enrolled ${result.successCount} learner(s) in the class.`,
+          });
+          setIsAddLearnersDialogOpen(false);
+          setSelectedLearners([]);
+          setLearnerSearchQuery('');
+        },
+        onError: (error: any) => {
+          toast({
+            title: 'Enrollment failed',
+            description: error.message || 'Failed to enroll learners. Please try again.',
+            variant: 'destructive',
+          });
+        },
+      }
+    );
+  };
+
+  const handleLearnerToggle = (learnerId: string) => {
+    setSelectedLearners((prev) =>
+      prev.includes(learnerId)
+        ? prev.filter((id) => id !== learnerId)
+        : [...prev, learnerId]
+    );
   };
 
   // Define columns
@@ -616,7 +678,7 @@ export const ClassManagementPage: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              <Button onClick={() => toast({ title: 'Feature coming soon' })}>
+              <Button onClick={() => setIsAddLearnersDialogOpen(true)}>
                 <UserPlus className="mr-2 h-4 w-4" />
                 Add Learners
               </Button>
@@ -702,6 +764,123 @@ export const ClassManagementPage: React.FC = () => {
         isDestructive
         isLoading={dropMutation.isPending}
       />
+
+      {/* Add Learners Dialog */}
+      <Dialog
+        open={isAddLearnersDialogOpen}
+        onOpenChange={(open) => {
+          setIsAddLearnersDialogOpen(open);
+          if (!open) {
+            setSelectedLearners([]);
+            setLearnerSearchQuery('');
+          }
+        }}
+      >
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Add Learners to Class</DialogTitle>
+            <DialogDescription>
+              Select learners to enroll in this class. Already enrolled learners are filtered out.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {/* Search */}
+            <div>
+              <Label htmlFor="learner-search">Search Learners</Label>
+              <Input
+                id="learner-search"
+                placeholder="Search by name or email..."
+                value={learnerSearchQuery}
+                onChange={(e) => setLearnerSearchQuery(e.target.value)}
+              />
+            </div>
+
+            {/* Selected count */}
+            {selectedLearners.length > 0 && (
+              <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+                <p className="text-sm font-medium">
+                  {selectedLearners.length} learner(s) selected
+                </p>
+              </div>
+            )}
+
+            {/* Learners list */}
+            <div className="border rounded-md max-h-[400px] overflow-y-auto">
+              {learnersData?.learners && learnersData.learners.length > 0 ? (
+                <div className="divide-y">
+                  {learnersData.learners
+                    .filter((learner) => {
+                      // Filter out already enrolled learners
+                      const isEnrolled = enrollmentsData?.enrollments.some(
+                        (enrollment: ClassEnrollment) => enrollment.learner.id === learner.id
+                      );
+                      return !isEnrolled;
+                    })
+                    .map((learner) => (
+                      <div
+                        key={learner.id}
+                        className="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer"
+                        onClick={() => handleLearnerToggle(learner.id)}
+                      >
+                        <Checkbox
+                          checked={selectedLearners.includes(learner.id)}
+                          onCheckedChange={() => handleLearnerToggle(learner.id)}
+                        />
+                        <div className="flex-1">
+                          <p className="font-medium text-sm">
+                            {learner.firstName} {learner.lastName}
+                          </p>
+                          <p className="text-xs text-muted-foreground">{learner.email}</p>
+                          {learner.studentId && (
+                            <p className="text-xs text-muted-foreground">
+                              ID: {learner.studentId}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              ) : (
+                <div className="p-8 text-center text-muted-foreground">
+                  {learnerSearchQuery
+                    ? 'No learners found matching your search.'
+                    : 'No learners available to enroll.'}
+                </div>
+              )}
+            </div>
+
+            {/* Actions */}
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsAddLearnersDialogOpen(false);
+                  setSelectedLearners([]);
+                  setLearnerSearchQuery('');
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleAddLearners}
+                disabled={selectedLearners.length === 0 || enrollMutation.isPending}
+              >
+                {enrollMutation.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Enrolling...
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Enroll {selectedLearners.length > 0 && `(${selectedLearners.length})`}
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

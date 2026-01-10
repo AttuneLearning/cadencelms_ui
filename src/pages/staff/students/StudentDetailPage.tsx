@@ -3,11 +3,12 @@
  * Comprehensive view of a single student's progress and performance
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLearnerProgress } from '@/entities/progress/hooks/useProgress';
 import { AppLayout } from '@/widgets/layout';
 import { Button } from '@/shared/ui/button';
+import { useToast } from '@/shared/ui/use-toast';
 import { ArrowLeft } from 'lucide-react';
 import {
   StudentDetailView,
@@ -16,12 +17,25 @@ import {
   ActivityTimeline,
 } from '@/features/progress/ui';
 import type { ProgressDataPoint } from '@/features/progress/ui';
+import {
+  useSendMessageToStudent,
+  useResetExamAttempt,
+  useExtendEnrollmentDeadline,
+  useManualCompleteEnrollment,
+} from '@/entities/student';
 
 export const StudentDetailPage: React.FC = () => {
   const { studentId } = useParams<{ studentId: string }>();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const { data: studentData, isLoading, error } = useLearnerProgress(studentId || '');
+
+  // Mutation hooks
+  const sendMessage = useSendMessageToStudent();
+  const resetQuiz = useResetExamAttempt();
+  const extendDeadline = useExtendEnrollmentDeadline();
+  const manualComplete = useManualCompleteEnrollment();
 
   // Transform data for progress chart
   const progressChartData: ProgressDataPoint[] = React.useMemo(() => {
@@ -74,24 +88,109 @@ export const StudentDetailPage: React.FC = () => {
   };
 
   // Handler functions for intervention tools
-  const handleSendMessage = async (studentId: string, message: string) => {
-    console.log('Send message to', studentId, ':', message);
-    // TODO: Implement actual message sending
+  const handleSendMessage = async (currentStudentId: string, message: string) => {
+    sendMessage.mutate(
+      {
+        studentId: currentStudentId,
+        subject: 'Message from Staff',
+        message,
+      },
+      {
+        onSuccess: () => {
+          toast({
+            title: 'Message sent',
+            description: 'Your message has been sent to the student successfully.',
+          });
+        },
+        onError: (error: any) => {
+          toast({
+            title: 'Failed to send message',
+            description: error.message || 'An error occurred while sending the message.',
+            variant: 'destructive',
+          });
+        },
+      }
+    );
   };
 
   const handleResetQuiz = async (attemptId: string) => {
-    console.log('Reset quiz attempt:', attemptId);
-    // TODO: Implement quiz reset using useResetExamAttempt hook
+    const enrollmentId = studentData?.courseProgress[0]?.courseId || '';
+    const examId = attemptId;
+
+    resetQuiz.mutate(
+      {
+        enrollmentId,
+        examId,
+        reason: 'Reset by staff member',
+      },
+      {
+        onSuccess: () => {
+          toast({
+            title: 'Quiz reset',
+            description: 'The quiz attempt has been reset successfully.',
+          });
+        },
+        onError: (error: any) => {
+          toast({
+            title: 'Failed to reset quiz',
+            description: error.message || 'An error occurred while resetting the quiz.',
+            variant: 'destructive',
+          });
+        },
+      }
+    );
   };
 
   const handleExtendDeadline = async (enrollmentId: string, days: number) => {
-    console.log('Extend deadline for', enrollmentId, 'by', days, 'days');
-    // TODO: Implement deadline extension
+    const newDeadline = new Date();
+    newDeadline.setDate(newDeadline.getDate() + days);
+
+    extendDeadline.mutate(
+      {
+        enrollmentId,
+        newDeadline: newDeadline.toISOString(),
+        reason: `Extended by ${days} days`,
+      },
+      {
+        onSuccess: () => {
+          toast({
+            title: 'Deadline extended',
+            description: `The deadline has been extended by ${days} days.`,
+          });
+        },
+        onError: (error: any) => {
+          toast({
+            title: 'Failed to extend deadline',
+            description: error.message || 'An error occurred while extending the deadline.',
+            variant: 'destructive',
+          });
+        },
+      }
+    );
   };
 
   const handleManualOverride = async (enrollmentId: string, reason: string) => {
-    console.log('Manual override for', enrollmentId, ':', reason);
-    // TODO: Implement manual completion override
+    manualComplete.mutate(
+      {
+        enrollmentId,
+        reason,
+      },
+      {
+        onSuccess: () => {
+          toast({
+            title: 'Enrollment completed',
+            description: 'The enrollment has been manually marked as complete.',
+          });
+        },
+        onError: (error: any) => {
+          toast({
+            title: 'Failed to complete enrollment',
+            description: error.message || 'An error occurred while completing the enrollment.',
+            variant: 'destructive',
+          });
+        },
+      }
+    );
   };
 
   return (
