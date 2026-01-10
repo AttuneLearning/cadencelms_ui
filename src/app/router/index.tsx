@@ -36,11 +36,10 @@ import { ContentManagementPage } from '@/pages/admin/content';
 import { TemplateManagementPage } from '@/pages/admin/templates';
 import { ExerciseManagementPage } from '@/pages/admin/exercises';
 import { QuestionBankPage } from '@/pages/admin/questions';
-// TODO: Uncomment when these pages are implemented
-// import { StaffManagementPage } from '@/pages/admin/staff/StaffManagementPage';
-// import { LearnerManagementPage } from '@/pages/admin/learners/LearnerManagementPage';
-// import { DepartmentManagementPage } from '@/pages/admin/departments/DepartmentManagementPage';
-// import { AcademicYearManagementPage } from '@/pages/admin/academic-years/AcademicYearManagementPage';
+import { StaffManagementPage } from '@/pages/admin/staff/StaffManagementPage';
+import { LearnerManagementPage } from '@/pages/admin/learners/LearnerManagementPage';
+import { DepartmentManagementPage } from '@/pages/admin/departments/DepartmentManagementPage';
+import { AcademicYearManagementPage } from '@/pages/admin/academic-years/AcademicYearManagementPage';
 
 // Profile page
 import { ProfilePage } from '@/pages/profile/ProfilePage';
@@ -410,8 +409,15 @@ export function AppRouter() {
           </ProtectedRoute>
         }
       />
-      {/* TODO: Uncomment when these pages are implemented */}
-      {/* <Route
+      <Route
+        path="/admin/departments"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <DepartmentManagementPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/admin/staff"
         element={
           <ProtectedRoute roles={['global-admin']}>
@@ -428,21 +434,13 @@ export function AppRouter() {
         }
       />
       <Route
-        path="/admin/departments"
-        element={
-          <ProtectedRoute roles={['global-admin']}>
-            <DepartmentManagementPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
         path="/admin/academic-years"
         element={
           <ProtectedRoute roles={['global-admin']}>
             <AcademicYearManagementPage />
           </ProtectedRoute>
         }
-      /> */}
+      />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/404" replace />} />
