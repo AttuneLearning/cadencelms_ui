@@ -25,6 +25,7 @@ import { CoursePreviewPage } from '@/pages/staff/courses/CoursePreviewPage';
 import { ClassManagementPage as StaffClassManagementPage } from '@/pages/staff/classes/ClassManagementPage';
 import { ClassDetailsPage as StaffClassDetailsPage } from '@/pages/staff/classes/ClassDetailsPage';
 import { GradingPage, GradingDetailPage } from '@/pages/staff/grading';
+import { StaffReportsPage } from '@/pages/staff/reports';
 
 // Admin pages
 import { AdminDashboardPage } from '@/pages/admin/dashboard/AdminDashboardPage';
@@ -41,6 +42,8 @@ import { LearnerManagementPage } from '@/pages/admin/learners/LearnerManagementP
 import { DepartmentManagementPage } from '@/pages/admin/departments/DepartmentManagementPage';
 import { AcademicYearManagementPage } from '@/pages/admin/academic-years/AcademicYearManagementPage';
 import { CertificateTemplateManagementPage } from '@/pages/admin/certificates/CertificateTemplateManagementPage';
+import { ReportBuilderPage } from '@/pages/admin/reports/ReportBuilderPage';
+import { ReportTemplatesPage, ReportViewerPage } from '@/pages/admin/reports';
 
 // Profile page
 import { ProfilePage } from '@/pages/profile/ProfilePage';
@@ -365,6 +368,14 @@ export function AppRouter() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/staff/reports"
+        element={
+          <ProtectedRoute roles={['staff', 'global-admin']}>
+            <StaffReportsPage />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Admin-only routes */}
       <Route
@@ -484,6 +495,30 @@ export function AppRouter() {
         element={
           <ProtectedRoute roles={['global-admin']}>
             <CertificateTemplateManagementPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/reports"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <ReportBuilderPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/reports/templates"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <ReportTemplatesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/reports/:reportId"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <ReportViewerPage />
           </ProtectedRoute>
         }
       />

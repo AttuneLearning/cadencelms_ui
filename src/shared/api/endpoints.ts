@@ -174,4 +174,22 @@ export const endpoints = {
     update: (id: string) => `/certificate-templates/${id}`,
     delete: (id: string) => `/certificate-templates/${id}`,
   },
+
+  reports: {
+    list: '/reports',
+    byId: (id: string) => `/reports/${id}`,
+    create: '/reports',
+    delete: (id: string) => `/reports/${id}`,
+    download: (id: string, format: string) => `/reports/${id}/download?format=${format}`,
+  },
+
+  reportTemplates: {
+    list: '/report-templates',
+    byId: (id: string) => `/report-templates/${id}`,
+    create: '/report-templates',
+    update: (id: string) => `/report-templates/${id}`,
+    delete: (id: string) => `/report-templates/${id}`,
+    setDefault: (id: string) => `/report-templates/${id}/set-default`,
+    toggleShared: (id: string) => `/report-templates/${id}/toggle-shared`,
+  },
 } as const;
