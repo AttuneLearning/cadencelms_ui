@@ -497,4 +497,280 @@ describe('CertificatesPage', () => {
       );
     });
   });
+
+  describe('Certificate Actions', () => {
+    it('should navigate to certificate view page when clicking View Certificate', () => {
+      const mockEnrollments = [
+        {
+          id: 'enr-1',
+          type: 'course',
+          target: { id: 'c1', name: 'Test Course', code: 'TEST' },
+          status: 'completed',
+          completedAt: '2024-01-15T10:30:00Z',
+          enrolledAt: '2024-01-01T00:00:00Z',
+          progress: { percentage: 100, completedItems: 5, totalItems: 5 },
+          grade: { score: 90, letter: 'A-', passed: true },
+        },
+      ];
+
+      useMyEnrollments.mockReturnValue({
+        data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
+        isLoading: false,
+        error: null,
+      });
+
+      render(<CertificatesPage />, { wrapper: createWrapper() });
+
+      const viewButton = screen.getByRole('button', { name: /View Certificate/i });
+      expect(viewButton).toBeInTheDocument();
+    });
+
+    it('should have download button for each certificate', () => {
+      const mockEnrollments = [
+        {
+          id: 'enr-1',
+          type: 'course',
+          target: { id: 'c1', name: 'Test Course', code: 'TEST' },
+          status: 'completed',
+          completedAt: '2024-01-15T10:30:00Z',
+          enrolledAt: '2024-01-01T00:00:00Z',
+          progress: { percentage: 100, completedItems: 5, totalItems: 5 },
+          grade: { score: 90, letter: 'A-', passed: true },
+        },
+      ];
+
+      useMyEnrollments.mockReturnValue({
+        data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
+        isLoading: false,
+        error: null,
+      });
+
+      render(<CertificatesPage />, { wrapper: createWrapper() });
+
+      // Button with Download icon should be present (check by title attribute)
+      const buttons = screen.getAllByRole('button');
+      const downloadButton = buttons.find(btn => btn.getAttribute('title') === 'Download PDF');
+      expect(downloadButton).toBeInTheDocument();
+    });
+
+    it('should have share button for each certificate', () => {
+      const mockEnrollments = [
+        {
+          id: 'enr-1',
+          type: 'course',
+          target: { id: 'c1', name: 'Test Course', code: 'TEST' },
+          status: 'completed',
+          completedAt: '2024-01-15T10:30:00Z',
+          enrolledAt: '2024-01-01T00:00:00Z',
+          progress: { percentage: 100, completedItems: 5, totalItems: 5 },
+          grade: { score: 90, letter: 'A-', passed: true },
+        },
+      ];
+
+      useMyEnrollments.mockReturnValue({
+        data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
+        isLoading: false,
+        error: null,
+      });
+
+      render(<CertificatesPage />, { wrapper: createWrapper() });
+
+      // Button with Share icon should be present (check by title attribute)
+      const buttons = screen.getAllByRole('button');
+      const shareButton = buttons.find(btn => btn.getAttribute('title') === 'Share Certificate');
+      expect(shareButton).toBeInTheDocument();
+    });
+
+    it('should have verify button for each certificate', () => {
+      const mockEnrollments = [
+        {
+          id: 'enr-1',
+          type: 'course',
+          target: { id: 'c1', name: 'Test Course', code: 'TEST' },
+          status: 'completed',
+          completedAt: '2024-01-15T10:30:00Z',
+          enrolledAt: '2024-01-01T00:00:00Z',
+          progress: { percentage: 100, completedItems: 5, totalItems: 5 },
+          grade: { score: 90, letter: 'A-', passed: true },
+        },
+      ];
+
+      useMyEnrollments.mockReturnValue({
+        data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
+        isLoading: false,
+        error: null,
+      });
+
+      render(<CertificatesPage />, { wrapper: createWrapper() });
+
+      // Button with Verify icon should be present (check by title attribute)
+      const buttons = screen.getAllByRole('button');
+      const verifyButton = buttons.find(btn => btn.getAttribute('title') === 'Verify Certificate');
+      expect(verifyButton).toBeInTheDocument();
+    });
+  });
+
+  describe('Date Range Filter', () => {
+    it('should display date range filter inputs', () => {
+      useMyEnrollments.mockReturnValue({
+        data: { enrollments: [], pagination: { page: 1, total: 0 } },
+        isLoading: false,
+        error: null,
+      });
+
+      render(<CertificatesPage />, { wrapper: createWrapper() });
+
+      expect(screen.getByLabelText(/From Date/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/To Date/i)).toBeInTheDocument();
+    });
+
+    it('should filter certificates by date range', async () => {
+      const mockEnrollments = [
+        {
+          id: 'enr-1',
+          type: 'course',
+          target: { id: 'c1', name: 'Old Course', code: 'OLD' },
+          status: 'completed',
+          completedAt: '2023-01-15T10:30:00Z',
+          enrolledAt: '2023-01-01T00:00:00Z',
+          progress: { percentage: 100, completedItems: 5, totalItems: 5 },
+          grade: { score: 90, letter: 'A-', passed: true },
+        },
+        {
+          id: 'enr-2',
+          type: 'course',
+          target: { id: 'c2', name: 'New Course', code: 'NEW' },
+          status: 'completed',
+          completedAt: '2024-06-15T10:30:00Z',
+          enrolledAt: '2024-06-01T00:00:00Z',
+          progress: { percentage: 100, completedItems: 5, totalItems: 5 },
+          grade: { score: 95, letter: 'A', passed: true },
+        },
+      ];
+
+      useMyEnrollments.mockReturnValue({
+        data: { enrollments: mockEnrollments, pagination: { page: 1, total: 2 } },
+        isLoading: false,
+        error: null,
+      });
+
+      render(<CertificatesPage />, { wrapper: createWrapper() });
+
+      const fromDate = screen.getByLabelText(/From Date/i);
+      const toDate = screen.getByLabelText(/To Date/i);
+
+      fireEvent.change(fromDate, { target: { value: '2024-01-01' } });
+      fireEvent.change(toDate, { target: { value: '2024-12-31' } });
+
+      await waitFor(() => {
+        expect(screen.getByText('New Course')).toBeInTheDocument();
+        expect(screen.queryByText('Old Course')).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Pagination', () => {
+    it('should display pagination when multiple pages exist', () => {
+      useMyEnrollments.mockReturnValue({
+        data: {
+          enrollments: [
+            {
+              id: 'enr-1',
+              type: 'course',
+              target: { id: 'c1', name: 'Course 1', code: 'C1' },
+              status: 'completed',
+              completedAt: '2024-01-15T10:30:00Z',
+              enrolledAt: '2024-01-01T00:00:00Z',
+              progress: { percentage: 100, completedItems: 5, totalItems: 5 },
+              grade: { score: 90, letter: 'A-', passed: true },
+            },
+          ],
+          pagination: {
+            page: 1,
+            total: 25,
+            totalPages: 3,
+            hasNext: true,
+            hasPrev: false,
+            limit: 12,
+          },
+        },
+        isLoading: false,
+        error: null,
+      });
+
+      render(<CertificatesPage />, { wrapper: createWrapper() });
+
+      expect(screen.getByText(/Page 1 of 3/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Next/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Previous/i })).toBeInTheDocument();
+    });
+
+    it('should disable Previous button on first page', () => {
+      useMyEnrollments.mockReturnValue({
+        data: {
+          enrollments: [
+            {
+              id: 'enr-1',
+              type: 'course',
+              target: { id: 'c1', name: 'Course 1', code: 'C1' },
+              status: 'completed',
+              completedAt: '2024-01-15T10:30:00Z',
+              enrolledAt: '2024-01-01T00:00:00Z',
+              progress: { percentage: 100, completedItems: 5, totalItems: 5 },
+              grade: { score: 90, letter: 'A-', passed: true },
+            },
+          ],
+          pagination: {
+            page: 1,
+            total: 25,
+            totalPages: 3,
+            hasNext: true,
+            hasPrev: false,
+            limit: 12,
+          },
+        },
+        isLoading: false,
+        error: null,
+      });
+
+      render(<CertificatesPage />, { wrapper: createWrapper() });
+
+      const prevButton = screen.getByRole('button', { name: /Previous/i });
+      expect(prevButton).toBeDisabled();
+    });
+
+    it('should disable Next button on last page', () => {
+      useMyEnrollments.mockReturnValue({
+        data: {
+          enrollments: [
+            {
+              id: 'enr-1',
+              type: 'course',
+              target: { id: 'c1', name: 'Course 1', code: 'C1' },
+              status: 'completed',
+              completedAt: '2024-01-15T10:30:00Z',
+              enrolledAt: '2024-01-01T00:00:00Z',
+              progress: { percentage: 100, completedItems: 5, totalItems: 5 },
+              grade: { score: 90, letter: 'A-', passed: true },
+            },
+          ],
+          pagination: {
+            page: 3,
+            total: 25,
+            totalPages: 3,
+            hasNext: false,
+            hasPrev: true,
+            limit: 12,
+          },
+        },
+        isLoading: false,
+        error: null,
+      });
+
+      render(<CertificatesPage />, { wrapper: createWrapper() });
+
+      const nextButton = screen.getByRole('button', { name: /Next/i });
+      expect(nextButton).toBeDisabled();
+    });
+  });
 });

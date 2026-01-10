@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useMyEnrollments } from '@/entities/enrollment';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
@@ -19,7 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/ui/select';
-import { Award, Search as SearchIcon, Printer, Download, Calendar, Hash } from 'lucide-react';
+import { Award, Search as SearchIcon, Printer, Download, Calendar, Hash, Share2, ShieldCheck, Eye } from 'lucide-react';
+import { useToast } from '@/shared/ui/use-toast';
 import type { EnrollmentListItem } from '@/entities/enrollment';
 
 // Format date to readable string
@@ -44,15 +45,49 @@ interface CertificateCardProps {
 }
 
 const CertificateCard: React.FC<CertificateCardProps> = ({ enrollment }) => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
   const handleView = () => {
-    // Placeholder for view certificate functionality
-    console.log('View certificate:', enrollment.id);
+    navigate(`/learner/certificates/${enrollment.id}`);
+  };
+
+  const handleDownload = () => {
+    // Placeholder for download PDF functionality
+    toast({
+      title: 'Download Started',
+      description: 'Your certificate is being downloaded.',
+    });
   };
 
   const handlePrint = () => {
-    // Placeholder for print functionality
-    console.log('Print certificate:', enrollment.id);
-    window.print();
+    // Navigate to certificate view page which has print styling
+    navigate(`/learner/certificates/${enrollment.id}`);
+  };
+
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/learner/certificates/${enrollment.id}`;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast({
+        title: 'Link Copied',
+        description: 'Certificate link copied to clipboard.',
+      });
+    } catch (error) {
+      toast({
+        title: 'Failed to Copy',
+        description: 'Could not copy link to clipboard.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleVerify = () => {
+    // Placeholder for verify certificate functionality
+    toast({
+      title: 'Certificate Verified',
+      description: `Certificate ${formatCertificateId(enrollment.id)} is authentic and valid.`,
+    });
   };
 
   return (
@@ -96,22 +131,53 @@ const CertificateCard: React.FC<CertificateCardProps> = ({ enrollment }) => {
           )}
 
           {/* Action Buttons */}
-          <div className="flex gap-2 pt-2">
+          <div className="space-y-2 pt-2">
             <Button
               onClick={handleView}
-              className="flex-1"
+              className="w-full"
               variant="default"
             >
-              <Download className="h-4 w-4 mr-2" />
+              <Eye className="h-4 w-4 mr-2" />
               View Certificate
             </Button>
-            <Button
-              onClick={handlePrint}
-              variant="outline"
-              size="icon"
-            >
-              <Printer className="h-4 w-4" />
-            </Button>
+            <div className="grid grid-cols-4 gap-2">
+              <Button
+                onClick={handleDownload}
+                variant="outline"
+                size="sm"
+                title="Download PDF"
+              >
+                <Download className="h-4 w-4" />
+                <span className="sr-only">Download</span>
+              </Button>
+              <Button
+                onClick={handlePrint}
+                variant="outline"
+                size="sm"
+                title="Print Certificate"
+              >
+                <Printer className="h-4 w-4" />
+                <span className="sr-only">Print</span>
+              </Button>
+              <Button
+                onClick={handleShare}
+                variant="outline"
+                size="sm"
+                title="Share Certificate"
+              >
+                <Share2 className="h-4 w-4" />
+                <span className="sr-only">Share</span>
+              </Button>
+              <Button
+                onClick={handleVerify}
+                variant="outline"
+                size="sm"
+                title="Verify Certificate"
+              >
+                <ShieldCheck className="h-4 w-4" />
+                <span className="sr-only">Verify</span>
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>
@@ -123,6 +189,8 @@ export const CertificatesPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('completedAt:desc');
   const [currentPage, setCurrentPage] = useState(1);
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
 
   const { data, isLoading, error } = useMyEnrollments({
     status: 'completed',
@@ -135,15 +203,37 @@ export const CertificatesPage: React.FC = () => {
   const enrollments = data?.enrollments || [];
   const pagination = data?.pagination;
 
-  // Client-side filter for search
+  // Client-side filter for search and date range
   const filteredEnrollments = enrollments.filter((enrollment) => {
+    // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       const matchesTitle = enrollment.target.name.toLowerCase().includes(query);
       const matchesCode = enrollment.target.code.toLowerCase().includes(query);
       const matchesCertId = enrollment.id.toLowerCase().includes(query);
-      return matchesTitle || matchesCode || matchesCertId;
+      if (!matchesTitle && !matchesCode && !matchesCertId) {
+        return false;
+      }
     }
+
+    // Date range filter
+    if (fromDate || toDate) {
+      const completedDate = enrollment.completedAt ? new Date(enrollment.completedAt) : null;
+      if (!completedDate) return false;
+
+      if (fromDate) {
+        const from = new Date(fromDate);
+        from.setHours(0, 0, 0, 0);
+        if (completedDate < from) return false;
+      }
+
+      if (toDate) {
+        const to = new Date(toDate);
+        to.setHours(23, 59, 59, 999);
+        if (completedDate > to) return false;
+      }
+    }
+
     return true;
   });
 
@@ -168,34 +258,80 @@ export const CertificatesPage: React.FC = () => {
       </div>
 
       {/* Search and Sort */}
-      <div className="mb-6 flex flex-col sm:flex-row gap-4">
-        <div className="flex-1 relative">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="text"
-            placeholder="Search certificates by course name or code..."
-            value={searchQuery}
-            onChange={handleSearchChange}
-            className="pl-10"
-          />
+      <div className="mb-6 space-y-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1 relative">
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Search certificates by course name or code..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="pl-10"
+            />
+          </div>
+          <div className="sm:w-64">
+            <Label htmlFor="sort-select" className="sr-only">
+              Sort by
+            </Label>
+            <Select value={sortBy} onValueChange={handleSortChange}>
+              <SelectTrigger id="sort-select">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="completedAt:desc">Completion Date (Newest)</SelectItem>
+                <SelectItem value="completedAt:asc">Completion Date (Oldest)</SelectItem>
+                <SelectItem value="target.name:asc">Course Name (A-Z)</SelectItem>
+                <SelectItem value="target.name:desc">Course Name (Z-A)</SelectItem>
+                <SelectItem value="grade.score:desc">Grade (High to Low)</SelectItem>
+                <SelectItem value="grade.score:asc">Grade (Low to High)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-        <div className="sm:w-64">
-          <Label htmlFor="sort-select" className="sr-only">
-            Sort by
-          </Label>
-          <Select value={sortBy} onValueChange={handleSortChange}>
-            <SelectTrigger id="sort-select">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="completedAt:desc">Completion Date (Newest)</SelectItem>
-              <SelectItem value="completedAt:asc">Completion Date (Oldest)</SelectItem>
-              <SelectItem value="target.name:asc">Course Name (A-Z)</SelectItem>
-              <SelectItem value="target.name:desc">Course Name (Z-A)</SelectItem>
-              <SelectItem value="grade.score:desc">Grade (High to Low)</SelectItem>
-              <SelectItem value="grade.score:asc">Grade (Low to High)</SelectItem>
-            </SelectContent>
-          </Select>
+
+        {/* Date Range Filter */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1">
+            <Label htmlFor="from-date">From Date</Label>
+            <Input
+              id="from-date"
+              type="date"
+              value={fromDate}
+              onChange={(e) => {
+                setFromDate(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="mt-1"
+            />
+          </div>
+          <div className="flex-1">
+            <Label htmlFor="to-date">To Date</Label>
+            <Input
+              id="to-date"
+              type="date"
+              value={toDate}
+              onChange={(e) => {
+                setToDate(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="mt-1"
+            />
+          </div>
+          {(fromDate || toDate) && (
+            <div className="flex items-end">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setFromDate('');
+                  setToDate('');
+                  setCurrentPage(1);
+                }}
+              >
+                Clear Dates
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 

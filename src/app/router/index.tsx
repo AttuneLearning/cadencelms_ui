@@ -40,6 +40,7 @@ import { StaffManagementPage } from '@/pages/admin/staff/StaffManagementPage';
 import { LearnerManagementPage } from '@/pages/admin/learners/LearnerManagementPage';
 import { DepartmentManagementPage } from '@/pages/admin/departments/DepartmentManagementPage';
 import { AcademicYearManagementPage } from '@/pages/admin/academic-years/AcademicYearManagementPage';
+import { CertificateTemplateManagementPage } from '@/pages/admin/certificates/CertificateTemplateManagementPage';
 
 // Profile page
 import { ProfilePage } from '@/pages/profile/ProfilePage';
@@ -54,7 +55,7 @@ import { CourseDetailsPage } from '@/pages/learner/catalog/CourseDetailsPage';
 import { CoursePlayerPage } from '@/pages/learner/player/CoursePlayerPage';
 import { MyCoursesPage } from '@/pages/learner/courses/MyCoursesPage';
 import { MyLearningPage } from '@/pages/learner/learning';
-import { CertificatesPage } from '@/pages/learner/certificates';
+import { CertificatesPage, CertificateViewPage } from '@/pages/learner/certificates';
 
 // Unauthorized page component
 const UnauthorizedPage = () => (
@@ -209,12 +210,20 @@ export function AppRouter() {
           </ProtectedRoute>
         }
       />
-      {/* Certificates Route */}
+      {/* Certificates Routes */}
       <Route
         path="/learner/certificates"
         element={
           <ProtectedRoute roles={['learner']}>
             <CertificatesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/learner/certificates/:certificateId"
+        element={
+          <ProtectedRoute roles={['learner']}>
+            <CertificateViewPage />
           </ProtectedRoute>
         }
       />
@@ -467,6 +476,14 @@ export function AppRouter() {
         element={
           <ProtectedRoute roles={['global-admin']}>
             <AcademicYearManagementPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/certificates"
+        element={
+          <ProtectedRoute roles={['global-admin']}>
+            <CertificateTemplateManagementPage />
           </ProtectedRoute>
         }
       />

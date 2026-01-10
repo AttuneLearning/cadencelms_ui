@@ -158,4 +158,20 @@ export const endpoints = {
     grade: (id: string) => `/exam-attempts/${id}/grade`,
     byExam: (examId: string) => `/exam-attempts/exam/${examId}`,
   },
+
+  certificates: {
+    list: '/certificates',
+    byId: (id: string) => `/certificates/${id}`,
+    generate: '/certificates/generate',
+    pdf: (id: string) => `/certificates/${id}/pdf`,
+    verify: (code: string) => `/certificates/verify/${code}`,
+  },
+
+  certificateTemplates: {
+    list: '/certificate-templates',
+    byId: (id: string) => `/certificate-templates/${id}`,
+    create: '/certificate-templates',
+    update: (id: string) => `/certificate-templates/${id}`,
+    delete: (id: string) => `/certificate-templates/${id}`,
+  },
 } as const;
