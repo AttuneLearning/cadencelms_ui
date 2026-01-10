@@ -12,6 +12,7 @@ import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { useAuth } from '../model/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/shared/ui/use-toast';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -23,6 +24,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export const LoginForm: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [error, setError] = React.useState<string | null>(null);
 
   const {
@@ -39,6 +41,10 @@ export const LoginForm: React.FC = () => {
       console.log('[LoginForm] Attempting login with:', data.email);
       await login(data);
       console.log('[LoginForm] Login successful, navigating to dashboard');
+      toast({
+        title: 'Success',
+        description: 'Logged in successfully',
+      });
       navigate('/dashboard');
     } catch (err: any) {
       console.error('[LoginForm] Login error:', err);
@@ -55,6 +61,13 @@ export const LoginForm: React.FC = () => {
         'Invalid email or password';
       console.error('[LoginForm] Setting error message:', errorMessage);
       setError(errorMessage);
+
+      // Also show toast notification
+      toast({
+        title: 'Login Failed',
+        description: errorMessage,
+        variant: 'destructive',
+      });
     }
   };
 
