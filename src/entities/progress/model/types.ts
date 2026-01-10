@@ -456,3 +456,17 @@ export interface ApiResponse<T> {
 export interface ProgressQueryOptions {
   learnerId?: string;
 }
+
+/**
+ * Progress Statistics Summary
+ * Aggregated statistics for progress dashboard widgets
+ */
+export interface ProgressStats {
+  totalLessonsCompleted: number;
+  totalTimeSpent: number; // in seconds
+  averageScore: number; // 0-100
+  coursesInProgress: number;
+  coursesCompleted: number;
+  currentStreak: number; // days
+  longestStreak: number; // days
+}

@@ -153,3 +153,27 @@ export async function getDetailedProgressReport(
   );
   return response.data.data;
 }
+
+/**
+ * Progress API object for backward compatibility
+ * Groups all progress API functions for easier consumption
+ */
+export const progressApi = {
+  getProgramProgress,
+  getCourseProgress,
+  getClassProgress,
+  getLearnerProgress,
+  updateProgress,
+  getProgressSummary,
+  getDetailedProgressReport,
+  // Stub methods for features not yet implemented
+  startLesson: async (_courseId: string, _lessonId: string) => {
+    console.warn('progressApi.startLesson not yet implemented');
+  },
+  updateLessonProgress: async (_courseId: string, _lessonId: string, _data: any) => {
+    console.warn('progressApi.updateLessonProgress not yet implemented');
+  },
+  completeLesson: async (_courseId: string, _lessonId: string, _data: any) => {
+    console.warn('progressApi.completeLesson not yet implemented');
+  },
+};

@@ -5,7 +5,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { progressApi } from '@/entities/progress/api/progressApi';
-import type { ProgressUpdate } from '@/entities/progress/model/types';
+import type { UpdateProgressRequest as ProgressUpdate } from '@/entities/progress/model/types';
 
 interface UseProgressTrackerOptions {
   courseId: string;

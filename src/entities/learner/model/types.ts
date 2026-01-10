@@ -35,12 +35,22 @@ export interface Learner {
 
 export interface LearnerListItem {
   _id: string;
+  id?: string; // Alias for _id for backward compatibility
   firstName: string;
   lastName: string;
   phoneNumber?: string;
   isActive: boolean;
   email?: string;
   createdAt: string;
+  studentId?: string;
+  departmentId?: string;
+  department?: {
+    id: string;
+    name: string;
+  };
+  status?: 'active' | 'inactive' | 'graduated';
+  enrollmentCount?: number;
+  updatedAt?: string;
 }
 
 export interface LearnerFormData {
@@ -58,4 +68,18 @@ export interface LearnerFormData {
 export interface LearnerFilters {
   search?: string;
   isActive?: boolean;
+  department?: string;
+  status?: 'active' | 'inactive' | 'graduated';
+  page?: number;
+  limit?: number;
+}
+
+export interface LearnersListResponse {
+  learners: LearnerListItem[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }

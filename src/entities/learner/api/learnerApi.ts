@@ -5,7 +5,7 @@
 
 import { client } from '@/shared/api/client';
 import { endpoints } from '@/shared/api/endpoints';
-import type { Learner, LearnerListItem, LearnerFormData, LearnerFilters } from '../model/types';
+import type { Learner, LearnerListItem, LearnerFormData, LearnerFilters, LearnersListResponse } from '../model/types';
 import type { ApiResponse, PaginatedResponse } from '@/shared/api/types';
 
 /**
@@ -15,12 +15,23 @@ export async function getLearners(params?: {
   page?: number;
   pageSize?: number;
   filters?: LearnerFilters;
-}): Promise<PaginatedResponse<LearnerListItem>> {
+}): Promise<LearnersListResponse> {
   const response = await client.get<ApiResponse<PaginatedResponse<LearnerListItem>>>(
     endpoints.admin.learners.list,
     { params }
   );
-  return response.data.data;
+  const paginatedData = response.data.data;
+
+  // Transform PaginatedResponse to LearnersListResponse
+  return {
+    learners: paginatedData.data,
+    pagination: {
+      page: paginatedData.meta.currentPage,
+      limit: paginatedData.meta.pageSize,
+      total: paginatedData.meta.totalCount,
+      totalPages: paginatedData.meta.totalPages,
+    },
+  };
 }
 
 /**

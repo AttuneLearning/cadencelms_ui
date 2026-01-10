@@ -38,7 +38,7 @@ export const CourseProgressCard: React.FC<CourseProgressCardProps> = ({
     return `${minutes}m`;
   };
 
-  const isComplete = courseProgress.overallProgress >= 100;
+  const isComplete = courseProgress.overallProgress.completionPercent >= 100;
 
   return (
     <Link to={`/courses/${courseProgress.courseId}`}>
@@ -59,7 +59,7 @@ export const CourseProgressCard: React.FC<CourseProgressCardProps> = ({
             )}
           </div>
           <CardDescription>
-            {courseProgress.completedLessons} of {courseProgress.totalLessons} lessons
+            {courseProgress.overallProgress.modulesCompleted} of {courseProgress.overallProgress.modulesTotal} modules
             completed
           </CardDescription>
         </CardHeader>
@@ -67,7 +67,7 @@ export const CourseProgressCard: React.FC<CourseProgressCardProps> = ({
         <CardContent className="space-y-4">
           {/* Progress Bar */}
           <ProgressBar
-            progress={courseProgress.overallProgress}
+            progress={courseProgress.overallProgress.completionPercent}
             showPercentage
             showIcon
             variant={isComplete ? 'success' : 'default'}
@@ -77,13 +77,13 @@ export const CourseProgressCard: React.FC<CourseProgressCardProps> = ({
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Clock className="h-4 w-4" />
-              <span>{formatTime(courseProgress.timeSpent)}</span>
+              <span>{formatTime(courseProgress.overallProgress.timeSpent)}</span>
             </div>
-            {courseProgress.lastAccessedAt && (
+            {courseProgress.overallProgress.lastAccessedAt && (
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Calendar className="h-4 w-4" />
                 <span>
-                  {formatDistanceToNow(new Date(courseProgress.lastAccessedAt), {
+                  {formatDistanceToNow(new Date(courseProgress.overallProgress.lastAccessedAt), {
                     addSuffix: true,
                   })}
                 </span>
@@ -91,17 +91,7 @@ export const CourseProgressCard: React.FC<CourseProgressCardProps> = ({
             )}
           </div>
 
-          {/* Estimated Completion */}
-          {!isComplete && courseProgress.estimatedCompletionDate && (
-            <div className="pt-2 border-t">
-              <p className="text-xs text-muted-foreground">
-                Estimated completion:{' '}
-                <span className="font-medium">
-                  {new Date(courseProgress.estimatedCompletionDate).toLocaleDateString()}
-                </span>
-              </p>
-            </div>
-          )}
+          {/* Note: estimatedCompletionDate not part of CourseProgress type, removed */}
         </CardContent>
       </Card>
     </Link>

@@ -5,7 +5,7 @@
 
 import { client } from '@/shared/api/client';
 import { endpoints } from '@/shared/api/endpoints';
-import type { Staff, StaffListItem, StaffFormData, StaffFilters } from '../model/types';
+import type { Staff, StaffListItem, StaffFormData, StaffFilters, StaffListResponse } from '../model/types';
 import type { ApiResponse, PaginatedResponse } from '@/shared/api/types';
 
 /**
@@ -15,12 +15,23 @@ export async function getStaff(params?: {
   page?: number;
   pageSize?: number;
   filters?: StaffFilters;
-}): Promise<PaginatedResponse<StaffListItem>> {
+}): Promise<StaffListResponse> {
   const response = await client.get<ApiResponse<PaginatedResponse<StaffListItem>>>(
     endpoints.admin.staff.list,
     { params }
   );
-  return response.data.data;
+  const paginatedData = response.data.data;
+
+  // Transform PaginatedResponse to StaffListResponse
+  return {
+    staff: paginatedData.data,
+    pagination: {
+      page: paginatedData.meta.currentPage,
+      limit: paginatedData.meta.pageSize,
+      total: paginatedData.meta.totalCount,
+      totalPages: paginatedData.meta.totalPages,
+    },
+  };
 }
 
 /**

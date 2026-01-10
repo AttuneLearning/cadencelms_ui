@@ -30,6 +30,7 @@ export interface Staff {
 
 export interface StaffListItem {
   _id: string;
+  id?: string; // Alias for _id for backward compatibility
   firstName: string;
   lastName: string;
   title?: string;
@@ -37,6 +38,16 @@ export interface StaffListItem {
   isActive: boolean;
   email?: string;
   createdAt: string;
+  departmentId?: string;
+  department?: {
+    id: string;
+    name: string;
+    code?: string;
+  };
+  role?: string;
+  status?: 'active' | 'inactive';
+  phone?: string;
+  updatedAt?: string;
 }
 
 export interface StaffFormData {
@@ -55,4 +66,18 @@ export interface StaffFilters {
   departmentId?: string;
   role?: StaffRole;
   isActive?: boolean;
+  department?: string;
+  status?: 'active' | 'inactive';
+  page?: number;
+  limit?: number;
+}
+
+export interface StaffListResponse {
+  staff: StaffListItem[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }

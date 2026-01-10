@@ -430,3 +430,27 @@ export interface WithdrawResponse {
     letter: string | null;
   };
 }
+
+/**
+ * Enrollment With Course Details
+ * Extended enrollment type with rich course information
+ * Used by UI components that need detailed course data
+ */
+export interface EnrollmentWithCourse {
+  _id: string;
+  status: EnrollmentStatus;
+  progress: number;
+  enrolledAt: string;
+  lastAccessedAt?: string;
+  expiresAt?: string;
+  isCertificateIssued?: boolean;
+  course: {
+    _id: string;
+    title: string;
+    thumbnail?: string;
+    shortDescription?: string;
+    lessonCount?: number;
+    duration?: number;
+    level?: string;
+  };
+}
