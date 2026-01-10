@@ -3,7 +3,7 @@
  * Display learner's enrolled courses with progress
  */
 
-import React, { useState } from 'react';
+import React, { useState, Component, ErrorInfo, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useMyEnrollments } from '@/entities/enrollment';
 import { EnrolledCourseCard } from '@/features/courses/ui/EnrolledCourseCard';
@@ -25,7 +25,46 @@ import type { EnrollmentStatus } from '@/entities/enrollment';
 
 type FilterStatus = 'all' | 'in-progress' | 'not-started' | 'completed';
 
-export const MyCoursesPage: React.FC = () => {
+// Error Boundary to catch and display errors
+class ErrorBoundary extends Component<
+  { children: ReactNode },
+  { hasError: boolean; error: Error | null }
+> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('[MyCoursesPage] Error caught:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="container mx-auto py-8 px-4">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+            <h2 className="text-xl font-bold text-red-900 mb-2">Error Loading Page</h2>
+            <p className="text-red-700 mb-4">
+              {this.state.error?.message || 'An unknown error occurred'}
+            </p>
+            <pre className="text-sm bg-red-100 p-4 rounded overflow-auto">
+              {this.state.error?.stack}
+            </pre>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+const MyCoursesPageInner: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('enrolledAt:desc');
@@ -43,6 +82,16 @@ export const MyCoursesPage: React.FC = () => {
     sort: sortBy,
     page: currentPage,
     limit: 12,
+  });
+
+  // Debug logging
+  console.log('[MyCoursesPage] Render state:', {
+    isLoading,
+    hasError: !!error,
+    errorMessage: error?.message,
+    hasData: !!data,
+    enrollmentsCount: data?.enrollments?.length || 0,
+    data,
   });
 
   const enrollments = data?.enrollments || [];
@@ -236,5 +285,14 @@ export const MyCoursesPage: React.FC = () => {
         </>
       )}
     </div>
+  );
+};
+
+// Export with error boundary
+export const MyCoursesPage: React.FC = () => {
+  return (
+    <ErrorBoundary>
+      <MyCoursesPageInner />
+    </ErrorBoundary>
   );
 };
