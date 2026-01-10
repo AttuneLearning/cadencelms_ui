@@ -12,7 +12,6 @@ import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { useAuth } from '../model/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from '@/shared/ui/use-toast';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -24,7 +23,6 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export const LoginForm: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [error, setError] = React.useState<string | null>(null);
 
   const {
@@ -38,36 +36,33 @@ export const LoginForm: React.FC = () => {
   const onSubmit = async (data: LoginFormData) => {
     try {
       setError(null);
-      console.log('[LoginForm] Attempting login with:', data.email);
+      console.log('[LoginForm] ===== LOGIN ATTEMPT =====');
+      console.log('[LoginForm] Email:', data.email);
+      console.log('[LoginForm] Password length:', data.password.length);
+      console.log('[LoginForm] Calling login()...');
+
       await login(data);
-      console.log('[LoginForm] Login successful, navigating to dashboard');
-      toast({
-        title: 'Success',
-        description: 'Logged in successfully',
-      });
+
+      console.log('[LoginForm] ===== LOGIN SUCCESS =====');
+      console.log('[LoginForm] Navigating to dashboard...');
       navigate('/dashboard');
     } catch (err: any) {
-      console.error('[LoginForm] Login error:', err);
-      console.error('[LoginForm] Error details:', {
-        message: err?.message,
-        response: err?.response?.data,
-        status: err?.status,
-      });
+      console.error('[LoginForm] ===== LOGIN FAILED =====');
+      console.error('[LoginForm] Error object:', err);
+      console.error('[LoginForm] Error name:', err?.name);
+      console.error('[LoginForm] Error message:', err?.message);
+      console.error('[LoginForm] Error status:', err?.status);
+      console.error('[LoginForm] Error response:', err?.response?.data);
+
       // ApiClientError has message property directly
       // Also check for axios error format as fallback
       const errorMessage =
         err?.message ||
         err?.response?.data?.message ||
         'Invalid email or password';
-      console.error('[LoginForm] Setting error message:', errorMessage);
-      setError(errorMessage);
 
-      // Also show toast notification
-      toast({
-        title: 'Login Failed',
-        description: errorMessage,
-        variant: 'destructive',
-      });
+      console.error('[LoginForm] Final error message to display:', errorMessage);
+      setError(errorMessage);
     }
   };
 
@@ -100,8 +95,8 @@ export const LoginForm: React.FC = () => {
       </div>
 
       {error && (
-        <div className="p-3 bg-destructive/10 border border-destructive rounded-md">
-          <p className="text-sm font-medium text-destructive">{error}</p>
+        <div className="p-4 bg-red-50 border-2 border-red-500 rounded-md">
+          <p className="text-base font-bold text-red-600">{error}</p>
         </div>
       )}
 
