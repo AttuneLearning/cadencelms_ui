@@ -15,6 +15,12 @@ import { ProtectedRoute } from './guards';
 import { StaffDashboardPage } from '@/pages/staff/dashboard';
 import { CourseAnalyticsPage } from '@/pages/staff/analytics';
 import { StudentProgressPage } from '@/pages/staff/students';
+import { StaffCoursesPage } from '@/pages/staff/courses/StaffCoursesPage';
+import { CourseEditorPage } from '@/pages/staff/courses/CourseEditorPage';
+import { ModuleEditorPage } from '@/pages/staff/courses/ModuleEditorPage';
+import { ContentUploaderPage } from '@/pages/staff/courses/ContentUploaderPage';
+import { ExerciseBuilderPage } from '@/pages/staff/courses/ExerciseBuilderPage';
+import { CoursePreviewPage } from '@/pages/staff/courses/CoursePreviewPage';
 
 // Admin pages
 import { AdminDashboardPage } from '@/pages/admin/dashboard/AdminDashboardPage';
@@ -129,6 +135,78 @@ export function AppRouter() {
         element={
           <ProtectedRoute roles={['staff', 'global-admin']}>
             <StudentProgressPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/staff/courses/:courseId/modules/:moduleId/edit"
+        element={
+          <ProtectedRoute roles={['staff', 'global-admin']}>
+            <ModuleEditorPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/staff/courses"
+        element={
+          <ProtectedRoute roles={['staff', 'global-admin']}>
+            <StaffCoursesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/staff/courses/new"
+        element={
+          <ProtectedRoute roles={['staff', 'global-admin']}>
+            <CourseEditorPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/staff/courses/:courseId/edit"
+        element={
+          <ProtectedRoute roles={['staff', 'global-admin']}>
+            <CourseEditorPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/staff/courses/content/upload"
+        element={
+          <ProtectedRoute roles={['staff', 'global-admin']}>
+            <ContentUploaderPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/staff/courses/exercises/new"
+        element={
+          <ProtectedRoute roles={['staff', 'global-admin']}>
+            <ExerciseBuilderPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/staff/courses/exercises/:exerciseId"
+        element={
+          <ProtectedRoute roles={['staff', 'global-admin']}>
+            <ExerciseBuilderPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/staff/courses/:courseId/preview"
+        element={
+          <ProtectedRoute roles={['staff', 'global-admin']}>
+            <CoursePreviewPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/staff/courses/:courseId/preview/:moduleId"
+        element={
+          <ProtectedRoute roles={['staff', 'global-admin']}>
+            <CoursePreviewPage />
           </ProtectedRoute>
         }
       />

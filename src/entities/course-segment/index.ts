@@ -18,6 +18,19 @@ export type {
   DeleteCourseSegmentResponse,
 } from './model/types';
 
+// Lesson Types
+export type {
+  Lesson,
+  LessonListItem,
+  LessonSettings,
+  CompletionCriteria,
+  CompletionCriteriaType,
+  CreateLessonPayload,
+  UpdateLessonPayload,
+  ReorderLessonsPayload,
+  LessonSettingsFormData,
+} from './model/lessonTypes';
+
 // API
 export {
   listCourseSegments,

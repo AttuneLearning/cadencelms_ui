@@ -22,11 +22,15 @@ import type {
 /**
  * Hook to fetch all course segments for a course
  */
-export function useCourseSegments(courseId: string, filters?: CourseSegmentFilters) {
+export function useCourseSegments(
+  courseId: string,
+  filters?: CourseSegmentFilters,
+  options?: { enabled?: boolean }
+) {
   return useQuery({
     queryKey: courseSegmentKeys.list(courseId, filters),
     queryFn: () => listCourseSegments(courseId, filters),
-    enabled: !!courseId,
+    enabled: options?.enabled !== undefined ? options.enabled : !!courseId,
   });
 }
 

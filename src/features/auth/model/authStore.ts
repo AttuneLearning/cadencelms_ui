@@ -41,27 +41,31 @@ export const useAuthStore = create<AuthState>()(
           const response = await authApi.login(credentials);
           console.log('Auth response:', response);
 
-          // Backend returns: { success, data: { user, token, refreshToken, expiresIn } }
+          // Backend returns: { status, data: { user, learner, accessToken, refreshToken }, message }
           // Extract token and user from nested data structure
           const { data } = response as any;
           console.log('Extracted data:', data);
 
-          if (!data || !data.user || !data.token) {
+          if (!data || !data.user || !data.accessToken) {
             throw new Error('Invalid response format from server');
           }
 
-          const userRole = data.user.role as Role;
+          // Backend returns roles as array, take first role
+          const userRole = (data.user.roles?.[0] || 'learner') as Role;
+
+          // firstName/lastName are in the learner/staff object, not user object
+          const profile = data.learner || data.staff || {};
 
           set({
-            accessToken: data.token, // Backend uses "token", not "accessToken"
+            accessToken: data.accessToken,
             role: userRole,
-            roles: [userRole], // Convert single role to array
+            roles: data.user.roles || [userRole],
             isAuthenticated: true,
             user: {
-              _id: data.user.id,
+              _id: data.user._id,
               email: data.user.email,
-              firstName: data.user.firstName,
-              lastName: data.user.lastName
+              firstName: profile.firstName,
+              lastName: profile.lastName
             },
           });
         } catch (error) {
