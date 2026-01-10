@@ -34,7 +34,7 @@ interface ApiResponse<T> {
  */
 export async function listTemplates(filters?: TemplateFilters): Promise<TemplatesListResponse> {
   const response = await client.get<ApiResponse<TemplatesListResponse>>(
-    '/api/v2/templates',
+    '/templates',
     { params: filters }
   );
   return response.data.data;
@@ -52,7 +52,7 @@ export async function getTemplate(id: string): Promise<Template> {
  * POST /api/v2/templates - Create new template
  */
 export async function createTemplate(payload: CreateTemplatePayload): Promise<Template> {
-  const response = await client.post<ApiResponse<Template>>('/api/v2/templates', payload);
+  const response = await client.post<ApiResponse<Template>>('/templates', payload);
   return response.data.data;
 }
 

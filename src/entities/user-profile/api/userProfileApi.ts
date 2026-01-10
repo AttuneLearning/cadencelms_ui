@@ -17,7 +17,7 @@ interface ApiResponse<T> {
  * Unified endpoint for all roles
  */
 export async function getUserProfile(): Promise<UserProfile> {
-  const response = await client.get<ApiResponse<UserProfile>>('/api/v2/users/me');
+  const response = await client.get<ApiResponse<UserProfile>>('/users/me');
   return response.data.data;
 }
 
@@ -29,7 +29,7 @@ export async function updateUserProfile(
   payload: UpdateProfilePayload
 ): Promise<UserProfile> {
   const response = await client.put<ApiResponse<UserProfile>>(
-    '/api/v2/users/me',
+    '/users/me',
     payload
   );
   return response.data.data;
@@ -41,7 +41,7 @@ export async function updateUserProfile(
  */
 export async function getUserDepartments(): Promise<UserDepartment[]> {
   const response = await client.get<ApiResponse<UserDepartment[]>>(
-    '/api/v2/users/me/departments'
+    '/users/me/departments'
   );
   return response.data.data;
 }

@@ -1,6 +1,16 @@
 /**
  * API endpoint constants
  * Centralized endpoint definitions for all API calls
+ *
+ * IMPORTANT: All endpoint paths are RELATIVE to the baseURL
+ *
+ * Pattern:
+ * - baseURL is set in .env: VITE_API_BASE_URL=http://localhost:5000/api/v2
+ * - All paths here should be RELATIVE (start with / but NO /api/v2 prefix)
+ * - Example: '/enrollments' → http://localhost:5000/api/v2/enrollments
+ *
+ * ❌ WRONG: '/api/v2/enrollments' → http://localhost:5000/api/v2/api/v2/enrollments
+ * ✅ CORRECT: '/enrollments' → http://localhost:5000/api/v2/enrollments
  */
 
 export const endpoints = {
@@ -21,12 +31,12 @@ export const endpoints = {
   },
 
   courseSegments: {
-    list: (courseId: string) => `/api/v2/courses/${courseId}/modules`,
-    byId: (courseId: string, moduleId: string) => `/api/v2/courses/${courseId}/modules/${moduleId}`,
-    create: (courseId: string) => `/api/v2/courses/${courseId}/modules`,
-    update: (courseId: string, moduleId: string) => `/api/v2/courses/${courseId}/modules/${moduleId}`,
-    delete: (courseId: string, moduleId: string) => `/api/v2/courses/${courseId}/modules/${moduleId}`,
-    reorder: (courseId: string) => `/api/v2/courses/${courseId}/modules/reorder`,
+    list: (courseId: string) => `/courses/${courseId}/modules`,
+    byId: (courseId: string, moduleId: string) => `/courses/${courseId}/modules/${moduleId}`,
+    create: (courseId: string) => `/courses/${courseId}/modules`,
+    update: (courseId: string, moduleId: string) => `/courses/${courseId}/modules/${moduleId}`,
+    delete: (courseId: string, moduleId: string) => `/courses/${courseId}/modules/${moduleId}`,
+    reorder: (courseId: string) => `/courses/${courseId}/modules/reorder`,
   },
 
   lessons: {
@@ -119,33 +129,33 @@ export const endpoints = {
   },
 
   classes: {
-    list: '/api/v2/classes',
-    byId: (id: string) => `/api/v2/classes/${id}`,
-    roster: (id: string) => `/api/v2/classes/${id}/roster`,
-    enrollments: (id: string) => `/api/v2/classes/${id}/enrollments`,
-    enrollment: (id: string, enrollmentId: string) => `/api/v2/classes/${id}/enrollments/${enrollmentId}`,
-    progress: (id: string) => `/api/v2/classes/${id}/progress`,
+    list: '/classes',
+    byId: (id: string) => `/classes/${id}`,
+    roster: (id: string) => `/classes/${id}/roster`,
+    enrollments: (id: string) => `/classes/${id}/enrollments`,
+    enrollment: (id: string, enrollmentId: string) => `/classes/${id}/enrollments/${enrollmentId}`,
+    progress: (id: string) => `/classes/${id}/progress`,
   },
 
   learningEvents: {
-    list: '/api/v2/learning-events',
-    byId: (id: string) => `/api/v2/learning-events/${id}`,
-    create: '/api/v2/learning-events',
-    createBatch: '/api/v2/learning-events/batch',
-    learnerActivity: (learnerId: string) => `/api/v2/learning-events/learner/${learnerId}`,
-    courseActivity: (courseId: string) => `/api/v2/learning-events/course/${courseId}`,
-    classActivity: (classId: string) => `/api/v2/learning-events/class/${classId}`,
-    stats: '/api/v2/learning-events/stats',
+    list: '/learning-events',
+    byId: (id: string) => `/learning-events/${id}`,
+    create: '/learning-events',
+    createBatch: '/learning-events/batch',
+    learnerActivity: (learnerId: string) => `/learning-events/learner/${learnerId}`,
+    courseActivity: (courseId: string) => `/learning-events/course/${courseId}`,
+    classActivity: (classId: string) => `/learning-events/class/${classId}`,
+    stats: '/learning-events/stats',
   },
 
   examAttempts: {
-    list: '/api/v2/exam-attempts',
-    byId: (id: string) => `/api/v2/exam-attempts/${id}`,
-    create: '/api/v2/exam-attempts',
-    submitAnswers: (id: string) => `/api/v2/exam-attempts/${id}/answers`,
-    submit: (id: string) => `/api/v2/exam-attempts/${id}/submit`,
-    results: (id: string) => `/api/v2/exam-attempts/${id}/results`,
-    grade: (id: string) => `/api/v2/exam-attempts/${id}/grade`,
-    byExam: (examId: string) => `/api/v2/exam-attempts/exam/${examId}`,
+    list: '/exam-attempts',
+    byId: (id: string) => `/exam-attempts/${id}`,
+    create: '/exam-attempts',
+    submitAnswers: (id: string) => `/exam-attempts/${id}/answers`,
+    submit: (id: string) => `/exam-attempts/${id}/submit`,
+    results: (id: string) => `/exam-attempts/${id}/results`,
+    grade: (id: string) => `/exam-attempts/${id}/grade`,
+    byExam: (examId: string) => `/exam-attempts/exam/${examId}`,
   },
 } as const;

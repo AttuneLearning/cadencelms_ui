@@ -42,7 +42,7 @@ interface ApiResponse<T> {
  */
 export async function listYears(filters?: YearFilters): Promise<YearsListResponse> {
   const response = await client.get<ApiResponse<YearsListResponse>>(
-    '/api/v2/calendar/years',
+    '/calendar/years',
     { params: filters }
   );
   return response.data.data;
@@ -64,7 +64,7 @@ export async function getYear(id: string, includeTerms?: boolean): Promise<Acade
  */
 export async function createYear(payload: CreateYearPayload): Promise<AcademicYear> {
   const response = await client.post<ApiResponse<AcademicYear>>(
-    '/api/v2/calendar/years',
+    '/calendar/years',
     payload
   );
   return response.data.data;
@@ -97,7 +97,7 @@ export async function deleteYear(id: string): Promise<void> {
  */
 export async function listTerms(filters?: TermFilters): Promise<TermsListResponse> {
   const response = await client.get<ApiResponse<TermsListResponse>>(
-    '/api/v2/calendar/terms',
+    '/calendar/terms',
     { params: filters }
   );
   return response.data.data;
@@ -119,7 +119,7 @@ export async function getTerm(id: string, includeClasses?: boolean): Promise<Ter
  */
 export async function createTerm(payload: CreateTermPayload): Promise<Term> {
   const response = await client.post<ApiResponse<Term>>(
-    '/api/v2/calendar/terms',
+    '/calendar/terms',
     payload
   );
   return response.data.data;
@@ -152,7 +152,7 @@ export async function deleteTerm(id: string): Promise<void> {
  */
 export async function listCohorts(filters?: CohortFilters): Promise<CohortsListResponse> {
   const response = await client.get<ApiResponse<CohortsListResponse>>(
-    '/api/v2/calendar/cohorts',
+    '/calendar/cohorts',
     { params: filters }
   );
   return response.data.data;
@@ -174,7 +174,7 @@ export async function getCohort(id: string, includeLearners?: boolean): Promise<
  */
 export async function createCohort(payload: CreateCohortPayload): Promise<Cohort> {
   const response = await client.post<ApiResponse<Cohort>>(
-    '/api/v2/calendar/cohorts',
+    '/calendar/cohorts',
     payload
   );
   return response.data.data;

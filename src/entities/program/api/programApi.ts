@@ -28,7 +28,7 @@ export async function listPrograms(
   filters?: ProgramFilters
 ): Promise<ProgramsListResponse> {
   const response = await client.get<ApiResponse<ProgramsListResponse>>(
-    '/api/v2/programs',
+    '/programs',
     { params: filters }
   );
   return response.data.data;
@@ -51,7 +51,7 @@ export async function createProgram(
   payload: CreateProgramPayload
 ): Promise<Program> {
   const response = await client.post<ApiResponse<Program>>(
-    '/api/v2/programs',
+    '/programs',
     payload
   );
   return response.data.data;

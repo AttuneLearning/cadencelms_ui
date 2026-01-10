@@ -51,7 +51,7 @@ export async function listContent(
   filters?: ContentFilters
 ): Promise<ContentListResponse> {
   const response = await client.get<ApiResponse<ContentListResponse>>(
-    '/api/v2/content',
+    '/content',
     { params: filters }
   );
   return response.data.data;
@@ -80,7 +80,7 @@ export async function listScormPackages(
   filters?: ScormPackageFilters
 ): Promise<ScormPackagesListResponse> {
   const response = await client.get<ApiResponse<ScormPackagesListResponse>>(
-    '/api/v2/content/scorm',
+    '/content/scorm',
     { params: filters }
   );
   return response.data.data;
@@ -110,7 +110,7 @@ export async function uploadScormPackage(
   }
 
   const response = await client.post<ApiResponse<UploadScormPackageResponse>>(
-    '/api/v2/content/scorm',
+    '/content/scorm',
     formData,
     {
       headers: {
@@ -214,7 +214,7 @@ export async function listMediaFiles(
   filters?: MediaFileFilters
 ): Promise<MediaFilesListResponse> {
   const response = await client.get<ApiResponse<MediaFilesListResponse>>(
-    '/api/v2/content/media',
+    '/content/media',
     { params: filters }
   );
   return response.data.data;
@@ -240,7 +240,7 @@ export async function uploadMediaFile(
   }
 
   const response = await client.post<ApiResponse<UploadMediaFileResponse>>(
-    '/api/v2/content/media',
+    '/content/media',
     formData,
     {
       headers: {

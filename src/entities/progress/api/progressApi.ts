@@ -118,7 +118,7 @@ export async function updateProgress(
   };
 
   const response = await client.post<ApiResponse<UpdateProgressResponse>>(
-    '/api/v2/progress/update',
+    '/progress/update',
     requestPayload
   );
   return response.data.data;
@@ -135,7 +135,7 @@ export async function getProgressSummary(
   filters?: ProgressSummaryFilters
 ): Promise<ProgressSummaryResponse> {
   const response = await client.get<ApiResponse<ProgressSummaryResponse>>(
-    '/api/v2/progress/reports/summary',
+    '/progress/reports/summary',
     { params: filters }
   );
   return response.data.data;
@@ -148,7 +148,7 @@ export async function getDetailedProgressReport(
   filters?: DetailedProgressReportFilters
 ): Promise<DetailedProgressReport> {
   const response = await client.get<ApiResponse<DetailedProgressReport>>(
-    '/api/v2/progress/reports/detailed',
+    '/progress/reports/detailed',
     { params: filters }
   );
   return response.data.data;

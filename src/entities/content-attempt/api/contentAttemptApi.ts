@@ -24,7 +24,7 @@ import type {
   DeleteAttemptResponse,
 } from '../model/types';
 
-const BASE_PATH = '/api/v2/content-attempts';
+const BASE_PATH = '/content-attempts';
 
 export const contentAttemptApi = {
   /**

@@ -27,7 +27,7 @@ interface ApiResponse<T> {
  */
 export async function listStaff(params?: StaffListParams): Promise<StaffListResponse> {
   const response = await client.get<ApiResponse<StaffListResponse>>(
-    '/api/v2/users/staff',
+    '/users/staff',
     { params }
   );
   return response.data.data;
@@ -39,7 +39,7 @@ export async function listStaff(params?: StaffListParams): Promise<StaffListResp
  */
 export async function registerStaff(payload: RegisterStaffPayload): Promise<Staff> {
   const response = await client.post<ApiResponse<Staff>>(
-    '/api/v2/users/staff',
+    '/users/staff',
     payload
   );
   return response.data.data;

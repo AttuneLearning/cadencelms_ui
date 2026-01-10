@@ -38,7 +38,7 @@ interface ApiResponse<T> {
  */
 export async function listExercises(filters?: ExerciseFilters): Promise<ExercisesListResponse> {
   const response = await client.get<ApiResponse<ExercisesListResponse>>(
-    '/api/v2/content/exercises',
+    '/content/exercises',
     { params: filters }
   );
   return response.data.data;
@@ -56,7 +56,7 @@ export async function getExercise(id: string): Promise<Exercise> {
  * POST /api/v2/content/exercises - Create new exercise
  */
 export async function createExercise(payload: CreateExercisePayload): Promise<Exercise> {
-  const response = await client.post<ApiResponse<Exercise>>('/api/v2/content/exercises', payload);
+  const response = await client.post<ApiResponse<Exercise>>('/content/exercises', payload);
   return response.data.data;
 }
 

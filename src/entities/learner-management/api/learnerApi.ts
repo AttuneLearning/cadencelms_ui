@@ -28,7 +28,7 @@ export async function listLearners(
   params?: ListLearnersParams
 ): Promise<ListLearnersResponse> {
   const response = await client.get<ApiResponse<ListLearnersResponse>>(
-    '/api/v2/users/learners',
+    '/users/learners',
     { params }
   );
   return response.data.data;
@@ -42,7 +42,7 @@ export async function registerLearner(
   payload: RegisterLearnerPayload
 ): Promise<LearnerResponse> {
   const response = await client.post<ApiResponse<{ learner: LearnerResponse }>>(
-    '/api/v2/users/learners',
+    '/users/learners',
     payload
   );
   return response.data.data.learner;

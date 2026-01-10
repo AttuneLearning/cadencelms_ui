@@ -40,7 +40,7 @@ interface ApiResponse<T> {
  */
 export async function listCourses(filters?: CourseFilters): Promise<CoursesListResponse> {
   const response = await client.get<ApiResponse<CoursesListResponse>>(
-    '/api/v2/courses',
+    '/courses',
     { params: filters }
   );
   return response.data.data;
@@ -58,7 +58,7 @@ export async function getCourse(id: string): Promise<Course> {
  * POST /api/v2/courses - Create new course
  */
 export async function createCourse(payload: CreateCoursePayload): Promise<Course> {
-  const response = await client.post<ApiResponse<Course>>('/api/v2/courses', payload);
+  const response = await client.post<ApiResponse<Course>>('/courses', payload);
   return response.data.data;
 }
 

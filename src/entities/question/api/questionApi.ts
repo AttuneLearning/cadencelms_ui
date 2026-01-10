@@ -28,7 +28,7 @@ export async function getQuestions(
   params?: QuestionListParams
 ): Promise<QuestionListResponse> {
   const response = await client.get<ApiResponse<QuestionListResponse>>(
-    '/api/v2/questions',
+    '/questions',
     { params }
   );
   return response.data.data;
@@ -41,7 +41,7 @@ export async function createQuestion(
   payload: CreateQuestionPayload
 ): Promise<Question> {
   const response = await client.post<ApiResponse<Question>>(
-    '/api/v2/questions',
+    '/questions',
     payload
   );
   return response.data.data;
@@ -85,7 +85,7 @@ export async function bulkImportQuestions(
   payload: BulkImportPayload
 ): Promise<BulkImportResponse> {
   const response = await client.post<ApiResponse<BulkImportResponse>>(
-    '/api/v2/questions/bulk',
+    '/questions/bulk',
     payload
   );
   return response.data.data;

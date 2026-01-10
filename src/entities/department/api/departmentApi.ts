@@ -34,7 +34,7 @@ export async function getDepartments(
   params?: DepartmentListParams
 ): Promise<DepartmentListResponse> {
   const response = await client.get<ApiResponse<DepartmentListResponse>>(
-    '/api/v2/departments',
+    '/departments',
     { params }
   );
   return response.data.data;
@@ -47,7 +47,7 @@ export async function createDepartment(
   payload: CreateDepartmentPayload
 ): Promise<Department> {
   const response = await client.post<ApiResponse<Department>>(
-    '/api/v2/departments',
+    '/departments',
     payload
   );
   return response.data.data;

@@ -20,7 +20,7 @@ import type {
   DropEnrollmentResponse,
 } from '../model/types';
 
-const BASE_URL = '/api/v2/classes';
+const BASE_URL = '/classes';
 
 /**
  * List all classes with optional filtering
