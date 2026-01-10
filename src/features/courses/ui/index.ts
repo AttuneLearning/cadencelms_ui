@@ -8,3 +8,4 @@ export { ModuleDialog } from './ModuleDialog';
 export { CourseNavigation } from './CourseNavigation';
 export { LessonPlayerPreview } from './LessonPlayerPreview';
 export { CoursePreviewButton } from './CoursePreviewButton';
+export { EnrolledCourseCard } from './EnrolledCourseCard';

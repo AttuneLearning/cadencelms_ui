@@ -43,6 +43,13 @@ import { ProfilePage } from '@/pages/profile/ProfilePage';
 
 // Learner pages
 import { LearnerDashboardPage } from '@/pages/learner/dashboard';
+import { ExerciseTakingPage } from '@/pages/learner/exercises/ExerciseTakingPage';
+import { ExerciseResultsPage } from '@/pages/learner/exercises/ExerciseResultsPage';
+import { CourseProgressPage } from '@/pages/learner/progress/CourseProgressPage';
+import { CourseCatalogPage } from '@/pages/learner/catalog/CourseCatalogPage';
+import { CourseDetailsPage } from '@/pages/learner/catalog/CourseDetailsPage';
+import { CoursePlayerPage } from '@/pages/learner/player/CoursePlayerPage';
+import { MyCoursesPage } from '@/pages/learner/courses/MyCoursesPage';
 
 // Unauthorized page component
 const UnauthorizedPage = () => (
@@ -109,6 +116,73 @@ export function AppRouter() {
         element={
           <ProtectedRoute roles={['learner']}>
             <LearnerDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      {/* Course Catalog Routes */}
+      <Route
+        path="/learner/catalog"
+        element={
+          <ProtectedRoute roles={['learner']}>
+            <CourseCatalogPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/learner/catalog/:courseId"
+        element={
+          <ProtectedRoute roles={['learner']}>
+            <CourseDetailsPage />
+          </ProtectedRoute>
+        }
+      />
+      {/* My Courses Route */}
+      <Route
+        path="/learner/courses"
+        element={
+          <ProtectedRoute roles={['learner']}>
+            <MyCoursesPage />
+          </ProtectedRoute>
+        }
+      />
+      {/* Course Player Routes */}
+      <Route
+        path="/learner/courses/:courseId/player"
+        element={
+          <ProtectedRoute roles={['learner']}>
+            <CoursePlayerPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/learner/courses/:courseId/player/:contentId"
+        element={
+          <ProtectedRoute roles={['learner']}>
+            <CoursePlayerPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/learner/exercises/:exerciseId/take"
+        element={
+          <ProtectedRoute roles={['learner']}>
+            <ExerciseTakingPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/learner/exercises/:exerciseId/results/:attemptId"
+        element={
+          <ProtectedRoute roles={['learner']}>
+            <ExerciseResultsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/learner/courses/:courseId/progress"
+        element={
+          <ProtectedRoute roles={['learner']}>
+            <CourseProgressPage />
           </ProtectedRoute>
         }
       />

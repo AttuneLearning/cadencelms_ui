@@ -25,6 +25,7 @@ import {
   FileCode,
   ListChecks,
   HelpCircle,
+  Search,
 } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import type { Role } from '@/features/auth/model/types';
@@ -44,10 +45,16 @@ const navItems: NavItem[] = [
     roles: ['learner', 'staff', 'global-admin'],
   },
   {
+    label: 'Browse Courses',
+    path: '/learner/catalog',
+    icon: Search,
+    roles: ['learner'],
+  },
+  {
     label: 'My Courses',
-    path: '/courses',
+    path: '/learner/courses',
     icon: BookOpen,
-    roles: ['learner', 'staff', 'global-admin'],
+    roles: ['learner'],
   },
   {
     label: 'My Learning',
