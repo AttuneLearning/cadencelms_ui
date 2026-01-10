@@ -47,7 +47,8 @@ export const ProfilePage: React.FC = () => {
       { label: 'Home', path: '/' },
       { label: 'Profile', path: '/profile' },
     ]);
-  }, [updateBreadcrumbs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Handle successful profile update
   const handleUpdateSuccess = () => {
