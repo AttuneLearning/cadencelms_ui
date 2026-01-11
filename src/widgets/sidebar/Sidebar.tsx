@@ -20,9 +20,11 @@ import {
   AlertCircle,
   Settings,
   X,
+  Loader2,
 } from 'lucide-react';
 import { useAuthStore } from '@/features/auth/model/authStore';
 import { useNavigationStore } from '@/shared/stores/navigationStore';
+import { useDepartmentContext } from '@/shared/hooks';
 import { GLOBAL_NAV_ITEMS, DEPARTMENT_NAV_ITEMS } from './config/navItems';
 import { NavLink } from './ui/NavLink';
 import { Badge } from '@/shared/ui/badge';
@@ -49,7 +51,7 @@ interface ProcessedDepartmentNavItem extends Omit<DepartmentNavItem, 'pathTempla
 // ============================================================================
 
 export const Sidebar: React.FC = () => {
-  const { roleHierarchy, user, hasPermission } = useAuthStore();
+  const { roleHierarchy, user } = useAuthStore();
   const {
     selectedDepartmentId,
     setSelectedDepartment,
@@ -58,6 +60,12 @@ export const Sidebar: React.FC = () => {
     isSidebarOpen,
     setSidebarOpen,
   } = useNavigationStore();
+  const {
+    hasPermission,
+    switchDepartment,
+    isSwitching,
+    switchError,
+  } = useDepartmentContext();
 
   // Guard: Must have auth data
   if (!roleHierarchy || !user) {
@@ -148,15 +156,24 @@ export const Sidebar: React.FC = () => {
   // Handle Department Selection
   // ================================================================
 
-  const handleDepartmentClick = (deptId: string) => {
+  const handleDepartmentClick = async (deptId: string) => {
     // Toggle: clicking selected department deselects it
-    const newSelection = selectedDepartmentId === deptId ? null : deptId;
+    if (selectedDepartmentId === deptId) {
+      setSelectedDepartment(null);
+      return;
+    }
 
-    setSelectedDepartment(newSelection);
+    // Call API to switch department
+    try {
+      await switchDepartment(deptId);
 
-    // Remember this selection for next time
-    if (user && newSelection) {
-      rememberDepartment(user._id, newSelection);
+      // Remember this selection for next time
+      if (user) {
+        rememberDepartment(user._id, deptId);
+      }
+    } catch (error) {
+      console.error('[Sidebar] Failed to switch department:', error);
+      // Error is already stored in switchError from the hook
     }
   };
 
@@ -242,6 +259,11 @@ export const Sidebar: React.FC = () => {
             <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               My Departments
             </div>
+            {switchError && (
+              <div className="mx-2 mb-2 px-3 py-2 text-xs bg-destructive/10 text-destructive rounded-md">
+                {switchError}
+              </div>
+            )}
             <div className="space-y-1 px-2 pb-4">
               {userDepartments.map((dept) => {
                 const isSelected = selectedDepartmentId === dept.id;
@@ -250,14 +272,18 @@ export const Sidebar: React.FC = () => {
                   <button
                     key={dept.id}
                     onClick={() => handleDepartmentClick(dept.id)}
+                    disabled={isSwitching}
                     className={cn(
                       'w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors',
                       isSelected
                         ? 'bg-primary text-primary-foreground'
-                        : 'hover:bg-accent text-muted-foreground'
+                        : 'hover:bg-accent text-muted-foreground',
+                      isSwitching && 'opacity-50 cursor-not-allowed'
                     )}
                   >
-                    {isSelected ? (
+                    {isSwitching && selectedDepartmentId === dept.id ? (
+                      <Loader2 className="h-4 w-4 flex-shrink-0 animate-spin" />
+                    ) : isSelected ? (
                       <ChevronDown className="h-4 w-4 flex-shrink-0" />
                     ) : (
                       <ChevronRight className="h-4 w-4 flex-shrink-0" />

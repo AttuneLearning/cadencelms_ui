@@ -1,12 +1,14 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { GraduationCap, Menu, LogOut, Settings, BookOpen } from 'lucide-react';
+import { GraduationCap, Menu, LogOut, Settings, BookOpen, Building2 } from 'lucide-react';
 import { ThemeToggle } from '@/features/theme/ui/ThemeToggle';
 import { useAuth } from '@/features/auth/model/useAuth';
 import { useNavigation } from '@/shared/lib/navigation';
+import { useDepartmentContext } from '@/shared/hooks';
 import { Button } from '@/shared/ui/button';
 import { Separator } from '@/shared/ui/separator';
 import { Avatar, AvatarFallback } from '@/shared/ui/avatar';
+import { Badge } from '@/shared/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,8 +44,13 @@ const navItems: NavItem[] = [
 ];
 
 export const Header: React.FC = () => {
-  const { isAuthenticated, role, user, logout } = useAuth();
+  const { isAuthenticated, user, logout, roleHierarchy } = useAuth();
   const { toggleSidebar } = useNavigation();
+  const {
+    currentDepartmentName,
+    currentDepartmentRoles,
+    hasPermission,
+  } = useDepartmentContext();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -58,9 +65,12 @@ export const Header: React.FC = () => {
     return email.charAt(0).toUpperCase();
   };
 
-  // Filter nav items based on user role
+  // Get primary user type for display
+  const primaryUserType = roleHierarchy?.primaryUserType || null;
+
+  // Filter nav items based on user type (simplified for header)
   const filteredNavItems = navItems.filter(
-    (item) => role && item.roles.includes(role)
+    (item) => primaryUserType && item.roles.includes(primaryUserType as Role)
   );
 
   return (
@@ -129,15 +139,37 @@ export const Header: React.FC = () => {
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuContent className="w-64" align="end" forceMount>
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col space-y-1">
                         <p className="text-sm font-medium leading-none">
                           {user?.email || 'User'}
                         </p>
                         <p className="text-xs leading-none text-muted-foreground">
-                          {role || 'No role'}
+                          {primaryUserType || 'No user type'}
                         </p>
+                        {currentDepartmentName && (
+                          <div className="flex items-center gap-1 mt-2 pt-2 border-t">
+                            <Building2 className="h-3 w-3 text-muted-foreground" />
+                            <span className="text-xs text-muted-foreground">
+                              {currentDepartmentName}
+                            </span>
+                          </div>
+                        )}
+                        {currentDepartmentRoles.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {currentDepartmentRoles.slice(0, 3).map((role) => (
+                              <Badge key={role} variant="secondary" className="text-xs">
+                                {role}
+                              </Badge>
+                            ))}
+                            {currentDepartmentRoles.length > 3 && (
+                              <Badge variant="secondary" className="text-xs">
+                                +{currentDepartmentRoles.length - 3}
+                              </Badge>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
