@@ -116,7 +116,7 @@ describe('SecuritySettingsPage', () => {
     render(<SecuritySettingsPage />, { wrapper: createWrapper() });
     await waitFor(() => expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument());
     await user.click(screen.getByRole('button', { name: /save/i }));
-    await waitFor(() => expect(screen.getByText(/failed|error/i)).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText(/failed|error/i)).toBeInTheDocument());
   });
 
   it('should have proper accessibility labels', async () => {
