@@ -39,6 +39,7 @@ import {
   clearAllTokens,
   getAccessTokenValue,
 } from '@/shared/utils/tokenStorage';
+import { useNavigationStore } from '@/shared/stores/navigationStore';
 
 // ============================================================================
 // State Interface
@@ -243,6 +244,9 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: false,
           error: null,
         });
+
+        // Clear navigation store department state
+        useNavigationStore.getState().clearDepartmentSelection();
 
         console.log('[AuthStore] Logout complete');
       },

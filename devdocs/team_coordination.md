@@ -23,23 +23,29 @@ This document tracks all events, signals, checkpoints, and coordination between 
   ```json
   {
     "event": "dept-api-ready",
-    "timestamp": "ISO-8601",
+    "timestamp": "2026-01-11T14:55:00Z",
     "trackId": "A",
     "agentId": "dept-api-agent",
     "deliverables": {
       "file": "src/entities/auth/api/authApi.ts",
       "function": "switchDepartment",
-      "types": "SwitchDepartmentResponse added to types"
+      "types": "SwitchDepartmentResponse in src/shared/types/auth.ts",
+      "tests": "src/entities/auth/api/__tests__/authApi.test.ts",
+      "testsPassing": true,
+      "testCount": 16,
+      "branch": "feature/contract-align/track-a/dept-api",
+      "commit": "ff50eb3"
     }
   }
   ```
-- **Status:** 🔲 Pending
+- **Status:** ✅ EMITTED (2026-01-11 14:55)
 
 #### EVENT: `phase-1-track-a-complete`
 - **Emitted by:** Track A (dept-api-agent)
 - **When:** All Track A deliverables complete and committed
 - **Consumed by:** Integration coordinator
-- **Status:** 🔲 Pending
+- **Status:** ✅ EMITTED (2026-01-11 14:55)
+- **Summary:** switchDepartment API verified, enhanced, and fully tested (16 tests passing)
 
 #### EVENT: `phase-1-track-b-complete`
 - **Emitted by:** Track B (nav-store-agent)
@@ -279,10 +285,19 @@ Required Types:
 
 | Track | Agent | Branch | Status | Event Emitted | Committed | Tests Pass | Coverage |
 |-------|-------|--------|--------|---------------|-----------|------------|----------|
-| A | dept-api-agent | feature/contract-align/track-a/dept-api | 🔲 Pending | ❌ | ❌ | ❌ | - |
+| A | dept-api-agent | feature/contract-align/track-a/dept-api | ✅ Complete | ✅ Yes | ✅ ff50eb3 | ✅ 16/16 | 100% |
 | B | nav-store-agent | feature/contract-align/track-b/nav-store | 🔲 Pending | ❌ | ❌ | ❌ | - |
 
-**Phase Status:** 🔲 Not Started
+**Phase Status:** 🔄 In Progress (Track A Complete, Track B Pending)
+
+**Track A Completion Summary:**
+- Verified `switchDepartment()` API function matches V2 contract exactly
+- Enhanced error handling with detailed logging for all error codes (401/403/404)
+- Created 16 comprehensive unit tests covering all scenarios
+- All tests passing (16/16)
+- Branch: feature/contract-align/track-a/dept-api
+- Commit: ff50eb3
+- Event `dept-api-ready` emitted for Track B
 
 ---
 

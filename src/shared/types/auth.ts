@@ -16,6 +16,39 @@
 export type UserType = 'learner' | 'staff' | 'global-admin';
 
 /**
+ * UserType object format for API responses (V2.1)
+ * This replaces string[] userTypes with object[] containing displayAs labels
+ */
+export interface UserTypeObject {
+  /**
+   * The userType key (matches UserType)
+   */
+  _id: UserType;
+
+  /**
+   * Human-readable display label (from server lookup values)
+   * @example "Learner", "Staff", "System Admin"
+   */
+  displayAs: string;
+}
+
+/**
+ * Role object format for department memberships and role hierarchies
+ */
+export interface RoleObject {
+  /**
+   * The role key (e.g., 'instructor', 'department-admin', 'course-taker')
+   */
+  role: string;
+
+  /**
+   * Human-readable display label (from server lookup values)
+   * @example "Instructor", "Department Admin", "Course Taker"
+   */
+  displayAs: string;
+}
+
+/**
  * Dashboard types corresponding to user types
  */
 export type DashboardType = 'learner' | 'staff' | 'admin';
@@ -152,8 +185,8 @@ export interface LoginResponse {
       tokenType: 'Bearer';
     };
 
-    // NEW IN V2
-    userTypes: UserType[];
+    // NEW IN V2.1 - userTypes now includes displayAs from server
+    userTypes: UserTypeObject[];
     defaultDashboard: DashboardType;
     canEscalateToAdmin: boolean;
 
@@ -220,7 +253,7 @@ export interface SwitchDepartmentResponse {
 export interface MyRolesResponse {
   success: boolean;
   data: {
-    userTypes: UserType[];
+    userTypes: UserTypeObject[];
     defaultDashboard: DashboardType;
     canEscalateToAdmin: boolean;
     departmentMemberships: DepartmentMembership[];
@@ -363,6 +396,12 @@ export interface RoleHierarchy {
 
   /** Flattened array of ALL permissions across all roles */
   allPermissions: string[];
+
+  /** Display mappings for user types from server (V2.1) */
+  userTypeDisplayMap?: Record<UserType, string>;
+
+  /** Display mappings for roles from server (V2.1) */
+  roleDisplayMap?: Record<string, string>;
 }
 
 // ============================================================================
