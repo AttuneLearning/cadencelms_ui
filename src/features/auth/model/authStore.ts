@@ -508,25 +508,52 @@ export const useAuthStore = create<AuthState>()(
         const { roleHierarchy } = get();
         if (!roleHierarchy) return false;
 
-        // Check for wildcard permission
+        // Check for system-wide wildcard permission (global-admin)
         if (roleHierarchy.allPermissions.includes('system:*')) {
           return true;
         }
 
         // No scope - check if permission exists anywhere
         if (!scope) {
-          return roleHierarchy.allPermissions.includes(permission);
+          // Direct match
+          if (roleHierarchy.allPermissions.includes(permission)) {
+            return true;
+          }
+
+          // Wildcard match (e.g., "content:*" matches "content:courses:read")
+          const [domain] = permission.split(':');
+          if (roleHierarchy.allPermissions.includes(`${domain}:*`)) {
+            return true;
+          }
+
+          return false;
         }
 
         // Check department-scoped permissions
-        if (scope.type === 'department') {
+        if (scope.type === 'department' && scope.id) {
+          // Helper function to check permissions with wildcard support
+          const checkPermissionsWithWildcard = (permissions: string[]): boolean => {
+            // Direct match
+            if (permissions.includes(permission)) {
+              return true;
+            }
+
+            // Wildcard match
+            const [domain] = permission.split(':');
+            if (permissions.includes(`${domain}:*`)) {
+              return true;
+            }
+
+            return false;
+          };
+
           // Check staff roles in this department
           if (roleHierarchy.staffRoles) {
             for (const deptGroup of roleHierarchy.staffRoles.departmentRoles) {
               if (deptGroup.departmentId === scope.id) {
                 // Check if any role in this department has the permission
                 for (const roleAssignment of deptGroup.roles) {
-                  if (roleAssignment.permissions.includes(permission)) {
+                  if (checkPermissionsWithWildcard(roleAssignment.permissions)) {
                     return true;
                   }
                 }
@@ -540,7 +567,7 @@ export const useAuthStore = create<AuthState>()(
               if (deptGroup.departmentId === scope.id) {
                 // Check if any role in this department has the permission
                 for (const roleAssignment of deptGroup.roles) {
-                  if (roleAssignment.permissions.includes(permission)) {
+                  if (checkPermissionsWithWildcard(roleAssignment.permissions)) {
                     return true;
                   }
                 }

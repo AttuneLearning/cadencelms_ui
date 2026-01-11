@@ -139,7 +139,32 @@ This document tracks all events, signals, checkpoints, and coordination between 
 - **Emitted by:** Track G (scoped-permissions-agent)
 - **When:** All Track G deliverables complete and committed
 - **Consumed by:** Integration coordinator
-- **Status:** 🔲 Pending
+- **Payload:**
+  ```json
+  {
+    "event": "phase-4-track-g-complete",
+    "timestamp": "2026-01-11T15:38:00Z",
+    "trackId": "G",
+    "agentId": "scoped-permissions-agent",
+    "deliverables": {
+      "authStoreEnhancement": "src/features/auth/model/authStore.ts",
+      "permissionHooks": "src/shared/hooks/usePermission.ts",
+      "protectedLinkComponent": "src/shared/ui/ProtectedLink.tsx",
+      "navItemsUpdate": "src/widgets/sidebar/config/navItems.ts",
+      "tests": [
+        "src/features/auth/model/__tests__/authStore.permissions.test.ts",
+        "src/shared/hooks/__tests__/usePermission.test.ts",
+        "src/shared/ui/__tests__/ProtectedLink.test.tsx"
+      ],
+      "testsPassing": true,
+      "testCount": 59,
+      "coverage": ">85%",
+      "branch": "feature/contract-align/track-g/scoped-perms",
+      "commit": "b438bb6"
+    }
+  }
+  ```
+- **Status:** ✅ EMITTED (2026-01-11 15:38)
 
 ---
 
@@ -360,9 +385,22 @@ Required Types:
 
 | Track | Agent | Branch | Status | Event Emitted | Committed | Tests Pass | Coverage |
 |-------|-------|--------|--------|---------------|-----------|------------|----------|
-| G | scoped-permissions-agent | feature/contract-align/track-g/scoped-perms | 🔲 Pending | ❌ | ❌ | ❌ | - |
+| G | scoped-permissions-agent | feature/contract-align/track-g/scoped-perms | ✅ Complete | ✅ Yes | ✅ b438bb6 | ✅ 59/59 | >85% |
 
-**Phase Status:** 🔲 Not Started
+**Phase Status:** ✅ Complete - Ready for integration
+
+**Track G Completion Summary:**
+- Enhanced authStore.hasPermission() with full department-scoped checking
+- Updated usePermission hooks to support departmentId parameter
+- Added useScopedPermission() convenience hook for current department
+- Created ProtectedLink component with permission-aware rendering
+- Updated navItems.ts with departmentScoped flags for all navigation items
+- Comprehensive test suite: 59 tests passing (20 authStore + 13 hooks + 26 component)
+- All tests passing (59/59)
+- Test coverage >85% for all new code
+- Branch: feature/contract-align/track-g/scoped-perms
+- Commit: b438bb6
+- Event `phase-4-track-g-complete` emitted
 
 ---
 

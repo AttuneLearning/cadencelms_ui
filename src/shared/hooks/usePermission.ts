@@ -10,6 +10,7 @@
 import { useMemo } from 'react';
 import { useAuthStore } from '@/features/auth/model';
 import type { PermissionScope, UserType } from '@/shared/types/auth';
+import { useDepartmentContext } from './useDepartmentContext';
 
 // ============================================================================
 // Permission Checking Hook
@@ -21,7 +22,7 @@ import type { PermissionScope, UserType } from '@/shared/types/auth';
  * Check if user has a specific permission
  *
  * @param permission - The permission to check (e.g., 'content:courses:create')
- * @param scope - Optional scope for department-scoped permissions
+ * @param departmentId - Optional department ID for scoped permissions
  * @returns boolean indicating if user has the permission
  *
  * @example
@@ -35,23 +36,23 @@ import type { PermissionScope, UserType } from '@/shared/types/auth';
  *
  * @example With department scope
  * function DepartmentActions({ departmentId }) {
- *   const canManage = usePermission('content:courses:manage', {
- *     type: 'department',
- *     id: departmentId,
- *   });
+ *   const canManage = usePermission('content:courses:manage', departmentId);
  *
  *   return canManage ? <ManagementPanel /> : <ViewOnlyPanel />;
  * }
  */
 export function usePermission(
   permission: string,
-  scope?: PermissionScope
+  departmentId?: string
 ): boolean {
   const { hasPermission } = useAuthStore();
 
   return useMemo(() => {
-    return hasPermission(permission, scope);
-  }, [hasPermission, permission, scope]);
+    if (departmentId) {
+      return hasPermission(permission, { type: 'department', id: departmentId });
+    }
+    return hasPermission(permission);
+  }, [hasPermission, permission, departmentId]);
 }
 
 // ============================================================================
@@ -329,4 +330,39 @@ export function useAccess() {
     hasAllPermissions,
     hasRole,
   };
+}
+
+// ============================================================================
+// Scoped Permission Hook (Department Context)
+// ============================================================================
+
+/**
+ * useScopedPermission Hook
+ *
+ * Check if user has a specific permission in the currently selected department
+ * This is a convenience hook that automatically uses the current department context
+ *
+ * @param permission - The permission to check (e.g., 'content:courses:create')
+ * @returns boolean indicating if user has the permission in current department
+ *
+ * @example
+ * function CreateCourseButton() {
+ *   const canCreate = useScopedPermission('content:courses:create');
+ *
+ *   if (!canCreate) return null;
+ *
+ *   return <Button>Create Course</Button>;
+ * }
+ */
+export function useScopedPermission(permission: string): boolean {
+  const { hasPermission } = useAuthStore();
+  const { currentDepartmentId } = useDepartmentContext();
+
+  return useMemo(() => {
+    if (currentDepartmentId) {
+      return hasPermission(permission, { type: 'department', id: currentDepartmentId });
+    }
+    // No department selected - check globally
+    return hasPermission(permission);
+  }, [hasPermission, permission, currentDepartmentId]);
 }
