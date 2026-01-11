@@ -1,195 +1,196 @@
 /**
- * Sidebar navigation component
- * Role-based menu with active route highlighting and responsive behavior
+ * Sidebar Navigation Component - Phase 3 Implementation
+ * Version: 2.0.0
+ * Date: 2026-01-10
+ *
+ * Complete navigation system with:
+ * - Section 1: Global Navigation (userType-based)
+ * - Section 2: Department Selector (when user has departments)
+ * - Section 3: Department Actions (when department selected)
+ * - Mobile responsive with slide-in behavior
+ * - Auto-restore last accessed department
  */
 
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { cn } from '@/shared/lib/utils';
-import { useAuth } from '@/features/auth/model/useAuth';
-import { useNavigation } from '@/shared/lib/navigation';
 import {
-  Home,
-  BookOpen,
-  GraduationCap,
-  Users,
-  Settings,
-  BarChart,
-  FileText,
-  Calendar,
-  ChevronLeft,
+  ChevronDown,
   ChevronRight,
-  Shield,
-  Layers,
-  Package,
-  FileCode,
-  ListChecks,
-  HelpCircle,
-  Search,
+  Folder,
+  FolderOpen,
+  AlertCircle,
+  Settings,
+  X,
 } from 'lucide-react';
-import { Button } from '@/shared/ui/button';
-import type { Role } from '@/features/auth/model/types';
+import { useAuthStore } from '@/features/auth/model/authStore';
+import { useNavigationStore } from '@/shared/stores/navigationStore';
+import { GLOBAL_NAV_ITEMS, DEPARTMENT_NAV_ITEMS } from './config/navItems';
+import { NavLink } from './ui/NavLink';
+import { Badge } from '@/shared/ui/badge';
+import { cn } from '@/shared/lib/utils';
+import type { DepartmentNavItem } from './config/navItems';
 
-interface NavItem {
-  label: string;
-  path: string;
-  icon: React.ComponentType<{ className?: string }>;
-  roles: Role[];
+// ============================================================================
+// Types
+// ============================================================================
+
+interface UserDepartment {
+  id: string;
+  name: string;
+  isPrimary: boolean;
+  type: 'staff' | 'learner';
 }
 
-const navItems: NavItem[] = [
-  {
-    label: 'Dashboard',
-    path: '/dashboard',
-    icon: Home,
-    roles: ['learner', 'staff', 'global-admin'],
-  },
-  {
-    label: 'Browse Courses',
-    path: '/learner/catalog',
-    icon: Search,
-    roles: ['learner'],
-  },
-  {
-    label: 'My Courses',
-    path: '/learner/courses',
-    icon: BookOpen,
-    roles: ['learner'],
-  },
-  {
-    label: 'My Learning',
-    path: '/learner/learning',
-    icon: GraduationCap,
-    roles: ['learner'],
-  },
-  {
-    label: 'Progress',
-    path: '/learner/progress',
-    icon: BarChart,
-    roles: ['learner'],
-  },
-  {
-    label: 'Certificates',
-    path: '/learner/certificates',
-    icon: FileText,
-    roles: ['learner'],
-  },
-  {
-    label: 'Course Management',
-    path: '/staff/courses',
-    icon: BookOpen,
-    roles: ['staff', 'global-admin'],
-  },
-  {
-    label: 'Content Library',
-    path: '/staff/content',
-    icon: FileText,
-    roles: ['staff', 'global-admin'],
-  },
-  {
-    label: 'Learners',
-    path: '/staff/learners',
-    icon: Users,
-    roles: ['staff', 'global-admin'],
-  },
-  {
-    label: 'Analytics',
-    path: '/staff/analytics',
-    icon: BarChart,
-    roles: ['staff', 'global-admin'],
-  },
-  {
-    label: 'Schedule',
-    path: '/staff/schedule',
-    icon: Calendar,
-    roles: ['staff', 'global-admin'],
-  },
-  {
-    label: 'User Management',
-    path: '/admin/users',
-    icon: Users,
-    roles: ['global-admin'],
-  },
-  {
-    label: 'Program Management',
-    path: '/admin/programs',
-    icon: Layers,
-    roles: ['global-admin'],
-  },
-  {
-    label: 'Course Management',
-    path: '/admin/courses',
-    icon: BookOpen,
-    roles: ['global-admin'],
-  },
-  {
-    label: 'Class Management',
-    path: '/admin/classes',
-    icon: Calendar,
-    roles: ['global-admin'],
-  },
-  {
-    label: 'Content Library',
-    path: '/admin/content',
-    icon: Package,
-    roles: ['global-admin'],
-  },
-  {
-    label: 'Templates',
-    path: '/admin/templates',
-    icon: FileCode,
-    roles: ['global-admin'],
-  },
-  {
-    label: 'Exercises',
-    path: '/admin/exercises',
-    icon: ListChecks,
-    roles: ['global-admin'],
-  },
-  {
-    label: 'Question Bank',
-    path: '/admin/questions',
-    icon: HelpCircle,
-    roles: ['global-admin'],
-  },
-  {
-    label: 'System Settings',
-    path: '/admin/settings',
-    icon: Settings,
-    roles: ['global-admin'],
-  },
-  {
-    label: 'Roles & Permissions',
-    path: '/admin/roles',
-    icon: Shield,
-    roles: ['global-admin'],
-  },
-  {
-    label: 'Reports',
-    path: '/admin/reports',
-    icon: BarChart,
-    roles: ['global-admin'],
-  },
-];
+interface ProcessedDepartmentNavItem extends Omit<DepartmentNavItem, 'pathTemplate'> {
+  path: string;
+}
+
+// ============================================================================
+// Sidebar Component
+// ============================================================================
 
 export const Sidebar: React.FC = () => {
-  const location = useLocation();
-  const { role } = useAuth();
-  const { isSidebarOpen, isSidebarCollapsed, setSidebarOpen, toggleSidebarCollapse } =
-    useNavigation();
+  const { roleHierarchy, user, hasPermission } = useAuthStore();
+  const {
+    selectedDepartmentId,
+    setSelectedDepartment,
+    rememberDepartment,
+    lastAccessedDepartments,
+    isSidebarOpen,
+    setSidebarOpen,
+  } = useNavigationStore();
 
-  // Filter nav items based on user role
-  const filteredNavItems = navItems.filter(
-    (item) => role && item.roles.includes(role)
-  );
+  // Guard: Must have auth data
+  if (!roleHierarchy || !user) {
+    return null;
+  }
 
-  const isActive = (path: string) => {
-    return location.pathname === path || location.pathname.startsWith(path + '/');
+  const primaryUserType = roleHierarchy.primaryUserType;
+
+  // ================================================================
+  // Filter Global Nav Items
+  // ================================================================
+
+  const globalNavItems = GLOBAL_NAV_ITEMS.filter((item) => {
+    // Check if this item applies to current userType
+    if (!item.userTypes.includes(primaryUserType)) {
+      return false;
+    }
+
+    // Check permission if required
+    if (item.requiredPermission) {
+      return hasPermission(item.requiredPermission);
+    }
+
+    return true;
+  });
+
+  // ================================================================
+  // Get User's Departments
+  // ================================================================
+
+  const userDepartments: UserDepartment[] = React.useMemo(() => {
+    const departments: UserDepartment[] = [];
+
+    // Add staff departments
+    if (roleHierarchy.staffRoles) {
+      for (const deptGroup of roleHierarchy.staffRoles.departmentRoles) {
+        departments.push({
+          id: deptGroup.departmentId,
+          name: deptGroup.departmentName,
+          isPrimary: deptGroup.isPrimary,
+          type: 'staff',
+        });
+      }
+    }
+
+    // Add learner departments
+    if (roleHierarchy.learnerRoles) {
+      for (const deptGroup of roleHierarchy.learnerRoles.departmentRoles) {
+        departments.push({
+          id: deptGroup.departmentId,
+          name: deptGroup.departmentName,
+          isPrimary: false,
+          type: 'learner',
+        });
+      }
+    }
+
+    return departments;
+  }, [roleHierarchy]);
+
+  // ================================================================
+  // Auto-Select Last Accessed Department
+  // ================================================================
+
+  React.useEffect(() => {
+    if (!user || userDepartments.length === 0) return;
+    if (selectedDepartmentId) return; // Already selected
+
+    // Try to restore last accessed department
+    const lastDept = lastAccessedDepartments[user._id];
+
+    if (lastDept && userDepartments.some((d) => d.id === lastDept)) {
+      setSelectedDepartment(lastDept);
+      console.log('[Sidebar] Restored last department:', lastDept);
+    }
+
+    // Otherwise, default to NO department selected
+    // User must explicitly choose
+  }, [
+    user,
+    userDepartments,
+    selectedDepartmentId,
+    lastAccessedDepartments,
+    setSelectedDepartment,
+  ]);
+
+  // ================================================================
+  // Handle Department Selection
+  // ================================================================
+
+  const handleDepartmentClick = (deptId: string) => {
+    // Toggle: clicking selected department deselects it
+    const newSelection = selectedDepartmentId === deptId ? null : deptId;
+
+    setSelectedDepartment(newSelection);
+
+    // Remember this selection for next time
+    if (user && newSelection) {
+      rememberDepartment(user._id, newSelection);
+    }
   };
+
+  // ================================================================
+  // Get Department-Specific Nav Items
+  // ================================================================
+
+  const departmentNavItems: ProcessedDepartmentNavItem[] = React.useMemo(() => {
+    if (!selectedDepartmentId) return [];
+
+    return DEPARTMENT_NAV_ITEMS.filter((item) => {
+      // Check if this item applies to current userType
+      if (!item.userTypes.includes(primaryUserType)) {
+        return false;
+      }
+
+      // Check if user has permission in THIS department
+      return hasPermission(item.requiredPermission, {
+        type: 'department',
+        id: selectedDepartmentId,
+      });
+    }).map((item) => ({
+      ...item,
+      path: item.pathTemplate.replace(':deptId', selectedDepartmentId),
+    }));
+  }, [selectedDepartmentId, primaryUserType, hasPermission]);
+
+  // ================================================================
+  // Render
+  // ================================================================
 
   return (
     <>
-      {/* Mobile overlay */}
+      {/* Mobile Overlay */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/50 lg:hidden"
@@ -200,74 +201,133 @@ export const Sidebar: React.FC = () => {
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed left-0 top-14 z-50 h-[calc(100vh-3.5rem)] border-r bg-background transition-all duration-300',
+          'fixed left-0 top-14 z-50 h-[calc(100vh-3.5rem)] border-r bg-background',
           'lg:sticky lg:top-14 lg:z-30',
-          isSidebarCollapsed ? 'w-16' : 'w-64',
+          'w-64 transition-transform duration-300 flex flex-col',
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         )}
       >
-        <div className="flex h-full flex-col">
-          {/* Collapse toggle button */}
-          <div className="flex items-center justify-end p-2 border-b">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleSidebarCollapse}
-              className="h-8 w-8 p-0"
-              aria-label={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-              {isSidebarCollapsed ? (
-                <ChevronRight className="h-4 w-4" />
-              ) : (
-                <ChevronLeft className="h-4 w-4" />
-              )}
-            </Button>
+        {/* Mobile Close Button */}
+        <div className="lg:hidden flex items-center justify-between p-4 border-b">
+          <span className="font-semibold">Navigation</span>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="p-1 hover:bg-accent rounded"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Section 1: Global Navigation */}
+        <div className="flex-shrink-0 border-b">
+          <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            Navigation
           </div>
-
-          {/* Navigation items */}
-          <nav className="flex-1 overflow-y-auto p-2 space-y-1">
-            {filteredNavItems.map((item) => {
-              const Icon = item.icon;
-              const active = isActive(item.path);
-
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setSidebarOpen(false)}
-                  className={cn(
-                    'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                    'hover:bg-accent hover:text-accent-foreground',
-                    active
-                      ? 'bg-accent text-accent-foreground'
-                      : 'text-muted-foreground',
-                    isSidebarCollapsed && 'justify-center px-2'
-                  )}
-                  title={isSidebarCollapsed ? item.label : undefined}
-                >
-                  <Icon className="h-5 w-5 flex-shrink-0" />
-                  {!isSidebarCollapsed && <span>{item.label}</span>}
-                </Link>
-              );
-            })}
+          <nav className="space-y-1 px-2 pb-4">
+            {globalNavItems.map((item) => (
+              <NavLink
+                key={item.path}
+                label={item.label}
+                path={item.path}
+                icon={item.icon}
+                onClick={() => setSidebarOpen(false)}
+              />
+            ))}
           </nav>
+        </div>
 
-          {/* Footer section */}
-          <div className="border-t p-2">
-            <Link
-              to="/settings"
-              onClick={() => setSidebarOpen(false)}
-              className={cn(
-                'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                'hover:bg-accent hover:text-accent-foreground text-muted-foreground',
-                isSidebarCollapsed && 'justify-center px-2'
-              )}
-              title={isSidebarCollapsed ? 'Settings' : undefined}
-            >
-              <Settings className="h-5 w-5 flex-shrink-0" />
-              {!isSidebarCollapsed && <span>Settings</span>}
-            </Link>
+        {/* Section 2: Department Selector */}
+        {userDepartments.length > 0 && (
+          <div className="flex-shrink-0 border-b">
+            <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              My Departments
+            </div>
+            <div className="space-y-1 px-2 pb-4">
+              {userDepartments.map((dept) => {
+                const isSelected = selectedDepartmentId === dept.id;
+
+                return (
+                  <button
+                    key={dept.id}
+                    onClick={() => handleDepartmentClick(dept.id)}
+                    className={cn(
+                      'w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors',
+                      isSelected
+                        ? 'bg-primary text-primary-foreground'
+                        : 'hover:bg-accent text-muted-foreground'
+                    )}
+                  >
+                    {isSelected ? (
+                      <ChevronDown className="h-4 w-4 flex-shrink-0" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4 flex-shrink-0" />
+                    )}
+                    <Folder className="h-4 w-4 flex-shrink-0" />
+                    <span className="flex-1 text-left truncate">{dept.name}</span>
+                    {dept.isPrimary && (
+                      <Badge variant="secondary" className="text-xs">
+                        Primary
+                      </Badge>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
+        )}
+
+        {/* Section 3: Department-Specific Actions */}
+        {userDepartments.length > 0 && (
+          <div className="flex-1 overflow-y-auto border-b">
+            <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Department Actions
+            </div>
+
+            {/* No Department Selected */}
+            {!selectedDepartmentId && (
+              <div className="px-4 py-8 text-center">
+                <FolderOpen className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
+                <p className="text-sm text-muted-foreground">
+                  Select a department above to see available actions
+                </p>
+              </div>
+            )}
+
+            {/* No Actions Available */}
+            {selectedDepartmentId && departmentNavItems.length === 0 && (
+              <div className="px-4 py-8 text-center">
+                <AlertCircle className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
+                <p className="text-sm text-muted-foreground">
+                  No actions available for this department
+                </p>
+              </div>
+            )}
+
+            {/* Department Actions */}
+            {selectedDepartmentId && departmentNavItems.length > 0 && (
+              <nav className="space-y-1 px-2 pb-4">
+                {departmentNavItems.map((item) => (
+                  <NavLink
+                    key={item.path}
+                    label={item.label}
+                    path={item.path}
+                    icon={item.icon}
+                    onClick={() => setSidebarOpen(false)}
+                  />
+                ))}
+              </nav>
+            )}
+          </div>
+        )}
+
+        {/* Settings Footer */}
+        <div className="flex-shrink-0 p-2 border-t">
+          <NavLink
+            label="Settings"
+            path="/settings"
+            icon={Settings}
+            onClick={() => setSidebarOpen(false)}
+          />
         </div>
       </aside>
     </>
