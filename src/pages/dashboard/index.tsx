@@ -1,23 +1,31 @@
 /**
- * Dashboard Page - Role-based redirect
- * Redirects users to appropriate dashboard based on their role
+ * Dashboard Page - Phase 6 Update
+ * Version: 2.0.0
+ * Date: 2026-01-10
+ *
+ * Redirects users to appropriate dashboard based on V2 defaultDashboard
+ * Uses roleHierarchy from V2 authStore
  */
 
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/features/auth/model/useAuth';
+import { useAuthStore } from '@/features/auth/model';
 
 export const DashboardPage = () => {
-  const { role } = useAuth();
+  const { isAuthenticated, roleHierarchy } = useAuthStore();
 
-  // Redirect to role-specific dashboard
-  switch (role) {
-    case 'learner':
-      return <Navigate to="/learner/dashboard" replace />;
-    case 'staff':
-      return <Navigate to="/staff/dashboard" replace />;
-    case 'global-admin':
-      return <Navigate to="/admin/dashboard" replace />;
-    default:
-      return <Navigate to="/login" replace />;
+  // If not authenticated, redirect to login
+  if (!isAuthenticated || !roleHierarchy) {
+    return <Navigate to="/login" replace />;
   }
+
+  // Use V2 defaultDashboard to determine redirect
+  const dashboardMap: Record<string, string> = {
+    learner: '/learner/dashboard',
+    staff: '/staff/dashboard',
+    admin: '/admin/dashboard',
+  };
+
+  const destination = dashboardMap[roleHierarchy.defaultDashboard] || '/learner/dashboard';
+
+  return <Navigate to={destination} replace />;
 };

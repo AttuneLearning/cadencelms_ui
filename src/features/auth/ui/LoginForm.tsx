@@ -1,5 +1,9 @@
 /**
- * Login form component
+ * Login form component - Phase 6 Implementation
+ * Version: 2.0.0
+ * Date: 2026-01-10
+ *
+ * Updated to use V2 authStore with UserType-based navigation
  * Uses react-hook-form with zod validation
  */
 
@@ -10,8 +14,9 @@ import { z } from 'zod';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
-import { useAuth } from '../model/useAuth';
-import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../model';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { AlertCircle } from 'lucide-react';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -21,9 +26,9 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export const LoginForm: React.FC = () => {
-  const { login } = useAuth();
+  const { login, roleHierarchy, error: authError } = useAuthStore();
   const navigate = useNavigate();
-  const [error, setError] = React.useState<string | null>(null);
+  const location = useLocation();
 
   const {
     register,
@@ -35,34 +40,38 @@ export const LoginForm: React.FC = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      setError(null);
-      console.log('[LoginForm] ===== LOGIN ATTEMPT =====');
-      console.log('[LoginForm] Email:', data.email);
-      console.log('[LoginForm] Password length:', data.password.length);
-      console.log('[LoginForm] Calling login()...');
+      console.log('[LoginForm] Starting login...');
 
+      // Call V2 login from authStore
       await login(data);
 
-      console.log('[LoginForm] ===== LOGIN SUCCESS =====');
-      console.log('[LoginForm] Navigating to dashboard...');
-      navigate('/dashboard');
+      console.log('[LoginForm] Login successful');
+
+      // Get the current auth state after login
+      const authState = useAuthStore.getState();
+      const { roleHierarchy: currentRoleHierarchy } = authState;
+
+      // Check if there was an intended destination
+      const from = (location.state as any)?.from?.pathname;
+
+      // Determine navigation destination
+      let destination = from || '/dashboard';
+
+      // Use V2 defaultDashboard if available
+      if (currentRoleHierarchy?.defaultDashboard) {
+        const dashboardMap: Record<string, string> = {
+          learner: '/learner/dashboard',
+          staff: '/staff/dashboard',
+          admin: '/admin/dashboard',
+        };
+        destination = from || dashboardMap[currentRoleHierarchy.defaultDashboard] || '/dashboard';
+      }
+
+      console.log('[LoginForm] Navigating to:', destination);
+      navigate(destination, { replace: true });
     } catch (err: any) {
-      console.error('[LoginForm] ===== LOGIN FAILED =====');
-      console.error('[LoginForm] Error object:', err);
-      console.error('[LoginForm] Error name:', err?.name);
-      console.error('[LoginForm] Error message:', err?.message);
-      console.error('[LoginForm] Error status:', err?.status);
-      console.error('[LoginForm] Error response:', err?.response?.data);
-
-      // ApiClientError has message property directly
-      // Also check for axios error format as fallback
-      const errorMessage =
-        err?.message ||
-        err?.response?.data?.message ||
-        'Invalid email or password';
-
-      console.error('[LoginForm] Final error message to display:', errorMessage);
-      setError(errorMessage);
+      console.error('[LoginForm] Login failed:', err);
+      // Error is automatically set in authStore, will display from authError
     }
   };
 
@@ -94,9 +103,13 @@ export const LoginForm: React.FC = () => {
         )}
       </div>
 
-      {error && (
-        <div className="p-4 bg-red-50 border-2 border-red-500 rounded-md">
-          <p className="text-base font-bold text-red-600">{error}</p>
+      {authError && (
+        <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-md">
+          <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-red-900">Login Failed</p>
+            <p className="text-sm text-red-700 mt-1">{authError}</p>
+          </div>
         </div>
       )}
 
