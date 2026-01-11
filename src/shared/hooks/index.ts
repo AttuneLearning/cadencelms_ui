@@ -15,3 +15,7 @@ export {
   useDepartmentPermissions,
   useAccess,
 } from './usePermission';
+
+// Department context hook (Contract Alignment - Track C)
+export { useDepartmentContext } from './useDepartmentContext';
+export type { DepartmentContext } from './useDepartmentContext';
