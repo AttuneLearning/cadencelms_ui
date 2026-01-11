@@ -92,7 +92,8 @@ This document tracks all events, signals, checkpoints, and coordination between 
 - **Emitted by:** Track D (ui-context-agent)
 - **When:** All Track D deliverables complete and committed
 - **Consumed by:** Integration coordinator
-- **Status:** 🔲 Pending
+- **Status:** ✅ EMITTED (2026-01-11 15:24)
+- **Summary:** Header and Sidebar updated to use useDepartmentContext hook with comprehensive testing (58 tests passing)
 
 ---
 
@@ -311,9 +312,9 @@ Required Types:
 | Track | Agent | Branch | Status | Event Emitted | Committed | Tests Pass | Coverage |
 |-------|-------|--------|--------|---------------|-----------|------------|----------|
 | C | dept-context-agent | feature/contract-align/track-c/dept-context | ✅ Complete | ✅ Yes | 🔄 Pending | ✅ 29/29 | 95%+ |
-| D | ui-context-agent | feature/contract-align/track-d/ui-context | 🔲 Pending | ❌ | ❌ | ❌ | - |
+| D | ui-context-agent | feature/contract-align/track-d/ui-context | ✅ Complete | ✅ Yes | ✅ d40f14a | ✅ 58/58 | 90%+ |
 
-**Phase Status:** 🔄 In Progress (Track C Complete, Track D Pending)
+**Phase Status:** ✅ Complete (Both tracks complete, ready for integration)
 
 **Track C Completion Summary:**
 - Created `useDepartmentContext()` hook combining authStore and navigationStore
@@ -325,6 +326,22 @@ Required Types:
 - Branch: feature/contract-align/track-c/dept-context
 - Ready for commit and integration
 - Event `dept-context-hook-ready` emitted for Track D
+
+**Track D Completion Summary:**
+- Updated Header.tsx to display department context with useDepartmentContext hook
+  - Shows current department name and roles in user dropdown
+  - Uses primaryUserType for navigation filtering
+  - Department info displayed with badges and overflow handling
+- Updated Sidebar.tsx to use department-aware navigation
+  - Integrated switchDepartment API call on department selection
+  - Loading states with spinner during department switch
+  - Error display when department switch fails
+  - Permission-based nav item filtering using hasPermission from hook
+- Created comprehensive unit tests (24 Header + 34 Sidebar = 58 tests)
+- All tests passing (58/58)
+- Branch: feature/contract-align/track-d/ui-context
+- Commit: d40f14a
+- Event `phase-2-track-d-complete` emitted
 
 ---
 
