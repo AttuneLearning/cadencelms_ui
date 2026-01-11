@@ -1,8 +1,16 @@
+/**
+ * Header Component - Phase 3 Update (Track F)
+ * Version: 2.1.0
+ * Date: 2026-01-11
+ *
+ * Updated to use server-provided displayAs labels from roleHierarchy
+ */
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { GraduationCap, Menu, LogOut, Settings, BookOpen, Building2 } from 'lucide-react';
 import { ThemeToggle } from '@/features/theme/ui/ThemeToggle';
-import { useAuth } from '@/features/auth/model/useAuth';
+import { useAuthStore } from '@/features/auth/model/authStore';
 import { useNavigation } from '@/shared/lib/navigation';
 import { useDepartmentContext } from '@/shared/hooks';
 import { Button } from '@/shared/ui/button';
@@ -17,34 +25,35 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
-import type { Role } from '@/features/auth/model/types';
+import { getUserTypeDisplayLabel } from '@/shared/lib/displayUtils';
+import type { UserType } from '@/shared/types/auth';
 
 interface NavItem {
   label: string;
   path: string;
-  roles: Role[];
+  userTypes: UserType[];
 }
 
 const navItems: NavItem[] = [
   {
     label: 'Dashboard',
     path: '/dashboard',
-    roles: ['learner', 'staff', 'global-admin'],
+    userTypes: ['learner', 'staff', 'global-admin'],
   },
   {
     label: 'Courses',
     path: '/courses',
-    roles: ['learner', 'staff', 'global-admin'],
+    userTypes: ['learner', 'staff', 'global-admin'],
   },
   {
     label: 'Admin',
     path: '/admin',
-    roles: ['global-admin'],
+    userTypes: ['global-admin'],
   },
 ];
 
 export const Header: React.FC = () => {
-  const { isAuthenticated, user, logout, roleHierarchy } = useAuth();
+  const { isAuthenticated, user, roleHierarchy, logout } = useAuthStore();
   const { toggleSidebar } = useNavigation();
   const {
     currentDepartmentName,
@@ -65,12 +74,20 @@ export const Header: React.FC = () => {
     return email.charAt(0).toUpperCase();
   };
 
-  // Get primary user type for display
-  const primaryUserType = roleHierarchy?.primaryUserType || null;
+  // Get primary user type display label using server displayAs
+  const getPrimaryUserTypeLabel = (): string => {
+    if (!roleHierarchy?.primaryUserType) return 'User';
 
-  // Filter nav items based on user type (simplified for header)
+    // Use server-provided displayAs from roleHierarchy
+    return getUserTypeDisplayLabel(
+      roleHierarchy.primaryUserType,
+      roleHierarchy.userTypeDisplayMap
+    );
+  };
+
+  // Filter nav items based on user types
   const filteredNavItems = navItems.filter(
-    (item) => primaryUserType && item.roles.includes(primaryUserType as Role)
+    (item) => user?.userTypes.some(ut => item.userTypes.includes(ut))
   );
 
   return (
@@ -146,7 +163,7 @@ export const Header: React.FC = () => {
                           {user?.email || 'User'}
                         </p>
                         <p className="text-xs leading-none text-muted-foreground">
-                          {primaryUserType || 'No user type'}
+                          {getPrimaryUserTypeLabel()}
                         </p>
                         {currentDepartmentName && (
                           <div className="flex items-center gap-1 mt-2 pt-2 border-t">

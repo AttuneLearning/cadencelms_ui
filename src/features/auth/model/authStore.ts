@@ -24,6 +24,9 @@ import type {
   LoginCredentials,
   LoginResponse,
   MyRolesResponse,
+  UserType,
+  UserTypeObject,
+  RoleObject,
 } from '@/shared/types/auth';
 import {
   login as apiLogin,
@@ -40,6 +43,11 @@ import {
   getAccessTokenValue,
 } from '@/shared/utils/tokenStorage';
 import { useNavigationStore } from '@/shared/stores/navigationStore';
+import {
+  extractUserTypeKeys,
+  buildUserTypeDisplayMap,
+  buildRoleDisplayMap,
+} from '@/shared/lib/displayUtils';
 
 // ============================================================================
 // State Interface
@@ -68,6 +76,44 @@ interface AuthState {
 
   // Role checking
   hasRole: (role: string, departmentId?: string) => boolean;
+}
+
+// ============================================================================
+// Helper Functions
+// ============================================================================
+
+/**
+ * Extract all unique roles from department memberships to build role display map
+ */
+function extractRolesFromMemberships(memberships: any[]): RoleObject[] {
+  const roleSet = new Set<string>();
+  const roleObjects: RoleObject[] = [];
+
+  for (const membership of memberships) {
+    if (membership.roles && Array.isArray(membership.roles)) {
+      for (const role of membership.roles) {
+        if (typeof role === 'object' && role.role && role.displayAs) {
+          // Server provides RoleObject format
+          if (!roleSet.has(role.role)) {
+            roleSet.add(role.role);
+            roleObjects.push(role);
+          }
+        } else if (typeof role === 'string') {
+          // Fallback for string-only roles (shouldn't happen in V2.1)
+          if (!roleSet.has(role)) {
+            roleSet.add(role);
+            // Create RoleObject with formatted display name
+            roleObjects.push({
+              role: role,
+              displayAs: role.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+            });
+          }
+        }
+      }
+    }
+  }
+
+  return roleObjects;
 }
 
 // ============================================================================
@@ -103,13 +149,26 @@ export const useAuthStore = create<AuthState>()(
 
           const { data } = response;
 
+          // V2.1: Extract UserType keys from UserTypeObject[]
+          const userTypeKeys: UserType[] = extractUserTypeKeys(data.userTypes);
+
+          // V2.1: Build display maps from server-provided displayAs values
+          const userTypeDisplayMap = buildUserTypeDisplayMap(data.userTypes);
+          const roleObjects = extractRolesFromMemberships(data.departmentMemberships);
+          const roleDisplayMap = buildRoleDisplayMap(roleObjects);
+
+          console.log('[AuthStore] Display maps built:', {
+            userTypeDisplayMap,
+            roleDisplayMap,
+          });
+
           // Build User object from response
           const user: User = {
             _id: data.user.id,
             email: data.user.email,
             firstName: data.user.firstName,
             lastName: data.user.lastName,
-            userTypes: data.userTypes,
+            userTypes: userTypeKeys, // Store UserType[] (keys only)
             defaultDashboard: data.defaultDashboard,
             lastSelectedDepartment: data.lastSelectedDepartment,
             isActive: data.user.isActive,
@@ -129,11 +188,14 @@ export const useAuthStore = create<AuthState>()(
 
           // Build RoleHierarchy from response
           const roleHierarchy: RoleHierarchy = {
-            primaryUserType: data.userTypes[0], // First userType is primary
-            allUserTypes: data.userTypes,
+            primaryUserType: userTypeKeys[0], // First userType is primary
+            allUserTypes: userTypeKeys,
             defaultDashboard: data.defaultDashboard,
             globalRoles: [], // Global-admins will have globalRoles populated
             allPermissions: data.allAccessRights,
+            // V2.1: Add display maps to roleHierarchy
+            userTypeDisplayMap,
+            roleDisplayMap,
           };
 
           // Process department memberships into staffRoles/learnerRoles
@@ -145,14 +207,19 @@ export const useAuthStore = create<AuthState>()(
           };
 
           for (const membership of data.departmentMemberships) {
+            // Extract role keys (handles both string[] and RoleObject[] formats)
+            const roleKeys = membership.roles.map((r: any) =>
+              typeof r === 'string' ? r : r.role
+            );
+
             // Convert DepartmentMembership to DepartmentRoleGroup format
             const roleGroup = {
               departmentId: membership.departmentId,
               departmentName: membership.departmentName,
               isPrimary: membership.isPrimary,
-              roles: membership.roles.map((roleName) => ({
+              roles: roleKeys.map((roleName: string) => ({
                 role: roleName,
-                displayName: roleName.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+                displayName: roleDisplayMap[roleName] || roleName.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
                 scopeType: 'department' as const,
                 scopeId: membership.departmentId,
                 scopeName: membership.departmentName,
@@ -161,10 +228,10 @@ export const useAuthStore = create<AuthState>()(
             };
 
             // Determine if this is a staff or learner membership based on roles
-            const hasStaffRole = membership.roles.some((role) =>
+            const hasStaffRole = roleKeys.some((role: string) =>
               ['instructor', 'content-admin', 'department-admin'].includes(role)
             );
-            const hasLearnerRole = membership.roles.some((role) =>
+            const hasLearnerRole = roleKeys.some((role: string) =>
               ['course-taker', 'auditor', 'learner-supervisor'].includes(role)
             );
 
@@ -177,12 +244,12 @@ export const useAuthStore = create<AuthState>()(
           }
 
           // Add staffRoles if user is staff
-          if (data.userTypes.includes('staff')) {
+          if (userTypeKeys.includes('staff')) {
             roleHierarchy.staffRoles = staffDepartments;
           }
 
           // Add learnerRoles if user is learner
-          if (data.userTypes.includes('learner')) {
+          if (userTypeKeys.includes('learner')) {
             roleHierarchy.learnerRoles = learnerDepartments;
           }
 
@@ -319,11 +386,19 @@ export const useAuthStore = create<AuthState>()(
 
           const { data } = response;
 
+          // V2.1: Extract UserType keys from UserTypeObject[]
+          const userTypeKeys: UserType[] = extractUserTypeKeys(data.userTypes);
+
+          // V2.1: Build display maps from server-provided displayAs values
+          const userTypeDisplayMap = buildUserTypeDisplayMap(data.userTypes);
+          const roleObjects = extractRolesFromMemberships(data.departmentMemberships);
+          const roleDisplayMap = buildRoleDisplayMap(roleObjects);
+
           // Build User object
           const user: User = {
             _id: accessToken.value, // We don't have full user data, will be updated
             email: '', // Will be updated from full user endpoint
-            userTypes: data.userTypes,
+            userTypes: userTypeKeys,
             defaultDashboard: data.defaultDashboard,
             lastSelectedDepartment: data.lastSelectedDepartment,
             isActive: true,
@@ -333,11 +408,14 @@ export const useAuthStore = create<AuthState>()(
 
           // Build RoleHierarchy
           const roleHierarchy: RoleHierarchy = {
-            primaryUserType: data.userTypes[0],
-            allUserTypes: data.userTypes,
+            primaryUserType: userTypeKeys[0],
+            allUserTypes: userTypeKeys,
             defaultDashboard: data.defaultDashboard,
             globalRoles: [],
             allPermissions: data.allAccessRights,
+            // V2.1: Add display maps to roleHierarchy
+            userTypeDisplayMap,
+            roleDisplayMap,
           };
 
           // Process department memberships (same logic as login)
@@ -349,13 +427,18 @@ export const useAuthStore = create<AuthState>()(
           };
 
           for (const membership of data.departmentMemberships) {
+            // Extract role keys (handles both string[] and RoleObject[] formats)
+            const roleKeys = membership.roles.map((r: any) =>
+              typeof r === 'string' ? r : r.role
+            );
+
             const roleGroup = {
               departmentId: membership.departmentId,
               departmentName: membership.departmentName,
               isPrimary: membership.isPrimary,
-              roles: membership.roles.map((roleName) => ({
+              roles: roleKeys.map((roleName: string) => ({
                 role: roleName,
-                displayName: roleName.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+                displayName: roleDisplayMap[roleName] || roleName.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
                 scopeType: 'department' as const,
                 scopeId: membership.departmentId,
                 scopeName: membership.departmentName,
@@ -363,10 +446,10 @@ export const useAuthStore = create<AuthState>()(
               })),
             };
 
-            const hasStaffRole = membership.roles.some((role) =>
+            const hasStaffRole = roleKeys.some((role: string) =>
               ['instructor', 'content-admin', 'department-admin'].includes(role)
             );
-            const hasLearnerRole = membership.roles.some((role) =>
+            const hasLearnerRole = roleKeys.some((role: string) =>
               ['course-taker', 'auditor', 'learner-supervisor'].includes(role)
             );
 
@@ -378,10 +461,10 @@ export const useAuthStore = create<AuthState>()(
             }
           }
 
-          if (data.userTypes.includes('staff')) {
+          if (userTypeKeys.includes('staff')) {
             roleHierarchy.staffRoles = staffDepartments;
           }
-          if (data.userTypes.includes('learner')) {
+          if (userTypeKeys.includes('learner')) {
             roleHierarchy.learnerRoles = learnerDepartments;
           }
 
