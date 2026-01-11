@@ -33,6 +33,8 @@ export interface GlobalNavItem {
   icon: LucideIcon;
   requiredPermission?: string;
   userTypes: UserType[];
+  /** If true, check permission in currently selected department only */
+  departmentScoped?: boolean;
 }
 
 export const GLOBAL_NAV_ITEMS: GlobalNavItem[] = [
@@ -87,6 +89,7 @@ export const GLOBAL_NAV_ITEMS: GlobalNavItem[] = [
     icon: Calendar,
     userTypes: ['staff'],
     requiredPermission: 'class:view-own',
+    departmentScoped: true, // Check in current department only
   },
   {
     label: 'Analytics',
@@ -94,6 +97,7 @@ export const GLOBAL_NAV_ITEMS: GlobalNavItem[] = [
     icon: BarChart,
     userTypes: ['staff'],
     requiredPermission: 'dashboard:view-department-overview',
+    departmentScoped: true, // Check in current department only
   },
   {
     label: 'Reports',
@@ -101,6 +105,7 @@ export const GLOBAL_NAV_ITEMS: GlobalNavItem[] = [
     icon: FileText,
     userTypes: ['staff'],
     requiredPermission: 'report:view-own-classes',
+    departmentScoped: true, // Check in current department only
   },
   {
     label: 'Grading',
@@ -108,6 +113,7 @@ export const GLOBAL_NAV_ITEMS: GlobalNavItem[] = [
     icon: FileText,
     userTypes: ['staff'],
     requiredPermission: 'grade:edit-department',
+    departmentScoped: true, // Check in current department only
   },
 
   // ============================================================
@@ -118,6 +124,7 @@ export const GLOBAL_NAV_ITEMS: GlobalNavItem[] = [
     path: '/admin/dashboard',
     icon: Home,
     userTypes: ['global-admin'],
+    departmentScoped: false, // Global admin permissions (not department-specific)
   },
   {
     label: 'User Management',
@@ -125,6 +132,7 @@ export const GLOBAL_NAV_ITEMS: GlobalNavItem[] = [
     icon: Users,
     userTypes: ['global-admin'],
     requiredPermission: 'user:view',
+    departmentScoped: false, // Global admin permissions (not department-specific)
   },
   {
     label: 'Department Management',
@@ -132,6 +140,7 @@ export const GLOBAL_NAV_ITEMS: GlobalNavItem[] = [
     icon: Building,
     userTypes: ['global-admin'],
     requiredPermission: 'department:view',
+    departmentScoped: false, // Global admin permissions (not department-specific)
   },
   {
     label: 'System Settings',
@@ -139,6 +148,7 @@ export const GLOBAL_NAV_ITEMS: GlobalNavItem[] = [
     icon: Settings,
     userTypes: ['global-admin'],
     requiredPermission: 'settings:view',
+    departmentScoped: false, // Global admin permissions (not department-specific)
   },
 ];
 
@@ -152,6 +162,8 @@ export interface DepartmentNavItem {
   icon: LucideIcon;
   requiredPermission: string; // Must have in selected department
   userTypes: UserType[];
+  /** Always true for department items - permission must exist in the specific department */
+  departmentScoped: true;
 }
 
 export const DEPARTMENT_NAV_ITEMS: DepartmentNavItem[] = [
@@ -164,6 +176,7 @@ export const DEPARTMENT_NAV_ITEMS: DepartmentNavItem[] = [
     icon: Plus,
     requiredPermission: 'course:create-department',
     userTypes: ['staff'],
+    departmentScoped: true,
   },
   {
     label: 'Manage Courses',
@@ -171,6 +184,7 @@ export const DEPARTMENT_NAV_ITEMS: DepartmentNavItem[] = [
     icon: BookOpen,
     requiredPermission: 'course:view-department',
     userTypes: ['staff'],
+    departmentScoped: true,
   },
   {
     label: 'Manage Classes',
@@ -178,6 +192,7 @@ export const DEPARTMENT_NAV_ITEMS: DepartmentNavItem[] = [
     icon: Calendar,
     requiredPermission: 'class:view-department',
     userTypes: ['staff'],
+    departmentScoped: true,
   },
   {
     label: 'Student Progress',
@@ -185,6 +200,7 @@ export const DEPARTMENT_NAV_ITEMS: DepartmentNavItem[] = [
     icon: Users,
     requiredPermission: 'student:view-department',
     userTypes: ['staff'],
+    departmentScoped: true,
   },
   {
     label: 'Department Reports',
@@ -192,6 +208,7 @@ export const DEPARTMENT_NAV_ITEMS: DepartmentNavItem[] = [
     icon: FileText,
     requiredPermission: 'report:view-department-all',
     userTypes: ['staff'],
+    departmentScoped: true,
   },
   {
     label: 'Department Settings',
@@ -199,6 +216,7 @@ export const DEPARTMENT_NAV_ITEMS: DepartmentNavItem[] = [
     icon: Settings,
     requiredPermission: 'department:edit',
     userTypes: ['staff'],
+    departmentScoped: true,
   },
 
   // ============================================================
@@ -210,6 +228,7 @@ export const DEPARTMENT_NAV_ITEMS: DepartmentNavItem[] = [
     icon: Search,
     requiredPermission: 'course:view-department',
     userTypes: ['learner'],
+    departmentScoped: true,
   },
   {
     label: 'My Enrollments',
@@ -217,6 +236,7 @@ export const DEPARTMENT_NAV_ITEMS: DepartmentNavItem[] = [
     icon: BookOpen,
     requiredPermission: 'course:enroll-department',
     userTypes: ['learner'],
+    departmentScoped: true,
   },
   {
     label: 'Department Progress',
@@ -224,5 +244,6 @@ export const DEPARTMENT_NAV_ITEMS: DepartmentNavItem[] = [
     icon: TrendingUp,
     requiredPermission: 'dashboard:view-my-progress',
     userTypes: ['learner'],
+    departmentScoped: true,
   },
 ];
