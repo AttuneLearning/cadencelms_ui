@@ -1,5 +1,9 @@
 /**
  * App router with authentication guards
+ * Version: 2.0.0 - Phase 4 Implementation
+ * Date: 2026-01-10
+ *
+ * Updated to use V2 role system with UserTypes and permissions
  */
 
 import { Routes, Route, Navigate } from 'react-router-dom';
@@ -9,7 +13,12 @@ import { DashboardPage } from '@/pages/dashboard';
 // import { CoursesPage } from '@/pages/courses';
 // import { CourseViewerPage } from '@/pages/course-viewer';
 import { NotFoundPage } from '@/pages/not-found';
-import { ProtectedRoute } from './guards';
+import {
+  ProtectedRoute,
+  StaffOnlyRoute,
+  LearnerOnlyRoute,
+  AdminOnlyRoute,
+} from './ProtectedRoute';
 
 // Staff pages
 import { StaffDashboardPage } from '@/pages/staff/dashboard';
@@ -57,6 +66,9 @@ import { AuditLogsPage, AuditLogDetailPage } from '@/pages/admin/audit-logs';
 // Profile page
 import { ProfilePage } from '@/pages/profile/ProfilePage';
 
+// Select department page (V2)
+import { SelectDepartmentPage } from '@/pages/select-department';
+
 // Learner pages
 import { LearnerDashboardPage } from '@/pages/learner/dashboard';
 import { ExerciseTakingPage } from '@/pages/learner/exercises/ExerciseTakingPage';
@@ -91,6 +103,7 @@ export function AppRouter() {
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
+      <Route path="/select-department" element={<SelectDepartmentPage />} />
       <Route path="/404" element={<NotFoundPage />} />
 
       {/* Protected routes */}
@@ -128,115 +141,115 @@ export function AppRouter() {
         }
       />
 
-      {/* Learner-only routes */}
+      {/* Learner-only routes (V2) */}
       <Route
         path="/learner/dashboard"
         element={
-          <ProtectedRoute roles={['learner']}>
+          <LearnerOnlyRoute>
             <LearnerDashboardPage />
-          </ProtectedRoute>
+          </LearnerOnlyRoute>
         }
       />
       {/* My Learning Route */}
       <Route
         path="/learner/learning"
         element={
-          <ProtectedRoute roles={['learner']}>
+          <LearnerOnlyRoute>
             <MyLearningPage />
-          </ProtectedRoute>
+          </LearnerOnlyRoute>
         }
       />
       {/* Course Catalog Routes */}
       <Route
         path="/learner/catalog"
         element={
-          <ProtectedRoute roles={['learner']}>
+          <LearnerOnlyRoute>
             <CourseCatalogPage />
-          </ProtectedRoute>
+          </LearnerOnlyRoute>
         }
       />
       <Route
         path="/learner/catalog/:courseId"
         element={
-          <ProtectedRoute roles={['learner']}>
+          <LearnerOnlyRoute>
             <CourseDetailsPage />
-          </ProtectedRoute>
+          </LearnerOnlyRoute>
         }
       />
       {/* My Courses Route */}
       <Route
         path="/learner/courses"
         element={
-          <ProtectedRoute roles={['learner']}>
+          <LearnerOnlyRoute>
             <MyCoursesPage />
-          </ProtectedRoute>
+          </LearnerOnlyRoute>
         }
       />
       {/* Course Player Routes */}
       <Route
         path="/learner/courses/:courseId/player"
         element={
-          <ProtectedRoute roles={['learner']}>
+          <LearnerOnlyRoute>
             <CoursePlayerPage />
-          </ProtectedRoute>
+          </LearnerOnlyRoute>
         }
       />
       <Route
         path="/learner/courses/:courseId/player/:contentId"
         element={
-          <ProtectedRoute roles={['learner']}>
+          <LearnerOnlyRoute>
             <CoursePlayerPage />
-          </ProtectedRoute>
+          </LearnerOnlyRoute>
         }
       />
       <Route
         path="/learner/exercises/:exerciseId/take"
         element={
-          <ProtectedRoute roles={['learner']}>
+          <LearnerOnlyRoute>
             <ExerciseTakingPage />
-          </ProtectedRoute>
+          </LearnerOnlyRoute>
         }
       />
       <Route
         path="/learner/exercises/:exerciseId/results/:attemptId"
         element={
-          <ProtectedRoute roles={['learner']}>
+          <LearnerOnlyRoute>
             <ExerciseResultsPage />
-          </ProtectedRoute>
+          </LearnerOnlyRoute>
         }
       />
       {/* Progress Routes */}
       <Route
         path="/learner/progress"
         element={
-          <ProtectedRoute roles={['learner']}>
+          <LearnerOnlyRoute>
             <ProgressDashboardPage />
-          </ProtectedRoute>
+          </LearnerOnlyRoute>
         }
       />
       <Route
         path="/learner/courses/:courseId/progress"
         element={
-          <ProtectedRoute roles={['learner']}>
+          <LearnerOnlyRoute>
             <CourseProgressPage />
-          </ProtectedRoute>
+          </LearnerOnlyRoute>
         }
       />
       {/* Certificates Routes */}
       <Route
         path="/learner/certificates"
         element={
-          <ProtectedRoute roles={['learner']}>
+          <LearnerOnlyRoute>
             <CertificatesPage />
-          </ProtectedRoute>
+          </LearnerOnlyRoute>
         }
       />
       <Route
         path="/learner/certificates/:certificateId"
         element={
-          <ProtectedRoute roles={['learner']}>
+          <LearnerOnlyRoute>
             <CertificateViewPage />
-          </ProtectedRoute>
+          </LearnerOnlyRoute>
         }
       />
 
@@ -244,145 +257,145 @@ export function AppRouter() {
       <Route
         path="/staff/dashboard"
         element={
-          <ProtectedRoute roles={['staff', 'global-admin']}>
+          <StaffOnlyRoute>
             <StaffDashboardPage />
-          </ProtectedRoute>
+          </StaffOnlyRoute>
         }
       />
       <Route
         path="/staff/analytics"
         element={
-          <ProtectedRoute roles={['staff', 'global-admin']}>
+          <StaffOnlyRoute>
             <CourseAnalyticsPage />
-          </ProtectedRoute>
+          </StaffOnlyRoute>
         }
       />
       <Route
         path="/staff/students"
         element={
-          <ProtectedRoute roles={['staff', 'global-admin']}>
+          <StaffOnlyRoute>
             <StudentProgressPage />
-          </ProtectedRoute>
+          </StaffOnlyRoute>
         }
       />
       <Route
         path="/staff/students/:studentId"
         element={
-          <ProtectedRoute roles={['staff', 'global-admin']}>
+          <StaffOnlyRoute>
             <StudentDetailPage />
-          </ProtectedRoute>
+          </StaffOnlyRoute>
         }
       />
       <Route
         path="/staff/courses/:courseId/modules/:moduleId/edit"
         element={
-          <ProtectedRoute roles={['staff', 'global-admin']}>
+          <StaffOnlyRoute>
             <ModuleEditorPage />
-          </ProtectedRoute>
+          </StaffOnlyRoute>
         }
       />
       <Route
         path="/staff/courses"
         element={
-          <ProtectedRoute roles={['staff', 'global-admin']}>
+          <StaffOnlyRoute>
             <StaffCoursesPage />
-          </ProtectedRoute>
+          </StaffOnlyRoute>
         }
       />
       <Route
         path="/staff/courses/new"
         element={
-          <ProtectedRoute roles={['staff', 'global-admin']}>
+          <StaffOnlyRoute>
             <CourseEditorPage />
-          </ProtectedRoute>
+          </StaffOnlyRoute>
         }
       />
       <Route
         path="/staff/courses/:courseId/edit"
         element={
-          <ProtectedRoute roles={['staff', 'global-admin']}>
+          <StaffOnlyRoute>
             <CourseEditorPage />
-          </ProtectedRoute>
+          </StaffOnlyRoute>
         }
       />
       <Route
         path="/staff/courses/content/upload"
         element={
-          <ProtectedRoute roles={['staff', 'global-admin']}>
+          <StaffOnlyRoute>
             <ContentUploaderPage />
-          </ProtectedRoute>
+          </StaffOnlyRoute>
         }
       />
       <Route
         path="/staff/courses/exercises/new"
         element={
-          <ProtectedRoute roles={['staff', 'global-admin']}>
+          <StaffOnlyRoute>
             <ExerciseBuilderPage />
-          </ProtectedRoute>
+          </StaffOnlyRoute>
         }
       />
       <Route
         path="/staff/courses/exercises/:exerciseId"
         element={
-          <ProtectedRoute roles={['staff', 'global-admin']}>
+          <StaffOnlyRoute>
             <ExerciseBuilderPage />
-          </ProtectedRoute>
+          </StaffOnlyRoute>
         }
       />
       <Route
         path="/staff/courses/:courseId/preview"
         element={
-          <ProtectedRoute roles={['staff', 'global-admin']}>
+          <StaffOnlyRoute>
             <CoursePreviewPage />
-          </ProtectedRoute>
+          </StaffOnlyRoute>
         }
       />
       <Route
         path="/staff/courses/:courseId/preview/:moduleId"
         element={
-          <ProtectedRoute roles={['staff', 'global-admin']}>
+          <StaffOnlyRoute>
             <CoursePreviewPage />
-          </ProtectedRoute>
+          </StaffOnlyRoute>
         }
       />
       <Route
         path="/staff/classes"
         element={
-          <ProtectedRoute roles={['staff', 'global-admin']}>
+          <StaffOnlyRoute>
             <StaffClassManagementPage />
-          </ProtectedRoute>
+          </StaffOnlyRoute>
         }
       />
       <Route
         path="/staff/classes/:classId"
         element={
-          <ProtectedRoute roles={['staff', 'global-admin']}>
+          <StaffOnlyRoute>
             <StaffClassDetailsPage />
-          </ProtectedRoute>
+          </StaffOnlyRoute>
         }
       />
       <Route
         path="/staff/grading"
         element={
-          <ProtectedRoute roles={['staff', 'global-admin']}>
+          <StaffOnlyRoute>
             <GradingPage />
-          </ProtectedRoute>
+          </StaffOnlyRoute>
         }
       />
       <Route
         path="/staff/grading/:attemptId"
         element={
-          <ProtectedRoute roles={['staff', 'global-admin']}>
+          <StaffOnlyRoute>
             <GradingDetailPage />
-          </ProtectedRoute>
+          </StaffOnlyRoute>
         }
       />
       <Route
         path="/staff/reports"
         element={
-          <ProtectedRoute roles={['staff', 'global-admin']}>
+          <StaffOnlyRoute>
             <StaffReportsPage />
-          </ProtectedRoute>
+          </StaffOnlyRoute>
         }
       />
 
@@ -390,209 +403,209 @@ export function AppRouter() {
       <Route
         path="/admin"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <AdminDashboardPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/dashboard"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <AdminDashboardPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/users"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <UserManagementPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/programs"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <ProgramManagementPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/courses"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <CourseManagementPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/classes"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <ClassManagementPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/content"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <ContentManagementPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/templates"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <TemplateManagementPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/exercises"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <ExerciseManagementPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/questions"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <QuestionBankPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/departments"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <DepartmentManagementPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/staff"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <StaffManagementPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/learners"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <LearnerManagementPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/academic-years"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <AcademicYearManagementPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/certificates"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <CertificateTemplateManagementPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/reports"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <ReportBuilderPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/reports/templates"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <ReportTemplatesPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/reports/:reportId"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <ReportViewerPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/audit-logs"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <AuditLogsPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/audit-logs/:logId"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <AuditLogDetailPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/settings"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <SettingsDashboardPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/settings/general"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <GeneralSettingsPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/settings/email"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <EmailSettingsPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/settings/notifications"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <NotificationSettingsPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/settings/security"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <SecuritySettingsPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
       <Route
         path="/admin/settings/appearance"
         element={
-          <ProtectedRoute roles={['global-admin']}>
+          <AdminOnlyRoute>
             <AppearanceSettingsPage />
-          </ProtectedRoute>
+          </AdminOnlyRoute>
         }
       />
 
