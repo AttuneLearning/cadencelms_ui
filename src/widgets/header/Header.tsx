@@ -58,7 +58,6 @@ export const Header: React.FC = () => {
   const {
     currentDepartmentName,
     currentDepartmentRoles,
-    hasPermission,
   } = useDepartmentContext();
   const navigate = useNavigate();
 

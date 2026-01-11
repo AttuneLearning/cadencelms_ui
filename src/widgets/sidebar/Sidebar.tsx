@@ -190,11 +190,9 @@ export const Sidebar: React.FC = () => {
         return false;
       }
 
-      // Check if user has permission in THIS department
-      return hasPermission(item.requiredPermission, {
-        type: 'department',
-        id: selectedDepartmentId,
-      });
+      // Check if user has permission in current department
+      // useDepartmentContext.hasPermission is already scoped to current department
+      return hasPermission(item.requiredPermission);
     }).map((item) => ({
       ...item,
       path: item.pathTemplate.replace(':deptId', selectedDepartmentId),

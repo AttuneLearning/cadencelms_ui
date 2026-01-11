@@ -45,7 +45,7 @@ export interface ProtectedLinkProps extends Omit<LinkProps, 'to'> {
   fallback?: React.ReactNode;
 
   /** Link content */
-  children: React.ReactNode;
+  children?: React.ReactNode;
 
   /** Optional className for styling */
   className?: string;

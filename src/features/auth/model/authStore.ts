@@ -25,7 +25,6 @@ import type {
   LoginResponse,
   MyRolesResponse,
   UserType,
-  UserTypeObject,
   RoleObject,
 } from '@/shared/types/auth';
 import {
