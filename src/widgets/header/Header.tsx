@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { GraduationCap, Menu, LogOut, Settings, BookOpen, Building2 } from 'lucide-react';
 import { ThemeToggle } from '@/features/theme/ui/ThemeToggle';
 import { useAuthStore } from '@/features/auth/model/authStore';
@@ -16,7 +16,6 @@ import { useDepartmentContext } from '@/shared/hooks';
 import { Button } from '@/shared/ui/button';
 import { Separator } from '@/shared/ui/separator';
 import { Avatar, AvatarFallback } from '@/shared/ui/avatar';
-import { Badge } from '@/shared/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,32 +24,52 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
-import { getUserTypeDisplayLabel } from '@/shared/lib/displayUtils';
+import { getUserTypeDisplayLabel, getRoleDisplayLabel } from '@/shared/lib/displayUtils';
+import { cn } from '@/shared/lib/utils';
 import type { UserType } from '@/shared/types/auth';
 
-interface NavItem {
+// ============================================================================
+// Dashboard Tab Configuration
+// ============================================================================
+
+interface DashboardTab {
+  userType: UserType;
   label: string;
   path: string;
-  userTypes: UserType[];
+  basePath: string; // For active detection
 }
 
-const navItems: NavItem[] = [
-  {
-    label: 'Dashboard',
-    path: '/dashboard',
-    userTypes: ['learner', 'staff', 'global-admin'],
-  },
-  {
-    label: 'Courses',
-    path: '/courses',
-    userTypes: ['learner', 'staff', 'global-admin'],
-  },
-  {
-    label: 'Admin',
-    path: '/admin',
-    userTypes: ['global-admin'],
-  },
-];
+/**
+ * Get dashboard path for a given userType
+ */
+const getDashboardPath = (userType: UserType): string => {
+  switch (userType) {
+    case 'learner':
+      return '/learner/dashboard';
+    case 'staff':
+      return '/staff/dashboard';
+    case 'global-admin':
+      return '/admin/dashboard';
+    default:
+      return '/dashboard';
+  }
+};
+
+/**
+ * Get base path for active state detection
+ */
+const getBasePath = (userType: UserType): string => {
+  switch (userType) {
+    case 'learner':
+      return '/learner';
+    case 'staff':
+      return '/staff';
+    case 'global-admin':
+      return '/admin';
+    default:
+      return '/';
+  }
+};
 
 export const Header: React.FC = () => {
   const { isAuthenticated, user, roleHierarchy, logout } = useAuthStore();
@@ -60,6 +79,7 @@ export const Header: React.FC = () => {
     currentDepartmentRoles,
   } = useDepartmentContext();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     await logout();
@@ -73,21 +93,76 @@ export const Header: React.FC = () => {
     return email.charAt(0).toUpperCase();
   };
 
-  // Get primary user type display label using server displayAs
-  const getPrimaryUserTypeLabel = (): string => {
-    if (!roleHierarchy?.primaryUserType) return 'User';
+  // Detect current dashboard context from route
+  const getCurrentDashboardUserType = (): UserType => {
+    const path = location.pathname;
+    if (path.startsWith('/admin')) return 'global-admin';
+    if (path.startsWith('/staff')) return 'staff';
+    if (path.startsWith('/learner')) return 'learner';
+    // Default to primary user type
+    return roleHierarchy?.primaryUserType || 'learner';
+  };
+
+  // Get user type display label based on current dashboard context
+  const getContextualUserTypeLabel = (): string => {
+    if (!roleHierarchy) return 'User';
+
+    const contextUserType = getCurrentDashboardUserType();
 
     // Use server-provided displayAs from roleHierarchy
     return getUserTypeDisplayLabel(
-      roleHierarchy.primaryUserType,
+      contextUserType,
       roleHierarchy.userTypeDisplayMap
     );
   };
 
-  // Filter nav items based on user types
-  const filteredNavItems = navItems.filter(
-    (item) => user?.userTypes.some(ut => item.userTypes.includes(ut))
-  );
+  // Get role badge initial (first letter, uppercase)
+  const getRoleBadgeInitial = (role: string): string => {
+    const displayLabel = getRoleDisplayLabel(role, roleHierarchy?.roleDisplayMap);
+    return displayLabel.charAt(0).toUpperCase();
+  };
+
+  // Get roles to display based on current dashboard context
+  const getContextualRoles = (): string[] => {
+    const dashboardType = getCurrentDashboardUserType();
+    
+    // For global-admin dashboard, show global admin roles if available
+    if (dashboardType === 'global-admin') {
+      // Global admins may have 'system-admin' or similar roles
+      const globalRoles = roleHierarchy?.globalRoles?.map(r => r.role) || [];
+      if (globalRoles.length > 0) return globalRoles;
+      // Fallback: if user is global-admin, show that
+      if (roleHierarchy?.allUserTypes?.includes('global-admin')) {
+        return ['system-admin'];
+      }
+    }
+    
+    // For staff/learner dashboards, show current department roles
+    return currentDepartmentRoles;
+  };
+
+  // Build dashboard tabs from user's available userTypes
+  const dashboardTabs: DashboardTab[] = React.useMemo(() => {
+    if (!roleHierarchy?.allUserTypes) return [];
+
+    return roleHierarchy.allUserTypes.map((userType) => ({
+      userType,
+      label: getUserTypeDisplayLabel(userType, roleHierarchy.userTypeDisplayMap),
+      path: getDashboardPath(userType),
+      basePath: getBasePath(userType),
+    }));
+  }, [roleHierarchy]);
+
+  // Detect which dashboard tab is currently active
+  const getActiveTab = (): UserType | null => {
+    const path = location.pathname;
+    for (const tab of dashboardTabs) {
+      if (path.startsWith(tab.basePath)) {
+        return tab.userType;
+      }
+    }
+    return null;
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -116,31 +191,28 @@ export const Header: React.FC = () => {
             <span className="hidden font-bold text-lg sm:inline-block">LMS UI V2</span>
           </Link>
 
-          {/* Desktop navigation */}
-          {isAuthenticated && (
+          {/* Dashboard Tabs (Desktop) */}
+          {isAuthenticated && dashboardTabs.length > 0 && (
             <>
               <Separator orientation="vertical" className="mx-2 h-6 hidden md:block" />
-              <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
-                {filteredNavItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className="transition-colors hover:text-foreground/80 text-foreground/60"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </nav>
-            </>
-          )}
-        </div>
-
-        {/* Right side */}
-        <div className="flex flex-1 items-center justify-end space-x-2">
-          <nav className="flex items-center space-x-2">
-            <ThemeToggle />
-
-            {isAuthenticated ? (
+              <nav className="hidden md:flex items-center gap-1">
+                {dashboardTabs.map((tab) => {
+                  const isActive = location.pathname.startsWith(tab.basePath);
+                  return (
+                    <Link
+                      key={tab.userType}
+                      to={tab.path}
+                      className={cn(
+                        "px-3 py-1.5 text-sm rounded-t transition-all",
+                        isActive
+                          ? "bg-primary/10 border-b-2 border-primary font-medium text-foreground"
+                          : "border-b-2 border-transparent text-muted-foreground hover:bg-accent hover:text-foreground"
+                      )}
+                    >
+                      {tab.label}
+                    </Link>
+                  );
+                })}
               <>
                 {/* User dropdown */}
                 <DropdownMenu>
@@ -161,29 +233,33 @@ export const Header: React.FC = () => {
                         <p className="text-sm font-medium leading-none">
                           {user?.email || 'User'}
                         </p>
-                        <p className="text-xs leading-none text-muted-foreground">
-                          {getPrimaryUserTypeLabel()}
-                        </p>
+                        {/* UserType with role badges */}
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs leading-none text-muted-foreground">
+                            {getContextualUserTypeLabel()}
+                          </span>
+                          {/* Role badge circles */}
+                          {getContextualRoles().slice(0, 4).map((role) => (
+                            <span
+                              key={role}
+                              className="inline-flex items-center justify-center h-4 w-4 rounded-full bg-primary/10 text-primary text-[10px] font-medium"
+                              title={getRoleDisplayLabel(role, roleHierarchy?.roleDisplayMap)}
+                            >
+                              {getRoleBadgeInitial(role)}
+                            </span>
+                          ))}
+                          {getContextualRoles().length > 4 && (
+                            <span className="text-[10px] text-muted-foreground">
+                              +{getContextualRoles().length - 4}
+                            </span>
+                          )}
+                        </div>
                         {currentDepartmentName && (
                           <div className="flex items-center gap-1 mt-2 pt-2 border-t">
                             <Building2 className="h-3 w-3 text-muted-foreground" />
                             <span className="text-xs text-muted-foreground">
                               {currentDepartmentName}
                             </span>
-                          </div>
-                        )}
-                        {currentDepartmentRoles.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {currentDepartmentRoles.slice(0, 3).map((role) => (
-                              <Badge key={role} variant="secondary" className="text-xs">
-                                {role}
-                              </Badge>
-                            ))}
-                            {currentDepartmentRoles.length > 3 && (
-                              <Badge variant="secondary" className="text-xs">
-                                +{currentDepartmentRoles.length - 3}
-                              </Badge>
-                            )}
                           </div>
                         )}
                       </div>

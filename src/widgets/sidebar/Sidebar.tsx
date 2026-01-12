@@ -51,7 +51,7 @@ interface ProcessedDepartmentNavItem extends Omit<DepartmentNavItem, 'pathTempla
 // ============================================================================
 
 export const Sidebar: React.FC = () => {
-  const { roleHierarchy, user } = useAuthStore();
+  const { roleHierarchy, user, hasPermission: hasGlobalPermission } = useAuthStore();
   const {
     selectedDepartmentId,
     setSelectedDepartment,
@@ -61,7 +61,7 @@ export const Sidebar: React.FC = () => {
     setSidebarOpen,
   } = useNavigationStore();
   const {
-    hasPermission,
+    hasPermission: hasDeptPermission,
     switchDepartment,
     isSwitching,
     switchError,
@@ -86,7 +86,14 @@ export const Sidebar: React.FC = () => {
 
     // Check permission if required
     if (item.requiredPermission) {
-      return hasPermission(item.requiredPermission);
+      // Use department-scoped or global permission check based on item config
+      if (item.departmentScoped) {
+        // Department-scoped: requires a department to be selected
+        return hasDeptPermission(item.requiredPermission);
+      } else {
+        // Global scope: check against allPermissions (no department required)
+        return hasGlobalPermission(item.requiredPermission);
+      }
     }
 
     return true;
@@ -192,12 +199,12 @@ export const Sidebar: React.FC = () => {
 
       // Check if user has permission in current department
       // useDepartmentContext.hasPermission is already scoped to current department
-      return hasPermission(item.requiredPermission);
+      return hasDeptPermission(item.requiredPermission);
     }).map((item) => ({
       ...item,
       path: item.pathTemplate.replace(':deptId', selectedDepartmentId),
     }));
-  }, [selectedDepartmentId, primaryUserType, hasPermission]);
+  }, [selectedDepartmentId, primaryUserType, hasDeptPermission]);
 
   // ================================================================
   // Render
