@@ -1,26 +1,24 @@
 /**
- * ProtectedLink Component - Track G Implementation (Enhanced for Track 2B)
- * Version: 2.0.0
+ * ProtectedNavLink Component - Track 2B Implementation
+ * Version: 1.0.0
  * Date: 2026-01-11
  *
- * A Link component that respects permissions and only renders if user has access.
- * Supports both global and department-scoped permission checking.
+ * A NavLink component that respects permissions and only renders if user has access.
+ * Wraps React Router's NavLink with permission checking capabilities.
  *
  * Features:
+ * - All ProtectedLink permission checking features
+ * - Active state styling (activeClassName, activeStyle)
+ * - Supports NavLink's isActive function
  * - Single or multiple permission requirements
  * - requireAll (AND) vs requireAny (OR) logic
  * - Department-scoped permission checking
  * - Fallback component when no access
- * - Standard Link props passthrough
- *
- * Version 2.0.0 Changes:
- * - Fixed multiple permission checking (was only checking first permission)
- * - Now properly implements requireAll (AND) and requireAny (OR) logic
- * - Maintains 100% backward compatibility with single permission usage
+ * - Standard NavLink props passthrough
  */
 
 import React from 'react';
-import { Link, LinkProps } from 'react-router-dom';
+import { NavLink, NavLinkProps } from 'react-router-dom';
 import { useAuthStore } from '@/features/auth/model/authStore';
 import { useDepartmentContext } from '@/shared/hooks/useDepartmentContext';
 
@@ -28,7 +26,7 @@ import { useDepartmentContext } from '@/shared/hooks/useDepartmentContext';
 // Types
 // ============================================================================
 
-export interface ProtectedLinkProps extends Omit<LinkProps, 'to'> {
+export interface ProtectedNavLinkProps extends Omit<NavLinkProps, 'to'> {
   /** Link destination */
   to: string;
 
@@ -54,7 +52,7 @@ export interface ProtectedLinkProps extends Omit<LinkProps, 'to'> {
   children?: React.ReactNode;
 
   /** Optional className for styling */
-  className?: string;
+  className?: string | ((props: { isActive: boolean }) => string);
 }
 
 // ============================================================================
@@ -62,73 +60,78 @@ export interface ProtectedLinkProps extends Omit<LinkProps, 'to'> {
 // ============================================================================
 
 /**
- * ProtectedLink - Permission-aware navigation link
+ * ProtectedNavLink - Permission-aware navigation link with active state
  *
  * @example Basic usage with single permission
  * ```tsx
- * <ProtectedLink
- *   to="/courses/create"
- *   requiredPermission="content:courses:create"
+ * <ProtectedNavLink
+ *   to="/courses"
+ *   requiredPermission="content:courses:read"
+ *   className={({ isActive }) => isActive ? "bg-blue-600 text-white" : "text-gray-600"}
  * >
- *   Create Course
- * </ProtectedLink>
+ *   Courses
+ * </ProtectedNavLink>
  * ```
  *
  * @example Multiple permissions (any)
  * ```tsx
- * <ProtectedLink
+ * <ProtectedNavLink
  *   to="/courses"
  *   requiredPermissions={['content:courses:read', 'content:courses:manage']}
  * >
  *   View Courses
- * </ProtectedLink>
+ * </ProtectedNavLink>
  * ```
  *
  * @example Multiple permissions (all required)
  * ```tsx
- * <ProtectedLink
+ * <ProtectedNavLink
  *   to="/courses/advanced"
  *   requiredPermissions={['content:courses:read', 'content:advanced:access']}
  *   requireAll={true}
  * >
  *   Advanced Courses
- * </ProtectedLink>
+ * </ProtectedNavLink>
  * ```
  *
  * @example Department-scoped (current department)
  * ```tsx
- * <ProtectedLink
+ * <ProtectedNavLink
  *   to="/department/courses"
  *   requiredPermission="content:courses:read"
  *   departmentScoped={true}
  * >
  *   Department Courses
- * </ProtectedLink>
+ * </ProtectedNavLink>
  * ```
  *
- * @example Specific department
+ * @example Sidebar navigation with active styling
  * ```tsx
- * <ProtectedLink
- *   to="/department/123/courses"
- *   requiredPermission="content:courses:read"
- *   departmentId="dept-123"
- * >
- *   Department 123 Courses
- * </ProtectedLink>
+ * <nav>
+ *   <ProtectedNavLink
+ *     to="/dashboard"
+ *     requiredPermission="system:dashboard:view"
+ *     className={({ isActive }) =>
+ *       `px-4 py-2 rounded ${isActive ? 'bg-blue-600 text-white' : 'hover:bg-gray-100'}`
+ *     }
+ *   >
+ *     Dashboard
+ *   </ProtectedNavLink>
+ * </nav>
  * ```
  *
  * @example With fallback
  * ```tsx
- * <ProtectedLink
+ * <ProtectedNavLink
  *   to="/admin/settings"
  *   requiredPermission="system:settings:manage"
  *   fallback={<span className="text-gray-400">Settings (No Access)</span>}
  * >
  *   Settings
- * </ProtectedLink>
+ * </ProtectedNavLink>
  * ```
  */
-export const ProtectedLink: React.FC<ProtectedLinkProps> = ({
+export const ProtectedNavLink: React.FC<ProtectedNavLinkProps> = ({
   to,
   requiredPermission,
   requiredPermissions,
@@ -138,7 +141,7 @@ export const ProtectedLink: React.FC<ProtectedLinkProps> = ({
   fallback = null,
   children,
   className,
-  ...linkProps
+  ...navLinkProps
 }) => {
   // ============================================================================
   // Permission Checking Logic
@@ -170,9 +173,9 @@ export const ProtectedLink: React.FC<ProtectedLinkProps> = ({
   // If no permissions required, always show link
   if (permissionsToCheck.length === 0) {
     return (
-      <Link to={to} className={className} {...linkProps}>
+      <NavLink to={to} className={className} {...navLinkProps}>
         {children}
-      </Link>
+      </NavLink>
     );
   }
 
@@ -249,23 +252,8 @@ export const ProtectedLink: React.FC<ProtectedLinkProps> = ({
   }
 
   return (
-    <Link to={to} className={className} {...linkProps}>
+    <NavLink to={to} className={className} {...navLinkProps}>
       {children}
-    </Link>
+    </NavLink>
   );
 };
-
-// ============================================================================
-// Note on ProtectedLinkMultiple
-// ============================================================================
-/**
- * DEPRECATED: ProtectedLinkMultiple is no longer needed.
- *
- * The main ProtectedLink component now properly handles multiple permissions
- * with requireAll (AND) and requireAny (OR) logic.
- *
- * Migration:
- * - ProtectedLinkMultiple with requireAll=true → ProtectedLink with requireAll=true
- * - ProtectedLinkMultiple with requireAll=false → ProtectedLink with requireAll=false (default)
- * - ProtectedLinkMultiple permissions prop → ProtectedLink requiredPermissions prop
- */
