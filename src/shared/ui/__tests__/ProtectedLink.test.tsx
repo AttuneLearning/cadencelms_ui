@@ -1,23 +1,29 @@
 /**
- * ProtectedLink Component Tests - Track G
- * Version: 1.0.0
+ * ProtectedLink Component Tests - Track G (Enhanced for Track 2B)
+ * Version: 2.0.0
  * Date: 2026-01-11
  *
  * Comprehensive tests for permission-aware link component
+ * Now includes extensive tests for multiple permission checking
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import { ProtectedLink, ProtectedLinkMultiple } from '../ProtectedLink';
+import { ProtectedLink } from '../ProtectedLink';
 
-// Mock the permission hooks
-vi.mock('@/shared/hooks/usePermission', () => ({
-  usePermission: vi.fn(),
-  useScopedPermission: vi.fn(),
+// Mock the auth store
+vi.mock('@/features/auth/model/authStore', () => ({
+  useAuthStore: vi.fn(),
 }));
 
-import { usePermission, useScopedPermission } from '@/shared/hooks/usePermission';
+// Mock the department context hook
+vi.mock('@/shared/hooks/useDepartmentContext', () => ({
+  useDepartmentContext: vi.fn(),
+}));
+
+import { useAuthStore } from '@/features/auth/model/authStore';
+import { useDepartmentContext } from '@/shared/hooks/useDepartmentContext';
 
 // Wrapper for React Router
 const RouterWrapper = ({ children }: { children: React.ReactNode }) => (
@@ -25,8 +31,37 @@ const RouterWrapper = ({ children }: { children: React.ReactNode }) => (
 );
 
 describe('ProtectedLink Component', () => {
+  // Default mock implementations
+  const mockHasPermission = vi.fn();
+  const mockHasAnyPermission = vi.fn();
+  const mockHasAllPermissions = vi.fn();
+  const mockHasDeptPermission = vi.fn();
+  const mockHasAnyDeptPermission = vi.fn();
+  const mockHasAllDeptPermissions = vi.fn();
+
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Default authStore mock
+    vi.mocked(useAuthStore).mockReturnValue({
+      hasPermission: mockHasPermission,
+      hasAnyPermission: mockHasAnyPermission,
+      hasAllPermissions: mockHasAllPermissions,
+    } as any);
+
+    // Default departmentContext mock
+    vi.mocked(useDepartmentContext).mockReturnValue({
+      hasPermission: mockHasDeptPermission,
+      hasAnyPermission: mockHasAnyDeptPermission,
+      hasAllPermissions: mockHasAllDeptPermissions,
+      currentDepartmentId: null,
+      currentDepartmentRoles: [],
+      currentDepartmentAccessRights: [],
+      currentDepartmentName: null,
+      switchDepartment: vi.fn(),
+      isSwitching: false,
+      switchError: null,
+    } as any);
   });
 
   describe('Basic Rendering', () => {
@@ -42,8 +77,35 @@ describe('ProtectedLink Component', () => {
       expect(link).toHaveAttribute('href', '/test');
     });
 
-    it('should render link when user has required permission', () => {
-      vi.mocked(usePermission).mockReturnValue(true);
+    it('should pass className to Link component', () => {
+      render(
+        <RouterWrapper>
+          <ProtectedLink to="/test" className="text-blue-500 hover:underline">
+            Test Link
+          </ProtectedLink>
+        </RouterWrapper>
+      );
+
+      const link = screen.getByRole('link');
+      expect(link).toHaveClass('text-blue-500', 'hover:underline');
+    });
+
+    it('should handle missing children', () => {
+      render(
+        <RouterWrapper>
+          <ProtectedLink to="/courses" />
+        </RouterWrapper>
+      );
+
+      const link = screen.getByRole('link');
+      expect(link).toBeInTheDocument();
+      expect(link.textContent).toBe('');
+    });
+  });
+
+  describe('Single Permission - Global Scope', () => {
+    it('should render link when user has the required permission', () => {
+      mockHasPermission.mockReturnValue(true);
 
       render(
         <RouterWrapper>
@@ -55,10 +117,11 @@ describe('ProtectedLink Component', () => {
 
       const link = screen.getByRole('link', { name: /courses/i });
       expect(link).toBeInTheDocument();
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read');
     });
 
-    it('should not render link when user lacks required permission', () => {
-      vi.mocked(usePermission).mockReturnValue(false);
+    it('should not render link when user lacks the required permission', () => {
+      mockHasPermission.mockReturnValue(false);
 
       render(
         <RouterWrapper>
@@ -69,65 +132,13 @@ describe('ProtectedLink Component', () => {
       );
 
       expect(screen.queryByRole('link')).not.toBeInTheDocument();
-    });
-
-    it('should pass className to Link component', () => {
-      vi.mocked(usePermission).mockReturnValue(true);
-
-      render(
-        <RouterWrapper>
-          <ProtectedLink
-            to="/courses"
-            requiredPermission="content:courses:read"
-            className="text-blue-500 hover:underline"
-          >
-            Courses
-          </ProtectedLink>
-        </RouterWrapper>
-      );
-
-      const link = screen.getByRole('link');
-      expect(link).toHaveClass('text-blue-500', 'hover:underline');
+      expect(mockHasPermission).toHaveBeenCalledWith('admin:access');
     });
   });
 
-  describe('Single Permission Requirement', () => {
-    it('should check single permission', () => {
-      vi.mocked(usePermission).mockReturnValue(true);
-
-      render(
-        <RouterWrapper>
-          <ProtectedLink to="/courses" requiredPermission="content:courses:read">
-            Courses
-          </ProtectedLink>
-        </RouterWrapper>
-      );
-
-      expect(usePermission).toHaveBeenCalledWith('content:courses:read', undefined);
-    });
-
-    it('should use department ID when provided', () => {
-      vi.mocked(usePermission).mockReturnValue(true);
-
-      render(
-        <RouterWrapper>
-          <ProtectedLink
-            to="/department/courses"
-            requiredPermission="content:courses:read"
-            departmentId="dept-123"
-          >
-            Department Courses
-          </ProtectedLink>
-        </RouterWrapper>
-      );
-
-      expect(usePermission).toHaveBeenCalledWith('content:courses:read', 'dept-123');
-    });
-  });
-
-  describe('Multiple Permissions', () => {
-    it('should show link when user has any of the required permissions (default)', () => {
-      vi.mocked(usePermission).mockReturnValue(true);
+  describe('Multiple Permissions - Global Scope (NEW - Track 2B)', () => {
+    it('should render link when user has ANY of the required permissions (default OR logic)', () => {
+      mockHasAnyPermission.mockReturnValue(true);
 
       render(
         <RouterWrapper>
@@ -142,11 +153,14 @@ describe('ProtectedLink Component', () => {
 
       const link = screen.getByRole('link');
       expect(link).toBeInTheDocument();
+      expect(mockHasAnyPermission).toHaveBeenCalledWith([
+        'content:courses:read',
+        'content:courses:create',
+      ]);
     });
 
-    it('should respect requireAll flag', () => {
-      // First permission returns true, but for requireAll=true, we need to check the logic
-      vi.mocked(usePermission).mockReturnValue(true);
+    it('should render link when user has ALL required permissions (AND logic)', () => {
+      mockHasAllPermissions.mockReturnValue(true);
 
       render(
         <RouterWrapper>
@@ -162,10 +176,33 @@ describe('ProtectedLink Component', () => {
 
       const link = screen.getByRole('link');
       expect(link).toBeInTheDocument();
+      expect(mockHasAllPermissions).toHaveBeenCalledWith([
+        'content:courses:read',
+        'content:courses:create',
+      ]);
     });
 
-    it('should hide link when user lacks all required permissions', () => {
-      vi.mocked(usePermission).mockReturnValue(false);
+    it('should hide link when user lacks any permission (AND logic)', () => {
+      mockHasAllPermissions.mockReturnValue(false);
+
+      render(
+        <RouterWrapper>
+          <ProtectedLink
+            to="/admin"
+            requiredPermissions={['admin:access', 'admin:settings']}
+            requireAll={true}
+          >
+            Admin Panel
+          </ProtectedLink>
+        </RouterWrapper>
+      );
+
+      expect(screen.queryByRole('link')).not.toBeInTheDocument();
+      expect(mockHasAllPermissions).toHaveBeenCalledWith(['admin:access', 'admin:settings']);
+    });
+
+    it('should hide link when user has none of the permissions (OR logic)', () => {
+      mockHasAnyPermission.mockReturnValue(false);
 
       render(
         <RouterWrapper>
@@ -179,12 +216,29 @@ describe('ProtectedLink Component', () => {
       );
 
       expect(screen.queryByRole('link')).not.toBeInTheDocument();
+      expect(mockHasAnyPermission).toHaveBeenCalledWith(['admin:access', 'admin:settings']);
     });
   });
 
-  describe('Department Scoped Checking', () => {
-    it('should use scoped permission hook when departmentScoped is true', () => {
-      vi.mocked(useScopedPermission).mockReturnValue(true);
+  describe('Department-Scoped Permissions (NEW - Track 2B)', () => {
+    beforeEach(() => {
+      // Mock current department context
+      vi.mocked(useDepartmentContext).mockReturnValue({
+        hasPermission: mockHasDeptPermission,
+        hasAnyPermission: mockHasAnyDeptPermission,
+        hasAllPermissions: mockHasAllDeptPermissions,
+        currentDepartmentId: 'dept-123',
+        currentDepartmentRoles: ['staff'],
+        currentDepartmentAccessRights: ['content:courses:read'],
+        currentDepartmentName: 'Engineering',
+        switchDepartment: vi.fn(),
+        isSwitching: false,
+        switchError: null,
+      } as any);
+    });
+
+    it('should use department context when departmentScoped is true (single permission)', () => {
+      mockHasDeptPermission.mockReturnValue(true);
 
       render(
         <RouterWrapper>
@@ -198,13 +252,152 @@ describe('ProtectedLink Component', () => {
         </RouterWrapper>
       );
 
-      expect(useScopedPermission).toHaveBeenCalledWith('content:courses:read');
+      const link = screen.getByRole('link');
+      expect(link).toBeInTheDocument();
+      expect(mockHasDeptPermission).toHaveBeenCalledWith('content:courses:read');
+    });
+
+    it('should use department context with multiple permissions (OR logic)', () => {
+      mockHasAnyDeptPermission.mockReturnValue(true);
+
+      render(
+        <RouterWrapper>
+          <ProtectedLink
+            to="/department/content"
+            requiredPermissions={['content:courses:read', 'content:courses:create']}
+            departmentScoped={true}
+          >
+            Department Content
+          </ProtectedLink>
+        </RouterWrapper>
+      );
+
+      const link = screen.getByRole('link');
+      expect(link).toBeInTheDocument();
+      expect(mockHasAnyDeptPermission).toHaveBeenCalledWith([
+        'content:courses:read',
+        'content:courses:create',
+      ]);
+    });
+
+    it('should use department context with multiple permissions (AND logic)', () => {
+      mockHasAllDeptPermissions.mockReturnValue(true);
+
+      render(
+        <RouterWrapper>
+          <ProtectedLink
+            to="/department/content"
+            requiredPermissions={['content:courses:read', 'content:courses:create']}
+            departmentScoped={true}
+            requireAll={true}
+          >
+            Department Content Management
+          </ProtectedLink>
+        </RouterWrapper>
+      );
+
+      const link = screen.getByRole('link');
+      expect(link).toBeInTheDocument();
+      expect(mockHasAllDeptPermissions).toHaveBeenCalledWith([
+        'content:courses:read',
+        'content:courses:create',
+      ]);
+    });
+  });
+
+  describe('Specific Department ID (NEW - Track 2B)', () => {
+    it('should check single permission with specific department ID', () => {
+      mockHasPermission.mockReturnValue(true);
+
+      render(
+        <RouterWrapper>
+          <ProtectedLink
+            to="/department/courses"
+            requiredPermission="content:courses:read"
+            departmentId="dept-456"
+          >
+            Specific Department Courses
+          </ProtectedLink>
+        </RouterWrapper>
+      );
+
+      const link = screen.getByRole('link');
+      expect(link).toBeInTheDocument();
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', {
+        type: 'department',
+        id: 'dept-456',
+      });
+    });
+
+    it('should check multiple permissions with specific department ID (AND logic)', () => {
+      mockHasPermission.mockImplementation((perm, scope) => true);
+
+      render(
+        <RouterWrapper>
+          <ProtectedLink
+            to="/department/content"
+            requiredPermissions={['content:courses:read', 'content:courses:create']}
+            departmentId="dept-456"
+            requireAll={true}
+          >
+            Department Content Management
+          </ProtectedLink>
+        </RouterWrapper>
+      );
+
+      const link = screen.getByRole('link');
+      expect(link).toBeInTheDocument();
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', {
+        type: 'department',
+        id: 'dept-456',
+      });
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:create', {
+        type: 'department',
+        id: 'dept-456',
+      });
+    });
+
+    it('should check multiple permissions with specific department ID (OR logic)', () => {
+      mockHasPermission
+        .mockReturnValueOnce(true) // First permission check
+        .mockReturnValueOnce(false); // Second permission check
+
+      render(
+        <RouterWrapper>
+          <ProtectedLink
+            to="/department/content"
+            requiredPermissions={['content:courses:read', 'content:courses:create']}
+            departmentId="dept-456"
+          >
+            Department Content
+          </ProtectedLink>
+        </RouterWrapper>
+      );
+
       const link = screen.getByRole('link');
       expect(link).toBeInTheDocument();
     });
 
+    it('should hide link when user lacks all permissions with specific department ID (OR logic)', () => {
+      mockHasPermission.mockReturnValue(false);
+
+      render(
+        <RouterWrapper>
+          <ProtectedLink
+            to="/department/content"
+            requiredPermissions={['content:courses:read', 'content:courses:create']}
+            departmentId="dept-456"
+          >
+            Department Content
+          </ProtectedLink>
+        </RouterWrapper>
+      );
+
+      expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    });
+
     it('should prioritize departmentId over departmentScoped', () => {
-      vi.mocked(usePermission).mockReturnValue(true);
+      mockHasPermission.mockReturnValue(true);
 
       render(
         <RouterWrapper>
@@ -219,13 +412,19 @@ describe('ProtectedLink Component', () => {
         </RouterWrapper>
       );
 
-      expect(usePermission).toHaveBeenCalledWith('content:courses:read', 'dept-specific');
+      const link = screen.getByRole('link');
+      expect(link).toBeInTheDocument();
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', {
+        type: 'department',
+        id: 'dept-specific',
+      });
+      expect(mockHasDeptPermission).not.toHaveBeenCalled();
     });
   });
 
   describe('Fallback Rendering', () => {
     it('should render fallback when permission is denied', () => {
-      vi.mocked(usePermission).mockReturnValue(false);
+      mockHasPermission.mockReturnValue(false);
 
       render(
         <RouterWrapper>
@@ -244,7 +443,7 @@ describe('ProtectedLink Component', () => {
     });
 
     it('should render null by default when permission is denied', () => {
-      vi.mocked(usePermission).mockReturnValue(false);
+      mockHasPermission.mockReturnValue(false);
 
       const { container } = render(
         <RouterWrapper>
@@ -258,7 +457,7 @@ describe('ProtectedLink Component', () => {
     });
 
     it('should render complex fallback component', () => {
-      vi.mocked(usePermission).mockReturnValue(false);
+      mockHasPermission.mockReturnValue(false);
 
       render(
         <RouterWrapper>
@@ -283,7 +482,7 @@ describe('ProtectedLink Component', () => {
 
   describe('Link Props Passthrough', () => {
     it('should pass through standard Link props', () => {
-      vi.mocked(usePermission).mockReturnValue(true);
+      mockHasPermission.mockReturnValue(true);
 
       render(
         <RouterWrapper>
@@ -300,11 +499,10 @@ describe('ProtectedLink Component', () => {
 
       const link = screen.getByRole('link');
       expect(link).toBeInTheDocument();
-      // Note: Testing replace and state props is limited in this context
     });
 
     it('should handle onClick handler', () => {
-      vi.mocked(usePermission).mockReturnValue(true);
+      mockHasPermission.mockReturnValue(true);
       const handleClick = vi.fn((e) => e.preventDefault());
 
       render(
@@ -340,8 +538,8 @@ describe('ProtectedLink Component', () => {
       expect(link).toBeInTheDocument();
     });
 
-    it('should handle both requiredPermission and requiredPermissions', () => {
-      vi.mocked(usePermission).mockReturnValue(true);
+    it('should prioritize requiredPermissions over requiredPermission', () => {
+      mockHasAnyPermission.mockReturnValue(true);
 
       render(
         <RouterWrapper>
@@ -355,168 +553,60 @@ describe('ProtectedLink Component', () => {
         </RouterWrapper>
       );
 
-      // requiredPermissions should take precedence
       const link = screen.getByRole('link');
       expect(link).toBeInTheDocument();
-    });
-
-    it('should handle missing children', () => {
-      vi.mocked(usePermission).mockReturnValue(true);
-
-      const { container } = render(
-        <RouterWrapper>
-          <ProtectedLink to="/courses" requiredPermission="content:courses:read" />
-        </RouterWrapper>
-      );
-
-      const link = screen.getByRole('link');
-      expect(link).toBeInTheDocument();
-      expect(link.textContent).toBe('');
-    });
-  });
-});
-
-describe('ProtectedLinkMultiple Component', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  describe('Multiple Permission Checks', () => {
-    it('should render when user has any permission (default)', () => {
-      vi.mocked(usePermission)
-        .mockReturnValueOnce(true) // First permission
-        .mockReturnValueOnce(false); // Second permission
-
-      render(
-        <RouterWrapper>
-          <ProtectedLinkMultiple
-            to="/content"
-            permissions={['content:courses:read', 'content:courses:create']}
-          >
-            Content
-          </ProtectedLinkMultiple>
-        </RouterWrapper>
-      );
-
-      const link = screen.getByRole('link');
-      expect(link).toBeInTheDocument();
-    });
-
-    it('should require all permissions when requireAll is true', () => {
-      vi.mocked(usePermission)
-        .mockReturnValueOnce(true)
-        .mockReturnValueOnce(true);
-
-      render(
-        <RouterWrapper>
-          <ProtectedLinkMultiple
-            to="/content"
-            permissions={['content:courses:read', 'content:courses:create']}
-            requireAll={true}
-          >
-            Content Management
-          </ProtectedLinkMultiple>
-        </RouterWrapper>
-      );
-
-      const link = screen.getByRole('link');
-      expect(link).toBeInTheDocument();
-    });
-
-    it('should hide link when requireAll is true and user lacks any permission', () => {
-      vi.mocked(usePermission)
-        .mockReturnValueOnce(true)
-        .mockReturnValueOnce(false);
-
-      render(
-        <RouterWrapper>
-          <ProtectedLinkMultiple
-            to="/content"
-            permissions={['content:courses:read', 'content:courses:create']}
-            requireAll={true}
-          >
-            Content Management
-          </ProtectedLinkMultiple>
-        </RouterWrapper>
-      );
-
-      expect(screen.queryByRole('link')).not.toBeInTheDocument();
-    });
-
-    it('should check each permission with department ID', () => {
-      vi.mocked(usePermission)
-        .mockReturnValueOnce(true)
-        .mockReturnValueOnce(true);
-
-      const deptId = 'dept-123';
-
-      render(
-        <RouterWrapper>
-          <ProtectedLinkMultiple
-            to="/department/content"
-            permissions={['content:courses:read', 'content:courses:create']}
-            departmentId={deptId}
-          >
-            Department Content
-          </ProtectedLinkMultiple>
-        </RouterWrapper>
-      );
-
-      expect(usePermission).toHaveBeenCalledWith('content:courses:read', deptId);
-      expect(usePermission).toHaveBeenCalledWith('content:courses:create', deptId);
+      expect(mockHasAnyPermission).toHaveBeenCalledWith(['content:courses:create']);
+      expect(mockHasPermission).not.toHaveBeenCalled();
     });
   });
 
-  describe('Fallback Behavior', () => {
-    it('should render fallback when permissions are denied', () => {
-      vi.mocked(usePermission)
-        .mockReturnValueOnce(false)
-        .mockReturnValueOnce(false);
+  describe('Backward Compatibility (Track 2B)', () => {
+    it('should maintain backward compatibility with single requiredPermission', () => {
+      mockHasPermission.mockReturnValue(true);
 
       render(
         <RouterWrapper>
-          <ProtectedLinkMultiple
-            to="/admin"
-            permissions={['admin:access', 'admin:settings']}
-            fallback={<span>Admin Access Required</span>}
-          >
-            Admin Panel
-          </ProtectedLinkMultiple>
-        </RouterWrapper>
-      );
-
-      expect(screen.getByText('Admin Access Required')).toBeInTheDocument();
-      expect(screen.queryByRole('link')).not.toBeInTheDocument();
-    });
-  });
-
-  describe('Edge Cases', () => {
-    it('should handle empty permissions array', () => {
-      render(
-        <RouterWrapper>
-          <ProtectedLinkMultiple to="/courses" permissions={[]}>
+          <ProtectedLink to="/courses" requiredPermission="content:courses:read">
             Courses
-          </ProtectedLinkMultiple>
+          </ProtectedLink>
         </RouterWrapper>
       );
 
       const link = screen.getByRole('link');
       expect(link).toBeInTheDocument();
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read');
     });
 
-    it('should handle single permission in array', () => {
-      vi.mocked(usePermission).mockReturnValue(true);
+    it('should work with existing departmentScoped pattern', () => {
+      mockHasDeptPermission.mockReturnValue(true);
+      vi.mocked(useDepartmentContext).mockReturnValue({
+        hasPermission: mockHasDeptPermission,
+        hasAnyPermission: mockHasAnyDeptPermission,
+        hasAllPermissions: mockHasAllDeptPermissions,
+        currentDepartmentId: 'dept-123',
+        currentDepartmentRoles: [],
+        currentDepartmentAccessRights: [],
+        currentDepartmentName: null,
+        switchDepartment: vi.fn(),
+        isSwitching: false,
+        switchError: null,
+      } as any);
 
       render(
         <RouterWrapper>
-          <ProtectedLinkMultiple to="/courses" permissions={['content:courses:read']}>
-            Courses
-          </ProtectedLinkMultiple>
+          <ProtectedLink
+            to="/courses"
+            requiredPermission="content:courses:read"
+            departmentScoped={true}
+          >
+            Department Courses
+          </ProtectedLink>
         </RouterWrapper>
       );
 
       const link = screen.getByRole('link');
       expect(link).toBeInTheDocument();
+      expect(mockHasDeptPermission).toHaveBeenCalledWith('content:courses:read');
     });
   });
 });
