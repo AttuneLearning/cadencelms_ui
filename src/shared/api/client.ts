@@ -1,6 +1,10 @@
 /**
  * Axios HTTP client with interceptors
  * Handles authentication, token refresh, and error handling
+ *
+ * Authorization Priority:
+ * 1. Admin token (if active) - for elevated privileges
+ * 2. Access token (fallback) - for normal user operations
  */
 
 import axios, {
@@ -10,6 +14,7 @@ import axios, {
 } from 'axios';
 import { env } from '@/shared/config/env';
 import type { ApiError } from './types';
+import { getAdminToken, hasAdminToken } from '@/shared/utils/adminTokenStorage';
 
 /**
  * Custom error class for API errors
@@ -112,7 +117,11 @@ function onTokenRefreshed(token: string): void {
 }
 
 /**
- * Request interceptor - inject access token
+ * Request interceptor - inject access token with admin token priority
+ *
+ * Priority order:
+ * 1. Admin token (if active) - for elevated admin operations
+ * 2. Access token (fallback) - for normal user operations
  */
 client.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
@@ -123,6 +132,17 @@ client.interceptors.request.use(
       return config;
     }
 
+    // Priority 1: Use admin token if active
+    if (hasAdminToken()) {
+      const adminToken = getAdminToken();
+      if (adminToken) {
+        config.headers.Authorization = `Bearer ${adminToken}`;
+        console.log('[API Client] Using admin token for request');
+        return config;
+      }
+    }
+
+    // Priority 2: Fall back to regular access token
     const token = getAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

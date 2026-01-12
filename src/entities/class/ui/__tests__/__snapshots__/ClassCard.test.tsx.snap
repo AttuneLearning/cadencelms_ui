@@ -1,0 +1,1127 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ClassCard > Snapshot Tests > should match snapshot for active class 1`] = `
+<a
+  class="block"
+  href="/classes/class-1"
+>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm h-full transition-shadow hover:shadow-lg"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <div
+        class="flex items-start justify-between gap-2"
+      >
+        <div
+          class="flex-1 space-y-1"
+        >
+          <h3
+            class="text-2xl font-semibold leading-none tracking-tight line-clamp-2"
+          >
+            Introduction to Programming - Spring 2026
+          </h3>
+          <p
+            class="text-sm text-muted-foreground flex items-center gap-1"
+          >
+            CS101
+             - 
+            Introduction to Programming
+          </p>
+        </div>
+        <div
+          class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground hover:bg-primary/80"
+        >
+          active
+        </div>
+      </div>
+    </div>
+    <div
+      class="p-6 pt-0 space-y-4"
+    >
+      <div
+        class="space-y-1 text-sm"
+      >
+        <div
+          class="flex items-center gap-2 text-muted-foreground"
+        >
+          <svg
+            class="lucide lucide-building h-4 w-4"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              height="20"
+              rx="2"
+              ry="2"
+              width="16"
+              x="4"
+              y="2"
+            />
+            <path
+              d="M9 22v-4h6v4"
+            />
+            <path
+              d="M8 6h.01"
+            />
+            <path
+              d="M16 6h.01"
+            />
+            <path
+              d="M12 6h.01"
+            />
+            <path
+              d="M12 10h.01"
+            />
+            <path
+              d="M12 14h.01"
+            />
+            <path
+              d="M16 10h.01"
+            />
+            <path
+              d="M16 14h.01"
+            />
+            <path
+              d="M8 10h.01"
+            />
+            <path
+              d="M8 14h.01"
+            />
+          </svg>
+          <span>
+            Computer Science
+          </span>
+        </div>
+        <div
+          class="ml-6 text-xs text-muted-foreground"
+        >
+          Spring 2026
+        </div>
+      </div>
+      <div
+        class="flex items-center gap-2 text-sm text-muted-foreground"
+      >
+        <svg
+          class="lucide lucide-user h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"
+          />
+          <circle
+            cx="12"
+            cy="7"
+            r="4"
+          />
+        </svg>
+        <span>
+          John
+           
+          Smith
+        </span>
+      </div>
+      <div
+        class="flex items-center gap-2 text-sm text-muted-foreground"
+      >
+        <svg
+          class="lucide lucide-calendar-days h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M8 2v4"
+          />
+          <path
+            d="M16 2v4"
+          />
+          <rect
+            height="18"
+            rx="2"
+            width="18"
+            x="3"
+            y="4"
+          />
+          <path
+            d="M3 10h18"
+          />
+          <path
+            d="M8 14h.01"
+          />
+          <path
+            d="M12 14h.01"
+          />
+          <path
+            d="M16 14h.01"
+          />
+          <path
+            d="M8 18h.01"
+          />
+          <path
+            d="M12 18h.01"
+          />
+          <path
+            d="M16 18h.01"
+          />
+        </svg>
+        <span>
+          Jan 19, 2026
+           - 
+          May 19, 2026
+        </span>
+      </div>
+      <div
+        class="flex items-center gap-2 text-sm text-muted-foreground"
+      >
+        <svg
+          class="lucide lucide-clock h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle
+            cx="12"
+            cy="12"
+            r="10"
+          />
+          <polyline
+            points="12 6 12 12 16 14"
+          />
+        </svg>
+        <span>
+          16
+           weeks
+        </span>
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <div
+          class="flex items-center justify-between text-sm"
+        >
+          <div
+            class="flex items-center gap-2 text-muted-foreground"
+          >
+            <svg
+              class="lucide lucide-users h-4 w-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+              />
+              <circle
+                cx="9"
+                cy="7"
+                r="4"
+              />
+              <path
+                d="M22 21v-2a4 4 0 0 0-3-3.87"
+              />
+              <path
+                d="M16 3.13a4 4 0 0 1 0 7.75"
+              />
+            </svg>
+            <span>
+              Enrollment
+            </span>
+          </div>
+          <span
+            class="font-medium"
+          >
+            25
+             / 30
+          </span>
+        </div>
+        <div
+          class="h-2 w-full overflow-hidden rounded-full bg-secondary"
+        >
+          <div
+            class="h-full transition-all bg-yellow-500"
+            style="width: 83%;"
+          />
+        </div>
+      </div>
+      <div
+        class="text-xs text-muted-foreground"
+      >
+        Department: 
+        Computer Science
+      </div>
+    </div>
+  </div>
+</a>
+`;
+
+exports[`ClassCard > Snapshot Tests > should match snapshot for cancelled class 1`] = `
+<a
+  class="block"
+  href="/classes/class-5"
+>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm h-full transition-shadow hover:shadow-lg"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <div
+        class="flex items-start justify-between gap-2"
+      >
+        <div
+          class="flex-1 space-y-1"
+        >
+          <h3
+            class="text-2xl font-semibold leading-none tracking-tight line-clamp-2"
+          >
+            Machine Learning - Spring 2026 (Cancelled)
+          </h3>
+          <p
+            class="text-sm text-muted-foreground flex items-center gap-1"
+          >
+            CS501
+             - 
+            Machine Learning
+          </p>
+        </div>
+        <div
+          class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80"
+        >
+          cancelled
+        </div>
+      </div>
+    </div>
+    <div
+      class="p-6 pt-0 space-y-4"
+    >
+      <div
+        class="space-y-1 text-sm"
+      >
+        <div
+          class="flex items-center gap-2 text-muted-foreground"
+        >
+          <svg
+            class="lucide lucide-building h-4 w-4"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              height="20"
+              rx="2"
+              ry="2"
+              width="16"
+              x="4"
+              y="2"
+            />
+            <path
+              d="M9 22v-4h6v4"
+            />
+            <path
+              d="M8 6h.01"
+            />
+            <path
+              d="M16 6h.01"
+            />
+            <path
+              d="M12 6h.01"
+            />
+            <path
+              d="M12 10h.01"
+            />
+            <path
+              d="M12 14h.01"
+            />
+            <path
+              d="M16 10h.01"
+            />
+            <path
+              d="M16 14h.01"
+            />
+            <path
+              d="M8 10h.01"
+            />
+            <path
+              d="M8 14h.01"
+            />
+          </svg>
+          <span>
+            Computer Science
+          </span>
+        </div>
+        <div
+          class="ml-6 text-xs text-muted-foreground"
+        >
+          Spring 2026
+        </div>
+      </div>
+      <div
+        class="flex items-center gap-2 text-sm text-muted-foreground"
+      >
+        <svg
+          class="lucide lucide-calendar-days h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M8 2v4"
+          />
+          <path
+            d="M16 2v4"
+          />
+          <rect
+            height="18"
+            rx="2"
+            width="18"
+            x="3"
+            y="4"
+          />
+          <path
+            d="M3 10h18"
+          />
+          <path
+            d="M8 14h.01"
+          />
+          <path
+            d="M12 14h.01"
+          />
+          <path
+            d="M16 14h.01"
+          />
+          <path
+            d="M8 18h.01"
+          />
+          <path
+            d="M12 18h.01"
+          />
+          <path
+            d="M16 18h.01"
+          />
+        </svg>
+        <span>
+          Jan 19, 2026
+           - 
+          May 19, 2026
+        </span>
+      </div>
+      <div
+        class="flex items-center gap-2 text-sm text-muted-foreground"
+      >
+        <svg
+          class="lucide lucide-clock h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle
+            cx="12"
+            cy="12"
+            r="10"
+          />
+          <polyline
+            points="12 6 12 12 16 14"
+          />
+        </svg>
+        <span>
+          16
+           weeks
+        </span>
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <div
+          class="flex items-center justify-between text-sm"
+        >
+          <div
+            class="flex items-center gap-2 text-muted-foreground"
+          >
+            <svg
+              class="lucide lucide-users h-4 w-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+              />
+              <circle
+                cx="9"
+                cy="7"
+                r="4"
+              />
+              <path
+                d="M22 21v-2a4 4 0 0 0-3-3.87"
+              />
+              <path
+                d="M16 3.13a4 4 0 0 1 0 7.75"
+              />
+            </svg>
+            <span>
+              Enrollment
+            </span>
+          </div>
+          <span
+            class="font-medium"
+          >
+            0
+             / 15
+          </span>
+        </div>
+        <div
+          class="h-2 w-full overflow-hidden rounded-full bg-secondary"
+        >
+          <div
+            class="h-full transition-all bg-primary"
+            style="width: 0%;"
+          />
+        </div>
+      </div>
+      <div
+        class="text-xs text-muted-foreground"
+      >
+        Department: 
+        Computer Science
+      </div>
+    </div>
+  </div>
+</a>
+`;
+
+exports[`ClassCard > Snapshot Tests > should match snapshot for full class 1`] = `
+<a
+  class="block"
+  href="/classes/class-6"
+>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm h-full transition-shadow hover:shadow-lg"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <div
+        class="flex items-start justify-between gap-2"
+      >
+        <div
+          class="flex-1 space-y-1"
+        >
+          <h3
+            class="text-2xl font-semibold leading-none tracking-tight line-clamp-2"
+          >
+            Algorithms - Spring 2026 (Full)
+          </h3>
+          <p
+            class="text-sm text-muted-foreground flex items-center gap-1"
+          >
+            CS301
+             - 
+            Algorithms
+          </p>
+        </div>
+        <div
+          class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground hover:bg-primary/80"
+        >
+          active
+        </div>
+      </div>
+    </div>
+    <div
+      class="p-6 pt-0 space-y-4"
+    >
+      <div
+        class="space-y-1 text-sm"
+      >
+        <div
+          class="flex items-center gap-2 text-muted-foreground"
+        >
+          <svg
+            class="lucide lucide-building h-4 w-4"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              height="20"
+              rx="2"
+              ry="2"
+              width="16"
+              x="4"
+              y="2"
+            />
+            <path
+              d="M9 22v-4h6v4"
+            />
+            <path
+              d="M8 6h.01"
+            />
+            <path
+              d="M16 6h.01"
+            />
+            <path
+              d="M12 6h.01"
+            />
+            <path
+              d="M12 10h.01"
+            />
+            <path
+              d="M12 14h.01"
+            />
+            <path
+              d="M16 10h.01"
+            />
+            <path
+              d="M16 14h.01"
+            />
+            <path
+              d="M8 10h.01"
+            />
+            <path
+              d="M8 14h.01"
+            />
+          </svg>
+          <span>
+            Computer Science
+          </span>
+        </div>
+        <div
+          class="ml-6 text-xs text-muted-foreground"
+        >
+          Spring 2026
+        </div>
+      </div>
+      <div
+        class="flex items-center gap-2 text-sm text-muted-foreground"
+      >
+        <svg
+          class="lucide lucide-user h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"
+          />
+          <circle
+            cx="12"
+            cy="7"
+            r="4"
+          />
+        </svg>
+        <span>
+          Mike
+           
+          Williams
+        </span>
+      </div>
+      <div
+        class="flex items-center gap-2 text-sm text-muted-foreground"
+      >
+        <svg
+          class="lucide lucide-calendar-days h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M8 2v4"
+          />
+          <path
+            d="M16 2v4"
+          />
+          <rect
+            height="18"
+            rx="2"
+            width="18"
+            x="3"
+            y="4"
+          />
+          <path
+            d="M3 10h18"
+          />
+          <path
+            d="M8 14h.01"
+          />
+          <path
+            d="M12 14h.01"
+          />
+          <path
+            d="M16 14h.01"
+          />
+          <path
+            d="M8 18h.01"
+          />
+          <path
+            d="M12 18h.01"
+          />
+          <path
+            d="M16 18h.01"
+          />
+        </svg>
+        <span>
+          Jan 19, 2026
+           - 
+          May 19, 2026
+        </span>
+      </div>
+      <div
+        class="flex items-center gap-2 text-sm text-muted-foreground"
+      >
+        <svg
+          class="lucide lucide-clock h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle
+            cx="12"
+            cy="12"
+            r="10"
+          />
+          <polyline
+            points="12 6 12 12 16 14"
+          />
+        </svg>
+        <span>
+          16
+           weeks
+        </span>
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <div
+          class="flex items-center justify-between text-sm"
+        >
+          <div
+            class="flex items-center gap-2 text-muted-foreground"
+          >
+            <svg
+              class="lucide lucide-users h-4 w-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+              />
+              <circle
+                cx="9"
+                cy="7"
+                r="4"
+              />
+              <path
+                d="M22 21v-2a4 4 0 0 0-3-3.87"
+              />
+              <path
+                d="M16 3.13a4 4 0 0 1 0 7.75"
+              />
+            </svg>
+            <span>
+              Enrollment
+            </span>
+          </div>
+          <span
+            class="font-medium"
+          >
+            20
+             / 20
+          </span>
+        </div>
+        <div
+          class="h-2 w-full overflow-hidden rounded-full bg-secondary"
+        >
+          <div
+            class="h-full transition-all bg-destructive"
+            style="width: 100%;"
+          />
+        </div>
+      </div>
+      <div
+        class="text-xs text-muted-foreground"
+      >
+        Department: 
+        Computer Science
+      </div>
+    </div>
+  </div>
+</a>
+`;
+
+exports[`ClassCard > Snapshot Tests > should match snapshot for upcoming class 1`] = `
+<a
+  class="block"
+  href="/classes/class-3"
+>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm h-full transition-shadow hover:shadow-lg"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <div
+        class="flex items-start justify-between gap-2"
+      >
+        <div
+          class="flex-1 space-y-1"
+        >
+          <h3
+            class="text-2xl font-semibold leading-none tracking-tight line-clamp-2"
+          >
+            Web Development Fundamentals - Fall 2026
+          </h3>
+          <p
+            class="text-sm text-muted-foreground flex items-center gap-1"
+          >
+            CS201
+             - 
+            Web Development Fundamentals
+          </p>
+        </div>
+        <div
+          class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80"
+        >
+          upcoming
+        </div>
+      </div>
+    </div>
+    <div
+      class="p-6 pt-0 space-y-4"
+    >
+      <div
+        class="space-y-1 text-sm"
+      >
+        <div
+          class="flex items-center gap-2 text-muted-foreground"
+        >
+          <svg
+            class="lucide lucide-building h-4 w-4"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              height="20"
+              rx="2"
+              ry="2"
+              width="16"
+              x="4"
+              y="2"
+            />
+            <path
+              d="M9 22v-4h6v4"
+            />
+            <path
+              d="M8 6h.01"
+            />
+            <path
+              d="M16 6h.01"
+            />
+            <path
+              d="M12 6h.01"
+            />
+            <path
+              d="M12 10h.01"
+            />
+            <path
+              d="M12 14h.01"
+            />
+            <path
+              d="M16 10h.01"
+            />
+            <path
+              d="M16 14h.01"
+            />
+            <path
+              d="M8 10h.01"
+            />
+            <path
+              d="M8 14h.01"
+            />
+          </svg>
+          <span>
+            Computer Science
+          </span>
+        </div>
+        <div
+          class="ml-6 text-xs text-muted-foreground"
+        >
+          Fall 2026
+        </div>
+      </div>
+      <div
+        class="flex items-center gap-2 text-sm text-muted-foreground"
+      >
+        <svg
+          class="lucide lucide-user h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"
+          />
+          <circle
+            cx="12"
+            cy="7"
+            r="4"
+          />
+        </svg>
+        <span>
+          John
+           
+          Smith
+        </span>
+      </div>
+      <div
+        class="flex items-center gap-2 text-sm text-muted-foreground"
+      >
+        <svg
+          class="lucide lucide-calendar-days h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M8 2v4"
+          />
+          <path
+            d="M16 2v4"
+          />
+          <rect
+            height="18"
+            rx="2"
+            width="18"
+            x="3"
+            y="4"
+          />
+          <path
+            d="M3 10h18"
+          />
+          <path
+            d="M8 14h.01"
+          />
+          <path
+            d="M12 14h.01"
+          />
+          <path
+            d="M16 14h.01"
+          />
+          <path
+            d="M8 18h.01"
+          />
+          <path
+            d="M12 18h.01"
+          />
+          <path
+            d="M16 18h.01"
+          />
+        </svg>
+        <span>
+          Aug 31, 2026
+           - 
+          Dec 14, 2026
+        </span>
+      </div>
+      <div
+        class="flex items-center gap-2 text-sm text-muted-foreground"
+      >
+        <svg
+          class="lucide lucide-clock h-4 w-4"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle
+            cx="12"
+            cy="12"
+            r="10"
+          />
+          <polyline
+            points="12 6 12 12 16 14"
+          />
+        </svg>
+        <span>
+          14
+           weeks
+        </span>
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <div
+          class="flex items-center justify-between text-sm"
+        >
+          <div
+            class="flex items-center gap-2 text-muted-foreground"
+          >
+            <svg
+              class="lucide lucide-users h-4 w-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+              />
+              <circle
+                cx="9"
+                cy="7"
+                r="4"
+              />
+              <path
+                d="M22 21v-2a4 4 0 0 0-3-3.87"
+              />
+              <path
+                d="M16 3.13a4 4 0 0 1 0 7.75"
+              />
+            </svg>
+            <span>
+              Enrollment
+            </span>
+          </div>
+          <span
+            class="font-medium"
+          >
+            5
+             / 25
+          </span>
+        </div>
+        <div
+          class="h-2 w-full overflow-hidden rounded-full bg-secondary"
+        >
+          <div
+            class="h-full transition-all bg-primary"
+            style="width: 20%;"
+          />
+        </div>
+      </div>
+      <div
+        class="text-xs text-muted-foreground"
+      >
+        Department: 
+        Computer Science
+      </div>
+    </div>
+  </div>
+</a>
+`;

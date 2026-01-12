@@ -1,16 +1,85 @@
 /**
  * App router with authentication guards
+ * Version: 2.0.0 - Phase 4 Implementation
+ * Date: 2026-01-10
+ *
+ * Updated to use V2 role system with UserTypes and permissions
  */
 
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { HomePage } from '@/pages/home';
 import { LoginPage } from '@/pages/auth/LoginPage';
 import { DashboardPage } from '@/pages/dashboard';
-import { CoursesPage } from '@/pages/courses';
-import { CourseViewerPage } from '@/pages/course-viewer';
-import { AdminPage } from '@/pages/admin';
+// import { CoursesPage } from '@/pages/courses';
+// import { CourseViewerPage } from '@/pages/course-viewer';
 import { NotFoundPage } from '@/pages/not-found';
-import { ProtectedRoute } from './guards';
+import {
+  ProtectedRoute,
+  StaffOnlyRoute,
+  LearnerOnlyRoute,
+  AdminOnlyRoute,
+} from './ProtectedRoute';
+
+// Staff pages
+import { StaffDashboardPage } from '@/pages/staff/dashboard';
+import { CourseAnalyticsPage } from '@/pages/staff/analytics';
+import { StudentProgressPage } from '@/pages/staff/students';
+import { StudentDetailPage } from '@/pages/staff/students/StudentDetailPage';
+import { StaffCoursesPage } from '@/pages/staff/courses/StaffCoursesPage';
+import { CourseEditorPage } from '@/pages/staff/courses/CourseEditorPage';
+import { ModuleEditorPage } from '@/pages/staff/courses/ModuleEditorPage';
+import { ContentUploaderPage } from '@/pages/staff/courses/ContentUploaderPage';
+import { ExerciseBuilderPage } from '@/pages/staff/courses/ExerciseBuilderPage';
+import { CoursePreviewPage } from '@/pages/staff/courses/CoursePreviewPage';
+import { ClassManagementPage as StaffClassManagementPage } from '@/pages/staff/classes/ClassManagementPage';
+import { ClassDetailsPage as StaffClassDetailsPage } from '@/pages/staff/classes/ClassDetailsPage';
+import { GradingPage, GradingDetailPage } from '@/pages/staff/grading';
+import { StaffReportsPage } from '@/pages/staff/reports';
+
+// Admin pages
+import { AdminDashboardPage } from '@/pages/admin/dashboard/AdminDashboardPage';
+import { UserManagementPage } from '@/pages/admin/users/UserManagementPage';
+import { ProgramManagementPage } from '@/pages/admin/programs';
+import { CourseManagementPage } from '@/pages/admin/courses';
+import { ClassManagementPage } from '@/pages/admin/classes';
+import { ContentManagementPage } from '@/pages/admin/content';
+import { TemplateManagementPage } from '@/pages/admin/templates';
+import { ExerciseManagementPage } from '@/pages/admin/exercises';
+import { QuestionBankPage } from '@/pages/admin/questions';
+import { StaffManagementPage } from '@/pages/admin/staff/StaffManagementPage';
+import { LearnerManagementPage } from '@/pages/admin/learners/LearnerManagementPage';
+import { DepartmentManagementPage } from '@/pages/admin/departments/DepartmentManagementPage';
+import { AcademicYearManagementPage } from '@/pages/admin/academic-years/AcademicYearManagementPage';
+import { CertificateTemplateManagementPage } from '@/pages/admin/certificates/CertificateTemplateManagementPage';
+import { ReportBuilderPage } from '@/pages/admin/reports/ReportBuilderPage';
+import { ReportTemplatesPage, ReportViewerPage } from '@/pages/admin/reports';
+import {
+  SettingsDashboardPage,
+  GeneralSettingsPage,
+  EmailSettingsPage,
+  NotificationSettingsPage,
+  SecuritySettingsPage,
+  AppearanceSettingsPage,
+} from '@/pages/admin/settings';
+import { AuditLogsPage, AuditLogDetailPage } from '@/pages/admin/audit-logs';
+
+// Profile page
+import { ProfilePage } from '@/pages/profile/ProfilePage';
+
+// Select department page (V2)
+import { SelectDepartmentPage } from '@/pages/select-department';
+
+// Learner pages
+import { LearnerDashboardPage } from '@/pages/learner/dashboard';
+import { ExerciseTakingPage } from '@/pages/learner/exercises/ExerciseTakingPage';
+import { ExerciseResultsPage } from '@/pages/learner/exercises/ExerciseResultsPage';
+import { ProgressDashboardPage, CourseProgressPage } from '@/pages/learner/progress';
+import { CourseCatalogPage } from '@/pages/learner/catalog/CourseCatalogPage';
+import { CourseDetailsPage } from '@/pages/learner/catalog/CourseDetailsPage';
+import { CoursePlayerPage } from '@/pages/learner/player/CoursePlayerPage';
+import { MyCoursesPage } from '@/pages/learner/courses/MyCoursesPage';
+import { MyLearningPage } from '@/pages/learner/learning';
+import { CertificatesPage, CertificateViewPage } from '@/pages/learner/certificates';
 
 // Unauthorized page component
 const UnauthorizedPage = () => (
@@ -34,6 +103,7 @@ export function AppRouter() {
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
+      <Route path="/select-department" element={<SelectDepartmentPage />} />
       <Route path="/404" element={<NotFoundPage />} />
 
       {/* Protected routes */}
@@ -45,20 +115,287 @@ export function AppRouter() {
           </ProtectedRoute>
         }
       />
-      <Route
+      {/* Archived old course page */}
+      {/* <Route
         path="/courses"
         element={
           <ProtectedRoute>
             <CoursesPage />
           </ProtectedRoute>
         }
-      />
-      <Route
+      /> */}
+      {/* <Route
         path="/courses/:courseId"
         element={
           <ProtectedRoute>
             <CourseViewerPage />
           </ProtectedRoute>
+        }
+      /> */}
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Learner-only routes (V2) */}
+      <Route
+        path="/learner/dashboard"
+        element={
+          <LearnerOnlyRoute>
+            <LearnerDashboardPage />
+          </LearnerOnlyRoute>
+        }
+      />
+      {/* My Learning Route */}
+      <Route
+        path="/learner/learning"
+        element={
+          <LearnerOnlyRoute>
+            <MyLearningPage />
+          </LearnerOnlyRoute>
+        }
+      />
+      {/* Course Catalog Routes */}
+      <Route
+        path="/learner/catalog"
+        element={
+          <LearnerOnlyRoute>
+            <CourseCatalogPage />
+          </LearnerOnlyRoute>
+        }
+      />
+      <Route
+        path="/learner/catalog/:courseId"
+        element={
+          <LearnerOnlyRoute>
+            <CourseDetailsPage />
+          </LearnerOnlyRoute>
+        }
+      />
+      {/* My Courses Route */}
+      <Route
+        path="/learner/courses"
+        element={
+          <LearnerOnlyRoute>
+            <MyCoursesPage />
+          </LearnerOnlyRoute>
+        }
+      />
+      {/* Course Player Routes */}
+      <Route
+        path="/learner/courses/:courseId/player"
+        element={
+          <LearnerOnlyRoute>
+            <CoursePlayerPage />
+          </LearnerOnlyRoute>
+        }
+      />
+      <Route
+        path="/learner/courses/:courseId/player/:contentId"
+        element={
+          <LearnerOnlyRoute>
+            <CoursePlayerPage />
+          </LearnerOnlyRoute>
+        }
+      />
+      <Route
+        path="/learner/exercises/:exerciseId/take"
+        element={
+          <LearnerOnlyRoute>
+            <ExerciseTakingPage />
+          </LearnerOnlyRoute>
+        }
+      />
+      <Route
+        path="/learner/exercises/:exerciseId/results/:attemptId"
+        element={
+          <LearnerOnlyRoute>
+            <ExerciseResultsPage />
+          </LearnerOnlyRoute>
+        }
+      />
+      {/* Progress Routes */}
+      <Route
+        path="/learner/progress"
+        element={
+          <LearnerOnlyRoute>
+            <ProgressDashboardPage />
+          </LearnerOnlyRoute>
+        }
+      />
+      <Route
+        path="/learner/courses/:courseId/progress"
+        element={
+          <LearnerOnlyRoute>
+            <CourseProgressPage />
+          </LearnerOnlyRoute>
+        }
+      />
+      {/* Certificates Routes */}
+      <Route
+        path="/learner/certificates"
+        element={
+          <LearnerOnlyRoute>
+            <CertificatesPage />
+          </LearnerOnlyRoute>
+        }
+      />
+      <Route
+        path="/learner/certificates/:certificateId"
+        element={
+          <LearnerOnlyRoute>
+            <CertificateViewPage />
+          </LearnerOnlyRoute>
+        }
+      />
+
+      {/* Staff-only routes */}
+      <Route
+        path="/staff/dashboard"
+        element={
+          <StaffOnlyRoute>
+            <StaffDashboardPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/analytics"
+        element={
+          <StaffOnlyRoute>
+            <CourseAnalyticsPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/students"
+        element={
+          <StaffOnlyRoute>
+            <StudentProgressPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/students/:studentId"
+        element={
+          <StaffOnlyRoute>
+            <StudentDetailPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/courses/:courseId/modules/:moduleId/edit"
+        element={
+          <StaffOnlyRoute>
+            <ModuleEditorPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/courses"
+        element={
+          <StaffOnlyRoute>
+            <StaffCoursesPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/courses/new"
+        element={
+          <StaffOnlyRoute>
+            <CourseEditorPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/courses/:courseId/edit"
+        element={
+          <StaffOnlyRoute>
+            <CourseEditorPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/courses/content/upload"
+        element={
+          <StaffOnlyRoute>
+            <ContentUploaderPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/courses/exercises/new"
+        element={
+          <StaffOnlyRoute>
+            <ExerciseBuilderPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/courses/exercises/:exerciseId"
+        element={
+          <StaffOnlyRoute>
+            <ExerciseBuilderPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/courses/:courseId/preview"
+        element={
+          <StaffOnlyRoute>
+            <CoursePreviewPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/courses/:courseId/preview/:moduleId"
+        element={
+          <StaffOnlyRoute>
+            <CoursePreviewPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/classes"
+        element={
+          <StaffOnlyRoute>
+            <StaffClassManagementPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/classes/:classId"
+        element={
+          <StaffOnlyRoute>
+            <StaffClassDetailsPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/grading"
+        element={
+          <StaffOnlyRoute>
+            <GradingPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/grading/:attemptId"
+        element={
+          <StaffOnlyRoute>
+            <GradingDetailPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/reports"
+        element={
+          <StaffOnlyRoute>
+            <StaffReportsPage />
+          </StaffOnlyRoute>
         }
       />
 
@@ -66,9 +403,209 @@ export function AppRouter() {
       <Route
         path="/admin"
         element={
-          <ProtectedRoute roles={['global-admin']}>
-            <AdminPage />
-          </ProtectedRoute>
+          <AdminOnlyRoute>
+            <AdminDashboardPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/dashboard"
+        element={
+          <AdminOnlyRoute>
+            <AdminDashboardPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/users"
+        element={
+          <AdminOnlyRoute>
+            <UserManagementPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/programs"
+        element={
+          <AdminOnlyRoute>
+            <ProgramManagementPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/courses"
+        element={
+          <AdminOnlyRoute>
+            <CourseManagementPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/classes"
+        element={
+          <AdminOnlyRoute>
+            <ClassManagementPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/content"
+        element={
+          <AdminOnlyRoute>
+            <ContentManagementPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/templates"
+        element={
+          <AdminOnlyRoute>
+            <TemplateManagementPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/exercises"
+        element={
+          <AdminOnlyRoute>
+            <ExerciseManagementPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/questions"
+        element={
+          <AdminOnlyRoute>
+            <QuestionBankPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/departments"
+        element={
+          <AdminOnlyRoute>
+            <DepartmentManagementPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/staff"
+        element={
+          <AdminOnlyRoute>
+            <StaffManagementPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/learners"
+        element={
+          <AdminOnlyRoute>
+            <LearnerManagementPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/academic-years"
+        element={
+          <AdminOnlyRoute>
+            <AcademicYearManagementPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/certificates"
+        element={
+          <AdminOnlyRoute>
+            <CertificateTemplateManagementPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/reports"
+        element={
+          <AdminOnlyRoute>
+            <ReportBuilderPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/reports/templates"
+        element={
+          <AdminOnlyRoute>
+            <ReportTemplatesPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/reports/:reportId"
+        element={
+          <AdminOnlyRoute>
+            <ReportViewerPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/audit-logs"
+        element={
+          <AdminOnlyRoute>
+            <AuditLogsPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/audit-logs/:logId"
+        element={
+          <AdminOnlyRoute>
+            <AuditLogDetailPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/settings"
+        element={
+          <AdminOnlyRoute>
+            <SettingsDashboardPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/settings/general"
+        element={
+          <AdminOnlyRoute>
+            <GeneralSettingsPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/settings/email"
+        element={
+          <AdminOnlyRoute>
+            <EmailSettingsPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/settings/notifications"
+        element={
+          <AdminOnlyRoute>
+            <NotificationSettingsPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/settings/security"
+        element={
+          <AdminOnlyRoute>
+            <SecuritySettingsPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/settings/appearance"
+        element={
+          <AdminOnlyRoute>
+            <AppearanceSettingsPage />
+          </AdminOnlyRoute>
         }
       />
 

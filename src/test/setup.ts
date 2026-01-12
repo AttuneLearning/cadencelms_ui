@@ -41,6 +41,19 @@ const localStorageMock = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 global.localStorage = localStorageMock as any;
 
+// Mock ResizeObserver for Radix UI components
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
+
+// Mock hasPointerCapture for Radix UI Select component
+if (typeof Element !== 'undefined') {
+  Element.prototype.hasPointerCapture = Element.prototype.hasPointerCapture || (() => false);
+  Element.prototype.scrollIntoView = Element.prototype.scrollIntoView || (() => {});
+}
+
 // Reset mocks and storage before each test
 beforeEach(() => {
   storage.clear();

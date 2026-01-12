@@ -1,0 +1,1427 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CourseSegmentForm > Snapshot Tests > should match snapshot in create mode 1`] = `
+<form
+  class="space-y-6"
+>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <h3
+        class="text-2xl font-semibold leading-none tracking-tight"
+      >
+        Basic Information
+      </h3>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Enter the module's title, description, and order
+      </p>
+    </div>
+    <div
+      class="p-6 pt-0 space-y-4"
+    >
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="title"
+        >
+          Title *
+        </label>
+        <input
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="title"
+          name="title"
+          placeholder="Enter module title"
+        />
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="description"
+        >
+          Description
+        </label>
+        <textarea
+          class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="description"
+          name="description"
+          placeholder="Enter module description"
+          rows="4"
+        />
+      </div>
+      <div
+        class="grid grid-cols-2 gap-4"
+      >
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="order"
+          >
+            Order *
+          </label>
+          <input
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            id="order"
+            name="order"
+            placeholder="1"
+            type="number"
+          />
+        </div>
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="type"
+          >
+            Type 
+            *
+          </label>
+          <button
+            aria-autocomplete="none"
+            aria-controls="radix-:ra4:"
+            aria-expanded="false"
+            class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+            data-state="closed"
+            dir="ltr"
+            id="type"
+            role="combobox"
+            type="button"
+          >
+            <span
+              style="pointer-events: none;"
+            >
+              Custom
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </button>
+          <select
+            aria-hidden="true"
+            style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+            tabindex="-1"
+          >
+            <option
+              selected=""
+              value="custom"
+            >
+              Custom
+            </option>
+            <option
+              value="scorm"
+            >
+              SCORM
+            </option>
+            <option
+              value="exercise"
+            >
+              Exercise
+            </option>
+            <option
+              value="video"
+            >
+              Video
+            </option>
+            <option
+              value="document"
+            >
+              Document
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <h3
+        class="text-2xl font-semibold leading-none tracking-tight"
+      >
+        Content Settings
+      </h3>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Configure content reference and scoring
+      </p>
+    </div>
+    <div
+      class="p-6 pt-0 space-y-4"
+    >
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="contentId"
+        >
+          Content ID
+        </label>
+        <input
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="contentId"
+          name="contentId"
+          placeholder="Reference to content library (optional)"
+        />
+      </div>
+      <div
+        class="grid grid-cols-2 gap-4"
+      >
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="passingScore"
+          >
+            Passing Score (%)
+          </label>
+          <input
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            id="passingScore"
+            name="passingScore"
+            placeholder="70"
+            type="number"
+          />
+        </div>
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="duration"
+          >
+            Duration (seconds)
+          </label>
+          <input
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            id="duration"
+            name="duration"
+            placeholder="3600"
+            type="number"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <h3
+        class="text-2xl font-semibold leading-none tracking-tight"
+      >
+        Module Settings
+      </h3>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Configure attempts, time limits, and feedback
+      </p>
+    </div>
+    <div
+      class="p-6 pt-0 space-y-4"
+    >
+      <div
+        class="flex items-center justify-between"
+      >
+        <div
+          class="space-y-0.5"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Allow Multiple Attempts
+          </label>
+          <p
+            class="text-sm text-muted-foreground"
+          >
+            Allow learners to retry this module
+          </p>
+        </div>
+        <button
+          aria-checked="true"
+          class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input"
+          data-state="checked"
+          role="switch"
+          type="button"
+          value="on"
+        >
+          <span
+            class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+            data-state="checked"
+          />
+        </button>
+        <input
+          aria-hidden="true"
+          checked=""
+          style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+          tabindex="-1"
+          type="checkbox"
+          value="on"
+        />
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="maxAttempts"
+        >
+          Maximum Attempts
+        </label>
+        <input
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="maxAttempts"
+          name="maxAttempts"
+          placeholder="Unlimited (leave empty)"
+          type="number"
+        />
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="timeLimit"
+        >
+          Time Limit (seconds)
+        </label>
+        <input
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="timeLimit"
+          name="timeLimit"
+          placeholder="No limit (leave empty)"
+          type="number"
+        />
+      </div>
+      <div
+        class="flex items-center justify-between"
+      >
+        <div
+          class="space-y-0.5"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Show Feedback
+          </label>
+          <p
+            class="text-sm text-muted-foreground"
+          >
+            Show correct answers and feedback after completion
+          </p>
+        </div>
+        <button
+          aria-checked="false"
+          class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input"
+          data-state="unchecked"
+          role="switch"
+          type="button"
+          value="true"
+        >
+          <span
+            class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+            data-state="unchecked"
+          />
+        </button>
+        <input
+          aria-hidden="true"
+          name="showFeedback"
+          style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+          tabindex="-1"
+          type="checkbox"
+          value="on"
+        />
+      </div>
+      <div
+        class="flex items-center justify-between"
+      >
+        <div
+          class="space-y-0.5"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Shuffle Questions
+          </label>
+          <p
+            class="text-sm text-muted-foreground"
+          >
+            Randomize question order for each attempt
+          </p>
+        </div>
+        <button
+          aria-checked="false"
+          class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input"
+          data-state="unchecked"
+          role="switch"
+          type="button"
+          value="false"
+        >
+          <span
+            class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+            data-state="unchecked"
+          />
+        </button>
+        <input
+          aria-hidden="true"
+          name="shuffleQuestions"
+          style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+          tabindex="-1"
+          type="checkbox"
+          value="on"
+        />
+      </div>
+    </div>
+  </div>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <h3
+        class="text-2xl font-semibold leading-none tracking-tight"
+      >
+        Publishing
+      </h3>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Control module visibility to learners
+      </p>
+    </div>
+    <div
+      class="p-6 pt-0"
+    >
+      <div
+        class="flex items-center justify-between"
+      >
+        <div
+          class="space-y-0.5"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Published
+          </label>
+          <p
+            class="text-sm text-muted-foreground"
+          >
+            Make this module visible to learners
+          </p>
+        </div>
+        <button
+          aria-checked="false"
+          class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input"
+          data-state="unchecked"
+          role="switch"
+          type="button"
+          value="false"
+        >
+          <span
+            class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+            data-state="unchecked"
+          />
+        </button>
+        <input
+          aria-hidden="true"
+          name="isPublished"
+          style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+          tabindex="-1"
+          type="checkbox"
+          value="on"
+        />
+      </div>
+    </div>
+  </div>
+  <div
+    class="flex justify-end gap-3"
+  >
+    <button
+      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+      type="submit"
+    >
+      Create Module
+    </button>
+  </div>
+</form>
+`;
+
+exports[`CourseSegmentForm > Snapshot Tests > should match snapshot in edit mode 1`] = `
+<form
+  class="space-y-6"
+>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <h3
+        class="text-2xl font-semibold leading-none tracking-tight"
+      >
+        Basic Information
+      </h3>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Enter the module's title, description, and order
+      </p>
+    </div>
+    <div
+      class="p-6 pt-0 space-y-4"
+    >
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="title"
+        >
+          Title *
+        </label>
+        <input
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="title"
+          name="title"
+          placeholder="Enter module title"
+        />
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="description"
+        >
+          Description
+        </label>
+        <textarea
+          class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="description"
+          name="description"
+          placeholder="Enter module description"
+          rows="4"
+        />
+      </div>
+      <div
+        class="grid grid-cols-2 gap-4"
+      >
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="type"
+          >
+            Type 
+          </label>
+          <button
+            aria-autocomplete="none"
+            aria-controls="radix-:raa:"
+            aria-expanded="false"
+            class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+            data-disabled=""
+            data-state="closed"
+            dir="ltr"
+            disabled=""
+            id="type"
+            role="combobox"
+            type="button"
+          >
+            <span
+              style="pointer-events: none;"
+            >
+              Custom
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </button>
+          <select
+            aria-hidden="true"
+            disabled=""
+            style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+            tabindex="-1"
+          >
+            <option
+              selected=""
+              value="custom"
+            >
+              Custom
+            </option>
+            <option
+              value="scorm"
+            >
+              SCORM
+            </option>
+            <option
+              value="exercise"
+            >
+              Exercise
+            </option>
+            <option
+              value="video"
+            >
+              Video
+            </option>
+            <option
+              value="document"
+            >
+              Document
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <h3
+        class="text-2xl font-semibold leading-none tracking-tight"
+      >
+        Content Settings
+      </h3>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Configure content reference and scoring
+      </p>
+    </div>
+    <div
+      class="p-6 pt-0 space-y-4"
+    >
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="contentId"
+        >
+          Content ID
+        </label>
+        <input
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="contentId"
+          name="contentId"
+          placeholder="Reference to content library (optional)"
+        />
+      </div>
+      <div
+        class="grid grid-cols-2 gap-4"
+      >
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="passingScore"
+          >
+            Passing Score (%)
+          </label>
+          <input
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            id="passingScore"
+            name="passingScore"
+            placeholder="70"
+            type="number"
+          />
+        </div>
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="duration"
+          >
+            Duration (seconds)
+          </label>
+          <input
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            id="duration"
+            name="duration"
+            placeholder="3600"
+            type="number"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <h3
+        class="text-2xl font-semibold leading-none tracking-tight"
+      >
+        Module Settings
+      </h3>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Configure attempts, time limits, and feedback
+      </p>
+    </div>
+    <div
+      class="p-6 pt-0 space-y-4"
+    >
+      <div
+        class="flex items-center justify-between"
+      >
+        <div
+          class="space-y-0.5"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Allow Multiple Attempts
+          </label>
+          <p
+            class="text-sm text-muted-foreground"
+          >
+            Allow learners to retry this module
+          </p>
+        </div>
+        <button
+          aria-checked="true"
+          class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input"
+          data-state="checked"
+          role="switch"
+          type="button"
+          value="on"
+        >
+          <span
+            class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+            data-state="checked"
+          />
+        </button>
+        <input
+          aria-hidden="true"
+          checked=""
+          style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+          tabindex="-1"
+          type="checkbox"
+          value="on"
+        />
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="maxAttempts"
+        >
+          Maximum Attempts
+        </label>
+        <input
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="maxAttempts"
+          name="maxAttempts"
+          placeholder="Unlimited (leave empty)"
+          type="number"
+        />
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="timeLimit"
+        >
+          Time Limit (seconds)
+        </label>
+        <input
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="timeLimit"
+          name="timeLimit"
+          placeholder="No limit (leave empty)"
+          type="number"
+        />
+      </div>
+      <div
+        class="flex items-center justify-between"
+      >
+        <div
+          class="space-y-0.5"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Show Feedback
+          </label>
+          <p
+            class="text-sm text-muted-foreground"
+          >
+            Show correct answers and feedback after completion
+          </p>
+        </div>
+        <button
+          aria-checked="false"
+          class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input"
+          data-state="unchecked"
+          role="switch"
+          type="button"
+          value="true"
+        >
+          <span
+            class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+            data-state="unchecked"
+          />
+        </button>
+        <input
+          aria-hidden="true"
+          name="showFeedback"
+          style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+          tabindex="-1"
+          type="checkbox"
+          value="on"
+        />
+      </div>
+      <div
+        class="flex items-center justify-between"
+      >
+        <div
+          class="space-y-0.5"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Shuffle Questions
+          </label>
+          <p
+            class="text-sm text-muted-foreground"
+          >
+            Randomize question order for each attempt
+          </p>
+        </div>
+        <button
+          aria-checked="false"
+          class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input"
+          data-state="unchecked"
+          role="switch"
+          type="button"
+          value="false"
+        >
+          <span
+            class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+            data-state="unchecked"
+          />
+        </button>
+        <input
+          aria-hidden="true"
+          name="shuffleQuestions"
+          style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+          tabindex="-1"
+          type="checkbox"
+          value="on"
+        />
+      </div>
+    </div>
+  </div>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <h3
+        class="text-2xl font-semibold leading-none tracking-tight"
+      >
+        Publishing
+      </h3>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Control module visibility to learners
+      </p>
+    </div>
+    <div
+      class="p-6 pt-0"
+    >
+      <div
+        class="flex items-center justify-between"
+      >
+        <div
+          class="space-y-0.5"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Published
+          </label>
+          <p
+            class="text-sm text-muted-foreground"
+          >
+            Make this module visible to learners
+          </p>
+        </div>
+        <button
+          aria-checked="false"
+          class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input"
+          data-state="unchecked"
+          role="switch"
+          type="button"
+          value="false"
+        >
+          <span
+            class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+            data-state="unchecked"
+          />
+        </button>
+        <input
+          aria-hidden="true"
+          name="isPublished"
+          style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+          tabindex="-1"
+          type="checkbox"
+          value="on"
+        />
+      </div>
+    </div>
+  </div>
+  <div
+    class="flex justify-end gap-3"
+  >
+    <button
+      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+      type="submit"
+    >
+      Update Module
+    </button>
+  </div>
+</form>
+`;
+
+exports[`CourseSegmentForm > Snapshot Tests > should match snapshot with loading state 1`] = `
+<form
+  class="space-y-6"
+>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <h3
+        class="text-2xl font-semibold leading-none tracking-tight"
+      >
+        Basic Information
+      </h3>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Enter the module's title, description, and order
+      </p>
+    </div>
+    <div
+      class="p-6 pt-0 space-y-4"
+    >
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="title"
+        >
+          Title *
+        </label>
+        <input
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="title"
+          name="title"
+          placeholder="Enter module title"
+        />
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="description"
+        >
+          Description
+        </label>
+        <textarea
+          class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="description"
+          name="description"
+          placeholder="Enter module description"
+          rows="4"
+        />
+      </div>
+      <div
+        class="grid grid-cols-2 gap-4"
+      >
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="order"
+          >
+            Order *
+          </label>
+          <input
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            id="order"
+            name="order"
+            placeholder="1"
+            type="number"
+          />
+        </div>
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="type"
+          >
+            Type 
+            *
+          </label>
+          <button
+            aria-autocomplete="none"
+            aria-controls="radix-:rag:"
+            aria-expanded="false"
+            class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+            data-state="closed"
+            dir="ltr"
+            id="type"
+            role="combobox"
+            type="button"
+          >
+            <span
+              style="pointer-events: none;"
+            >
+              Custom
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down h-4 w-4 opacity-50"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </button>
+          <select
+            aria-hidden="true"
+            style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+            tabindex="-1"
+          >
+            <option
+              selected=""
+              value="custom"
+            >
+              Custom
+            </option>
+            <option
+              value="scorm"
+            >
+              SCORM
+            </option>
+            <option
+              value="exercise"
+            >
+              Exercise
+            </option>
+            <option
+              value="video"
+            >
+              Video
+            </option>
+            <option
+              value="document"
+            >
+              Document
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <h3
+        class="text-2xl font-semibold leading-none tracking-tight"
+      >
+        Content Settings
+      </h3>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Configure content reference and scoring
+      </p>
+    </div>
+    <div
+      class="p-6 pt-0 space-y-4"
+    >
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="contentId"
+        >
+          Content ID
+        </label>
+        <input
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="contentId"
+          name="contentId"
+          placeholder="Reference to content library (optional)"
+        />
+      </div>
+      <div
+        class="grid grid-cols-2 gap-4"
+      >
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="passingScore"
+          >
+            Passing Score (%)
+          </label>
+          <input
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            id="passingScore"
+            name="passingScore"
+            placeholder="70"
+            type="number"
+          />
+        </div>
+        <div
+          class="space-y-2"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            for="duration"
+          >
+            Duration (seconds)
+          </label>
+          <input
+            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            id="duration"
+            name="duration"
+            placeholder="3600"
+            type="number"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <h3
+        class="text-2xl font-semibold leading-none tracking-tight"
+      >
+        Module Settings
+      </h3>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Configure attempts, time limits, and feedback
+      </p>
+    </div>
+    <div
+      class="p-6 pt-0 space-y-4"
+    >
+      <div
+        class="flex items-center justify-between"
+      >
+        <div
+          class="space-y-0.5"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Allow Multiple Attempts
+          </label>
+          <p
+            class="text-sm text-muted-foreground"
+          >
+            Allow learners to retry this module
+          </p>
+        </div>
+        <button
+          aria-checked="true"
+          class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input"
+          data-state="checked"
+          role="switch"
+          type="button"
+          value="on"
+        >
+          <span
+            class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+            data-state="checked"
+          />
+        </button>
+        <input
+          aria-hidden="true"
+          checked=""
+          style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+          tabindex="-1"
+          type="checkbox"
+          value="on"
+        />
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="maxAttempts"
+        >
+          Maximum Attempts
+        </label>
+        <input
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="maxAttempts"
+          name="maxAttempts"
+          placeholder="Unlimited (leave empty)"
+          type="number"
+        />
+      </div>
+      <div
+        class="space-y-2"
+      >
+        <label
+          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          for="timeLimit"
+        >
+          Time Limit (seconds)
+        </label>
+        <input
+          class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          id="timeLimit"
+          name="timeLimit"
+          placeholder="No limit (leave empty)"
+          type="number"
+        />
+      </div>
+      <div
+        class="flex items-center justify-between"
+      >
+        <div
+          class="space-y-0.5"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Show Feedback
+          </label>
+          <p
+            class="text-sm text-muted-foreground"
+          >
+            Show correct answers and feedback after completion
+          </p>
+        </div>
+        <button
+          aria-checked="false"
+          class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input"
+          data-state="unchecked"
+          role="switch"
+          type="button"
+          value="true"
+        >
+          <span
+            class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+            data-state="unchecked"
+          />
+        </button>
+        <input
+          aria-hidden="true"
+          name="showFeedback"
+          style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+          tabindex="-1"
+          type="checkbox"
+          value="on"
+        />
+      </div>
+      <div
+        class="flex items-center justify-between"
+      >
+        <div
+          class="space-y-0.5"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Shuffle Questions
+          </label>
+          <p
+            class="text-sm text-muted-foreground"
+          >
+            Randomize question order for each attempt
+          </p>
+        </div>
+        <button
+          aria-checked="false"
+          class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input"
+          data-state="unchecked"
+          role="switch"
+          type="button"
+          value="false"
+        >
+          <span
+            class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+            data-state="unchecked"
+          />
+        </button>
+        <input
+          aria-hidden="true"
+          name="shuffleQuestions"
+          style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+          tabindex="-1"
+          type="checkbox"
+          value="on"
+        />
+      </div>
+    </div>
+  </div>
+  <div
+    class="rounded-lg border bg-card text-card-foreground shadow-sm"
+  >
+    <div
+      class="flex flex-col space-y-1.5 p-6"
+    >
+      <h3
+        class="text-2xl font-semibold leading-none tracking-tight"
+      >
+        Publishing
+      </h3>
+      <p
+        class="text-sm text-muted-foreground"
+      >
+        Control module visibility to learners
+      </p>
+    </div>
+    <div
+      class="p-6 pt-0"
+    >
+      <div
+        class="flex items-center justify-between"
+      >
+        <div
+          class="space-y-0.5"
+        >
+          <label
+            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Published
+          </label>
+          <p
+            class="text-sm text-muted-foreground"
+          >
+            Make this module visible to learners
+          </p>
+        </div>
+        <button
+          aria-checked="false"
+          class="peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input"
+          data-state="unchecked"
+          role="switch"
+          type="button"
+          value="false"
+        >
+          <span
+            class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+            data-state="unchecked"
+          />
+        </button>
+        <input
+          aria-hidden="true"
+          name="isPublished"
+          style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+          tabindex="-1"
+          type="checkbox"
+          value="on"
+        />
+      </div>
+    </div>
+  </div>
+  <div
+    class="flex justify-end gap-3"
+  >
+    <button
+      class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+      disabled=""
+      type="submit"
+    >
+      Saving...
+    </button>
+  </div>
+</form>
+`;

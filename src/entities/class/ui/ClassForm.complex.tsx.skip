@@ -1,0 +1,479 @@
+/**
+ * ClassForm Component
+ * Form for creating and editing classes
+ */
+
+import React from 'react';
+import { useForm, useFieldArray } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Button } from '@/shared/ui/button';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/shared/ui/form';
+import { Input } from '@/shared/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/ui/select';
+import { Calendar } from '@/shared/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
+import { cn } from '@/shared/lib/utils';
+import { CalendarIcon, Plus, Trash2 } from 'lucide-react';
+import { format } from 'date-fns';
+import type { Class, CreateClassPayload, UpdateClassPayload } from '../model/types';
+
+const instructorSchema = z.object({
+  userId: z.string().min(1, 'Instructor is required'),
+  role: z.enum(['primary', 'secondary'] as const),
+});
+
+const classFormSchema = z.object({
+  name: z.string().min(1, 'Class name is required').max(200, 'Name too long'),
+  course: z.string().min(1, 'Course is required'),
+  program: z.string().min(1, 'Program is required'),
+  programLevel: z.string().optional(),
+  instructors: z.array(instructorSchema).min(1, 'At least one instructor is required'),
+  startDate: z.date({ required_error: 'Start date is required' }),
+  endDate: z.date({ required_error: 'End date is required' }),
+  duration: z.number().optional(),
+  capacity: z.number().int().positive().optional().nullable(),
+  academicTerm: z.string().optional(),
+}).refine((data) => data.endDate > data.startDate, {
+  message: 'End date must be after start date',
+  path: ['endDate'],
+}).refine((data) => data.instructors.some((i) => i.role === 'primary'), {
+  message: 'At least one primary instructor is required',
+  path: ['instructors'],
+});
+
+type ClassFormValues = z.infer<typeof classFormSchema>;
+
+interface ClassFormProps {
+  initialData?: Class;
+  onSubmit: (data: CreateClassPayload | UpdateClassPayload) => void;
+  isLoading?: boolean;
+  courses?: Array<{ id: string; title: string; code: string }>;
+  programs?: Array<{ id: string; name: string }>;
+  programLevels?: Array<{ id: string; name: string; levelNumber: number }>;
+  terms?: Array<{ id: string; name: string }>;
+  instructors?: Array<{ id: string; firstName: string; lastName: string; email: string }>;
+}
+
+export const ClassForm: React.FC<ClassFormProps> = ({
+  initialData,
+  onSubmit,
+  isLoading = false,
+  courses = [],
+  programs = [],
+  programLevels = [],
+  terms = [],
+  instructors = [],
+}) => {
+  const form = useForm<ClassFormValues>({
+    resolver: zodResolver(classFormSchema),
+    defaultValues: initialData
+      ? {
+          name: initialData.name,
+          course: initialData.course.id,
+          program: initialData.program.id,
+          programLevel: initialData.programLevel?.id,
+          instructors: initialData.instructors.map((i) => ({
+            userId: i.id,
+            role: i.role,
+          })),
+          startDate: new Date(initialData.startDate),
+          endDate: new Date(initialData.endDate),
+          duration: initialData.duration,
+          capacity: initialData.capacity,
+          academicTerm: initialData.academicTerm?.id,
+        }
+      : {
+          name: '',
+          course: '',
+          program: '',
+          programLevel: undefined,
+          instructors: [{ userId: '', role: 'primary' }],
+          startDate: undefined,
+          endDate: undefined,
+          duration: undefined,
+          capacity: undefined,
+          academicTerm: undefined,
+        },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: 'instructors',
+  });
+
+  const handleSubmit = (values: ClassFormValues) => {
+    const payload = {
+      name: values.name,
+      course: values.course,
+      program: values.program,
+      programLevel: values.programLevel,
+      instructors: values.instructors,
+      startDate: values.startDate.toISOString(),
+      endDate: values.endDate.toISOString(),
+      duration: values.duration,
+      capacity: values.capacity,
+      academicTerm: values.academicTerm,
+    };
+
+    onSubmit(payload);
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        {/* Class Name */}
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Class Name</FormLabel>
+              <FormControl>
+                <Input placeholder="e.g., CBT Fundamentals - Spring 2026" {...field} />
+              </FormControl>
+              <FormDescription>
+                A descriptive name for this class instance
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Course Selection */}
+        <FormField
+          control={form.control}
+          name="course"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Course</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                disabled={!!initialData}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a course" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {courses.map((course) => (
+                    <SelectItem key={course.id} value={course.id}>
+                      {course.code} - {course.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormDescription>
+                The course this class is based on (cannot be changed after creation)
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Program Selection */}
+        <FormField
+          control={form.control}
+          name="program"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Program</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                disabled={!!initialData}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a program" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {programs.map((program) => (
+                    <SelectItem key={program.id} value={program.id}>
+                      {program.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormDescription>
+                The program this class belongs to (cannot be changed after creation)
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Program Level (Optional) */}
+        {programLevels.length > 0 && (
+          <FormField
+            control={form.control}
+            name="programLevel"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Program Level (Optional)</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a program level" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {programLevels.map((level) => (
+                      <SelectItem key={level.id} value={level.id}>
+                        {level.name} (Level {level.levelNumber})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
+        {/* Academic Term (Optional) */}
+        {terms.length > 0 && (
+          <FormField
+            control={form.control}
+            name="academicTerm"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Academic Term (Optional)</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a term" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {terms.map((term) => (
+                      <SelectItem key={term.id} value={term.id}>
+                        {term.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
+        {/* Instructors */}
+        <div className="space-y-4">
+          <FormLabel>Instructors</FormLabel>
+          {fields.map((field, index) => (
+            <div key={field.id} className="flex gap-2">
+              <FormField
+                control={form.control}
+                name={`instructors.${index}.userId`}
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select instructor" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {instructors.map((instructor) => (
+                          <SelectItem key={instructor.id} value={instructor.id}>
+                            {instructor.firstName} {instructor.lastName} ({instructor.email})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name={`instructors.${index}.role`}
+                render={({ field }) => (
+                  <FormItem className="w-32">
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="primary">Primary</SelectItem>
+                        <SelectItem value="secondary">Secondary</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {fields.length > 1 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => remove(index)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          ))}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => append({ userId: '', role: 'secondary' })}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Add Instructor
+          </Button>
+        </div>
+
+        {/* Dates */}
+        <div className="grid gap-4 md:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="startDate"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Start Date</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          'w-full pl-3 text-left font-normal',
+                          !field.value && 'text-muted-foreground'
+                        )}
+                      >
+                        {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) => date < new Date()}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="endDate"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>End Date</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          'w-full pl-3 text-left font-normal',
+                          !field.value && 'text-muted-foreground'
+                        )}
+                      >
+                        {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) => date < new Date()}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/* Duration and Capacity */}
+        <div className="grid gap-4 md:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="duration"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Duration (weeks)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="Auto-calculated if not provided"
+                    {...field}
+                    value={field.value || ''}
+                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                  />
+                </FormControl>
+                <FormDescription>Leave empty to auto-calculate</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="capacity"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Capacity</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="Leave empty for unlimited"
+                    {...field}
+                    value={field.value || ''}
+                    onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
+                  />
+                </FormControl>
+                <FormDescription>Maximum number of learners (leave empty for unlimited)</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/* Submit Button */}
+        <div className="flex justify-end gap-4">
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? 'Saving...' : initialData ? 'Update Class' : 'Create Class'}
+          </Button>
+        </div>
+      </form>
+    </Form>
+  );
+};
