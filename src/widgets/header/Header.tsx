@@ -213,6 +213,17 @@ export const Header: React.FC = () => {
                     </Link>
                   );
                 })}
+              </nav>
+            </>
+          )}
+        </div>
+
+        {/* Right side */}
+        <div className="flex flex-1 items-center justify-end space-x-2">
+          <nav className="flex items-center space-x-2">
+            <ThemeToggle />
+
+            {isAuthenticated ? (
               <>
                 {/* User dropdown */}
                 <DropdownMenu>

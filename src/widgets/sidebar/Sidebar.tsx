@@ -67,6 +67,16 @@ export const Sidebar: React.FC = () => {
     switchError,
   } = useDepartmentContext();
 
+  // Local state: Department section expansion (auto-expand if switching)
+  const [isDepartmentSectionExpanded, setIsDepartmentSectionExpanded] = React.useState(isSwitching);
+
+  // Auto-expand section when department switching starts (so user sees loading state)
+  React.useEffect(() => {
+    if (isSwitching) {
+      setIsDepartmentSectionExpanded(true);
+    }
+  }, [isSwitching]);
+
   // Guard: Must have auth data
   if (!roleHierarchy || !user) {
     return null;
@@ -265,49 +275,64 @@ export const Sidebar: React.FC = () => {
         {/* Section 2: Department Selector */}
         {userDepartments.length > 0 && (
           <div className="flex-shrink-0 border-b">
-            <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            {/* Collapsible Header */}
+            <button
+              onClick={() => setIsDepartmentSectionExpanded(!isDepartmentSectionExpanded)}
+              className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:bg-accent/50 transition-colors"
+            >
+              {isDepartmentSectionExpanded ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
               My Departments
-            </div>
-            {switchError && (
-              <div className="mx-2 mb-2 px-3 py-2 text-xs bg-destructive/10 text-destructive rounded-md">
-                {switchError}
-              </div>
-            )}
-            <div className="space-y-1 px-2 pb-4">
-              {userDepartments.map((dept) => {
-                const isSelected = selectedDepartmentId === dept.id;
+            </button>
 
-                return (
-                  <button
-                    key={dept.id}
-                    onClick={() => handleDepartmentClick(dept.id)}
-                    disabled={isSwitching}
-                    className={cn(
-                      'w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors',
-                      isSelected
-                        ? 'bg-primary text-primary-foreground'
-                        : 'hover:bg-accent text-muted-foreground',
-                      isSwitching && 'opacity-50 cursor-not-allowed'
-                    )}
-                  >
-                    {isSwitching && selectedDepartmentId === dept.id ? (
-                      <Loader2 className="h-4 w-4 flex-shrink-0 animate-spin" />
-                    ) : isSelected ? (
-                      <ChevronDown className="h-4 w-4 flex-shrink-0" />
-                    ) : (
-                      <ChevronRight className="h-4 w-4 flex-shrink-0" />
-                    )}
-                    <Folder className="h-4 w-4 flex-shrink-0" />
-                    <span className="flex-1 text-left truncate">{dept.name}</span>
-                    {dept.isPrimary && (
-                      <Badge variant="secondary" className="text-xs">
-                        Primary
-                      </Badge>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
+            {/* Department List - Only visible when expanded */}
+            {isDepartmentSectionExpanded && (
+              <>
+                {switchError && (
+                  <div className="mx-2 mb-2 px-3 py-2 text-xs bg-destructive/10 text-destructive rounded-md">
+                    {switchError}
+                  </div>
+                )}
+                <div className="space-y-1 px-2 pb-4">
+                  {userDepartments.map((dept) => {
+                    const isSelected = selectedDepartmentId === dept.id;
+
+                    return (
+                      <button
+                        key={dept.id}
+                        onClick={() => handleDepartmentClick(dept.id)}
+                        disabled={isSwitching}
+                        className={cn(
+                          'w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors',
+                          isSelected
+                            ? 'bg-primary text-primary-foreground'
+                            : 'hover:bg-accent text-muted-foreground',
+                          isSwitching && 'opacity-50 cursor-not-allowed'
+                        )}
+                      >
+                        {isSwitching && selectedDepartmentId === dept.id ? (
+                          <Loader2 className="h-4 w-4 flex-shrink-0 animate-spin" />
+                        ) : isSelected ? (
+                          <ChevronDown className="h-4 w-4 flex-shrink-0" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4 flex-shrink-0" />
+                        )}
+                        <Folder className="h-4 w-4 flex-shrink-0" />
+                        <span className="flex-1 text-left truncate">{dept.name}</span>
+                        {dept.isPrimary && (
+                          <Badge variant="secondary" className="text-xs">
+                            Primary
+                          </Badge>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
           </div>
         )}
 

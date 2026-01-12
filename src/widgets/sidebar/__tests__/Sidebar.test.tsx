@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { Sidebar } from '../Sidebar';
@@ -197,18 +197,32 @@ describe('Sidebar Component', () => {
   });
 
   describe('Department Display', () => {
-    it('should display user departments from roleHierarchy', () => {
+    it('should display user departments from roleHierarchy', async () => {
       renderSidebar();
-      expect(screen.getByText('Engineering')).toBeInTheDocument();
-      expect(screen.getByText('Science')).toBeInTheDocument();
+
+      // Expand the department dropdown
+      const departmentHeader = screen.getByText('My Departments').closest('button');
+      fireEvent.click(departmentHeader!);
+
+      await waitFor(() => {
+        expect(screen.getByText('Engineering')).toBeInTheDocument();
+        expect(screen.getByText('Science')).toBeInTheDocument();
+      });
     });
 
-    it('should show primary badge on primary department', () => {
+    it('should show primary badge on primary department', async () => {
       renderSidebar();
-      expect(screen.getByText('Primary')).toBeInTheDocument();
+
+      // Expand the department dropdown
+      const departmentHeader = screen.getByText('My Departments').closest('button');
+      fireEvent.click(departmentHeader!);
+
+      await waitFor(() => {
+        expect(screen.getByText('Primary')).toBeInTheDocument();
+      });
     });
 
-    it('should handle departments from learnerRoles', () => {
+    it('should handle departments from learnerRoles', async () => {
       vi.mocked(useAuthStoreModule.useAuthStore).mockReturnValue({
         roleHierarchy: {
           ...mockRoleHierarchy,
@@ -233,7 +247,14 @@ describe('Sidebar Component', () => {
       } as any);
 
       renderSidebar();
-      expect(screen.getByText('Math')).toBeInTheDocument();
+
+      // Expand the department dropdown
+      const departmentHeader = screen.getByText('My Departments').closest('button');
+      fireEvent.click(departmentHeader!);
+
+      await waitFor(() => {
+        expect(screen.getByText('Math')).toBeInTheDocument();
+      });
     });
   });
 
@@ -247,6 +268,14 @@ describe('Sidebar Component', () => {
       });
 
       renderSidebar();
+
+      // Expand the department dropdown
+      const departmentHeader = screen.getByText('My Departments').closest('button');
+      fireEvent.click(departmentHeader!);
+
+      await waitFor(() => {
+        expect(screen.getByText('Engineering')).toBeInTheDocument();
+      });
 
       const deptButton = screen.getByText('Engineering').closest('button');
       await user.click(deptButton!);
@@ -265,6 +294,14 @@ describe('Sidebar Component', () => {
       });
 
       renderSidebar();
+
+      // Expand the department dropdown
+      const departmentHeader = screen.getByText('My Departments').closest('button');
+      fireEvent.click(departmentHeader!);
+
+      await waitFor(() => {
+        expect(screen.getByText('Engineering')).toBeInTheDocument();
+      });
 
       const deptButton = screen.getByText('Engineering').closest('button');
       await user.click(deptButton!);
@@ -285,6 +322,14 @@ describe('Sidebar Component', () => {
       } as any);
 
       renderSidebar();
+
+      // Manually expand the department dropdown
+      const departmentHeader = screen.getByText('My Departments').closest('button');
+      fireEvent.click(departmentHeader!);
+
+      await waitFor(() => {
+        expect(screen.getByText('Engineering')).toBeInTheDocument();
+      });
 
       const deptButton = screen.getByText('Engineering').closest('button');
       await user.click(deptButton!);
@@ -312,7 +357,7 @@ describe('Sidebar Component', () => {
       expect(loadingIcon).toBeInTheDocument();
     });
 
-    it('should disable department buttons during switch', () => {
+    it('should disable department buttons during switch', async () => {
       vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
         ...mockDepartmentContext,
         isSwitching: true,
@@ -320,11 +365,14 @@ describe('Sidebar Component', () => {
 
       renderSidebar();
 
-      const deptButton = screen.getByText('Engineering').closest('button');
-      expect(deptButton).toBeDisabled();
+      // Auto-expands when isSwitching = true
+      await waitFor(() => {
+        const deptButton = screen.getByText('Engineering').closest('button');
+        expect(deptButton).toBeDisabled();
+      });
     });
 
-    it('should display error message when switch fails', () => {
+    it('should display error message when switch fails', async () => {
       vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
         ...mockDepartmentContext,
         switchError: 'Failed to switch department',
@@ -332,7 +380,13 @@ describe('Sidebar Component', () => {
 
       renderSidebar();
 
-      expect(screen.getByText('Failed to switch department')).toBeInTheDocument();
+      // Expand to see error message
+      const departmentHeader = screen.getByText('My Departments').closest('button');
+      fireEvent.click(departmentHeader!);
+
+      await waitFor(() => {
+        expect(screen.getByText('Failed to switch department')).toBeInTheDocument();
+      });
     });
 
     it('should handle API error gracefully', async () => {
@@ -346,6 +400,14 @@ describe('Sidebar Component', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       renderSidebar();
+
+      // Expand the department dropdown
+      const departmentHeader = screen.getByText('My Departments').closest('button');
+      fireEvent.click(departmentHeader!);
+
+      await waitFor(() => {
+        expect(screen.getByText('Engineering')).toBeInTheDocument();
+      });
 
       const deptButton = screen.getByText('Engineering').closest('button');
       await user.click(deptButton!);
@@ -465,6 +527,7 @@ describe('Sidebar Component', () => {
           primaryUserType: 'global-admin',
         },
         user: mockUser,
+        hasPermission: mockHasPermission, // Add hasGlobalPermission mock
       } as any);
       vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
         ...mockDepartmentContext,
@@ -599,6 +662,14 @@ describe('Sidebar Component', () => {
       });
 
       renderSidebar();
+
+      // Expand the department dropdown
+      const departmentHeader = screen.getByText('My Departments').closest('button');
+      fireEvent.click(departmentHeader!);
+
+      await waitFor(() => {
+        expect(screen.getByText('Engineering')).toBeInTheDocument();
+      });
 
       const deptButton = screen.getByText('Engineering').closest('button');
       await user.click(deptButton!);
