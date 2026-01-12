@@ -47,6 +47,12 @@ import {
   buildUserTypeDisplayMap,
   buildRoleDisplayMap,
 } from '@/shared/lib/displayUtils';
+import {
+  setAdminToken,
+  clearAdminToken,
+  hasAdminToken as checkHasAdminToken,
+  getAdminTokenExpiry,
+} from '@/shared/utils/adminTokenStorage';
 
 // ============================================================================
 // State Interface
@@ -61,12 +67,21 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
 
+  // Admin session state
+  isAdminSessionActive: boolean;
+  adminSessionExpiry: Date | null;
+
   // Actions
   login: (credentials: LoginCredentials) => Promise<void>;
   logout: () => Promise<void>;
   refreshToken: () => Promise<void>;
   clearError: () => void;
   initializeAuth: () => Promise<void>;
+
+  // Admin escalation
+  escalateToAdmin: (password: string) => Promise<void>;
+  deEscalateFromAdmin: () => void;
+  hasAdminToken: () => boolean;
 
   // Permission checking
   hasPermission: (permission: string, scope?: PermissionScope) => boolean;
@@ -131,6 +146,8 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: false,
       error: null,
+      isAdminSessionActive: false,
+      adminSessionExpiry: null,
 
       // ================================================================
       // Login
@@ -299,6 +316,9 @@ export const useAuthStore = create<AuthState>()(
           // Continue with local cleanup even if API fails
         }
 
+        // Clear admin token if active
+        clearAdminToken();
+
         // Clear tokens
         clearAllTokens();
 
@@ -309,12 +329,108 @@ export const useAuthStore = create<AuthState>()(
           roleHierarchy: null,
           isAuthenticated: false,
           error: null,
+          isAdminSessionActive: false,
+          adminSessionExpiry: null,
         });
 
         // Clear navigation store department state
         useNavigationStore.getState().clearDepartmentSelection();
 
         console.log('[AuthStore] Logout complete');
+      },
+
+      // ================================================================
+      // Admin Escalation
+      // ================================================================
+
+      /**
+       * Escalate to admin session with password verification
+       *
+       * SECURITY: Admin token is stored in MEMORY ONLY and never persisted.
+       * Token will be lost on page refresh, requiring re-escalation.
+       *
+       * @param _password - User's password for verification (will be used when API is implemented)
+       * @throws Error if escalation fails
+       */
+      escalateToAdmin: async (_password: string) => {
+        const { user } = get();
+
+        if (!user) {
+          throw new Error('User must be logged in to escalate to admin');
+        }
+
+        console.log('[AuthStore] Starting admin escalation...');
+
+        try {
+          // Call API to verify password and get admin token
+          // TODO: Replace with actual API endpoint when available
+          // const response = await apiEscalateToAdmin({ password: _password });
+
+          // For now, simulate the API response structure
+          // In production, this would be an actual API call
+          const mockResponse = {
+            success: true,
+            data: {
+              adminToken: 'admin_token_' + Date.now(), // Mock token
+              expiresIn: 900, // 15 minutes
+            },
+          };
+
+          const { adminToken, expiresIn } = mockResponse.data;
+
+          // Store admin token in memory only
+          setAdminToken(adminToken, expiresIn);
+
+          // Update state
+          set({
+            isAdminSessionActive: true,
+            adminSessionExpiry: getAdminTokenExpiry(),
+          });
+
+          console.log('[AuthStore] Escalated to admin session');
+        } catch (error: any) {
+          console.error('[AuthStore] Admin escalation failed:', error);
+          throw new Error(error.message || 'Failed to escalate to admin');
+        }
+      },
+
+      /**
+       * De-escalate from admin session
+       *
+       * Clears the admin token from memory and returns to normal user session.
+       */
+      deEscalateFromAdmin: () => {
+        console.log('[AuthStore] De-escalating from admin session...');
+
+        // Clear admin token from memory
+        clearAdminToken();
+
+        // Update state
+        set({
+          isAdminSessionActive: false,
+          adminSessionExpiry: null,
+        });
+
+        console.log('[AuthStore] De-escalated from admin session');
+      },
+
+      /**
+       * Check if admin token exists and is valid
+       *
+       * @returns true if admin session is active
+       */
+      hasAdminToken: () => {
+        const hasToken = checkHasAdminToken();
+
+        // Sync state if token expired
+        if (!hasToken && get().isAdminSessionActive) {
+          set({
+            isAdminSessionActive: false,
+            adminSessionExpiry: null,
+          });
+        }
+
+        return hasToken;
       },
 
       // ================================================================
