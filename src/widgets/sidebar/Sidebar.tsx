@@ -86,31 +86,59 @@ export const Sidebar: React.FC = () => {
   const allUserTypes = roleHierarchy.allUserTypes || [primaryUserType];
 
   // ================================================================
-  // Filter Global Nav Items
+  // Process Global Nav Items (with disabled state for cross-userType links)
   // ================================================================
 
-  const globalNavItems = GLOBAL_NAV_ITEMS.filter((item) => {
-    // Check if user has ANY of the allowed userTypes for this item
-    // This allows global-admin users to see staff/learner items if they have those userTypes
-    const hasMatchingUserType = item.userTypes.some(ut => allUserTypes.includes(ut));
-    if (!hasMatchingUserType) {
-      return false;
-    }
+  interface ProcessedNavItem extends GlobalNavItem {
+    disabled: boolean;
+  }
 
-    // Check permission if required
-    if (item.requiredPermission) {
-      // Use department-scoped or global permission check based on item config
-      if (item.departmentScoped) {
-        // Department-scoped: requires a department to be selected
-        return hasDeptPermission(item.requiredPermission);
-      } else {
-        // Global scope: check against allPermissions (no department required)
-        return hasGlobalPermission(item.requiredPermission);
+  const globalNavItems: ProcessedNavItem[] = GLOBAL_NAV_ITEMS
+    .filter((item) => {
+      // ALWAYS show items for primaryUserType
+      if (item.userTypes.includes(primaryUserType)) {
+        return true;
       }
-    }
 
-    return true;
-  });
+      // Show cross-userType items (even if user doesn't have that userType)
+      // They will be marked as disabled if user lacks the userType
+      // Example: Show "My Progress" (learner) on staff dashboard (grayed out if no learner userType)
+      return true;
+    })
+    .map((item) => {
+      // Determine if link should be disabled
+      let disabled = false;
+
+      // Check if user has the required userType
+      const hasRequiredUserType = item.userTypes.some((itemUserType) =>
+        allUserTypes.includes(itemUserType)
+      );
+
+      if (!hasRequiredUserType) {
+        disabled = true;
+      }
+
+      // Check permission if required (only if not already disabled)
+      if (!disabled && item.requiredPermission) {
+        // Use department-scoped or global permission check based on item config
+        if (item.departmentScoped) {
+          // Department-scoped: requires a department to be selected
+          if (!hasDeptPermission(item.requiredPermission)) {
+            disabled = true;
+          }
+        } else {
+          // Global scope: check against allPermissions (no department required)
+          if (!hasGlobalPermission(item.requiredPermission)) {
+            disabled = true;
+          }
+        }
+      }
+
+      return {
+        ...item,
+        disabled,
+      };
+    });
 
   // ================================================================
   // Get User's Departments
@@ -266,6 +294,7 @@ export const Sidebar: React.FC = () => {
                 label={item.label}
                 path={item.path}
                 icon={item.icon}
+                disabled={item.disabled}
                 onClick={() => setSidebarOpen(false)}
               />
             ))}

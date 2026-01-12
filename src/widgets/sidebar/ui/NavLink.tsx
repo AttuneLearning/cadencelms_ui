@@ -18,19 +18,35 @@ interface NavLinkProps {
   path: string;
   icon: React.ComponentType<{ className?: string }>;
   onClick?: () => void;
+  disabled?: boolean;
 }
 
 // ============================================================================
 // Component
 // ============================================================================
 
-export const NavLink: React.FC<NavLinkProps> = ({ label, path, icon: Icon, onClick }) => {
+export const NavLink: React.FC<NavLinkProps> = ({ label, path, icon: Icon, onClick, disabled = false }) => {
   const location = useLocation();
 
   // Determine if this link is active
   // Active if current path matches exactly or starts with the link path followed by '/'
   const isActive =
     location.pathname === path || location.pathname.startsWith(path + '/');
+
+  // Disabled links render as non-interactive divs
+  if (disabled) {
+    return (
+      <div
+        className={cn(
+          'flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium',
+          'opacity-50 cursor-not-allowed text-muted-foreground'
+        )}
+      >
+        <Icon className="h-5 w-5 flex-shrink-0" />
+        <span className="truncate">{label}</span>
+      </div>
+    );
+  }
 
   return (
     <Link
