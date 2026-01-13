@@ -34,7 +34,7 @@ describe('learningEventApi', () => {
   describe('list', () => {
     it('should fetch paginated list of learning events without filters', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/learning-events`, () => {
+        http.get(`${baseUrl}/learning-events`, () => {
           return HttpResponse.json({
             success: true,
             data: mockLearningEventsListResponse,
@@ -52,7 +52,7 @@ describe('learningEventApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/learning-events`, ({ request }) => {
+        http.get(`${baseUrl}/learning-events`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -73,7 +73,7 @@ describe('learningEventApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/learning-events`, ({ request }) => {
+        http.get(`${baseUrl}/learning-events`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -91,7 +91,7 @@ describe('learningEventApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/learning-events`, ({ request }) => {
+        http.get(`${baseUrl}/learning-events`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -109,7 +109,7 @@ describe('learningEventApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/learning-events`, ({ request }) => {
+        http.get(`${baseUrl}/learning-events`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -129,7 +129,7 @@ describe('learningEventApi', () => {
 
     it('should handle empty event list', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/learning-events`, () => {
+        http.get(`${baseUrl}/learning-events`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -155,7 +155,7 @@ describe('learningEventApi', () => {
 
     it('should handle API error', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/learning-events`, () => {
+        http.get(`${baseUrl}/learning-events`, () => {
           return HttpResponse.json(
             { message: 'Internal server error' },
             { status: 500 }
@@ -173,7 +173,7 @@ describe('learningEventApi', () => {
       const mockEvent = createMockLearningEvent({ id: eventId });
 
       server.use(
-        http.get(`${baseUrl}/api/v2/learning-events/${eventId}`, () => {
+        http.get(`${baseUrl}/learning-events/${eventId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockEvent,
@@ -191,7 +191,7 @@ describe('learningEventApi', () => {
       const eventId = 'non-existent';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/learning-events/${eventId}`, () => {
+        http.get(`${baseUrl}/learning-events/${eventId}`, () => {
           return HttpResponse.json(
             { message: 'Learning event not found' },
             { status: 404 }
@@ -212,7 +212,7 @@ describe('learningEventApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.post(`${baseUrl}/api/v2/learning-events`, async ({ request }) => {
+        http.post(`${baseUrl}/learning-events`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json(
             {
@@ -242,7 +242,7 @@ describe('learningEventApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/learning-events`, () => {
+        http.post(`${baseUrl}/learning-events`, () => {
           return HttpResponse.json(
             {
               message: 'Validation failed',
@@ -260,7 +260,7 @@ describe('learningEventApi', () => {
 
     it('should handle learner not found error', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/learning-events`, () => {
+        http.post(`${baseUrl}/learning-events`, () => {
           return HttpResponse.json(
             { message: 'Learner not found' },
             { status: 404 }
@@ -282,7 +282,7 @@ describe('learningEventApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.post(`${baseUrl}/api/v2/learning-events/batch`, async ({ request }) => {
+        http.post(`${baseUrl}/learning-events/batch`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json(
             {
@@ -310,7 +310,7 @@ describe('learningEventApi', () => {
       ];
 
       server.use(
-        http.post(`${baseUrl}/api/v2/learning-events/batch`, () => {
+        http.post(`${baseUrl}/learning-events/batch`, () => {
           return HttpResponse.json(
             {
               success: true,
@@ -332,7 +332,7 @@ describe('learningEventApi', () => {
 
     it('should handle empty batch', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/learning-events/batch`, () => {
+        http.post(`${baseUrl}/learning-events/batch`, () => {
           return HttpResponse.json(
             {
               success: true,
@@ -358,7 +358,7 @@ describe('learningEventApi', () => {
       const events = Array(101).fill(mockCreateLearningEventData);
 
       server.use(
-        http.post(`${baseUrl}/api/v2/learning-events/batch`, () => {
+        http.post(`${baseUrl}/learning-events/batch`, () => {
           return HttpResponse.json(
             { message: 'Batch size exceeds maximum of 100 events' },
             { status: 400 }
@@ -375,7 +375,7 @@ describe('learningEventApi', () => {
       const learnerId = '507f1f77bcf86cd799439011';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/learning-events/learner/${learnerId}`, () => {
+        http.get(`${baseUrl}/learning-events/learner/${learnerId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockLearnerActivityResponse,
@@ -396,7 +396,7 @@ describe('learningEventApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/learning-events/learner/${learnerId}`, ({ request }) => {
+        http.get(`${baseUrl}/learning-events/learner/${learnerId}`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -418,7 +418,7 @@ describe('learningEventApi', () => {
       const learnerId = 'non-existent';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/learning-events/learner/${learnerId}`, () => {
+        http.get(`${baseUrl}/learning-events/learner/${learnerId}`, () => {
           return HttpResponse.json(
             { message: 'Learner not found' },
             { status: 404 }
@@ -435,7 +435,7 @@ describe('learningEventApi', () => {
       const courseId = '507f1f77bcf86cd799439012';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/learning-events/course/${courseId}`, () => {
+        http.get(`${baseUrl}/learning-events/course/${courseId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockCourseActivityResponse,
@@ -455,7 +455,7 @@ describe('learningEventApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/learning-events/course/${courseId}`, ({ request }) => {
+        http.get(`${baseUrl}/learning-events/course/${courseId}`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -477,7 +477,7 @@ describe('learningEventApi', () => {
       const classId = '507f1f77bcf86cd799439013';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/learning-events/class/${classId}`, () => {
+        http.get(`${baseUrl}/learning-events/class/${classId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockClassActivityResponse,
@@ -496,7 +496,7 @@ describe('learningEventApi', () => {
   describe('getStats', () => {
     it('should fetch activity statistics', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/learning-events/stats`, () => {
+        http.get(`${baseUrl}/learning-events/stats`, () => {
           return HttpResponse.json({
             success: true,
             data: mockActivityStatsResponse,
@@ -518,7 +518,7 @@ describe('learningEventApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/learning-events/stats`, ({ request }) => {
+        http.get(`${baseUrl}/learning-events/stats`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,

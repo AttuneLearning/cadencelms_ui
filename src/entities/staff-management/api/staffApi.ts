@@ -22,7 +22,7 @@ interface ApiResponse<T> {
 }
 
 /**
- * GET /api/v2/users/staff - List staff users
+ * GET /users/staff - List staff users
  * Supports filtering, pagination, search, and sorting
  */
 export async function listStaff(params?: StaffListParams): Promise<StaffListResponse> {
@@ -34,7 +34,7 @@ export async function listStaff(params?: StaffListParams): Promise<StaffListResp
 }
 
 /**
- * POST /api/v2/users/staff - Register new staff user
+ * POST /users/staff - Register new staff user
  * Creates a new staff account with department assignments
  */
 export async function registerStaff(payload: RegisterStaffPayload): Promise<Staff> {
@@ -46,18 +46,18 @@ export async function registerStaff(payload: RegisterStaffPayload): Promise<Staf
 }
 
 /**
- * GET /api/v2/users/staff/:id - Get staff user by ID
+ * GET /users/staff/:id - Get staff user by ID
  * Returns detailed staff profile including metadata
  */
 export async function getStaffById(id: string): Promise<Staff> {
   const response = await client.get<ApiResponse<Staff>>(
-    `/api/v2/users/staff/${id}`
+    `/users/staff/${id}`
   );
   return response.data.data;
 }
 
 /**
- * PUT /api/v2/users/staff/:id - Update staff user
+ * PUT /users/staff/:id - Update staff user
  * Updates basic profile information (partial update)
  */
 export async function updateStaff(
@@ -65,14 +65,14 @@ export async function updateStaff(
   payload: UpdateStaffPayload
 ): Promise<Staff> {
   const response = await client.put<ApiResponse<Staff>>(
-    `/api/v2/users/staff/${id}`,
+    `/users/staff/${id}`,
     payload
   );
   return response.data.data;
 }
 
 /**
- * DELETE /api/v2/users/staff/:id - Soft delete staff user
+ * DELETE /users/staff/:id - Soft delete staff user
  * Sets status to withdrawn and disables login
  */
 export async function deleteStaff(
@@ -80,14 +80,14 @@ export async function deleteStaff(
   reason?: string
 ): Promise<DeleteStaffResponse> {
   const response = await client.delete<ApiResponse<DeleteStaffResponse>>(
-    `/api/v2/users/staff/${id}`,
+    `/users/staff/${id}`,
     { params: { reason } }
   );
   return response.data.data;
 }
 
 /**
- * PATCH /api/v2/users/staff/:id/departments - Update department assignments
+ * PATCH /users/staff/:id/departments - Update department assignments
  * Add, remove, update, or replace department assignments for a staff member
  */
 export async function updateStaffDepartments(
@@ -95,7 +95,7 @@ export async function updateStaffDepartments(
   payload: UpdateDepartmentsPayload
 ): Promise<UpdateDepartmentsResponse> {
   const response = await client.patch<ApiResponse<UpdateDepartmentsResponse>>(
-    `/api/v2/users/staff/${id}/departments`,
+    `/users/staff/${id}/departments`,
     payload
   );
   return response.data.data;

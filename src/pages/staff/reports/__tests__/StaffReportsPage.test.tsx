@@ -195,7 +195,7 @@ describe('StaffReportsPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/api/reports`, () => {
+        http.get(`${baseUrl}/reports`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -211,7 +211,7 @@ describe('StaffReportsPage', () => {
             },
           });
         }),
-        http.post(`${baseUrl}/api/reports`, async ({ request }) => {
+        http.post(`${baseUrl}/reports`, async ({ request }) => {
           const body = await request.json();
           return HttpResponse.json({
             success: true,
@@ -257,7 +257,7 @@ describe('StaffReportsPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/api/reports`, () => {
+        http.get(`${baseUrl}/reports`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -273,7 +273,7 @@ describe('StaffReportsPage', () => {
             },
           });
         }),
-        http.post(`${baseUrl}/api/reports`, () => {
+        http.post(`${baseUrl}/reports`, () => {
           return HttpResponse.json(
             { success: false, error: 'Failed to generate report' },
             { status: 500 }
@@ -312,7 +312,7 @@ describe('StaffReportsPage', () => {
   describe('Reports List Display', () => {
     it('should display list of generated reports', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports`, () => {
+        http.get(`${baseUrl}/reports`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -342,7 +342,7 @@ describe('StaffReportsPage', () => {
 
     it('should display empty state when no reports', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports`, () => {
+        http.get(`${baseUrl}/reports`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -369,7 +369,7 @@ describe('StaffReportsPage', () => {
 
     it('should handle API errors when loading reports', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports`, () => {
+        http.get(`${baseUrl}/reports`, () => {
           return HttpResponse.json(
             { success: false, error: 'Failed to fetch reports' },
             { status: 500 }
@@ -388,7 +388,7 @@ describe('StaffReportsPage', () => {
   describe('Status Indicators', () => {
     it('should display ready status badge', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports`, () => {
+        http.get(`${baseUrl}/reports`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -415,7 +415,7 @@ describe('StaffReportsPage', () => {
 
     it('should display generating status badge', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports`, () => {
+        http.get(`${baseUrl}/reports`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -442,7 +442,7 @@ describe('StaffReportsPage', () => {
 
     it('should display failed status badge', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports`, () => {
+        http.get(`${baseUrl}/reports`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -469,7 +469,7 @@ describe('StaffReportsPage', () => {
 
     it('should display pending status badge', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports`, () => {
+        http.get(`${baseUrl}/reports`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -505,7 +505,7 @@ describe('StaffReportsPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/api/reports`, () => {
+        http.get(`${baseUrl}/reports`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -546,7 +546,7 @@ describe('StaffReportsPage', () => {
 
     it('should disable download button for non-ready reports', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports`, () => {
+        http.get(`${baseUrl}/reports`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -580,7 +580,7 @@ describe('StaffReportsPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/api/reports`, () => {
+        http.get(`${baseUrl}/reports`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -628,7 +628,7 @@ describe('StaffReportsPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/api/reports`, () => {
+        http.get(`${baseUrl}/reports`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -675,45 +675,50 @@ describe('StaffReportsPage', () => {
   });
 
   describe('Auto-refresh for Generating Reports', () => {
-    it('should auto-refresh when reports are generating', async () => {
-      vi.useFakeTimers();
-
-      let callCount = 0;
-      server.use(
-        http.get(`${baseUrl}/api/reports`, () => {
-          callCount++;
-          const reports = callCount === 1 ? [mockGeneratingReport] : [mockReports[0]];
-          return HttpResponse.json({
-            success: true,
-            data: {
-              reports,
-              pagination: {
-                page: 1,
-                limit: 20,
-                total: 1,
-                totalPages: 1,
-                hasNext: false,
-                hasPrev: false,
+    it(
+      'should auto-refresh when reports are generating',
+      async () => {
+        // Use REAL timers like GradingForm tests
+        // The component uses setInterval with 5000ms delay
+        let callCount = 0;
+        server.use(
+          http.get(`${baseUrl}/reports`, () => {
+            callCount++;
+            const reports = callCount === 1 ? [mockGeneratingReport] : [mockReports[0]];
+            return HttpResponse.json({
+              success: true,
+              data: {
+                reports,
+                pagination: {
+                  page: 1,
+                  limit: 20,
+                  total: 1,
+                  totalPages: 1,
+                  hasNext: false,
+                  hasPrev: false,
+                },
               },
-            },
-          });
-        })
-      );
+            });
+          })
+        );
 
-      render(<StaffReportsPage />, { wrapper: createWrapper() });
+        render(<StaffReportsPage />, { wrapper: createWrapper() });
 
-      await waitFor(() => {
-        expect(screen.getByText('Generating')).toBeInTheDocument();
-      });
+        // Wait for initial load with generating status
+        await waitFor(() => {
+          expect(screen.getByText('Generating')).toBeInTheDocument();
+        });
 
-      // Fast-forward time to trigger auto-refresh
-      vi.advanceTimersByTime(5000);
-
-      await waitFor(() => {
-        expect(screen.getByText('Ready')).toBeInTheDocument();
-      });
-
-      vi.useRealTimers();
-    });
+        // Wait for auto-refresh to trigger (5000ms + buffer)
+        // Using REAL timers, so this actually waits
+        await waitFor(
+          () => {
+            expect(screen.getByText('Ready')).toBeInTheDocument();
+          },
+          { timeout: 7000 }
+        );
+      },
+      { timeout: 10000 }
+    );
   });
 });

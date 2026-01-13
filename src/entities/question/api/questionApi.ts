@@ -22,7 +22,7 @@ interface ApiResponse<T> {
 }
 
 /**
- * GET /api/v2/questions - List questions with pagination and filtering
+ * GET /questions - List questions with pagination and filtering
  */
 export async function getQuestions(
   params?: QuestionListParams
@@ -35,7 +35,7 @@ export async function getQuestions(
 }
 
 /**
- * POST /api/v2/questions - Create a new question
+ * POST /questions - Create a new question
  */
 export async function createQuestion(
   payload: CreateQuestionPayload
@@ -48,38 +48,38 @@ export async function createQuestion(
 }
 
 /**
- * GET /api/v2/questions/:id - Get question details by ID
+ * GET /questions/:id - Get question details by ID
  */
 export async function getQuestionById(id: string): Promise<QuestionDetails> {
   const response = await client.get<ApiResponse<QuestionDetails>>(
-    `/api/v2/questions/${id}`
+    `/questions/${id}`
   );
   return response.data.data;
 }
 
 /**
- * PUT /api/v2/questions/:id - Update question information
+ * PUT /questions/:id - Update question information
  */
 export async function updateQuestion(
   id: string,
   payload: UpdateQuestionPayload
 ): Promise<Question> {
   const response = await client.put<ApiResponse<Question>>(
-    `/api/v2/questions/${id}`,
+    `/questions/${id}`,
     payload
   );
   return response.data.data;
 }
 
 /**
- * DELETE /api/v2/questions/:id - Delete question (soft delete)
+ * DELETE /questions/:id - Delete question (soft delete)
  */
 export async function deleteQuestion(id: string): Promise<void> {
-  await client.delete(`/api/v2/questions/${id}`);
+  await client.delete(`/questions/${id}`);
 }
 
 /**
- * POST /api/v2/questions/bulk - Bulk import questions
+ * POST /questions/bulk - Bulk import questions
  */
 export async function bulkImportQuestions(
   payload: BulkImportPayload

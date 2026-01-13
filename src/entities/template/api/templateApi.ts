@@ -30,7 +30,7 @@ interface ApiResponse<T> {
 // =====================
 
 /**
- * GET /api/v2/templates - List all templates
+ * GET /templates - List all templates
  */
 export async function listTemplates(filters?: TemplateFilters): Promise<TemplatesListResponse> {
   const response = await client.get<ApiResponse<TemplatesListResponse>>(
@@ -41,15 +41,15 @@ export async function listTemplates(filters?: TemplateFilters): Promise<Template
 }
 
 /**
- * GET /api/v2/templates/:id - Get template details
+ * GET /templates/:id - Get template details
  */
 export async function getTemplate(id: string): Promise<Template> {
-  const response = await client.get<ApiResponse<Template>>(`/api/v2/templates/${id}`);
+  const response = await client.get<ApiResponse<Template>>(`/templates/${id}`);
   return response.data.data;
 }
 
 /**
- * POST /api/v2/templates - Create new template
+ * POST /templates - Create new template
  */
 export async function createTemplate(payload: CreateTemplatePayload): Promise<Template> {
   const response = await client.post<ApiResponse<Template>>('/templates', payload);
@@ -57,40 +57,40 @@ export async function createTemplate(payload: CreateTemplatePayload): Promise<Te
 }
 
 /**
- * PUT /api/v2/templates/:id - Update template
+ * PUT /templates/:id - Update template
  */
 export async function updateTemplate(id: string, payload: UpdateTemplatePayload): Promise<Template> {
-  const response = await client.put<ApiResponse<Template>>(`/api/v2/templates/${id}`, payload);
+  const response = await client.put<ApiResponse<Template>>(`/templates/${id}`, payload);
   return response.data.data;
 }
 
 /**
- * DELETE /api/v2/templates/:id - Delete template
+ * DELETE /templates/:id - Delete template
  */
 export async function deleteTemplate(id: string, force?: boolean): Promise<DeleteTemplateResponse> {
   const response = await client.delete<ApiResponse<DeleteTemplateResponse>>(
-    `/api/v2/templates/${id}`,
+    `/templates/${id}`,
     { params: { force } }
   );
   return response.data.data;
 }
 
 /**
- * POST /api/v2/templates/:id/duplicate - Duplicate template
+ * POST /templates/:id/duplicate - Duplicate template
  */
 export async function duplicateTemplate(
   id: string,
   payload: DuplicateTemplatePayload
 ): Promise<DuplicateTemplateResponse> {
   const response = await client.post<ApiResponse<DuplicateTemplateResponse>>(
-    `/api/v2/templates/${id}/duplicate`,
+    `/templates/${id}/duplicate`,
     payload
   );
   return response.data.data;
 }
 
 /**
- * GET /api/v2/templates/:id/preview - Preview template
+ * GET /templates/:id/preview - Preview template
  */
 export async function previewTemplate(
   id: string,
@@ -99,7 +99,7 @@ export async function previewTemplate(
   const format = params?.format || 'json';
 
   const response = await client.get(
-    `/api/v2/templates/${id}/preview`,
+    `/templates/${id}/preview`,
     {
       params: {
         ...params,

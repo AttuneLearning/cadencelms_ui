@@ -272,8 +272,8 @@ export const handlers = [
 
   // ==================== CONTENT API HANDLERS ====================
 
-  // GET /api/v2/content - List all content
-  http.get(`${baseUrl}/api/v2/content`, ({ request }) => {
+  // GET /content - List all content
+  http.get(`${baseUrl}/content`, ({ request }) => {
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get('page') || '1');
     const limit = parseInt(url.searchParams.get('limit') || '20');
@@ -315,8 +315,8 @@ export const handlers = [
     });
   }),
 
-  // GET /api/v2/content/:id - Get single content item
-  http.get(`${baseUrl}/api/v2/content/:id`, ({ params }) => {
+  // GET /content/:id - Get single content item
+  http.get(`${baseUrl}/content/:id`, ({ params }) => {
     const { id } = params;
     const content = mockContents.find((c) => c.id === id);
 
@@ -335,8 +335,8 @@ export const handlers = [
 
   // ==================== SCORM PACKAGE HANDLERS ====================
 
-  // GET /api/v2/content/scorm - List SCORM packages
-  http.get(`${baseUrl}/api/v2/content/scorm`, ({ request }) => {
+  // GET /content/scorm - List SCORM packages
+  http.get(`${baseUrl}/content/scorm`, ({ request }) => {
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get('page') || '1');
     const limit = parseInt(url.searchParams.get('limit') || '20');
@@ -374,8 +374,8 @@ export const handlers = [
     });
   }),
 
-  // POST /api/v2/content/scorm - Upload SCORM package
-  http.post(`${baseUrl}/api/v2/content/scorm`, async ({ request }) => {
+  // POST /content/scorm - Upload SCORM package
+  http.post(`${baseUrl}/content/scorm`, async ({ request }) => {
     await request.formData(); // Consume form data
 
     return HttpResponse.json(
@@ -387,8 +387,8 @@ export const handlers = [
     );
   }),
 
-  // GET /api/v2/content/scorm/:id - Get SCORM package
-  http.get(`${baseUrl}/api/v2/content/scorm/:id`, ({ params }) => {
+  // GET /content/scorm/:id - Get SCORM package
+  http.get(`${baseUrl}/content/scorm/:id`, ({ params }) => {
     const { id } = params;
     const scormPackage = mockScormPackages.find((p) => p.id === id);
 
@@ -405,8 +405,8 @@ export const handlers = [
     );
   }),
 
-  // PUT /api/v2/content/scorm/:id - Update SCORM package
-  http.put(`${baseUrl}/api/v2/content/scorm/:id`, async ({ params, request }) => {
+  // PUT /content/scorm/:id - Update SCORM package
+  http.put(`${baseUrl}/content/scorm/:id`, async ({ params, request }) => {
     const { id } = params;
     const body = await request.json();
     const scormPackage = mockScormPackages.find((p) => p.id === id);
@@ -429,15 +429,15 @@ export const handlers = [
     );
   }),
 
-  // DELETE /api/v2/content/scorm/:id - Delete SCORM package
-  http.delete(`${baseUrl}/api/v2/content/scorm/:id`, ({ params }) => {
+  // DELETE /content/scorm/:id - Delete SCORM package
+  http.delete(`${baseUrl}/content/scorm/:id`, ({ params }) => {
     const { id } = params;
 
     return HttpResponse.json({}, { status: 204 });
   }),
 
-  // POST /api/v2/content/scorm/:id/launch - Launch SCORM package
-  http.post(`${baseUrl}/api/v2/content/scorm/:id/launch`, async ({ params, request }) => {
+  // POST /content/scorm/:id/launch - Launch SCORM package
+  http.post(`${baseUrl}/content/scorm/:id/launch`, async ({ params, request }) => {
     const { id } = params;
 
     return HttpResponse.json({
@@ -446,8 +446,8 @@ export const handlers = [
     });
   }),
 
-  // POST /api/v2/content/scorm/:id/publish - Publish SCORM package
-  http.post(`${baseUrl}/api/v2/content/scorm/:id/publish`, async ({ params, request }) => {
+  // POST /content/scorm/:id/publish - Publish SCORM package
+  http.post(`${baseUrl}/content/scorm/:id/publish`, async ({ params, request }) => {
     const { id } = params;
 
     return HttpResponse.json({
@@ -459,8 +459,8 @@ export const handlers = [
     });
   }),
 
-  // POST /api/v2/content/scorm/:id/unpublish - Unpublish SCORM package
-  http.post(`${baseUrl}/api/v2/content/scorm/:id/unpublish`, async ({ params, request }) => {
+  // POST /content/scorm/:id/unpublish - Unpublish SCORM package
+  http.post(`${baseUrl}/content/scorm/:id/unpublish`, async ({ params, request }) => {
     const { id } = params;
 
     return HttpResponse.json({
@@ -474,8 +474,8 @@ export const handlers = [
 
   // ==================== MEDIA FILE HANDLERS ====================
 
-  // GET /api/v2/content/media - List media files
-  http.get(`${baseUrl}/api/v2/content/media`, ({ request }) => {
+  // GET /content/media - List media files
+  http.get(`${baseUrl}/content/media`, ({ request }) => {
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get('page') || '1');
     const limit = parseInt(url.searchParams.get('limit') || '20');
@@ -513,8 +513,8 @@ export const handlers = [
     });
   }),
 
-  // POST /api/v2/content/media - Upload media file
-  http.post(`${baseUrl}/api/v2/content/media`, async ({ request }) => {
+  // POST /content/media - Upload media file
+  http.post(`${baseUrl}/content/media`, async ({ request }) => {
     await request.formData(); // Consume form data
 
     return HttpResponse.json(
@@ -526,8 +526,8 @@ export const handlers = [
     );
   }),
 
-  // GET /api/v2/content/media/:id - Get media file
-  http.get(`${baseUrl}/api/v2/content/media/:id`, ({ params }) => {
+  // GET /content/media/:id - Get media file
+  http.get(`${baseUrl}/content/media/:id`, ({ params }) => {
     const { id } = params;
     const mediaFile = mockMediaFiles.find((m) => m.id === id);
 
@@ -544,8 +544,8 @@ export const handlers = [
     );
   }),
 
-  // PUT /api/v2/content/media/:id - Update media file
-  http.put(`${baseUrl}/api/v2/content/media/:id`, async ({ params, request }) => {
+  // PUT /content/media/:id - Update media file
+  http.put(`${baseUrl}/content/media/:id`, async ({ params, request }) => {
     const { id } = params;
     const body = await request.json();
     const mediaFile = mockMediaFiles.find((m) => m.id === id);
@@ -568,8 +568,8 @@ export const handlers = [
     );
   }),
 
-  // DELETE /api/v2/content/media/:id - Delete media file
-  http.delete(`${baseUrl}/api/v2/content/media/:id`, ({ params }) => {
+  // DELETE /content/media/:id - Delete media file
+  http.delete(`${baseUrl}/content/media/:id`, ({ params }) => {
     const { id } = params;
 
     return HttpResponse.json({}, { status: 204 });
@@ -577,8 +577,8 @@ export const handlers = [
 
   // ==================== COURSE SEGMENT HANDLERS ====================
 
-  // GET /api/v2/courses/:courseId/modules - List course segments
-  http.get(`${baseUrl}/api/v2/courses/:courseId/modules`, ({ params, request }) => {
+  // GET /courses/:courseId/modules - List course segments
+  http.get(`${baseUrl}/courses/:courseId/modules`, ({ params, request }) => {
     const { courseId } = params;
     const url = new URL(request.url);
     const includeUnpublished = url.searchParams.get('includeUnpublished') === 'true';
@@ -599,8 +599,8 @@ export const handlers = [
     });
   }),
 
-  // GET /api/v2/courses/:courseId/modules/:moduleId - Get course segment
-  http.get(`${baseUrl}/api/v2/courses/:courseId/modules/:moduleId`, ({ params }) => {
+  // GET /courses/:courseId/modules/:moduleId - Get course segment
+  http.get(`${baseUrl}/courses/:courseId/modules/:moduleId`, ({ params }) => {
     const { courseId, moduleId } = params;
 
     return HttpResponse.json({
@@ -612,8 +612,8 @@ export const handlers = [
     });
   }),
 
-  // POST /api/v2/courses/:courseId/modules - Create course segment
-  http.post(`${baseUrl}/api/v2/courses/:courseId/modules`, async ({ params, request }) => {
+  // POST /courses/:courseId/modules - Create course segment
+  http.post(`${baseUrl}/courses/:courseId/modules`, async ({ params, request }) => {
     const { courseId } = params;
     const body = await request.json();
 
@@ -632,9 +632,9 @@ export const handlers = [
     );
   }),
 
-  // PUT /api/v2/courses/:courseId/modules/:moduleId - Update course segment
+  // PUT /courses/:courseId/modules/:moduleId - Update course segment
   http.put(
-    `${baseUrl}/api/v2/courses/:courseId/modules/:moduleId`,
+    `${baseUrl}/courses/:courseId/modules/:moduleId`,
     async ({ params, request }) => {
       const { courseId, moduleId } = params;
       const body = await request.json();
@@ -652,8 +652,8 @@ export const handlers = [
     }
   ),
 
-  // DELETE /api/v2/courses/:courseId/modules/:moduleId - Delete course segment
-  http.delete(`${baseUrl}/api/v2/courses/:courseId/modules/:moduleId`, ({ params }) => {
+  // DELETE /courses/:courseId/modules/:moduleId - Delete course segment
+  http.delete(`${baseUrl}/courses/:courseId/modules/:moduleId`, ({ params }) => {
     const { courseId, moduleId } = params;
 
     return HttpResponse.json({
@@ -667,9 +667,9 @@ export const handlers = [
     });
   }),
 
-  // PATCH /api/v2/courses/:courseId/modules/reorder - Reorder course segments
+  // PATCH /courses/:courseId/modules/reorder - Reorder course segments
   http.patch(
-    `${baseUrl}/api/v2/courses/:courseId/modules/reorder`,
+    `${baseUrl}/courses/:courseId/modules/reorder`,
     async ({ params, request }) => {
       const { courseId } = params;
       const body = await request.json();

@@ -73,7 +73,7 @@ describe('exerciseApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content/exercises`, () => {
+        http.get(`${baseUrl}/content/exercises`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -103,7 +103,7 @@ describe('exerciseApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content/exercises`, ({ request }) => {
+        http.get(`${baseUrl}/content/exercises`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -136,7 +136,7 @@ describe('exerciseApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content/exercises`, () => {
+        http.get(`${baseUrl}/content/exercises`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -166,7 +166,7 @@ describe('exerciseApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content/exercises`, () => {
+        http.get(`${baseUrl}/content/exercises`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -195,7 +195,7 @@ describe('exerciseApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content/exercises`, () => {
+        http.get(`${baseUrl}/content/exercises`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -225,7 +225,7 @@ describe('exerciseApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content/exercises`, () => {
+        http.get(`${baseUrl}/content/exercises`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -257,7 +257,7 @@ describe('exerciseApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content/exercises`, () => {
+        http.get(`${baseUrl}/content/exercises`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -288,7 +288,7 @@ describe('exerciseApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content/exercises`, () => {
+        http.get(`${baseUrl}/content/exercises`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -315,7 +315,7 @@ describe('exerciseApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content/exercises`, () => {
+        http.get(`${baseUrl}/content/exercises`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -331,7 +331,7 @@ describe('exerciseApi', () => {
 
     it('should handle API error', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/content/exercises`, () => {
+        http.get(`${baseUrl}/content/exercises`, () => {
           return HttpResponse.json(
             { success: false, message: 'Internal server error' },
             { status: 500 }
@@ -352,7 +352,7 @@ describe('exerciseApi', () => {
       const exerciseId = 'ex-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content/exercises/${exerciseId}`, () => {
+        http.get(`${baseUrl}/content/exercises/${exerciseId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockPublishedQuiz,
@@ -370,7 +370,7 @@ describe('exerciseApi', () => {
       const exerciseId = 'ex-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content/exercises/${exerciseId}`, () => {
+        http.get(`${baseUrl}/content/exercises/${exerciseId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockPublishedQuiz,
@@ -388,7 +388,7 @@ describe('exerciseApi', () => {
       const exerciseId = 'ex-2';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content/exercises/${exerciseId}`, () => {
+        http.get(`${baseUrl}/content/exercises/${exerciseId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockPublishedExam,
@@ -407,7 +407,7 @@ describe('exerciseApi', () => {
       const exerciseId = 'ex-5';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content/exercises/${exerciseId}`, () => {
+        http.get(`${baseUrl}/content/exercises/${exerciseId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockDraftQuiz,
@@ -425,7 +425,7 @@ describe('exerciseApi', () => {
       const exerciseId = 'ex-6';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content/exercises/${exerciseId}`, () => {
+        http.get(`${baseUrl}/content/exercises/${exerciseId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockArchivedQuiz,
@@ -442,7 +442,7 @@ describe('exerciseApi', () => {
       const exerciseId = 'non-existent';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content/exercises/${exerciseId}`, () => {
+        http.get(`${baseUrl}/content/exercises/${exerciseId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Exercise not found' },
             { status: 404 }
@@ -457,7 +457,7 @@ describe('exerciseApi', () => {
       const exerciseId = 'ex-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content/exercises/${exerciseId}`, () => {
+        http.get(`${baseUrl}/content/exercises/${exerciseId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Unauthorized' },
             { status: 401 }
@@ -484,7 +484,7 @@ describe('exerciseApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.post(`${baseUrl}/api/v2/content/exercises`, async ({ request }) => {
+        http.post(`${baseUrl}/content/exercises`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json(
             {
@@ -520,7 +520,7 @@ describe('exerciseApi', () => {
       });
 
       server.use(
-        http.post(`${baseUrl}/api/v2/content/exercises`, () => {
+        http.post(`${baseUrl}/content/exercises`, () => {
           return HttpResponse.json(
             {
               success: true,
@@ -556,7 +556,7 @@ describe('exerciseApi', () => {
       });
 
       server.use(
-        http.post(`${baseUrl}/api/v2/content/exercises`, () => {
+        http.post(`${baseUrl}/content/exercises`, () => {
           return HttpResponse.json(
             {
               success: true,
@@ -581,7 +581,7 @@ describe('exerciseApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/content/exercises`, () => {
+        http.post(`${baseUrl}/content/exercises`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -605,7 +605,7 @@ describe('exerciseApi', () => {
       } as any;
 
       server.use(
-        http.post(`${baseUrl}/api/v2/content/exercises`, () => {
+        http.post(`${baseUrl}/content/exercises`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -641,7 +641,7 @@ describe('exerciseApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.put(`${baseUrl}/api/v2/content/exercises/${exerciseId}`, async ({ request }) => {
+        http.put(`${baseUrl}/content/exercises/${exerciseId}`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json({
             success: true,
@@ -662,7 +662,7 @@ describe('exerciseApi', () => {
       const updatedExercise = { ...mockPublishedQuiz, status: 'archived' as const };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/content/exercises/${exerciseId}`, () => {
+        http.put(`${baseUrl}/content/exercises/${exerciseId}`, () => {
           return HttpResponse.json({
             success: true,
             data: updatedExercise,
@@ -679,7 +679,7 @@ describe('exerciseApi', () => {
       const exerciseId = 'non-existent';
 
       server.use(
-        http.put(`${baseUrl}/api/v2/content/exercises/${exerciseId}`, () => {
+        http.put(`${baseUrl}/content/exercises/${exerciseId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Exercise not found' },
             { status: 404 }
@@ -701,7 +701,7 @@ describe('exerciseApi', () => {
       let deleteCalled = false;
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/content/exercises/${exerciseId}`, () => {
+        http.delete(`${baseUrl}/content/exercises/${exerciseId}`, () => {
           deleteCalled = true;
           return HttpResponse.json({}, { status: 204 });
         })
@@ -716,7 +716,7 @@ describe('exerciseApi', () => {
       const exerciseId = 'non-existent';
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/content/exercises/${exerciseId}`, () => {
+        http.delete(`${baseUrl}/content/exercises/${exerciseId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Exercise not found' },
             { status: 404 }
@@ -731,7 +731,7 @@ describe('exerciseApi', () => {
       const exerciseId = 'ex-1';
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/content/exercises/${exerciseId}`, () => {
+        http.delete(`${baseUrl}/content/exercises/${exerciseId}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -755,7 +755,7 @@ describe('exerciseApi', () => {
       const exerciseId = 'ex-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content/exercises/${exerciseId}/questions`, () => {
+        http.get(`${baseUrl}/content/exercises/${exerciseId}/questions`, () => {
           return HttpResponse.json({
             success: true,
             data: mockExerciseQuestionsResponse,
@@ -773,7 +773,7 @@ describe('exerciseApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content/exercises/ex-1/questions`, ({ request }) => {
+        http.get(`${baseUrl}/content/exercises/ex-1/questions`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -801,7 +801,7 @@ describe('exerciseApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content/exercises/${exerciseId}/questions`, () => {
+        http.get(`${baseUrl}/content/exercises/${exerciseId}/questions`, () => {
           return HttpResponse.json({
             success: true,
             data: emptyResponse,
@@ -828,7 +828,7 @@ describe('exerciseApi', () => {
 
       server.use(
         http.post(
-          `${baseUrl}/api/v2/content/exercises/${exerciseId}/questions`,
+          `${baseUrl}/content/exercises/${exerciseId}/questions`,
           async ({ request }) => {
             capturedRequestBody = await request.json();
             return HttpResponse.json({
@@ -859,7 +859,7 @@ describe('exerciseApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/content/exercises/${exerciseId}/questions`, () => {
+        http.post(`${baseUrl}/content/exercises/${exerciseId}/questions`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -891,7 +891,7 @@ describe('exerciseApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/content/exercises/${exerciseId}/questions`, () => {
+        http.post(`${baseUrl}/content/exercises/${exerciseId}/questions`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -920,7 +920,7 @@ describe('exerciseApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/content/exercises/${exerciseId}/questions`, () => {
+        http.post(`${baseUrl}/content/exercises/${exerciseId}/questions`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -951,7 +951,7 @@ describe('exerciseApi', () => {
 
       server.use(
         http.post(
-          `${baseUrl}/api/v2/content/exercises/${exerciseId}/questions/bulk`,
+          `${baseUrl}/content/exercises/${exerciseId}/questions/bulk`,
           async ({ request }) => {
             capturedRequestBody = await request.json();
             return HttpResponse.json({
@@ -979,7 +979,7 @@ describe('exerciseApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/content/exercises/${exerciseId}/questions/bulk`, () => {
+        http.post(`${baseUrl}/content/exercises/${exerciseId}/questions/bulk`, () => {
           return HttpResponse.json({
             success: true,
             data: mockBulkAddQuestionsResponse,
@@ -1000,7 +1000,7 @@ describe('exerciseApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/content/exercises/${exerciseId}/questions/bulk`, () => {
+        http.post(`${baseUrl}/content/exercises/${exerciseId}/questions/bulk`, () => {
           return HttpResponse.json({
             success: true,
             data: mockBulkAddQuestionsResponse,
@@ -1017,7 +1017,7 @@ describe('exerciseApi', () => {
       const exerciseId = 'ex-1';
 
       server.use(
-        http.post(`${baseUrl}/api/v2/content/exercises/${exerciseId}/questions/bulk`, () => {
+        http.post(`${baseUrl}/content/exercises/${exerciseId}/questions/bulk`, () => {
           return HttpResponse.json({
             success: true,
             data: mockBulkAddQuestionsWithErrorsResponse,
@@ -1045,7 +1045,7 @@ describe('exerciseApi', () => {
 
       server.use(
         http.delete(
-          `${baseUrl}/api/v2/content/exercises/${exerciseId}/questions/${questionId}`,
+          `${baseUrl}/content/exercises/${exerciseId}/questions/${questionId}`,
           () => {
             return HttpResponse.json({
               success: true,
@@ -1068,7 +1068,7 @@ describe('exerciseApi', () => {
 
       server.use(
         http.delete(
-          `${baseUrl}/api/v2/content/exercises/${exerciseId}/questions/${questionId}`,
+          `${baseUrl}/content/exercises/${exerciseId}/questions/${questionId}`,
           () => {
             return HttpResponse.json(
               { success: false, message: 'Question not found' },
@@ -1097,7 +1097,7 @@ describe('exerciseApi', () => {
 
       server.use(
         http.patch(
-          `${baseUrl}/api/v2/content/exercises/${exerciseId}/questions/reorder`,
+          `${baseUrl}/content/exercises/${exerciseId}/questions/reorder`,
           async ({ request }) => {
             capturedRequestBody = await request.json();
             return HttpResponse.json({
@@ -1124,7 +1124,7 @@ describe('exerciseApi', () => {
 
       server.use(
         http.patch(
-          `${baseUrl}/api/v2/content/exercises/${exerciseId}/questions/reorder`,
+          `${baseUrl}/content/exercises/${exerciseId}/questions/reorder`,
           () => {
             return HttpResponse.json(
               { success: false, message: 'Invalid question IDs provided' },
@@ -1148,7 +1148,7 @@ describe('exerciseApi', () => {
       const publishedExercise = { ...mockDraftQuiz, status: 'published' as const };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/content/exercises/${exerciseId}`, () => {
+        http.put(`${baseUrl}/content/exercises/${exerciseId}`, () => {
           return HttpResponse.json({
             success: true,
             data: publishedExercise,
@@ -1165,7 +1165,7 @@ describe('exerciseApi', () => {
       const exerciseId = 'ex-1';
 
       server.use(
-        http.put(`${baseUrl}/api/v2/content/exercises/${exerciseId}`, () => {
+        http.put(`${baseUrl}/content/exercises/${exerciseId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Exercise is already published' },
             { status: 409 }
@@ -1187,7 +1187,7 @@ describe('exerciseApi', () => {
       const unpublishedExercise = { ...mockPublishedQuiz, status: 'draft' as const };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/content/exercises/${exerciseId}`, () => {
+        http.put(`${baseUrl}/content/exercises/${exerciseId}`, () => {
           return HttpResponse.json({
             success: true,
             data: unpublishedExercise,
@@ -1211,7 +1211,7 @@ describe('exerciseApi', () => {
       const archivedExercise = { ...mockPublishedQuiz, status: 'archived' as const };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/content/exercises/${exerciseId}`, () => {
+        http.put(`${baseUrl}/content/exercises/${exerciseId}`, () => {
           return HttpResponse.json({
             success: true,
             data: archivedExercise,
@@ -1228,7 +1228,7 @@ describe('exerciseApi', () => {
       const exerciseId = 'ex-6';
 
       server.use(
-        http.put(`${baseUrl}/api/v2/content/exercises/${exerciseId}`, () => {
+        http.put(`${baseUrl}/content/exercises/${exerciseId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Exercise is already archived' },
             { status: 409 }

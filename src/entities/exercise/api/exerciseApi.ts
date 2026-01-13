@@ -34,7 +34,7 @@ interface ApiResponse<T> {
 // =====================
 
 /**
- * GET /api/v2/content/exercises - List all exercises
+ * GET /content/exercises - List all exercises
  */
 export async function listExercises(filters?: ExerciseFilters): Promise<ExercisesListResponse> {
   const response = await client.get<ApiResponse<ExercisesListResponse>>(
@@ -45,15 +45,15 @@ export async function listExercises(filters?: ExerciseFilters): Promise<Exercise
 }
 
 /**
- * GET /api/v2/content/exercises/:id - Get exercise details
+ * GET /content/exercises/:id - Get exercise details
  */
 export async function getExercise(id: string): Promise<Exercise> {
-  const response = await client.get<ApiResponse<Exercise>>(`/api/v2/content/exercises/${id}`);
+  const response = await client.get<ApiResponse<Exercise>>(`/content/exercises/${id}`);
   return response.data.data;
 }
 
 /**
- * POST /api/v2/content/exercises - Create new exercise
+ * POST /content/exercises - Create new exercise
  */
 export async function createExercise(payload: CreateExercisePayload): Promise<Exercise> {
   const response = await client.post<ApiResponse<Exercise>>('/content/exercises', payload);
@@ -61,24 +61,24 @@ export async function createExercise(payload: CreateExercisePayload): Promise<Ex
 }
 
 /**
- * PUT /api/v2/content/exercises/:id - Update exercise
+ * PUT /content/exercises/:id - Update exercise
  */
 export async function updateExercise(
   id: string,
   payload: UpdateExercisePayload
 ): Promise<Exercise> {
   const response = await client.put<ApiResponse<Exercise>>(
-    `/api/v2/content/exercises/${id}`,
+    `/content/exercises/${id}`,
     payload
   );
   return response.data.data;
 }
 
 /**
- * DELETE /api/v2/content/exercises/:id - Delete exercise (soft delete)
+ * DELETE /content/exercises/:id - Delete exercise (soft delete)
  */
 export async function deleteExercise(id: string): Promise<void> {
-  await client.delete(`/api/v2/content/exercises/${id}`);
+  await client.delete(`/content/exercises/${id}`);
 }
 
 // =====================
@@ -86,69 +86,69 @@ export async function deleteExercise(id: string): Promise<void> {
 // =====================
 
 /**
- * GET /api/v2/content/exercises/:id/questions - Get questions in exercise
+ * GET /content/exercises/:id/questions - Get questions in exercise
  */
 export async function getExerciseQuestions(
   id: string,
   query?: GetQuestionsQuery
 ): Promise<ExerciseQuestionsResponse> {
   const response = await client.get<ApiResponse<ExerciseQuestionsResponse>>(
-    `/api/v2/content/exercises/${id}/questions`,
+    `/content/exercises/${id}/questions`,
     { params: query }
   );
   return response.data.data;
 }
 
 /**
- * POST /api/v2/content/exercises/:id/questions - Add question to exercise
+ * POST /content/exercises/:id/questions - Add question to exercise
  */
 export async function addExerciseQuestion(
   id: string,
   payload: AddQuestionPayload
 ): Promise<AddQuestionResponse> {
   const response = await client.post<ApiResponse<AddQuestionResponse>>(
-    `/api/v2/content/exercises/${id}/questions`,
+    `/content/exercises/${id}/questions`,
     payload
   );
   return response.data.data;
 }
 
 /**
- * POST /api/v2/content/exercises/:id/questions/bulk - Bulk add questions
+ * POST /content/exercises/:id/questions/bulk - Bulk add questions
  */
 export async function bulkAddExerciseQuestions(
   id: string,
   payload: BulkAddQuestionsPayload
 ): Promise<BulkAddQuestionsResponse> {
   const response = await client.post<ApiResponse<BulkAddQuestionsResponse>>(
-    `/api/v2/content/exercises/${id}/questions/bulk`,
+    `/content/exercises/${id}/questions/bulk`,
     payload
   );
   return response.data.data;
 }
 
 /**
- * DELETE /api/v2/content/exercises/:id/questions/:questionId - Remove question from exercise
+ * DELETE /content/exercises/:id/questions/:questionId - Remove question from exercise
  */
 export async function removeExerciseQuestion(
   id: string,
   questionId: string
 ): Promise<RemoveQuestionResponse> {
   const response = await client.delete<ApiResponse<RemoveQuestionResponse>>(
-    `/api/v2/content/exercises/${id}/questions/${questionId}`
+    `/content/exercises/${id}/questions/${questionId}`
   );
   return response.data.data;
 }
 
 /**
- * PATCH /api/v2/content/exercises/:id/questions/reorder - Reorder questions
+ * PATCH /content/exercises/:id/questions/reorder - Reorder questions
  */
 export async function reorderExerciseQuestions(
   id: string,
   payload: ReorderQuestionsPayload
 ): Promise<ReorderQuestionsResponse> {
   const response = await client.patch<ApiResponse<ReorderQuestionsResponse>>(
-    `/api/v2/content/exercises/${id}/questions/reorder`,
+    `/content/exercises/${id}/questions/reorder`,
     payload
   );
   return response.data.data;

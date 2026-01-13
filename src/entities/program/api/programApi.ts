@@ -22,7 +22,7 @@ interface ApiResponse<T> {
 }
 
 /**
- * GET /api/v2/programs - List programs with filtering and pagination
+ * GET /programs - List programs with filtering and pagination
  */
 export async function listPrograms(
   filters?: ProgramFilters
@@ -35,17 +35,17 @@ export async function listPrograms(
 }
 
 /**
- * GET /api/v2/programs/:id - Get program details by ID
+ * GET /programs/:id - Get program details by ID
  */
 export async function getProgram(id: string): Promise<Program> {
   const response = await client.get<ApiResponse<Program>>(
-    `/api/v2/programs/${id}`
+    `/programs/${id}`
   );
   return response.data.data;
 }
 
 /**
- * POST /api/v2/programs - Create a new program
+ * POST /programs - Create a new program
  */
 export async function createProgram(
   payload: CreateProgramPayload
@@ -58,28 +58,28 @@ export async function createProgram(
 }
 
 /**
- * PUT /api/v2/programs/:id - Update program information
+ * PUT /programs/:id - Update program information
  */
 export async function updateProgram(
   id: string,
   payload: UpdateProgramPayload
 ): Promise<Program> {
   const response = await client.put<ApiResponse<Program>>(
-    `/api/v2/programs/${id}`,
+    `/programs/${id}`,
     payload
   );
   return response.data.data;
 }
 
 /**
- * DELETE /api/v2/programs/:id - Delete program (soft delete)
+ * DELETE /programs/:id - Delete program (soft delete)
  */
 export async function deleteProgram(id: string): Promise<void> {
-  await client.delete(`/api/v2/programs/${id}`);
+  await client.delete(`/programs/${id}`);
 }
 
 /**
- * POST /api/v2/programs/:id/publish - Publish program
+ * POST /programs/:id/publish - Publish program
  * Note: This is implemented via the update endpoint with isPublished=true
  */
 export async function publishProgram(id: string): Promise<Program> {
@@ -87,7 +87,7 @@ export async function publishProgram(id: string): Promise<Program> {
 }
 
 /**
- * POST /api/v2/programs/:id/unpublish - Unpublish program
+ * POST /programs/:id/unpublish - Unpublish program
  * Note: This is implemented via the update endpoint with isPublished=false
  */
 export async function unpublishProgram(id: string): Promise<Program> {
@@ -95,7 +95,7 @@ export async function unpublishProgram(id: string): Promise<Program> {
 }
 
 /**
- * POST /api/v2/programs/:id/duplicate - Duplicate a program
+ * POST /programs/:id/duplicate - Duplicate a program
  * Note: This is implemented by fetching the program and creating a new one
  */
 export async function duplicateProgram(id: string): Promise<Program> {
@@ -114,24 +114,24 @@ export async function duplicateProgram(id: string): Promise<Program> {
 }
 
 /**
- * GET /api/v2/programs/:id/levels - Get all levels for a program
+ * GET /programs/:id/levels - Get all levels for a program
  */
 export async function getProgramLevels(id: string): Promise<ProgramLevelsResponse> {
   const response = await client.get<ApiResponse<ProgramLevelsResponse>>(
-    `/api/v2/programs/${id}/levels`
+    `/programs/${id}/levels`
   );
   return response.data.data;
 }
 
 /**
- * GET /api/v2/programs/:id/enrollments - Get all enrollments for a program
+ * GET /programs/:id/enrollments - Get all enrollments for a program
  */
 export async function getProgramEnrollments(
   id: string,
   filters?: ProgramEnrollmentFilters
 ): Promise<ProgramEnrollmentsResponse> {
   const response = await client.get<ApiResponse<ProgramEnrollmentsResponse>>(
-    `/api/v2/programs/${id}/enrollments`,
+    `/programs/${id}/enrollments`,
     { params: filters }
   );
   return response.data.data;

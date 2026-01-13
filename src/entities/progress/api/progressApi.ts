@@ -25,14 +25,14 @@ import type {
 // =====================
 
 /**
- * GET /api/v2/progress/program/:programId - Get program progress
+ * GET /progress/program/:programId - Get program progress
  */
 export async function getProgramProgress(
   programId: string,
   learnerId?: string
 ): Promise<ProgramProgress> {
   const response = await client.get<ApiResponse<ProgramProgress>>(
-    `/api/v2/progress/program/${programId}`,
+    `/progress/program/${programId}`,
     { params: learnerId ? { learnerId } : undefined }
   );
   return response.data.data;
@@ -43,14 +43,14 @@ export async function getProgramProgress(
 // =====================
 
 /**
- * GET /api/v2/progress/course/:courseId - Get detailed course progress
+ * GET /progress/course/:courseId - Get detailed course progress
  */
 export async function getCourseProgress(
   courseId: string,
   learnerId?: string
 ): Promise<CourseProgress> {
   const response = await client.get<ApiResponse<CourseProgress>>(
-    `/api/v2/progress/course/${courseId}`,
+    `/progress/course/${courseId}`,
     { params: learnerId ? { learnerId } : undefined }
   );
   return response.data.data;
@@ -61,14 +61,14 @@ export async function getCourseProgress(
 // =====================
 
 /**
- * GET /api/v2/progress/class/:classId - Get class progress with attendance
+ * GET /progress/class/:classId - Get class progress with attendance
  */
 export async function getClassProgress(
   classId: string,
   learnerId?: string
 ): Promise<ClassProgress> {
   const response = await client.get<ApiResponse<ClassProgress>>(
-    `/api/v2/progress/class/${classId}`,
+    `/progress/class/${classId}`,
     { params: learnerId ? { learnerId } : undefined }
   );
   return response.data.data;
@@ -79,24 +79,24 @@ export async function getClassProgress(
 // =====================
 
 /**
- * GET /api/v2/progress/learner/:learnerId - Get comprehensive learner progress
+ * GET /progress/learner/:learnerId - Get comprehensive learner progress
  */
 export async function getLearnerProgress(learnerId: string): Promise<LearnerProgress> {
   const response = await client.get<ApiResponse<LearnerProgress>>(
-    `/api/v2/progress/learner/${learnerId}`
+    `/progress/learner/${learnerId}`
   );
   return response.data.data;
 }
 
 /**
- * GET /api/v2/progress/learner/:learnerId/program/:programId - Get learner's program progress
+ * GET /progress/learner/:learnerId/program/:programId - Get learner's program progress
  */
 export async function getLearnerProgramProgress(
   learnerId: string,
   programId: string
 ): Promise<ProgramProgress> {
   const response = await client.get<ApiResponse<ProgramProgress>>(
-    `/api/v2/progress/learner/${learnerId}/program/${programId}`
+    `/progress/learner/${learnerId}/program/${programId}`
   );
   return response.data.data;
 }
@@ -106,7 +106,7 @@ export async function getLearnerProgramProgress(
 // =====================
 
 /**
- * POST /api/v2/progress/update - Manual progress update (instructor/admin override)
+ * POST /progress/update - Manual progress update (instructor/admin override)
  */
 export async function updateProgress(
   payload: UpdateProgressRequest
@@ -129,7 +129,7 @@ export async function updateProgress(
 // =====================
 
 /**
- * GET /api/v2/progress/reports/summary - Get progress summary report
+ * GET /progress/reports/summary - Get progress summary report
  */
 export async function getProgressSummary(
   filters?: ProgressSummaryFilters
@@ -142,7 +142,7 @@ export async function getProgressSummary(
 }
 
 /**
- * GET /api/v2/progress/reports/detailed - Get detailed progress report
+ * GET /progress/reports/detailed - Get detailed progress report
  */
 export async function getDetailedProgressReport(
   filters?: DetailedProgressReportFilters

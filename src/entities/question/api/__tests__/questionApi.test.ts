@@ -57,7 +57,7 @@ describe('questionApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/questions`, () => {
+        http.get(`${baseUrl}/questions`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -87,7 +87,7 @@ describe('questionApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/questions`, ({ request }) => {
+        http.get(`${baseUrl}/questions`, ({ request }) => {
           const url = new URL(request.url);
           capturedParams = url.searchParams;
           return HttpResponse.json({
@@ -124,7 +124,7 @@ describe('questionApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/questions`, ({ request }) => {
+        http.get(`${baseUrl}/questions`, ({ request }) => {
           const url = new URL(request.url);
           capturedParams = url.searchParams;
           return HttpResponse.json({
@@ -158,7 +158,7 @@ describe('questionApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/questions`, ({ request }) => {
+        http.get(`${baseUrl}/questions`, ({ request }) => {
           const url = new URL(request.url);
           capturedParams = url.searchParams;
           return HttpResponse.json({
@@ -194,7 +194,7 @@ describe('questionApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/questions`, ({ request }) => {
+        http.get(`${baseUrl}/questions`, ({ request }) => {
           const url = new URL(request.url);
           capturedParams = url.searchParams;
           return HttpResponse.json({
@@ -227,7 +227,7 @@ describe('questionApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/questions`, ({ request }) => {
+        http.get(`${baseUrl}/questions`, ({ request }) => {
           const url = new URL(request.url);
           capturedParams = url.searchParams;
           return HttpResponse.json({
@@ -260,7 +260,7 @@ describe('questionApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/questions`, ({ request }) => {
+        http.get(`${baseUrl}/questions`, ({ request }) => {
           const url = new URL(request.url);
           capturedParams = url.searchParams;
           return HttpResponse.json({
@@ -291,7 +291,7 @@ describe('questionApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/questions`, () => {
+        http.get(`${baseUrl}/questions`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -307,7 +307,7 @@ describe('questionApi', () => {
 
     it('should handle API errors', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/questions`, () => {
+        http.get(`${baseUrl}/questions`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -331,7 +331,7 @@ describe('questionApi', () => {
       const newQuestion = createMockQuestion(mockCreateQuestionPayload);
 
       server.use(
-        http.post(`${baseUrl}/api/v2/questions`, () => {
+        http.post(`${baseUrl}/questions`, () => {
           return HttpResponse.json({
             success: true,
             data: newQuestion,
@@ -362,7 +362,7 @@ describe('questionApi', () => {
       const newQuestion = createMockQuestion(trueFalsePayload);
 
       server.use(
-        http.post(`${baseUrl}/api/v2/questions`, () => {
+        http.post(`${baseUrl}/questions`, () => {
           return HttpResponse.json({
             success: true,
             data: newQuestion,
@@ -391,7 +391,7 @@ describe('questionApi', () => {
       });
 
       server.use(
-        http.post(`${baseUrl}/api/v2/questions`, () => {
+        http.post(`${baseUrl}/questions`, () => {
           return HttpResponse.json({
             success: true,
             data: newQuestion,
@@ -407,7 +407,7 @@ describe('questionApi', () => {
 
     it('should handle validation errors', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/questions`, () => {
+        http.post(`${baseUrl}/questions`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -437,7 +437,7 @@ describe('questionApi', () => {
       const mockQuestion = mockQuestionDetails[0];
 
       server.use(
-        http.get(`${baseUrl}/api/v2/questions/${mockQuestion.id}`, () => {
+        http.get(`${baseUrl}/questions/${mockQuestion.id}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockQuestion,
@@ -455,7 +455,7 @@ describe('questionApi', () => {
       const mockQuestion = mockQuestionDetails[0];
 
       server.use(
-        http.get(`${baseUrl}/api/v2/questions/${mockQuestion.id}`, () => {
+        http.get(`${baseUrl}/questions/${mockQuestion.id}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockQuestion,
@@ -471,7 +471,7 @@ describe('questionApi', () => {
 
     it('should handle question not found', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/questions/invalid-id`, () => {
+        http.get(`${baseUrl}/questions/invalid-id`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -499,7 +499,7 @@ describe('questionApi', () => {
       });
 
       server.use(
-        http.put(`${baseUrl}/api/v2/questions/${questionId}`, () => {
+        http.put(`${baseUrl}/questions/${questionId}`, () => {
           return HttpResponse.json({
             success: true,
             data: updatedQuestion,
@@ -525,7 +525,7 @@ describe('questionApi', () => {
       });
 
       server.use(
-        http.put(`${baseUrl}/api/v2/questions/${questionId}`, () => {
+        http.put(`${baseUrl}/questions/${questionId}`, () => {
           return HttpResponse.json({
             success: true,
             data: updatedQuestion,
@@ -552,7 +552,7 @@ describe('questionApi', () => {
       });
 
       server.use(
-        http.put(`${baseUrl}/api/v2/questions/${questionId}`, () => {
+        http.put(`${baseUrl}/questions/${questionId}`, () => {
           return HttpResponse.json({
             success: true,
             data: updatedQuestion,
@@ -569,7 +569,7 @@ describe('questionApi', () => {
       const questionId = 'q1';
 
       server.use(
-        http.put(`${baseUrl}/api/v2/questions/${questionId}`, () => {
+        http.put(`${baseUrl}/questions/${questionId}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -593,7 +593,7 @@ describe('questionApi', () => {
       const questionId = 'q1';
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/questions/${questionId}`, () => {
+        http.delete(`${baseUrl}/questions/${questionId}`, () => {
           return HttpResponse.json({
             success: true,
             message: 'Question deleted successfully',
@@ -608,7 +608,7 @@ describe('questionApi', () => {
       const questionId = 'invalid-id';
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/questions/${questionId}`, () => {
+        http.delete(`${baseUrl}/questions/${questionId}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -637,7 +637,7 @@ describe('questionApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/questions/bulk`, () => {
+        http.post(`${baseUrl}/questions/bulk`, () => {
           return HttpResponse.json({
             success: true,
             data: mockBulkImportSuccessResponse,
@@ -661,7 +661,7 @@ describe('questionApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/questions/bulk`, () => {
+        http.post(`${baseUrl}/questions/bulk`, () => {
           return HttpResponse.json({
             success: true,
             data: mockBulkImportPartialResponse,
@@ -697,7 +697,7 @@ describe('questionApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/questions/bulk`, () => {
+        http.post(`${baseUrl}/questions/bulk`, () => {
           return HttpResponse.json({
             success: true,
             data: response,
@@ -718,7 +718,7 @@ describe('questionApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/questions/bulk`, () => {
+        http.post(`${baseUrl}/questions/bulk`, () => {
           return HttpResponse.json({
             success: true,
             data: mockBulkImportSuccessResponse,
@@ -738,7 +738,7 @@ describe('questionApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/questions/bulk`, () => {
+        http.post(`${baseUrl}/questions/bulk`, () => {
           return HttpResponse.json(
             {
               success: false,

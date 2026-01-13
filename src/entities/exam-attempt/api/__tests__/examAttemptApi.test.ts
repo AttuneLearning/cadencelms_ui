@@ -65,7 +65,7 @@ describe('examAttemptApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/exam-attempts`, () => {
+        http.get(`${baseUrl}/exam-attempts`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -95,7 +95,7 @@ describe('examAttemptApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/exam-attempts`, ({ request }) => {
+        http.get(`${baseUrl}/exam-attempts`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -117,7 +117,7 @@ describe('examAttemptApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/exam-attempts`, ({ request }) => {
+        http.get(`${baseUrl}/exam-attempts`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -145,7 +145,7 @@ describe('examAttemptApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/exam-attempts`, ({ request }) => {
+        http.get(`${baseUrl}/exam-attempts`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -171,7 +171,7 @@ describe('examAttemptApi', () => {
 
     it('should handle error response', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/exam-attempts`, () => {
+        http.get(`${baseUrl}/exam-attempts`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -193,7 +193,7 @@ describe('examAttemptApi', () => {
   describe('getExamAttempt', () => {
     it('should fetch started exam attempt by id', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/exam-attempts/${mockStartedAttempt.id}`, () => {
+        http.get(`${baseUrl}/exam-attempts/${mockStartedAttempt.id}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockStartedAttempt,
@@ -210,7 +210,7 @@ describe('examAttemptApi', () => {
 
     it('should fetch graded exam attempt by id', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/exam-attempts/${mockGradedAttempt.id}`, () => {
+        http.get(`${baseUrl}/exam-attempts/${mockGradedAttempt.id}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockGradedAttempt,
@@ -228,7 +228,7 @@ describe('examAttemptApi', () => {
 
     it('should handle attempt not found error', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/exam-attempts/non-existent-id`, () => {
+        http.get(`${baseUrl}/exam-attempts/non-existent-id`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -254,7 +254,7 @@ describe('examAttemptApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/exam-attempts`, async ({ request: req }) => {
+        http.post(`${baseUrl}/exam-attempts`, async ({ request: req }) => {
           const body = await req.json() as StartExamAttemptRequest;
           expect(body).toEqual(request);
 
@@ -276,7 +276,7 @@ describe('examAttemptApi', () => {
 
     it('should handle active attempt exists error', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/exam-attempts`, () => {
+        http.post(`${baseUrl}/exam-attempts`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -292,7 +292,7 @@ describe('examAttemptApi', () => {
 
     it('should handle max attempts reached error', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/exam-attempts`, () => {
+        http.post(`${baseUrl}/exam-attempts`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -322,7 +322,7 @@ describe('examAttemptApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/exam-attempts/${attemptId}/answers`, async ({ request: req }) => {
+        http.post(`${baseUrl}/exam-attempts/${attemptId}/answers`, async ({ request: req }) => {
           const body = await req.json() as SubmitAnswersRequest;
           expect(body).toEqual(request);
 
@@ -343,7 +343,7 @@ describe('examAttemptApi', () => {
 
     it('should handle time expired error', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/exam-attempts/attempt-1/answers`, () => {
+        http.post(`${baseUrl}/exam-attempts/attempt-1/answers`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -361,7 +361,7 @@ describe('examAttemptApi', () => {
 
     it('should handle attempt closed error', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/exam-attempts/attempt-1/answers`, () => {
+        http.post(`${baseUrl}/exam-attempts/attempt-1/answers`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -390,7 +390,7 @@ describe('examAttemptApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/exam-attempts/${attemptId}/submit`, async ({ request: req }) => {
+        http.post(`${baseUrl}/exam-attempts/${attemptId}/submit`, async ({ request: req }) => {
           const body = await req.json() as SubmitExamRequest;
           expect(body).toEqual(request);
 
@@ -414,7 +414,7 @@ describe('examAttemptApi', () => {
       const attemptId = 'attempt-1';
 
       server.use(
-        http.post(`${baseUrl}/api/v2/exam-attempts/${attemptId}/submit`, () => {
+        http.post(`${baseUrl}/exam-attempts/${attemptId}/submit`, () => {
           return HttpResponse.json({
             success: true,
             message: 'Exam submitted successfully',
@@ -430,7 +430,7 @@ describe('examAttemptApi', () => {
 
     it('should handle already submitted error', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/exam-attempts/attempt-1/submit`, () => {
+        http.post(`${baseUrl}/exam-attempts/attempt-1/submit`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -454,7 +454,7 @@ describe('examAttemptApi', () => {
       const attemptId = 'attempt-3';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/exam-attempts/${attemptId}/results`, () => {
+        http.get(`${baseUrl}/exam-attempts/${attemptId}/results`, () => {
           return HttpResponse.json({
             success: true,
             data: mockExamResult,
@@ -473,7 +473,7 @@ describe('examAttemptApi', () => {
 
     it('should handle not graded error', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/exam-attempts/attempt-1/results`, () => {
+        http.get(`${baseUrl}/exam-attempts/attempt-1/results`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -489,7 +489,7 @@ describe('examAttemptApi', () => {
 
     it('should handle review not allowed error', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/exam-attempts/attempt-1/results`, () => {
+        http.get(`${baseUrl}/exam-attempts/attempt-1/results`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -548,7 +548,7 @@ describe('examAttemptApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/exam-attempts/${attemptId}/grade`, async ({ request: req }) => {
+        http.post(`${baseUrl}/exam-attempts/${attemptId}/grade`, async ({ request: req }) => {
           const body = await req.json() as GradeExamRequest;
           expect(body).toEqual(request);
 
@@ -569,7 +569,7 @@ describe('examAttemptApi', () => {
 
     it('should handle not submitted error', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/exam-attempts/attempt-1/grade`, () => {
+        http.post(`${baseUrl}/exam-attempts/attempt-1/grade`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -587,7 +587,7 @@ describe('examAttemptApi', () => {
 
     it('should handle forbidden error', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/exam-attempts/attempt-1/grade`, () => {
+        http.post(`${baseUrl}/exam-attempts/attempt-1/grade`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -613,7 +613,7 @@ describe('examAttemptApi', () => {
       const examId = 'exam-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/exam-attempts/exam/${examId}`, () => {
+        http.get(`${baseUrl}/exam-attempts/exam/${examId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockExamAttemptsByExamResponse,
@@ -633,7 +633,7 @@ describe('examAttemptApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/exam-attempts/exam/${examId}`, ({ request }) => {
+        http.get(`${baseUrl}/exam-attempts/exam/${examId}`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -649,7 +649,7 @@ describe('examAttemptApi', () => {
 
     it('should handle exam not found error', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/exam-attempts/exam/non-existent-id`, () => {
+        http.get(`${baseUrl}/exam-attempts/exam/non-existent-id`, () => {
           return HttpResponse.json(
             {
               success: false,

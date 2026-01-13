@@ -94,7 +94,7 @@ describe('useContentAttempts hooks', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content-attempts`, () => {
+        http.get(`${baseUrl}/content-attempts`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -128,7 +128,7 @@ describe('useContentAttempts hooks', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content-attempts`, ({ request }) => {
+        http.get(`${baseUrl}/content-attempts`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -162,7 +162,7 @@ describe('useContentAttempts hooks', () => {
   describe('useContentAttempt', () => {
     it('should fetch single attempt by id', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/content-attempts/attempt-1`, () => {
+        http.get(`${baseUrl}/content-attempts/attempt-1`, () => {
           return HttpResponse.json({
             success: true,
             data: mockAttempt,
@@ -204,7 +204,7 @@ describe('useContentAttempts hooks', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/content-attempts`, async ({ request }) => {
+        http.post(`${baseUrl}/content-attempts`, async ({ request }) => {
           const body = (await request.json()) as Record<string, unknown>;
           expect(body.contentId).toBe('content-1');
 
@@ -233,7 +233,7 @@ describe('useContentAttempts hooks', () => {
 
     it('should handle error when attempt already exists', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/content-attempts`, () => {
+        http.post(`${baseUrl}/content-attempts`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -274,7 +274,7 @@ describe('useContentAttempts hooks', () => {
       };
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/content-attempts/attempt-1`, async ({ request }) => {
+        http.patch(`${baseUrl}/content-attempts/attempt-1`, async ({ request }) => {
           const body = (await request.json()) as Record<string, unknown>;
           expect(body.progressPercent).toBe(75);
 
@@ -323,7 +323,7 @@ describe('useContentAttempts hooks', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/content-attempts/attempt-1/complete`, async ({ request }) => {
+        http.post(`${baseUrl}/content-attempts/attempt-1/complete`, async ({ request }) => {
           const body = (await request.json()) as Record<string, unknown>;
           expect(body.passed).toBe(true);
 

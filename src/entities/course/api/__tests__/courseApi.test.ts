@@ -69,7 +69,7 @@ describe('courseApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses`, () => {
+        http.get(`${baseUrl}/courses`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -99,7 +99,7 @@ describe('courseApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses`, ({ request }) => {
+        http.get(`${baseUrl}/courses`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -134,7 +134,7 @@ describe('courseApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses`, () => {
+        http.get(`${baseUrl}/courses`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -166,7 +166,7 @@ describe('courseApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses`, () => {
+        http.get(`${baseUrl}/courses`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -196,7 +196,7 @@ describe('courseApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses`, () => {
+        http.get(`${baseUrl}/courses`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -228,7 +228,7 @@ describe('courseApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses`, () => {
+        http.get(`${baseUrl}/courses`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -259,7 +259,7 @@ describe('courseApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses`, () => {
+        http.get(`${baseUrl}/courses`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -290,7 +290,7 @@ describe('courseApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses`, () => {
+        http.get(`${baseUrl}/courses`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -317,7 +317,7 @@ describe('courseApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses`, () => {
+        http.get(`${baseUrl}/courses`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -333,7 +333,7 @@ describe('courseApi', () => {
 
     it('should handle API error', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/courses`, () => {
+        http.get(`${baseUrl}/courses`, () => {
           return HttpResponse.json(
             { success: false, message: 'Internal server error' },
             { status: 500 }
@@ -354,7 +354,7 @@ describe('courseApi', () => {
       const courseId = 'course-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses/${courseId}`, () => {
+        http.get(`${baseUrl}/courses/${courseId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockPublishedCourse,
@@ -372,7 +372,7 @@ describe('courseApi', () => {
       const courseId = 'course-3';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses/${courseId}`, () => {
+        http.get(`${baseUrl}/courses/${courseId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockDraftCourse,
@@ -391,7 +391,7 @@ describe('courseApi', () => {
       const courseId = 'course-4';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses/${courseId}`, () => {
+        http.get(`${baseUrl}/courses/${courseId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockArchivedCourse,
@@ -410,7 +410,7 @@ describe('courseApi', () => {
       const courseId = 'non-existent';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses/${courseId}`, () => {
+        http.get(`${baseUrl}/courses/${courseId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Course not found' },
             { status: 404 }
@@ -425,7 +425,7 @@ describe('courseApi', () => {
       const courseId = 'course-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses/${courseId}`, () => {
+        http.get(`${baseUrl}/courses/${courseId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Unauthorized' },
             { status: 401 }
@@ -452,7 +452,7 @@ describe('courseApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses`, async ({ request }) => {
+        http.post(`${baseUrl}/courses`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json(
             {
@@ -489,7 +489,7 @@ describe('courseApi', () => {
       });
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses`, () => {
+        http.post(`${baseUrl}/courses`, () => {
           return HttpResponse.json(
             {
               success: true,
@@ -513,7 +513,7 @@ describe('courseApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses`, () => {
+        http.post(`${baseUrl}/courses`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -532,7 +532,7 @@ describe('courseApi', () => {
 
     it('should handle duplicate course code error', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/courses`, () => {
+        http.post(`${baseUrl}/courses`, () => {
           return HttpResponse.json(
             { success: false, message: 'Course code already exists' },
             { status: 409 }
@@ -550,7 +550,7 @@ describe('courseApi', () => {
       } as any;
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses`, () => {
+        http.post(`${baseUrl}/courses`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -596,7 +596,7 @@ describe('courseApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.put(`${baseUrl}/api/v2/courses/${courseId}`, async ({ request }) => {
+        http.put(`${baseUrl}/courses/${courseId}`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json({
             success: true,
@@ -615,7 +615,7 @@ describe('courseApi', () => {
       const courseId = 'non-existent';
 
       server.use(
-        http.put(`${baseUrl}/api/v2/courses/${courseId}`, () => {
+        http.put(`${baseUrl}/courses/${courseId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Course not found' },
             { status: 404 }
@@ -638,7 +638,7 @@ describe('courseApi', () => {
       const updatedCourse = { ...mockPublishedCourse, title: partialUpdate.title };
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/courses/${courseId}`, () => {
+        http.patch(`${baseUrl}/courses/${courseId}`, () => {
           return HttpResponse.json({
             success: true,
             data: updatedCourse,
@@ -669,7 +669,7 @@ describe('courseApi', () => {
       };
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/courses/${courseId}`, () => {
+        http.patch(`${baseUrl}/courses/${courseId}`, () => {
           return HttpResponse.json({
             success: true,
             data: updatedCourse,
@@ -686,7 +686,7 @@ describe('courseApi', () => {
       const courseId = 'non-existent';
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/courses/${courseId}`, () => {
+        http.patch(`${baseUrl}/courses/${courseId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Course not found' },
             { status: 404 }
@@ -708,7 +708,7 @@ describe('courseApi', () => {
       let deleteCalled = false;
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/courses/${courseId}`, () => {
+        http.delete(`${baseUrl}/courses/${courseId}`, () => {
           deleteCalled = true;
           return HttpResponse.json({}, { status: 204 });
         })
@@ -723,7 +723,7 @@ describe('courseApi', () => {
       const courseId = 'non-existent';
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/courses/${courseId}`, () => {
+        http.delete(`${baseUrl}/courses/${courseId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Course not found' },
             { status: 404 }
@@ -738,7 +738,7 @@ describe('courseApi', () => {
       const courseId = 'course-1';
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/courses/${courseId}`, () => {
+        http.delete(`${baseUrl}/courses/${courseId}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -768,7 +768,7 @@ describe('courseApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses/${courseId}/publish`, () => {
+        http.post(`${baseUrl}/courses/${courseId}/publish`, () => {
           return HttpResponse.json({
             success: true,
             data: publishResponse,
@@ -795,7 +795,7 @@ describe('courseApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses/${courseId}/publish`, async ({ request }) => {
+        http.post(`${baseUrl}/courses/${courseId}/publish`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json({
             success: true,
@@ -814,7 +814,7 @@ describe('courseApi', () => {
       const courseId = 'course-3';
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses/${courseId}/publish`, () => {
+        http.post(`${baseUrl}/courses/${courseId}/publish`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -832,7 +832,7 @@ describe('courseApi', () => {
       const courseId = 'course-1';
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses/${courseId}/publish`, () => {
+        http.post(`${baseUrl}/courses/${courseId}/publish`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -862,7 +862,7 @@ describe('courseApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses/${courseId}/unpublish`, () => {
+        http.post(`${baseUrl}/courses/${courseId}/unpublish`, () => {
           return HttpResponse.json({
             success: true,
             data: unpublishResponse,
@@ -889,7 +889,7 @@ describe('courseApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses/${courseId}/unpublish`, async ({ request }) => {
+        http.post(`${baseUrl}/courses/${courseId}/unpublish`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json({
             success: true,
@@ -908,7 +908,7 @@ describe('courseApi', () => {
       const courseId = 'course-3';
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses/${courseId}/unpublish`, () => {
+        http.post(`${baseUrl}/courses/${courseId}/unpublish`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -938,7 +938,7 @@ describe('courseApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses/${courseId}/archive`, () => {
+        http.post(`${baseUrl}/courses/${courseId}/archive`, () => {
           return HttpResponse.json({
             success: true,
             data: archiveResponse,
@@ -966,7 +966,7 @@ describe('courseApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses/${courseId}/archive`, async ({ request }) => {
+        http.post(`${baseUrl}/courses/${courseId}/archive`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json({
             success: true,
@@ -986,7 +986,7 @@ describe('courseApi', () => {
       const courseId = 'course-4';
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses/${courseId}/archive`, () => {
+        http.post(`${baseUrl}/courses/${courseId}/archive`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -1016,7 +1016,7 @@ describe('courseApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses/${courseId}/unarchive`, () => {
+        http.post(`${baseUrl}/courses/${courseId}/unarchive`, () => {
           return HttpResponse.json({
             success: true,
             data: unarchiveResponse,
@@ -1034,7 +1034,7 @@ describe('courseApi', () => {
       const courseId = 'course-1';
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses/${courseId}/unarchive`, () => {
+        http.post(`${baseUrl}/courses/${courseId}/unarchive`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -1063,7 +1063,7 @@ describe('courseApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses/${courseId}/duplicate`, () => {
+        http.post(`${baseUrl}/courses/${courseId}/duplicate`, () => {
           return HttpResponse.json({
             success: true,
             data: mockDuplicateCourseResponse,
@@ -1094,7 +1094,7 @@ describe('courseApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses/${courseId}/duplicate`, () => {
+        http.post(`${baseUrl}/courses/${courseId}/duplicate`, () => {
           return HttpResponse.json({
             success: true,
             data: customResponse,
@@ -1119,7 +1119,7 @@ describe('courseApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses/${courseId}/duplicate`, () => {
+        http.post(`${baseUrl}/courses/${courseId}/duplicate`, () => {
           return HttpResponse.json({
             success: true,
             data: mockDuplicateCourseResponse,
@@ -1141,7 +1141,7 @@ describe('courseApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses/${courseId}/duplicate`, () => {
+        http.post(`${baseUrl}/courses/${courseId}/duplicate`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -1165,7 +1165,7 @@ describe('courseApi', () => {
       const courseId = 'course-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses/${courseId}/export`, () => {
+        http.get(`${baseUrl}/courses/${courseId}/export`, () => {
           return HttpResponse.json({
             success: true,
             data: mockExportCourseResponse,
@@ -1189,7 +1189,7 @@ describe('courseApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses/${courseId}/export`, () => {
+        http.get(`${baseUrl}/courses/${courseId}/export`, () => {
           return HttpResponse.json({
             success: true,
             data: scormResponse,
@@ -1211,7 +1211,7 @@ describe('courseApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses/${courseId}/export`, () => {
+        http.get(`${baseUrl}/courses/${courseId}/export`, () => {
           return HttpResponse.json({
             success: true,
             data: pdfResponse,
@@ -1229,7 +1229,7 @@ describe('courseApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses/${courseId}/export`, ({ request }) => {
+        http.get(`${baseUrl}/courses/${courseId}/export`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -1249,7 +1249,7 @@ describe('courseApi', () => {
       const courseId = 'course-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses/${courseId}/export`, () => {
+        http.get(`${baseUrl}/courses/${courseId}/export`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -1280,7 +1280,7 @@ describe('courseApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/courses/${courseId}/department`, async ({ request }) => {
+        http.patch(`${baseUrl}/courses/${courseId}/department`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json({
             success: true,
@@ -1299,7 +1299,7 @@ describe('courseApi', () => {
       const courseId = 'course-1';
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/courses/${courseId}/department`, () => {
+        http.patch(`${baseUrl}/courses/${courseId}/department`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -1330,7 +1330,7 @@ describe('courseApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/courses/${courseId}/program`, async ({ request }) => {
+        http.patch(`${baseUrl}/courses/${courseId}/program`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json({
             success: true,
@@ -1353,7 +1353,7 @@ describe('courseApi', () => {
       };
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/courses/${courseId}/program`, () => {
+        http.patch(`${baseUrl}/courses/${courseId}/program`, () => {
           return HttpResponse.json({
             success: true,
             data: unassignResponse,
@@ -1370,7 +1370,7 @@ describe('courseApi', () => {
       const courseId = 'course-1';
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/courses/${courseId}/program`, () => {
+        http.patch(`${baseUrl}/courses/${courseId}/program`, () => {
           return HttpResponse.json(
             {
               success: false,

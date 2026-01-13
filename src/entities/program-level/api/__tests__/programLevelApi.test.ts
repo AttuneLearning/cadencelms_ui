@@ -36,7 +36,7 @@ describe('programLevelApi', () => {
       const levelId = 'level-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/program-levels/${levelId}`, () => {
+        http.get(`${baseUrl}/program-levels/${levelId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockProgramLevel,
@@ -56,7 +56,7 @@ describe('programLevelApi', () => {
       const levelId = 'level-2';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/program-levels/${levelId}`, () => {
+        http.get(`${baseUrl}/program-levels/${levelId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockProgramLevelWithCourses,
@@ -75,7 +75,7 @@ describe('programLevelApi', () => {
       const levelId = 'level-5';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/program-levels/${levelId}`, () => {
+        http.get(`${baseUrl}/program-levels/${levelId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockMinimalProgramLevel,
@@ -95,7 +95,7 @@ describe('programLevelApi', () => {
       const levelId = 'non-existent';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/program-levels/${levelId}`, () => {
+        http.get(`${baseUrl}/program-levels/${levelId}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -113,7 +113,7 @@ describe('programLevelApi', () => {
       const levelId = 'level-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/program-levels/${levelId}`, () => {
+        http.get(`${baseUrl}/program-levels/${levelId}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -131,7 +131,7 @@ describe('programLevelApi', () => {
       const levelId = 'level-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/program-levels/${levelId}`, () => {
+        http.get(`${baseUrl}/program-levels/${levelId}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -159,7 +159,7 @@ describe('programLevelApi', () => {
 
       server.use(
         http.put(
-          `${baseUrl}/api/v2/program-levels/${levelId}`,
+          `${baseUrl}/program-levels/${levelId}`,
           async ({ request }) => {
             capturedRequestBody = await request.json();
             return HttpResponse.json({
@@ -188,7 +188,7 @@ describe('programLevelApi', () => {
       };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/program-levels/${levelId}`, () => {
+        http.put(`${baseUrl}/program-levels/${levelId}`, () => {
           return HttpResponse.json({
             success: true,
             data: updatedLevel,
@@ -215,7 +215,7 @@ describe('programLevelApi', () => {
       };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/program-levels/${levelId}`, () => {
+        http.put(`${baseUrl}/program-levels/${levelId}`, () => {
           return HttpResponse.json({
             success: true,
             data: updatedLevel,
@@ -235,7 +235,7 @@ describe('programLevelApi', () => {
       };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/program-levels/${levelId}`, () => {
+        http.put(`${baseUrl}/program-levels/${levelId}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -256,7 +256,7 @@ describe('programLevelApi', () => {
       const levelId = 'non-existent';
 
       server.use(
-        http.put(`${baseUrl}/api/v2/program-levels/${levelId}`, () => {
+        http.put(`${baseUrl}/program-levels/${levelId}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -279,7 +279,7 @@ describe('programLevelApi', () => {
       let deleteCalled = false;
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/program-levels/${levelId}`, () => {
+        http.delete(`${baseUrl}/program-levels/${levelId}`, () => {
           deleteCalled = true;
           return HttpResponse.json(
             {
@@ -299,7 +299,7 @@ describe('programLevelApi', () => {
       const levelId = 'non-existent';
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/program-levels/${levelId}`, () => {
+        http.delete(`${baseUrl}/program-levels/${levelId}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -317,7 +317,7 @@ describe('programLevelApi', () => {
       const levelId = 'level-1';
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/program-levels/${levelId}`, () => {
+        http.delete(`${baseUrl}/program-levels/${levelId}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -335,7 +335,7 @@ describe('programLevelApi', () => {
       const levelId = 'level-1';
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/program-levels/${levelId}`, () => {
+        http.delete(`${baseUrl}/program-levels/${levelId}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -359,7 +359,7 @@ describe('programLevelApi', () => {
 
       server.use(
         http.patch(
-          `${baseUrl}/api/v2/program-levels/${levelId}/reorder`,
+          `${baseUrl}/program-levels/${levelId}/reorder`,
           async ({ request }) => {
             capturedRequestBody = await request.json();
             return HttpResponse.json({
@@ -389,7 +389,7 @@ describe('programLevelApi', () => {
       ];
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/program-levels/${levelId}/reorder`, () => {
+        http.patch(`${baseUrl}/program-levels/${levelId}/reorder`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -415,7 +415,7 @@ describe('programLevelApi', () => {
       ];
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/program-levels/${levelId}/reorder`, () => {
+        http.patch(`${baseUrl}/program-levels/${levelId}/reorder`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -436,7 +436,7 @@ describe('programLevelApi', () => {
       const payload = { newOrder: -1 };
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/program-levels/${levelId}/reorder`, () => {
+        http.patch(`${baseUrl}/program-levels/${levelId}/reorder`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -455,7 +455,7 @@ describe('programLevelApi', () => {
       const payload = { newOrder: 999 };
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/program-levels/${levelId}/reorder`, () => {
+        http.patch(`${baseUrl}/program-levels/${levelId}/reorder`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -474,7 +474,7 @@ describe('programLevelApi', () => {
       const payload = { newOrder: 1 };
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/program-levels/${levelId}/reorder`, () => {
+        http.patch(`${baseUrl}/program-levels/${levelId}/reorder`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -499,7 +499,7 @@ describe('programLevelApi', () => {
       ];
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/program-levels/${levelId}/reorder`, () => {
+        http.patch(`${baseUrl}/program-levels/${levelId}/reorder`, () => {
           return HttpResponse.json({
             success: true,
             data: {

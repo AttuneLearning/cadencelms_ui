@@ -68,7 +68,7 @@ describe('enrollmentApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments`, () => {
+        http.get(`${baseUrl}/enrollments`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -98,7 +98,7 @@ describe('enrollmentApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments`, ({ request }) => {
+        http.get(`${baseUrl}/enrollments`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -133,7 +133,7 @@ describe('enrollmentApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments`, () => {
+        http.get(`${baseUrl}/enrollments`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -165,7 +165,7 @@ describe('enrollmentApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments`, () => {
+        http.get(`${baseUrl}/enrollments`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -197,7 +197,7 @@ describe('enrollmentApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments`, () => {
+        http.get(`${baseUrl}/enrollments`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -228,7 +228,7 @@ describe('enrollmentApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments`, () => {
+        http.get(`${baseUrl}/enrollments`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -243,7 +243,7 @@ describe('enrollmentApi', () => {
 
     it('should handle API error', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments`, () => {
+        http.get(`${baseUrl}/enrollments`, () => {
           return HttpResponse.json(
             { success: false, message: 'Internal server error' },
             { status: 500 }
@@ -264,7 +264,7 @@ describe('enrollmentApi', () => {
       const enrollmentId = 'enrollment-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments/${enrollmentId}`, () => {
+        http.get(`${baseUrl}/enrollments/${enrollmentId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockEnrollmentDetail,
@@ -283,7 +283,7 @@ describe('enrollmentApi', () => {
       const enrollmentId = 'non-existent';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments/${enrollmentId}`, () => {
+        http.get(`${baseUrl}/enrollments/${enrollmentId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Enrollment not found' },
             { status: 404 }
@@ -298,7 +298,7 @@ describe('enrollmentApi', () => {
       const enrollmentId = 'enrollment-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments/${enrollmentId}`, () => {
+        http.get(`${baseUrl}/enrollments/${enrollmentId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Unauthorized' },
             { status: 401 }
@@ -325,7 +325,7 @@ describe('enrollmentApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.post(`${baseUrl}/api/v2/enrollments/program`, async ({ request }) => {
+        http.post(`${baseUrl}/enrollments/program`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json(
             {
@@ -355,7 +355,7 @@ describe('enrollmentApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/enrollments/program`, () => {
+        http.post(`${baseUrl}/enrollments/program`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -377,7 +377,7 @@ describe('enrollmentApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/enrollments/program`, () => {
+        http.post(`${baseUrl}/enrollments/program`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -399,7 +399,7 @@ describe('enrollmentApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/enrollments/program`, () => {
+        http.post(`${baseUrl}/enrollments/program`, () => {
           return HttpResponse.json(
             { success: false, message: 'Program or learner not found' },
             { status: 404 }
@@ -424,7 +424,7 @@ describe('enrollmentApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/enrollments/course`, () => {
+        http.post(`${baseUrl}/enrollments/course`, () => {
           return HttpResponse.json(
             {
               success: true,
@@ -449,7 +449,7 @@ describe('enrollmentApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/enrollments/course`, () => {
+        http.post(`${baseUrl}/enrollments/course`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -471,7 +471,7 @@ describe('enrollmentApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/enrollments/course`, () => {
+        http.post(`${baseUrl}/enrollments/course`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -499,7 +499,7 @@ describe('enrollmentApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/enrollments/class`, () => {
+        http.post(`${baseUrl}/enrollments/class`, () => {
           return HttpResponse.json(
             {
               success: true,
@@ -524,7 +524,7 @@ describe('enrollmentApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/enrollments/class`, () => {
+        http.post(`${baseUrl}/enrollments/class`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -546,7 +546,7 @@ describe('enrollmentApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/enrollments/class`, () => {
+        http.post(`${baseUrl}/enrollments/class`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -592,7 +592,7 @@ describe('enrollmentApi', () => {
 
       server.use(
         http.patch(
-          `${baseUrl}/api/v2/enrollments/${enrollmentId}/status`,
+          `${baseUrl}/enrollments/${enrollmentId}/status`,
           async ({ request }) => {
             capturedRequestBody = await request.json();
             return HttpResponse.json({
@@ -630,7 +630,7 @@ describe('enrollmentApi', () => {
       };
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/enrollments/${enrollmentId}/status`, () => {
+        http.patch(`${baseUrl}/enrollments/${enrollmentId}/status`, () => {
           return HttpResponse.json({
             success: true,
             message: 'Enrollment status updated successfully',
@@ -651,7 +651,7 @@ describe('enrollmentApi', () => {
       };
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/enrollments/${enrollmentId}/status`, () => {
+        http.patch(`${baseUrl}/enrollments/${enrollmentId}/status`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -673,7 +673,7 @@ describe('enrollmentApi', () => {
       };
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/enrollments/${enrollmentId}/status`, () => {
+        http.patch(`${baseUrl}/enrollments/${enrollmentId}/status`, () => {
           return HttpResponse.json(
             { success: false, message: 'Enrollment not found' },
             { status: 404 }
@@ -709,7 +709,7 @@ describe('enrollmentApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/enrollments/${enrollmentId}`, async ({ request }) => {
+        http.delete(`${baseUrl}/enrollments/${enrollmentId}`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json({
             success: true,
@@ -740,7 +740,7 @@ describe('enrollmentApi', () => {
       };
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/enrollments/${enrollmentId}`, () => {
+        http.delete(`${baseUrl}/enrollments/${enrollmentId}`, () => {
           return HttpResponse.json({
             success: true,
             message: 'Successfully withdrawn from enrollment',
@@ -758,7 +758,7 @@ describe('enrollmentApi', () => {
       const enrollmentId = 'enrollment-3';
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/enrollments/${enrollmentId}`, () => {
+        http.delete(`${baseUrl}/enrollments/${enrollmentId}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -777,7 +777,7 @@ describe('enrollmentApi', () => {
       const enrollmentId = 'enrollment-4';
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/enrollments/${enrollmentId}`, () => {
+        http.delete(`${baseUrl}/enrollments/${enrollmentId}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -845,7 +845,7 @@ describe('enrollmentApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments/program/${programId}`, () => {
+        http.get(`${baseUrl}/enrollments/program/${programId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -864,7 +864,7 @@ describe('enrollmentApi', () => {
       const programId = 'non-existent';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments/program/${programId}`, () => {
+        http.get(`${baseUrl}/enrollments/program/${programId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Program not found' },
             { status: 404 }
@@ -930,7 +930,7 @@ describe('enrollmentApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments/course/${courseId}`, () => {
+        http.get(`${baseUrl}/enrollments/course/${courseId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -949,7 +949,7 @@ describe('enrollmentApi', () => {
       const courseId = 'non-existent';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments/course/${courseId}`, () => {
+        http.get(`${baseUrl}/enrollments/course/${courseId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Course not found' },
             { status: 404 }
@@ -1032,7 +1032,7 @@ describe('enrollmentApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments/class/${classId}`, () => {
+        http.get(`${baseUrl}/enrollments/class/${classId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -1053,7 +1053,7 @@ describe('enrollmentApi', () => {
       const classId = 'non-existent';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments/class/${classId}`, () => {
+        http.get(`${baseUrl}/enrollments/class/${classId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Class not found' },
             { status: 404 }

@@ -48,7 +48,7 @@ describe('programApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/programs`, () => {
+        http.get(`${baseUrl}/programs`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -78,7 +78,7 @@ describe('programApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/programs`, ({ request }) => {
+        http.get(`${baseUrl}/programs`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -113,7 +113,7 @@ describe('programApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/programs`, () => {
+        http.get(`${baseUrl}/programs`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -146,7 +146,7 @@ describe('programApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/programs`, () => {
+        http.get(`${baseUrl}/programs`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -182,7 +182,7 @@ describe('programApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/programs`, () => {
+        http.get(`${baseUrl}/programs`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -212,7 +212,7 @@ describe('programApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/programs`, () => {
+        http.get(`${baseUrl}/programs`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -228,7 +228,7 @@ describe('programApi', () => {
 
     it('should handle API error', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/programs`, () => {
+        http.get(`${baseUrl}/programs`, () => {
           return HttpResponse.json(
             { message: 'Internal server error' },
             { status: 500 }
@@ -245,7 +245,7 @@ describe('programApi', () => {
       const programId = 'program-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/programs/${programId}`, () => {
+        http.get(`${baseUrl}/programs/${programId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockFullProgram,
@@ -263,7 +263,7 @@ describe('programApi', () => {
       const programId = 'non-existent';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/programs/${programId}`, () => {
+        http.get(`${baseUrl}/programs/${programId}`, () => {
           return HttpResponse.json(
             { message: 'Program not found' },
             { status: 404 }
@@ -278,7 +278,7 @@ describe('programApi', () => {
       const programId = 'program-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/programs/${programId}`, () => {
+        http.get(`${baseUrl}/programs/${programId}`, () => {
           return HttpResponse.json(
             { message: 'Unauthorized' },
             { status: 401 }
@@ -301,7 +301,7 @@ describe('programApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.post(`${baseUrl}/api/v2/programs`, async ({ request }) => {
+        http.post(`${baseUrl}/programs`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json(
             {
@@ -331,7 +331,7 @@ describe('programApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/programs`, () => {
+        http.post(`${baseUrl}/programs`, () => {
           return HttpResponse.json(
             {
               message: 'Validation failed',
@@ -349,7 +349,7 @@ describe('programApi', () => {
 
     it('should handle duplicate code error', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/programs`, () => {
+        http.post(`${baseUrl}/programs`, () => {
           return HttpResponse.json(
             { message: 'Program code already exists' },
             { status: 409 }
@@ -382,7 +382,7 @@ describe('programApi', () => {
       });
 
       server.use(
-        http.post(`${baseUrl}/api/v2/programs`, () => {
+        http.post(`${baseUrl}/programs`, () => {
           return HttpResponse.json(
             {
               success: true,
@@ -410,7 +410,7 @@ describe('programApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.put(`${baseUrl}/api/v2/programs/${programId}`, async ({ request }) => {
+        http.put(`${baseUrl}/programs/${programId}`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json({
             success: true,
@@ -434,7 +434,7 @@ describe('programApi', () => {
       const updatedProgram = { ...mockFullProgram, name: 'Updated Name' };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/programs/${programId}`, () => {
+        http.put(`${baseUrl}/programs/${programId}`, () => {
           return HttpResponse.json({
             success: true,
             data: updatedProgram,
@@ -451,7 +451,7 @@ describe('programApi', () => {
       const programId = 'non-existent';
 
       server.use(
-        http.put(`${baseUrl}/api/v2/programs/${programId}`, () => {
+        http.put(`${baseUrl}/programs/${programId}`, () => {
           return HttpResponse.json(
             { message: 'Program not found' },
             { status: 404 }
@@ -468,7 +468,7 @@ describe('programApi', () => {
       const programId = 'program-1';
 
       server.use(
-        http.put(`${baseUrl}/api/v2/programs/${programId}`, () => {
+        http.put(`${baseUrl}/programs/${programId}`, () => {
           return HttpResponse.json(
             {
               message: 'Validation failed',
@@ -493,7 +493,7 @@ describe('programApi', () => {
       let deleteCalled = false;
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/programs/${programId}`, () => {
+        http.delete(`${baseUrl}/programs/${programId}`, () => {
           deleteCalled = true;
           return HttpResponse.json({}, { status: 204 });
         })
@@ -508,7 +508,7 @@ describe('programApi', () => {
       const programId = 'non-existent';
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/programs/${programId}`, () => {
+        http.delete(`${baseUrl}/programs/${programId}`, () => {
           return HttpResponse.json(
             { message: 'Program not found' },
             { status: 404 }
@@ -523,7 +523,7 @@ describe('programApi', () => {
       const programId = 'program-1';
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/programs/${programId}`, () => {
+        http.delete(`${baseUrl}/programs/${programId}`, () => {
           return HttpResponse.json(
             { message: 'Cannot delete program with active enrollments' },
             { status: 403 }
@@ -541,7 +541,7 @@ describe('programApi', () => {
       const publishedProgram = { ...mockFullProgram, isPublished: true };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/programs/${programId}`, async ({ request }) => {
+        http.put(`${baseUrl}/programs/${programId}`, async ({ request }) => {
           const body = await request.json() as any;
           expect(body.isPublished).toBe(true);
           return HttpResponse.json({
@@ -560,7 +560,7 @@ describe('programApi', () => {
       const programId = 'program-1';
 
       server.use(
-        http.put(`${baseUrl}/api/v2/programs/${programId}`, () => {
+        http.put(`${baseUrl}/programs/${programId}`, () => {
           return HttpResponse.json(
             { message: 'Cannot publish program without courses' },
             { status: 400 }
@@ -578,7 +578,7 @@ describe('programApi', () => {
       const unpublishedProgram = { ...mockFullProgram, isPublished: false };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/programs/${programId}`, async ({ request }) => {
+        http.put(`${baseUrl}/programs/${programId}`, async ({ request }) => {
           const body = await request.json() as any;
           expect(body.isPublished).toBe(false);
           return HttpResponse.json({
@@ -597,7 +597,7 @@ describe('programApi', () => {
       const programId = 'program-1';
 
       server.use(
-        http.put(`${baseUrl}/api/v2/programs/${programId}`, () => {
+        http.put(`${baseUrl}/programs/${programId}`, () => {
           return HttpResponse.json(
             { message: 'Program not found' },
             { status: 404 }
@@ -619,13 +619,13 @@ describe('programApi', () => {
       });
 
       server.use(
-        http.get(`${baseUrl}/api/v2/programs/${programId}`, () => {
+        http.get(`${baseUrl}/programs/${programId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockFullProgram,
           });
         }),
-        http.post(`${baseUrl}/api/v2/programs`, async ({ request }) => {
+        http.post(`${baseUrl}/programs`, async ({ request }) => {
           const body = await request.json() as any;
           expect(body.name).toContain('(Copy)');
           expect(body.code).toContain('COPY');
@@ -651,7 +651,7 @@ describe('programApi', () => {
       const programId = 'non-existent';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/programs/${programId}`, () => {
+        http.get(`${baseUrl}/programs/${programId}`, () => {
           return HttpResponse.json(
             { message: 'Program not found' },
             { status: 404 }
@@ -666,13 +666,13 @@ describe('programApi', () => {
       const programId = 'program-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/programs/${programId}`, () => {
+        http.get(`${baseUrl}/programs/${programId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockFullProgram,
           });
         }),
-        http.post(`${baseUrl}/api/v2/programs`, () => {
+        http.post(`${baseUrl}/programs`, () => {
           return HttpResponse.json(
             { message: 'Failed to create duplicate' },
             { status: 500 }
@@ -694,7 +694,7 @@ describe('programApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/programs/${programId}/levels`, () => {
+        http.get(`${baseUrl}/programs/${programId}/levels`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -718,7 +718,7 @@ describe('programApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/programs/${programId}/levels`, () => {
+        http.get(`${baseUrl}/programs/${programId}/levels`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -735,7 +735,7 @@ describe('programApi', () => {
       const programId = 'non-existent';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/programs/${programId}/levels`, () => {
+        http.get(`${baseUrl}/programs/${programId}/levels`, () => {
           return HttpResponse.json(
             { message: 'Program not found' },
             { status: 404 }
@@ -765,7 +765,7 @@ describe('programApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/programs/${programId}/enrollments`, () => {
+        http.get(`${baseUrl}/programs/${programId}/enrollments`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -800,7 +800,7 @@ describe('programApi', () => {
 
       server.use(
         http.get(
-          `${baseUrl}/api/v2/programs/${programId}/enrollments`,
+          `${baseUrl}/programs/${programId}/enrollments`,
           ({ request }) => {
             capturedParams = new URL(request.url).searchParams;
             return HttpResponse.json({
@@ -843,7 +843,7 @@ describe('programApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/programs/${programId}/enrollments`, () => {
+        http.get(`${baseUrl}/programs/${programId}/enrollments`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -876,7 +876,7 @@ describe('programApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/programs/${programId}/enrollments`, () => {
+        http.get(`${baseUrl}/programs/${programId}/enrollments`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -893,7 +893,7 @@ describe('programApi', () => {
       const programId = 'non-existent';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/programs/${programId}/enrollments`, () => {
+        http.get(`${baseUrl}/programs/${programId}/enrollments`, () => {
           return HttpResponse.json(
             { message: 'Program not found' },
             { status: 404 }

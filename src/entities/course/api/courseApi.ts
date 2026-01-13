@@ -36,7 +36,7 @@ interface ApiResponse<T> {
 // =====================
 
 /**
- * GET /api/v2/courses - List all courses
+ * GET /courses - List all courses
  */
 export async function listCourses(filters?: CourseFilters): Promise<CoursesListResponse> {
   const response = await client.get<ApiResponse<CoursesListResponse>>(
@@ -47,15 +47,15 @@ export async function listCourses(filters?: CourseFilters): Promise<CoursesListR
 }
 
 /**
- * GET /api/v2/courses/:id - Get course details
+ * GET /courses/:id - Get course details
  */
 export async function getCourse(id: string): Promise<Course> {
-  const response = await client.get<ApiResponse<Course>>(`/api/v2/courses/${id}`);
+  const response = await client.get<ApiResponse<Course>>(`/courses/${id}`);
   return response.data.data;
 }
 
 /**
- * POST /api/v2/courses - Create new course
+ * POST /courses - Create new course
  */
 export async function createCourse(payload: CreateCoursePayload): Promise<Course> {
   const response = await client.post<ApiResponse<Course>>('/courses', payload);
@@ -63,97 +63,97 @@ export async function createCourse(payload: CreateCoursePayload): Promise<Course
 }
 
 /**
- * PUT /api/v2/courses/:id - Update course (full)
+ * PUT /courses/:id - Update course (full)
  */
 export async function updateCourse(id: string, payload: UpdateCoursePayload): Promise<Course> {
-  const response = await client.put<ApiResponse<Course>>(`/api/v2/courses/${id}`, payload);
+  const response = await client.put<ApiResponse<Course>>(`/courses/${id}`, payload);
   return response.data.data;
 }
 
 /**
- * PATCH /api/v2/courses/:id - Update course (partial)
+ * PATCH /courses/:id - Update course (partial)
  */
 export async function patchCourse(id: string, payload: PatchCoursePayload): Promise<Course> {
-  const response = await client.patch<ApiResponse<Course>>(`/api/v2/courses/${id}`, payload);
+  const response = await client.patch<ApiResponse<Course>>(`/courses/${id}`, payload);
   return response.data.data;
 }
 
 /**
- * DELETE /api/v2/courses/:id - Delete course
+ * DELETE /courses/:id - Delete course
  */
 export async function deleteCourse(id: string): Promise<void> {
-  await client.delete(`/api/v2/courses/${id}`);
+  await client.delete(`/courses/${id}`);
 }
 
 /**
- * POST /api/v2/courses/:id/publish - Publish course
+ * POST /courses/:id/publish - Publish course
  */
 export async function publishCourse(
   id: string,
   payload?: PublishCoursePayload
 ): Promise<CourseStatusResponse> {
   const response = await client.post<ApiResponse<CourseStatusResponse>>(
-    `/api/v2/courses/${id}/publish`,
+    `/courses/${id}/publish`,
     payload || {}
   );
   return response.data.data;
 }
 
 /**
- * POST /api/v2/courses/:id/unpublish - Unpublish course
+ * POST /courses/:id/unpublish - Unpublish course
  */
 export async function unpublishCourse(
   id: string,
   payload?: UnpublishCoursePayload
 ): Promise<CourseStatusResponse> {
   const response = await client.post<ApiResponse<CourseStatusResponse>>(
-    `/api/v2/courses/${id}/unpublish`,
+    `/courses/${id}/unpublish`,
     payload || {}
   );
   return response.data.data;
 }
 
 /**
- * POST /api/v2/courses/:id/archive - Archive course
+ * POST /courses/:id/archive - Archive course
  */
 export async function archiveCourse(
   id: string,
   payload?: ArchiveCoursePayload
 ): Promise<CourseStatusResponse> {
   const response = await client.post<ApiResponse<CourseStatusResponse>>(
-    `/api/v2/courses/${id}/archive`,
+    `/courses/${id}/archive`,
     payload || {}
   );
   return response.data.data;
 }
 
 /**
- * POST /api/v2/courses/:id/unarchive - Unarchive course
+ * POST /courses/:id/unarchive - Unarchive course
  */
 export async function unarchiveCourse(id: string): Promise<CourseStatusResponse> {
   const response = await client.post<ApiResponse<CourseStatusResponse>>(
-    `/api/v2/courses/${id}/unarchive`,
+    `/courses/${id}/unarchive`,
     {}
   );
   return response.data.data;
 }
 
 /**
- * POST /api/v2/courses/:id/duplicate - Duplicate course
+ * POST /courses/:id/duplicate - Duplicate course
  */
 export async function duplicateCourse(
   id: string,
   payload: DuplicateCoursePayload
 ): Promise<DuplicateCourseResponse> {
   const response = await client.post<ApiResponse<DuplicateCourseResponse>>(
-    `/api/v2/courses/${id}/duplicate`,
+    `/courses/${id}/duplicate`,
     payload
   );
   return response.data.data;
 }
 
 /**
- * GET /api/v2/courses/:id/export - Export course
+ * GET /courses/:id/export - Export course
  */
 export async function exportCourse(
   id: string,
@@ -162,7 +162,7 @@ export async function exportCourse(
   includeAssessments: boolean = true
 ): Promise<ExportCourseResponse> {
   const response = await client.get<ApiResponse<ExportCourseResponse>>(
-    `/api/v2/courses/${id}/export`,
+    `/courses/${id}/export`,
     {
       params: {
         format,
@@ -175,7 +175,7 @@ export async function exportCourse(
 }
 
 /**
- * PATCH /api/v2/courses/:id/department - Move course to different department
+ * PATCH /courses/:id/department - Move course to different department
  */
 export async function moveDepartment(
   id: string,
@@ -183,12 +183,12 @@ export async function moveDepartment(
 ): Promise<{ id: string; department: { id: string; name: string } }> {
   const response = await client.patch<
     ApiResponse<{ id: string; department: { id: string; name: string } }>
-  >(`/api/v2/courses/${id}/department`, payload);
+  >(`/courses/${id}/department`, payload);
   return response.data.data;
 }
 
 /**
- * PATCH /api/v2/courses/:id/program - Assign course to program
+ * PATCH /courses/:id/program - Assign course to program
  */
 export async function assignProgram(
   id: string,
@@ -196,6 +196,6 @@ export async function assignProgram(
 ): Promise<{ id: string; program: { id: string; name: string } | null }> {
   const response = await client.patch<
     ApiResponse<{ id: string; program: { id: string; name: string } | null }>
-  >(`/api/v2/courses/${id}/program`, payload);
+  >(`/courses/${id}/program`, payload);
   return response.data.data;
 }

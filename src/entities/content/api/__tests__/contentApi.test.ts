@@ -48,7 +48,7 @@ describe('contentApi', () => {
     describe('listContent', () => {
       it('should fetch paginated list of all content without filters', async () => {
         server.use(
-          http.get(`${baseUrl}/api/v2/content`, () => {
+          http.get(`${baseUrl}/content`, () => {
             return HttpResponse.json({
               success: true,
               data: mockContentListResponse,
@@ -78,7 +78,7 @@ describe('contentApi', () => {
         let capturedParams: URLSearchParams | null = null;
 
         server.use(
-          http.get(`${baseUrl}/api/v2/content`, ({ request }) => {
+          http.get(`${baseUrl}/content`, ({ request }) => {
             capturedParams = new URL(request.url).searchParams;
             return HttpResponse.json({
               success: true,
@@ -111,7 +111,7 @@ describe('contentApi', () => {
         };
 
         server.use(
-          http.get(`${baseUrl}/api/v2/content`, () => {
+          http.get(`${baseUrl}/content`, () => {
             return HttpResponse.json({
               success: true,
               data: mockResponse,
@@ -141,7 +141,7 @@ describe('contentApi', () => {
         };
 
         server.use(
-          http.get(`${baseUrl}/api/v2/content`, () => {
+          http.get(`${baseUrl}/content`, () => {
             return HttpResponse.json({
               success: true,
               data: mockResponse,
@@ -169,7 +169,7 @@ describe('contentApi', () => {
         };
 
         server.use(
-          http.get(`${baseUrl}/api/v2/content`, () => {
+          http.get(`${baseUrl}/content`, () => {
             return HttpResponse.json({
               success: true,
               data: mockResponse,
@@ -200,7 +200,7 @@ describe('contentApi', () => {
         };
 
         server.use(
-          http.get(`${baseUrl}/api/v2/content`, () => {
+          http.get(`${baseUrl}/content`, () => {
             return HttpResponse.json({
               success: true,
               data: mockResponse,
@@ -227,7 +227,7 @@ describe('contentApi', () => {
         };
 
         server.use(
-          http.get(`${baseUrl}/api/v2/content`, () => {
+          http.get(`${baseUrl}/content`, () => {
             return HttpResponse.json({
               success: true,
               data: mockResponse,
@@ -243,7 +243,7 @@ describe('contentApi', () => {
 
       it('should handle API error', async () => {
         server.use(
-          http.get(`${baseUrl}/api/v2/content`, () => {
+          http.get(`${baseUrl}/content`, () => {
             return HttpResponse.json(
               { message: 'Internal server error' },
               { status: 500 }
@@ -260,7 +260,7 @@ describe('contentApi', () => {
         const contentId = 'content-1';
 
         server.use(
-          http.get(`${baseUrl}/api/v2/content/${contentId}`, () => {
+          http.get(`${baseUrl}/content/${contentId}`, () => {
             return HttpResponse.json({
               success: true,
               data: mockContents[0],
@@ -278,7 +278,7 @@ describe('contentApi', () => {
         const contentId = 'non-existent';
 
         server.use(
-          http.get(`${baseUrl}/api/v2/content/${contentId}`, () => {
+          http.get(`${baseUrl}/content/${contentId}`, () => {
             return HttpResponse.json(
               { message: 'Content not found' },
               { status: 404 }
@@ -293,7 +293,7 @@ describe('contentApi', () => {
         const contentId = 'content-1';
 
         server.use(
-          http.get(`${baseUrl}/api/v2/content/${contentId}`, () => {
+          http.get(`${baseUrl}/content/${contentId}`, () => {
             return HttpResponse.json(
               { message: 'Unauthorized' },
               { status: 401 }
@@ -310,7 +310,7 @@ describe('contentApi', () => {
     describe('listScormPackages', () => {
       it('should fetch paginated list of SCORM packages without filters', async () => {
         server.use(
-          http.get(`${baseUrl}/api/v2/content/scorm`, () => {
+          http.get(`${baseUrl}/content/scorm`, () => {
             return HttpResponse.json({
               success: true,
               data: mockScormPackagesListResponse,
@@ -338,7 +338,7 @@ describe('contentApi', () => {
         };
 
         server.use(
-          http.get(`${baseUrl}/api/v2/content/scorm`, () => {
+          http.get(`${baseUrl}/content/scorm`, () => {
             return HttpResponse.json({
               success: true,
               data: mockResponse,
@@ -369,7 +369,7 @@ describe('contentApi', () => {
         };
 
         server.use(
-          http.get(`${baseUrl}/api/v2/content/scorm`, () => {
+          http.get(`${baseUrl}/content/scorm`, () => {
             return HttpResponse.json({
               success: true,
               data: mockResponse,
@@ -400,7 +400,7 @@ describe('contentApi', () => {
         };
 
         server.use(
-          http.get(`${baseUrl}/api/v2/content/scorm`, () => {
+          http.get(`${baseUrl}/content/scorm`, () => {
             return HttpResponse.json({
               success: true,
               data: mockResponse,
@@ -415,7 +415,7 @@ describe('contentApi', () => {
 
       it('should handle API error', async () => {
         server.use(
-          http.get(`${baseUrl}/api/v2/content/scorm`, () => {
+          http.get(`${baseUrl}/content/scorm`, () => {
             return HttpResponse.json(
               { message: 'Internal server error' },
               { status: 500 }
@@ -440,7 +440,7 @@ describe('contentApi', () => {
         let capturedFormData: FormData | null = null;
 
         server.use(
-          http.post(`${baseUrl}/api/v2/content/scorm`, async ({ request }) => {
+          http.post(`${baseUrl}/content/scorm`, async ({ request }) => {
             capturedFormData = await request.formData();
             return HttpResponse.json(
               {
@@ -474,7 +474,7 @@ describe('contentApi', () => {
         let capturedFormData: FormData | null = null;
 
         server.use(
-          http.post(`${baseUrl}/api/v2/content/scorm`, async ({ request }) => {
+          http.post(`${baseUrl}/content/scorm`, async ({ request }) => {
             capturedFormData = await request.formData();
             return HttpResponse.json(
               {
@@ -498,7 +498,7 @@ describe('contentApi', () => {
         const progressCallback = vi.fn();
 
         server.use(
-          http.post(`${baseUrl}/api/v2/content/scorm`, () => {
+          http.post(`${baseUrl}/content/scorm`, () => {
             return HttpResponse.json(
               {
                 success: true,
@@ -522,7 +522,7 @@ describe('contentApi', () => {
         let capturedFormData: FormData | null = null;
 
         server.use(
-          http.post(`${baseUrl}/api/v2/content/scorm`, async ({ request }) => {
+          http.post(`${baseUrl}/content/scorm`, async ({ request }) => {
             capturedFormData = await request.formData();
             return HttpResponse.json(
               {
@@ -547,7 +547,7 @@ describe('contentApi', () => {
         const payload = { file };
 
         server.use(
-          http.post(`${baseUrl}/api/v2/content/scorm`, () => {
+          http.post(`${baseUrl}/content/scorm`, () => {
             return HttpResponse.json(
               {
                 message: 'Validation failed',
@@ -568,7 +568,7 @@ describe('contentApi', () => {
         const payload = { file };
 
         server.use(
-          http.post(`${baseUrl}/api/v2/content/scorm`, () => {
+          http.post(`${baseUrl}/content/scorm`, () => {
             return HttpResponse.json(
               { message: 'Internal server error' },
               { status: 500 }
@@ -585,7 +585,7 @@ describe('contentApi', () => {
         const packageId = 'scorm-1';
 
         server.use(
-          http.get(`${baseUrl}/api/v2/content/scorm/${packageId}`, () => {
+          http.get(`${baseUrl}/content/scorm/${packageId}`, () => {
             return HttpResponse.json({
               success: true,
               data: mockScormPackages[0],
@@ -603,7 +603,7 @@ describe('contentApi', () => {
         const packageId = 'non-existent';
 
         server.use(
-          http.get(`${baseUrl}/api/v2/content/scorm/${packageId}`, () => {
+          http.get(`${baseUrl}/content/scorm/${packageId}`, () => {
             return HttpResponse.json(
               { message: 'SCORM package not found' },
               { status: 404 }
@@ -632,7 +632,7 @@ describe('contentApi', () => {
         let capturedRequestBody: any = null;
 
         server.use(
-          http.put(`${baseUrl}/api/v2/content/scorm/${packageId}`, async ({ request }) => {
+          http.put(`${baseUrl}/content/scorm/${packageId}`, async ({ request }) => {
             capturedRequestBody = await request.json();
             return HttpResponse.json({
               success: true,
@@ -654,7 +654,7 @@ describe('contentApi', () => {
         const updatedPackage = { ...mockScormPackages[0], title: 'Updated Title Only' };
 
         server.use(
-          http.put(`${baseUrl}/api/v2/content/scorm/${packageId}`, () => {
+          http.put(`${baseUrl}/content/scorm/${packageId}`, () => {
             return HttpResponse.json({
               success: true,
               data: updatedPackage,
@@ -672,7 +672,7 @@ describe('contentApi', () => {
         const payload = { departmentId: 'invalid-dept' };
 
         server.use(
-          http.put(`${baseUrl}/api/v2/content/scorm/${packageId}`, () => {
+          http.put(`${baseUrl}/content/scorm/${packageId}`, () => {
             return HttpResponse.json(
               {
                 message: 'Validation failed',
@@ -695,7 +695,7 @@ describe('contentApi', () => {
         const payload = { title: 'Updated' };
 
         server.use(
-          http.put(`${baseUrl}/api/v2/content/scorm/${packageId}`, () => {
+          http.put(`${baseUrl}/content/scorm/${packageId}`, () => {
             return HttpResponse.json(
               { message: 'SCORM package not found' },
               { status: 404 }
@@ -715,7 +715,7 @@ describe('contentApi', () => {
         let deleteCalled = false;
 
         server.use(
-          http.delete(`${baseUrl}/api/v2/content/scorm/${packageId}`, () => {
+          http.delete(`${baseUrl}/content/scorm/${packageId}`, () => {
             deleteCalled = true;
             return HttpResponse.json({}, { status: 204 });
           })
@@ -730,7 +730,7 @@ describe('contentApi', () => {
         const packageId = 'non-existent';
 
         server.use(
-          http.delete(`${baseUrl}/api/v2/content/scorm/${packageId}`, () => {
+          http.delete(`${baseUrl}/content/scorm/${packageId}`, () => {
             return HttpResponse.json(
               { message: 'SCORM package not found' },
               { status: 404 }
@@ -745,7 +745,7 @@ describe('contentApi', () => {
         const packageId = 'scorm-1';
 
         server.use(
-          http.delete(`${baseUrl}/api/v2/content/scorm/${packageId}`, () => {
+          http.delete(`${baseUrl}/content/scorm/${packageId}`, () => {
             return HttpResponse.json(
               { message: 'Cannot delete package in use by courses' },
               { status: 403 }
@@ -762,7 +762,7 @@ describe('contentApi', () => {
         const packageId = 'scorm-1';
 
         server.use(
-          http.post(`${baseUrl}/api/v2/content/scorm/${packageId}/launch`, () => {
+          http.post(`${baseUrl}/content/scorm/${packageId}/launch`, () => {
             return HttpResponse.json({
               success: true,
               data: mockScormLaunchResponse,
@@ -786,7 +786,7 @@ describe('contentApi', () => {
 
         server.use(
           http.post(
-            `${baseUrl}/api/v2/content/scorm/${packageId}/launch`,
+            `${baseUrl}/content/scorm/${packageId}/launch`,
             async ({ request }) => {
               capturedRequestBody = await request.json();
               return HttpResponse.json({
@@ -813,7 +813,7 @@ describe('contentApi', () => {
         };
 
         server.use(
-          http.post(`${baseUrl}/api/v2/content/scorm/${packageId}/launch`, () => {
+          http.post(`${baseUrl}/content/scorm/${packageId}/launch`, () => {
             return HttpResponse.json({
               success: true,
               data: resumeLaunchResponse,
@@ -830,7 +830,7 @@ describe('contentApi', () => {
         const packageId = 'scorm-3';
 
         server.use(
-          http.post(`${baseUrl}/api/v2/content/scorm/${packageId}/launch`, () => {
+          http.post(`${baseUrl}/content/scorm/${packageId}/launch`, () => {
             return HttpResponse.json(
               { message: 'Cannot launch unpublished SCORM package' },
               { status: 400 }
@@ -845,7 +845,7 @@ describe('contentApi', () => {
         const packageId = 'non-existent';
 
         server.use(
-          http.post(`${baseUrl}/api/v2/content/scorm/${packageId}/launch`, () => {
+          http.post(`${baseUrl}/content/scorm/${packageId}/launch`, () => {
             return HttpResponse.json(
               { message: 'SCORM package not found' },
               { status: 404 }
@@ -862,7 +862,7 @@ describe('contentApi', () => {
         const packageId = 'scorm-3';
 
         server.use(
-          http.post(`${baseUrl}/api/v2/content/scorm/${packageId}/publish`, () => {
+          http.post(`${baseUrl}/content/scorm/${packageId}/publish`, () => {
             return HttpResponse.json({
               success: true,
               data: mockPublishScormPackageResponse,
@@ -885,7 +885,7 @@ describe('contentApi', () => {
 
         server.use(
           http.post(
-            `${baseUrl}/api/v2/content/scorm/${packageId}/publish`,
+            `${baseUrl}/content/scorm/${packageId}/publish`,
             async ({ request }) => {
               capturedRequestBody = await request.json();
               return HttpResponse.json({
@@ -909,7 +909,7 @@ describe('contentApi', () => {
         const packageId = 'scorm-1';
 
         server.use(
-          http.post(`${baseUrl}/api/v2/content/scorm/${packageId}/publish`, () => {
+          http.post(`${baseUrl}/content/scorm/${packageId}/publish`, () => {
             return HttpResponse.json(
               { message: 'SCORM package already published' },
               { status: 400 }
@@ -924,7 +924,7 @@ describe('contentApi', () => {
         const packageId = 'non-existent';
 
         server.use(
-          http.post(`${baseUrl}/api/v2/content/scorm/${packageId}/publish`, () => {
+          http.post(`${baseUrl}/content/scorm/${packageId}/publish`, () => {
             return HttpResponse.json(
               { message: 'SCORM package not found' },
               { status: 404 }
@@ -941,7 +941,7 @@ describe('contentApi', () => {
         const packageId = 'scorm-1';
 
         server.use(
-          http.post(`${baseUrl}/api/v2/content/scorm/${packageId}/unpublish`, () => {
+          http.post(`${baseUrl}/content/scorm/${packageId}/unpublish`, () => {
             return HttpResponse.json({
               success: true,
               data: mockUnpublishScormPackageResponse,
@@ -960,7 +960,7 @@ describe('contentApi', () => {
         const packageId = 'scorm-3';
 
         server.use(
-          http.post(`${baseUrl}/api/v2/content/scorm/${packageId}/unpublish`, () => {
+          http.post(`${baseUrl}/content/scorm/${packageId}/unpublish`, () => {
             return HttpResponse.json(
               { message: 'SCORM package already unpublished' },
               { status: 400 }
@@ -975,7 +975,7 @@ describe('contentApi', () => {
         const packageId = 'non-existent';
 
         server.use(
-          http.post(`${baseUrl}/api/v2/content/scorm/${packageId}/unpublish`, () => {
+          http.post(`${baseUrl}/content/scorm/${packageId}/unpublish`, () => {
             return HttpResponse.json(
               { message: 'SCORM package not found' },
               { status: 404 }
@@ -990,7 +990,7 @@ describe('contentApi', () => {
         const packageId = 'scorm-1';
 
         server.use(
-          http.post(`${baseUrl}/api/v2/content/scorm/${packageId}/unpublish`, () => {
+          http.post(`${baseUrl}/content/scorm/${packageId}/unpublish`, () => {
             return HttpResponse.json(
               { message: 'Cannot unpublish package in use by courses' },
               { status: 403 }
@@ -1007,7 +1007,7 @@ describe('contentApi', () => {
     describe('listMediaFiles', () => {
       it('should fetch paginated list of media files without filters', async () => {
         server.use(
-          http.get(`${baseUrl}/api/v2/content/media`, () => {
+          http.get(`${baseUrl}/content/media`, () => {
             return HttpResponse.json({
               success: true,
               data: mockMediaFilesListResponse,
@@ -1035,7 +1035,7 @@ describe('contentApi', () => {
         };
 
         server.use(
-          http.get(`${baseUrl}/api/v2/content/media`, () => {
+          http.get(`${baseUrl}/content/media`, () => {
             return HttpResponse.json({
               success: true,
               data: mockResponse,
@@ -1064,7 +1064,7 @@ describe('contentApi', () => {
         };
 
         server.use(
-          http.get(`${baseUrl}/api/v2/content/media`, () => {
+          http.get(`${baseUrl}/content/media`, () => {
             return HttpResponse.json({
               success: true,
               data: mockResponse,
@@ -1095,7 +1095,7 @@ describe('contentApi', () => {
         };
 
         server.use(
-          http.get(`${baseUrl}/api/v2/content/media`, () => {
+          http.get(`${baseUrl}/content/media`, () => {
             return HttpResponse.json({
               success: true,
               data: mockResponse,
@@ -1110,7 +1110,7 @@ describe('contentApi', () => {
 
       it('should handle API error', async () => {
         server.use(
-          http.get(`${baseUrl}/api/v2/content/media`, () => {
+          http.get(`${baseUrl}/content/media`, () => {
             return HttpResponse.json(
               { message: 'Internal server error' },
               { status: 500 }
@@ -1136,7 +1136,7 @@ describe('contentApi', () => {
         let capturedFormData: FormData | null = null;
 
         server.use(
-          http.post(`${baseUrl}/api/v2/content/media`, async ({ request }) => {
+          http.post(`${baseUrl}/content/media`, async ({ request }) => {
             capturedFormData = await request.formData();
             return HttpResponse.json(
               {
@@ -1167,7 +1167,7 @@ describe('contentApi', () => {
         const progressCallback = vi.fn();
 
         server.use(
-          http.post(`${baseUrl}/api/v2/content/media`, () => {
+          http.post(`${baseUrl}/content/media`, () => {
             return HttpResponse.json(
               {
                 success: true,
@@ -1194,7 +1194,7 @@ describe('contentApi', () => {
         let capturedFormData: FormData | null = null;
 
         server.use(
-          http.post(`${baseUrl}/api/v2/content/media`, async ({ request }) => {
+          http.post(`${baseUrl}/content/media`, async ({ request }) => {
             capturedFormData = await request.formData();
             return HttpResponse.json(
               {
@@ -1221,7 +1221,7 @@ describe('contentApi', () => {
         };
 
         server.use(
-          http.post(`${baseUrl}/api/v2/content/media`, () => {
+          http.post(`${baseUrl}/content/media`, () => {
             return HttpResponse.json(
               {
                 message: 'Validation failed',
@@ -1246,7 +1246,7 @@ describe('contentApi', () => {
         };
 
         server.use(
-          http.post(`${baseUrl}/api/v2/content/media`, () => {
+          http.post(`${baseUrl}/content/media`, () => {
             return HttpResponse.json(
               { message: 'Internal server error' },
               { status: 500 }
@@ -1263,7 +1263,7 @@ describe('contentApi', () => {
         const mediaId = 'media-1';
 
         server.use(
-          http.get(`${baseUrl}/api/v2/content/media/${mediaId}`, () => {
+          http.get(`${baseUrl}/content/media/${mediaId}`, () => {
             return HttpResponse.json({
               success: true,
               data: mockMediaFiles[0],
@@ -1281,7 +1281,7 @@ describe('contentApi', () => {
         const mediaId = 'non-existent';
 
         server.use(
-          http.get(`${baseUrl}/api/v2/content/media/${mediaId}`, () => {
+          http.get(`${baseUrl}/content/media/${mediaId}`, () => {
             return HttpResponse.json(
               { message: 'Media file not found' },
               { status: 404 }
@@ -1310,7 +1310,7 @@ describe('contentApi', () => {
         let capturedRequestBody: any = null;
 
         server.use(
-          http.put(`${baseUrl}/api/v2/content/media/${mediaId}`, async ({ request }) => {
+          http.put(`${baseUrl}/content/media/${mediaId}`, async ({ request }) => {
             capturedRequestBody = await request.json();
             return HttpResponse.json({
               success: true,
@@ -1332,7 +1332,7 @@ describe('contentApi', () => {
         const updatedMedia = { ...mockMediaFiles[0], title: 'Updated Title Only' };
 
         server.use(
-          http.put(`${baseUrl}/api/v2/content/media/${mediaId}`, () => {
+          http.put(`${baseUrl}/content/media/${mediaId}`, () => {
             return HttpResponse.json({
               success: true,
               data: updatedMedia,
@@ -1350,7 +1350,7 @@ describe('contentApi', () => {
         const payload = { title: 'Updated' };
 
         server.use(
-          http.put(`${baseUrl}/api/v2/content/media/${mediaId}`, () => {
+          http.put(`${baseUrl}/content/media/${mediaId}`, () => {
             return HttpResponse.json(
               { message: 'Media file not found' },
               { status: 404 }
@@ -1368,7 +1368,7 @@ describe('contentApi', () => {
         let deleteCalled = false;
 
         server.use(
-          http.delete(`${baseUrl}/api/v2/content/media/${mediaId}`, () => {
+          http.delete(`${baseUrl}/content/media/${mediaId}`, () => {
             deleteCalled = true;
             return HttpResponse.json({}, { status: 204 });
           })
@@ -1383,7 +1383,7 @@ describe('contentApi', () => {
         const mediaId = 'non-existent';
 
         server.use(
-          http.delete(`${baseUrl}/api/v2/content/media/${mediaId}`, () => {
+          http.delete(`${baseUrl}/content/media/${mediaId}`, () => {
             return HttpResponse.json(
               { message: 'Media file not found' },
               { status: 404 }
@@ -1398,7 +1398,7 @@ describe('contentApi', () => {
         const mediaId = 'media-1';
 
         server.use(
-          http.delete(`${baseUrl}/api/v2/content/media/${mediaId}`, () => {
+          http.delete(`${baseUrl}/content/media/${mediaId}`, () => {
             return HttpResponse.json(
               { message: 'Cannot delete media file in use by courses' },
               { status: 403 }

@@ -61,7 +61,7 @@ describe('useExamAttempts hooks', () => {
   describe('useExamAttempts', () => {
     it('should fetch list of exam attempts', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/exam-attempts`, () => {
+        http.get(`${baseUrl}/exam-attempts`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -91,7 +91,7 @@ describe('useExamAttempts hooks', () => {
 
     it('should filter by examId', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/exam-attempts`, ({ request }) => {
+        http.get(`${baseUrl}/exam-attempts`, ({ request }) => {
           const url = new URL(request.url);
           expect(url.searchParams.get('examId')).toBe('exam-1');
 
@@ -123,7 +123,7 @@ describe('useExamAttempts hooks', () => {
   describe('useExamAttempt', () => {
     it('should fetch single exam attempt', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/exam-attempts/${mockStartedAttempt.id}`, () => {
+        http.get(`${baseUrl}/exam-attempts/${mockStartedAttempt.id}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockStartedAttempt,
@@ -153,7 +153,7 @@ describe('useExamAttempts hooks', () => {
   describe('useStartExamAttempt', () => {
     it('should start a new exam attempt', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/exam-attempts`, () => {
+        http.post(`${baseUrl}/exam-attempts`, () => {
           return HttpResponse.json({
             success: true,
             message: 'Exam attempt started successfully',
@@ -175,7 +175,7 @@ describe('useExamAttempts hooks', () => {
 
     it('should handle error when starting attempt', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/exam-attempts`, () => {
+        http.post(`${baseUrl}/exam-attempts`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -199,7 +199,7 @@ describe('useExamAttempts hooks', () => {
   describe('useSaveAnswer', () => {
     it('should save answer with optimistic update', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/exam-attempts/attempt-1/answers`, () => {
+        http.post(`${baseUrl}/exam-attempts/attempt-1/answers`, () => {
           return HttpResponse.json({
             success: true,
             message: 'Answers saved successfully',
@@ -226,7 +226,7 @@ describe('useExamAttempts hooks', () => {
   describe('useSubmitExamAttempt', () => {
     it('should submit exam attempt', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/exam-attempts/attempt-1/submit`, () => {
+        http.post(`${baseUrl}/exam-attempts/attempt-1/submit`, () => {
           return HttpResponse.json({
             success: true,
             message: 'Exam submitted successfully',
@@ -248,7 +248,7 @@ describe('useExamAttempts hooks', () => {
 
     it('should handle already submitted error', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/exam-attempts/attempt-1/submit`, () => {
+        http.post(`${baseUrl}/exam-attempts/attempt-1/submit`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -272,7 +272,7 @@ describe('useExamAttempts hooks', () => {
   describe('useExamAttemptResult', () => {
     it('should fetch exam results', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/exam-attempts/${mockGradedAttempt.id}/results`, () => {
+        http.get(`${baseUrl}/exam-attempts/${mockGradedAttempt.id}/results`, () => {
           return HttpResponse.json({
             success: true,
             data: mockExamResult,
@@ -302,7 +302,7 @@ describe('useExamAttempts hooks', () => {
   describe('useExamAttemptHistory', () => {
     it('should fetch attempt history for exam', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/exam-attempts`, ({ request }) => {
+        http.get(`${baseUrl}/exam-attempts`, ({ request }) => {
           const url = new URL(request.url);
           expect(url.searchParams.get('examId')).toBe('exam-1');
           expect(url.searchParams.get('status')).toBe('graded');

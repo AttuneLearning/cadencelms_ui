@@ -47,7 +47,7 @@ describe('progressApi', () => {
       const programId = '507f1f77bcf86cd799439015';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/program/${programId}`, () => {
+        http.get(`${baseUrl}/progress/program/${programId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockProgramProgress,
@@ -70,7 +70,7 @@ describe('progressApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/program/${programId}`, ({ request }) => {
+        http.get(`${baseUrl}/progress/program/${programId}`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -90,7 +90,7 @@ describe('progressApi', () => {
       const programId = 'non-existent';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/program/${programId}`, () => {
+        http.get(`${baseUrl}/progress/program/${programId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Program not found' },
             { status: 404 }
@@ -105,7 +105,7 @@ describe('progressApi', () => {
       const programId = '507f1f77bcf86cd799439015';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/program/${programId}`, () => {
+        http.get(`${baseUrl}/progress/program/${programId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Learner not enrolled in this program' },
             { status: 404 }
@@ -126,7 +126,7 @@ describe('progressApi', () => {
       const courseId = '507f1f77bcf86cd799439018';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/course/${courseId}`, () => {
+        http.get(`${baseUrl}/progress/course/${courseId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockCourseProgress,
@@ -149,7 +149,7 @@ describe('progressApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/course/${courseId}`, ({ request }) => {
+        http.get(`${baseUrl}/progress/course/${courseId}`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -168,7 +168,7 @@ describe('progressApi', () => {
       const courseId = 'non-existent';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/course/${courseId}`, () => {
+        http.get(`${baseUrl}/progress/course/${courseId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Course not found' },
             { status: 404 }
@@ -183,7 +183,7 @@ describe('progressApi', () => {
       const courseId = '507f1f77bcf86cd799439018';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/course/${courseId}`, () => {
+        http.get(`${baseUrl}/progress/course/${courseId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockCourseProgress,
@@ -208,7 +208,7 @@ describe('progressApi', () => {
       const classId = '507f1f77bcf86cd799439020';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/class/${classId}`, () => {
+        http.get(`${baseUrl}/progress/class/${classId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockClassProgress,
@@ -231,7 +231,7 @@ describe('progressApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/class/${classId}`, ({ request }) => {
+        http.get(`${baseUrl}/progress/class/${classId}`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -250,7 +250,7 @@ describe('progressApi', () => {
       const classId = 'non-existent';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/class/${classId}`, () => {
+        http.get(`${baseUrl}/progress/class/${classId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Class not found' },
             { status: 404 }
@@ -271,7 +271,7 @@ describe('progressApi', () => {
       const learnerId = '507f1f77bcf86cd799439030';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/learner/${learnerId}`, () => {
+        http.get(`${baseUrl}/progress/learner/${learnerId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockLearnerProgress,
@@ -293,7 +293,7 @@ describe('progressApi', () => {
       const learnerId = '507f1f77bcf86cd799439030';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/learner/${learnerId}`, () => {
+        http.get(`${baseUrl}/progress/learner/${learnerId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockLearnerProgress,
@@ -313,7 +313,7 @@ describe('progressApi', () => {
       const learnerId = 'non-existent';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/learner/${learnerId}`, () => {
+        http.get(`${baseUrl}/progress/learner/${learnerId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Learner not found' },
             { status: 404 }
@@ -335,7 +335,7 @@ describe('progressApi', () => {
       const programId = '507f1f77bcf86cd799439015';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/learner/${learnerId}/program/${programId}`, () => {
+        http.get(`${baseUrl}/progress/learner/${learnerId}/program/${programId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockProgramProgress,
@@ -355,7 +355,7 @@ describe('progressApi', () => {
       const programId = '507f1f77bcf86cd799439015';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/learner/${learnerId}/program/${programId}`, () => {
+        http.get(`${baseUrl}/progress/learner/${learnerId}/program/${programId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Unauthorized' },
             { status: 403 }
@@ -384,7 +384,7 @@ describe('progressApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.post(`${baseUrl}/api/v2/progress/update`, async ({ request }) => {
+        http.post(`${baseUrl}/progress/update`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json({
             success: true,
@@ -414,7 +414,7 @@ describe('progressApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.post(`${baseUrl}/api/v2/progress/update`, async ({ request }) => {
+        http.post(`${baseUrl}/progress/update`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json({
             success: true,
@@ -446,7 +446,7 @@ describe('progressApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.post(`${baseUrl}/api/v2/progress/update`, async ({ request }) => {
+        http.post(`${baseUrl}/progress/update`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json({
             success: true,
@@ -470,7 +470,7 @@ describe('progressApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/progress/update`, () => {
+        http.post(`${baseUrl}/progress/update`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -496,7 +496,7 @@ describe('progressApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/progress/update`, () => {
+        http.post(`${baseUrl}/progress/update`, () => {
           return HttpResponse.json(
             { success: false, message: 'Insufficient permissions to update progress' },
             { status: 403 }
@@ -525,7 +525,7 @@ describe('progressApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/reports/summary`, ({ request }) => {
+        http.get(`${baseUrl}/progress/reports/summary`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -544,7 +544,7 @@ describe('progressApi', () => {
 
     it('should fetch summary without filters', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/reports/summary`, () => {
+        http.get(`${baseUrl}/progress/reports/summary`, () => {
           return HttpResponse.json({
             success: true,
             data: mockProgressSummary,
@@ -561,7 +561,7 @@ describe('progressApi', () => {
 
     it('should include pagination information', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/reports/summary`, () => {
+        http.get(`${baseUrl}/progress/reports/summary`, () => {
           return HttpResponse.json({
             success: true,
             data: mockProgressSummary,
@@ -578,7 +578,7 @@ describe('progressApi', () => {
 
     it('should handle unauthorized access', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/reports/summary`, () => {
+        http.get(`${baseUrl}/progress/reports/summary`, () => {
           return HttpResponse.json(
             { success: false, message: 'Insufficient permissions to view reports' },
             { status: 403 }
@@ -606,7 +606,7 @@ describe('progressApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/reports/detailed`, ({ request }) => {
+        http.get(`${baseUrl}/progress/reports/detailed`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -625,7 +625,7 @@ describe('progressApi', () => {
 
     it('should include report metadata', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/reports/detailed`, () => {
+        http.get(`${baseUrl}/progress/reports/detailed`, () => {
           return HttpResponse.json({
             success: true,
             data: mockDetailedProgressReport,
@@ -642,7 +642,7 @@ describe('progressApi', () => {
 
     it('should include learner details with modules and assessments', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/reports/detailed`, () => {
+        http.get(`${baseUrl}/progress/reports/detailed`, () => {
           return HttpResponse.json({
             success: true,
             data: mockDetailedProgressReport,
@@ -664,7 +664,7 @@ describe('progressApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/reports/detailed`, () => {
+        http.get(`${baseUrl}/progress/reports/detailed`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -688,7 +688,7 @@ describe('progressApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/reports/detailed`, () => {
+        http.get(`${baseUrl}/progress/reports/detailed`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -707,7 +707,7 @@ describe('progressApi', () => {
 
     it('should handle validation errors', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/reports/detailed`, () => {
+        http.get(`${baseUrl}/progress/reports/detailed`, () => {
           return HttpResponse.json(
             {
               success: false,

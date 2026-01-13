@@ -21,7 +21,7 @@ interface ApiResponse<T> {
 }
 
 /**
- * GET /api/v2/users/learners - List all learners with filtering and pagination
+ * GET /users/learners - List all learners with filtering and pagination
  * Requires: staff or admin permissions
  */
 export async function listLearners(
@@ -35,7 +35,7 @@ export async function listLearners(
 }
 
 /**
- * POST /api/v2/users/learners - Register a new learner account
+ * POST /users/learners - Register a new learner account
  * Requires: staff or admin permissions
  */
 export async function registerLearner(
@@ -49,18 +49,18 @@ export async function registerLearner(
 }
 
 /**
- * GET /api/v2/users/learners/:id - Get detailed learner profile by ID
+ * GET /users/learners/:id - Get detailed learner profile by ID
  * Requires: staff or admin permissions
  */
 export async function getLearnerById(id: string): Promise<LearnerDetails> {
   const response = await client.get<ApiResponse<LearnerDetails>>(
-    `/api/v2/users/learners/${id}`
+    `/users/learners/${id}`
   );
   return response.data.data;
 }
 
 /**
- * PUT /api/v2/users/learners/:id - Update learner profile information
+ * PUT /users/learners/:id - Update learner profile information
  * Requires: staff or admin permissions
  */
 export async function updateLearner(
@@ -68,14 +68,14 @@ export async function updateLearner(
   payload: UpdateLearnerPayload
 ): Promise<LearnerResponse> {
   const response = await client.put<ApiResponse<{ learner: LearnerResponse }>>(
-    `/api/v2/users/learners/${id}`,
+    `/users/learners/${id}`,
     payload
   );
   return response.data.data.learner;
 }
 
 /**
- * DELETE /api/v2/users/learners/:id - Soft delete learner account
+ * DELETE /users/learners/:id - Soft delete learner account
  * Requires: admin permissions only
  */
 export async function deleteLearner(
@@ -84,7 +84,7 @@ export async function deleteLearner(
 ): Promise<DeleteLearnerResponse> {
   const params = reason ? { reason } : undefined;
   const response = await client.delete<ApiResponse<DeleteLearnerResponse>>(
-    `/api/v2/users/learners/${id}`,
+    `/users/learners/${id}`,
     { params }
   );
   return response.data.data;

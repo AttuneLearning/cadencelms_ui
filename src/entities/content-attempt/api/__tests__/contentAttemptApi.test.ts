@@ -137,7 +137,7 @@ describe('contentAttemptApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content-attempts`, () => {
+        http.get(`${baseUrl}/content-attempts`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -167,7 +167,7 @@ describe('contentAttemptApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content-attempts`, ({ request }) => {
+        http.get(`${baseUrl}/content-attempts`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -198,7 +198,7 @@ describe('contentAttemptApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content-attempts`, ({ request }) => {
+        http.get(`${baseUrl}/content-attempts`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -228,7 +228,7 @@ describe('contentAttemptApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content-attempts`, ({ request }) => {
+        http.get(`${baseUrl}/content-attempts`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -258,7 +258,7 @@ describe('contentAttemptApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content-attempts`, ({ request }) => {
+        http.get(`${baseUrl}/content-attempts`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -275,7 +275,7 @@ describe('contentAttemptApi', () => {
 
     it('should handle error response', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/content-attempts`, () => {
+        http.get(`${baseUrl}/content-attempts`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -297,7 +297,7 @@ describe('contentAttemptApi', () => {
   describe('getAttemptById', () => {
     it('should fetch attempt by id', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/content-attempts/attempt-1`, () => {
+        http.get(`${baseUrl}/content-attempts/attempt-1`, () => {
           return HttpResponse.json({
             success: true,
             data: mockAttempt,
@@ -315,7 +315,7 @@ describe('contentAttemptApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content-attempts/attempt-1`, ({ request }) => {
+        http.get(`${baseUrl}/content-attempts/attempt-1`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -331,7 +331,7 @@ describe('contentAttemptApi', () => {
 
     it('should handle not found error', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/content-attempts/invalid-id`, () => {
+        http.get(`${baseUrl}/content-attempts/invalid-id`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -367,7 +367,7 @@ describe('contentAttemptApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/content-attempts`, async ({ request }) => {
+        http.post(`${baseUrl}/content-attempts`, async ({ request }) => {
           const body = (await request.json()) as typeof createData;
           expect(body.contentId).toBe('content-1');
           expect(body.scormVersion).toBe('1.2');
@@ -402,7 +402,7 @@ describe('contentAttemptApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/content-attempts`, () => {
+        http.post(`${baseUrl}/content-attempts`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -417,7 +417,7 @@ describe('contentAttemptApi', () => {
 
     it('should handle attempt already exists error', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/content-attempts`, () => {
+        http.post(`${baseUrl}/content-attempts`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -459,7 +459,7 @@ describe('contentAttemptApi', () => {
       };
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/content-attempts/attempt-1`, async ({ request }) => {
+        http.patch(`${baseUrl}/content-attempts/attempt-1`, async ({ request }) => {
           const body = (await request.json()) as typeof updateData;
           expect(body.progressPercent).toBe(75);
 
@@ -495,7 +495,7 @@ describe('contentAttemptApi', () => {
       };
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/content-attempts/attempt-1`, () => {
+        http.patch(`${baseUrl}/content-attempts/attempt-1`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -508,7 +508,7 @@ describe('contentAttemptApi', () => {
 
     it('should handle invalid state error', async () => {
       server.use(
-        http.patch(`${baseUrl}/api/v2/content-attempts/attempt-1`, () => {
+        http.patch(`${baseUrl}/content-attempts/attempt-1`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -553,7 +553,7 @@ describe('contentAttemptApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/content-attempts/attempt-1/complete`, async ({ request }) => {
+        http.post(`${baseUrl}/content-attempts/attempt-1/complete`, async ({ request }) => {
           const body = (await request.json()) as typeof completeData;
           expect(body.passed).toBe(true);
           expect(body.score).toBe(92);
@@ -593,7 +593,7 @@ describe('contentAttemptApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/content-attempts/attempt-1/complete`, () => {
+        http.post(`${baseUrl}/content-attempts/attempt-1/complete`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -609,7 +609,7 @@ describe('contentAttemptApi', () => {
 
     it('should handle already completed error', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/content-attempts/attempt-1/complete`, () => {
+        http.post(`${baseUrl}/content-attempts/attempt-1/complete`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -645,7 +645,7 @@ describe('contentAttemptApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/content-attempts/attempt-1/cmi`, () => {
+        http.get(`${baseUrl}/content-attempts/attempt-1/cmi`, () => {
           return HttpResponse.json({
             success: true,
             data: mockCmiData,
@@ -662,7 +662,7 @@ describe('contentAttemptApi', () => {
 
     it('should handle not found error for non-SCORM content', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/content-attempts/attempt-2/cmi`, () => {
+        http.get(`${baseUrl}/content-attempts/attempt-2/cmi`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -705,7 +705,7 @@ describe('contentAttemptApi', () => {
       };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/content-attempts/attempt-1/cmi`, async ({ request }) => {
+        http.put(`${baseUrl}/content-attempts/attempt-1/cmi`, async ({ request }) => {
           const body = (await request.json()) as typeof updateData;
           expect(body.cmiData['cmi.core.lesson_location']).toBe('page-7');
 
@@ -725,7 +725,7 @@ describe('contentAttemptApi', () => {
 
     it('should handle read-only field error', async () => {
       server.use(
-        http.put(`${baseUrl}/api/v2/content-attempts/attempt-1/cmi`, () => {
+        http.put(`${baseUrl}/content-attempts/attempt-1/cmi`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -766,7 +766,7 @@ describe('contentAttemptApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/content-attempts/attempt-1/suspend`, async ({ request }) => {
+        http.post(`${baseUrl}/content-attempts/attempt-1/suspend`, async ({ request }) => {
           const body = (await request.json()) as typeof suspendData;
           expect(body.location).toBe('page-7');
 
@@ -806,7 +806,7 @@ describe('contentAttemptApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/content-attempts/attempt-1/resume`, () => {
+        http.post(`${baseUrl}/content-attempts/attempt-1/resume`, () => {
           return HttpResponse.json({
             success: true,
             message: 'Attempt resumed successfully',
@@ -824,7 +824,7 @@ describe('contentAttemptApi', () => {
 
     it('should handle invalid state error', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/content-attempts/attempt-1/resume`, () => {
+        http.post(`${baseUrl}/content-attempts/attempt-1/resume`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -852,7 +852,7 @@ describe('contentAttemptApi', () => {
       };
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/content-attempts/attempt-1`, () => {
+        http.delete(`${baseUrl}/content-attempts/attempt-1`, () => {
           return HttpResponse.json({
             success: true,
             message: 'Attempt deleted successfully',
@@ -877,7 +877,7 @@ describe('contentAttemptApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/content-attempts/attempt-1`, ({ request }) => {
+        http.delete(`${baseUrl}/content-attempts/attempt-1`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -893,7 +893,7 @@ describe('contentAttemptApi', () => {
 
     it('should handle forbidden error', async () => {
       server.use(
-        http.delete(`${baseUrl}/api/v2/content-attempts/attempt-1`, () => {
+        http.delete(`${baseUrl}/content-attempts/attempt-1`, () => {
           return HttpResponse.json(
             {
               success: false,

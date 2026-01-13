@@ -59,7 +59,7 @@ describe('classApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes`, () => {
+        http.get(`${baseUrl}/classes`, () => {
           return HttpResponse.json({ data: { data: mockResponse } });
         })
       );
@@ -86,7 +86,7 @@ describe('classApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes`, ({ request }) => {
+        http.get(`${baseUrl}/classes`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({ data: { data: mockResponse } });
         })
@@ -118,7 +118,7 @@ describe('classApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes`, ({ request }) => {
+        http.get(`${baseUrl}/classes`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({ data: { data: mockResponse } });
         })
@@ -149,7 +149,7 @@ describe('classApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes`, ({ request }) => {
+        http.get(`${baseUrl}/classes`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({ data: { data: mockResponse } });
         })
@@ -177,7 +177,7 @@ describe('classApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes`, ({ request }) => {
+        http.get(`${baseUrl}/classes`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({ data: { data: mockResponse } });
         })
@@ -209,7 +209,7 @@ describe('classApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes`, ({ request }) => {
+        http.get(`${baseUrl}/classes`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({ data: { data: mockResponse } });
         })
@@ -241,7 +241,7 @@ describe('classApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes`, ({ request }) => {
+        http.get(`${baseUrl}/classes`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({ data: { data: mockResponse } });
         })
@@ -274,7 +274,7 @@ describe('classApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes`, ({ request }) => {
+        http.get(`${baseUrl}/classes`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({ data: { data: mockResponse } });
         })
@@ -302,7 +302,7 @@ describe('classApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes`, ({ request }) => {
+        http.get(`${baseUrl}/classes`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({ data: { data: mockResponse } });
         })
@@ -330,7 +330,7 @@ describe('classApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes`, ({ request }) => {
+        http.get(`${baseUrl}/classes`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({ data: { data: mockResponse } });
         })
@@ -356,7 +356,7 @@ describe('classApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes`, () => {
+        http.get(`${baseUrl}/classes`, () => {
           return HttpResponse.json({ data: { data: mockResponse } });
         })
       );
@@ -369,7 +369,7 @@ describe('classApi', () => {
 
     it('should handle API error', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/classes`, () => {
+        http.get(`${baseUrl}/classes`, () => {
           return HttpResponse.json(
             { message: 'Internal server error' },
             { status: 500 }
@@ -386,7 +386,7 @@ describe('classApi', () => {
       const classId = 'class-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes/${classId}`, () => {
+        http.get(`${baseUrl}/classes/${classId}`, () => {
           return HttpResponse.json({ data: { data: mockFullClass } });
         })
       );
@@ -401,7 +401,7 @@ describe('classApi', () => {
       const classId = 'class-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes/${classId}`, () => {
+        http.get(`${baseUrl}/classes/${classId}`, () => {
           return HttpResponse.json({ data: { data: mockFullClass } });
         })
       );
@@ -418,7 +418,7 @@ describe('classApi', () => {
       const classId = 'non-existent';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes/${classId}`, () => {
+        http.get(`${baseUrl}/classes/${classId}`, () => {
           return HttpResponse.json(
             { message: 'Class not found' },
             { status: 404 }
@@ -433,7 +433,7 @@ describe('classApi', () => {
       const classId = 'class-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes/${classId}`, () => {
+        http.get(`${baseUrl}/classes/${classId}`, () => {
           return HttpResponse.json(
             { message: 'Unauthorized' },
             { status: 401 }
@@ -459,7 +459,7 @@ describe('classApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.post(`${baseUrl}/api/v2/classes`, async ({ request }) => {
+        http.post(`${baseUrl}/classes`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json(
             { data: { data: newClass, message: 'Class created successfully' } },
@@ -485,7 +485,7 @@ describe('classApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/classes`, () => {
+        http.post(`${baseUrl}/classes`, () => {
           return HttpResponse.json(
             {
               message: 'Validation failed',
@@ -507,7 +507,7 @@ describe('classApi', () => {
       } as any;
 
       server.use(
-        http.post(`${baseUrl}/api/v2/classes`, () => {
+        http.post(`${baseUrl}/classes`, () => {
           return HttpResponse.json(
             {
               message: 'Validation failed',
@@ -532,7 +532,7 @@ describe('classApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/classes`, () => {
+        http.post(`${baseUrl}/classes`, () => {
           return HttpResponse.json(
             {
               message: 'Validation failed',
@@ -564,7 +564,7 @@ describe('classApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.put(`${baseUrl}/api/v2/classes/${classId}`, async ({ request }) => {
+        http.put(`${baseUrl}/classes/${classId}`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json({
             data: { data: updatedClass, message: 'Class updated successfully' },
@@ -584,7 +584,7 @@ describe('classApi', () => {
       const updatedClass = { ...mockFullClass, capacity: 40 };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/classes/${classId}`, () => {
+        http.put(`${baseUrl}/classes/${classId}`, () => {
           return HttpResponse.json({
             data: { data: updatedClass, message: 'Class updated successfully' },
           });
@@ -601,7 +601,7 @@ describe('classApi', () => {
       const classId = 'non-existent';
 
       server.use(
-        http.put(`${baseUrl}/api/v2/classes/${classId}`, () => {
+        http.put(`${baseUrl}/classes/${classId}`, () => {
           return HttpResponse.json(
             { message: 'Class not found' },
             { status: 404 }
@@ -618,7 +618,7 @@ describe('classApi', () => {
       const updatedClass = { ...mockFullClass, status: 'completed' as const };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/classes/${classId}`, () => {
+        http.put(`${baseUrl}/classes/${classId}`, () => {
           return HttpResponse.json({
             data: { data: updatedClass, message: 'Class updated successfully' },
           });
@@ -636,7 +636,7 @@ describe('classApi', () => {
       const classId = 'class-1';
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/classes/${classId}`, () => {
+        http.delete(`${baseUrl}/classes/${classId}`, () => {
           return HttpResponse.json({
             data: { data: mockDeleteClassResponse, message: 'Class deleted successfully' },
           });
@@ -654,7 +654,7 @@ describe('classApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/classes/${classId}`, ({ request }) => {
+        http.delete(`${baseUrl}/classes/${classId}`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             data: { data: mockDeleteClassResponse, message: 'Class deleted successfully' },
@@ -672,7 +672,7 @@ describe('classApi', () => {
       const classId = 'non-existent';
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/classes/${classId}`, () => {
+        http.delete(`${baseUrl}/classes/${classId}`, () => {
           return HttpResponse.json(
             { message: 'Class not found' },
             { status: 404 }
@@ -687,7 +687,7 @@ describe('classApi', () => {
       const classId = 'class-1';
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/classes/${classId}`, () => {
+        http.delete(`${baseUrl}/classes/${classId}`, () => {
           return HttpResponse.json(
             { message: 'Cannot delete class with active enrollments' },
             { status: 400 }
@@ -704,7 +704,7 @@ describe('classApi', () => {
       const classId = 'class-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes/${classId}/roster`, () => {
+        http.get(`${baseUrl}/classes/${classId}/roster`, () => {
           return HttpResponse.json({ data: { data: mockClassRoster } });
         })
       );
@@ -720,7 +720,7 @@ describe('classApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes/${classId}/roster`, ({ request }) => {
+        http.get(`${baseUrl}/classes/${classId}/roster`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({ data: { data: mockClassRoster } });
         })
@@ -737,7 +737,7 @@ describe('classApi', () => {
       const classId = 'class-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes/${classId}/roster`, () => {
+        http.get(`${baseUrl}/classes/${classId}/roster`, () => {
           return HttpResponse.json({ data: { data: mockClassRoster } });
         })
       );
@@ -760,7 +760,7 @@ describe('classApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes/${classId}/roster`, ({ request }) => {
+        http.get(`${baseUrl}/classes/${classId}/roster`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({ data: { data: activeRoster } });
         })
@@ -781,7 +781,7 @@ describe('classApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes/${classId}/roster`, () => {
+        http.get(`${baseUrl}/classes/${classId}/roster`, () => {
           return HttpResponse.json({ data: { data: emptyRoster } });
         })
       );
@@ -804,7 +804,7 @@ describe('classApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.post(`${baseUrl}/api/v2/classes/${classId}/enrollments`, async ({ request }) => {
+        http.post(`${baseUrl}/classes/${classId}/enrollments`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json({
             data: { data: mockEnrollmentResult, message: 'Learners enrolled successfully' },
@@ -827,7 +827,7 @@ describe('classApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/classes/${classId}/enrollments`, () => {
+        http.post(`${baseUrl}/classes/${classId}/enrollments`, () => {
           return HttpResponse.json({
             data: { data: mockEnrollmentResultWithErrors, message: 'Enrollment completed with errors' },
           });
@@ -849,7 +849,7 @@ describe('classApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/classes/${classId}/enrollments`, () => {
+        http.post(`${baseUrl}/classes/${classId}/enrollments`, () => {
           return HttpResponse.json(
             { message: 'Class is at full capacity' },
             { status: 400 }
@@ -880,7 +880,7 @@ describe('classApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/classes/${classId}/enrollments`, () => {
+        http.post(`${baseUrl}/classes/${classId}/enrollments`, () => {
           return HttpResponse.json({
             data: { data: duplicateError, message: 'Enrollment completed with errors' },
           });
@@ -900,7 +900,7 @@ describe('classApi', () => {
       const enrollmentId = 'enrollment-1';
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/classes/${classId}/enrollments/${enrollmentId}`, () => {
+        http.delete(`${baseUrl}/classes/${classId}/enrollments/${enrollmentId}`, () => {
           return HttpResponse.json({
             data: { data: mockDropEnrollmentResponse, message: 'Learner removed successfully' },
           });
@@ -922,7 +922,7 @@ describe('classApi', () => {
 
       server.use(
         http.delete(
-          `${baseUrl}/api/v2/classes/${classId}/enrollments/${enrollmentId}`,
+          `${baseUrl}/classes/${classId}/enrollments/${enrollmentId}`,
           ({ request }) => {
             capturedParams = new URL(request.url).searchParams;
             return HttpResponse.json({
@@ -943,7 +943,7 @@ describe('classApi', () => {
       const enrollmentId = 'non-existent';
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/classes/${classId}/enrollments/${enrollmentId}`, () => {
+        http.delete(`${baseUrl}/classes/${classId}/enrollments/${enrollmentId}`, () => {
           return HttpResponse.json(
             { message: 'Enrollment not found' },
             { status: 404 }
@@ -960,7 +960,7 @@ describe('classApi', () => {
       const classId = 'class-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes/${classId}/progress`, () => {
+        http.get(`${baseUrl}/classes/${classId}/progress`, () => {
           return HttpResponse.json({ data: { data: mockClassProgress } });
         })
       );
@@ -977,7 +977,7 @@ describe('classApi', () => {
       const classId = 'class-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes/${classId}/progress`, () => {
+        http.get(`${baseUrl}/classes/${classId}/progress`, () => {
           return HttpResponse.json({ data: { data: mockClassProgress } });
         })
       );
@@ -993,7 +993,7 @@ describe('classApi', () => {
       const classId = 'class-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes/${classId}/progress`, () => {
+        http.get(`${baseUrl}/classes/${classId}/progress`, () => {
           return HttpResponse.json({ data: { data: mockClassProgress } });
         })
       );
@@ -1009,7 +1009,7 @@ describe('classApi', () => {
       const classId = 'class-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes/${classId}/progress`, () => {
+        http.get(`${baseUrl}/classes/${classId}/progress`, () => {
           return HttpResponse.json({ data: { data: mockClassProgress } });
         })
       );
@@ -1036,7 +1036,7 @@ describe('classApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes/${classId}/progress`, () => {
+        http.get(`${baseUrl}/classes/${classId}/progress`, () => {
           return HttpResponse.json({ data: { data: emptyProgress } });
         })
       );
@@ -1053,7 +1053,7 @@ describe('classApi', () => {
       const classId = 'class-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes/${classId}/enrollments`, () => {
+        http.get(`${baseUrl}/classes/${classId}/enrollments`, () => {
           return HttpResponse.json({ data: { data: mockClassEnrollmentsResponse } });
         })
       );
@@ -1069,7 +1069,7 @@ describe('classApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes/${classId}/enrollments`, ({ request }) => {
+        http.get(`${baseUrl}/classes/${classId}/enrollments`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({ data: { data: mockClassEnrollmentsResponse } });
         })
@@ -1094,7 +1094,7 @@ describe('classApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes/${classId}/enrollments`, ({ request }) => {
+        http.get(`${baseUrl}/classes/${classId}/enrollments`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({ data: { data: activeEnrollments } });
         })
@@ -1122,7 +1122,7 @@ describe('classApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/classes/${classId}/enrollments`, () => {
+        http.get(`${baseUrl}/classes/${classId}/enrollments`, () => {
           return HttpResponse.json({ data: { data: emptyResponse } });
         })
       );

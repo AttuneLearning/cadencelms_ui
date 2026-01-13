@@ -38,7 +38,7 @@ interface ApiResponse<T> {
 // =====================
 
 /**
- * GET /api/v2/calendar/years - List all academic years
+ * GET /calendar/years - List all academic years
  */
 export async function listYears(filters?: YearFilters): Promise<YearsListResponse> {
   const response = await client.get<ApiResponse<YearsListResponse>>(
@@ -49,18 +49,18 @@ export async function listYears(filters?: YearFilters): Promise<YearsListRespons
 }
 
 /**
- * GET /api/v2/calendar/years/:id - Get academic year details
+ * GET /calendar/years/:id - Get academic year details
  */
 export async function getYear(id: string, includeTerms?: boolean): Promise<AcademicYear> {
   const response = await client.get<ApiResponse<AcademicYear>>(
-    `/api/v2/calendar/years/${id}`,
+    `/calendar/years/${id}`,
     { params: { includeTerms } }
   );
   return response.data.data;
 }
 
 /**
- * POST /api/v2/calendar/years - Create new academic year
+ * POST /calendar/years - Create new academic year
  */
 export async function createYear(payload: CreateYearPayload): Promise<AcademicYear> {
   const response = await client.post<ApiResponse<AcademicYear>>(
@@ -71,21 +71,21 @@ export async function createYear(payload: CreateYearPayload): Promise<AcademicYe
 }
 
 /**
- * PUT /api/v2/calendar/years/:id - Update academic year
+ * PUT /calendar/years/:id - Update academic year
  */
 export async function updateYear(id: string, payload: UpdateYearPayload): Promise<AcademicYear> {
   const response = await client.put<ApiResponse<AcademicYear>>(
-    `/api/v2/calendar/years/${id}`,
+    `/calendar/years/${id}`,
     payload
   );
   return response.data.data;
 }
 
 /**
- * DELETE /api/v2/calendar/years/:id - Delete academic year
+ * DELETE /calendar/years/:id - Delete academic year
  */
 export async function deleteYear(id: string): Promise<void> {
-  await client.delete(`/api/v2/calendar/years/${id}`);
+  await client.delete(`/calendar/years/${id}`);
 }
 
 // =====================
@@ -93,7 +93,7 @@ export async function deleteYear(id: string): Promise<void> {
 // =====================
 
 /**
- * GET /api/v2/calendar/terms - List all academic terms
+ * GET /calendar/terms - List all academic terms
  */
 export async function listTerms(filters?: TermFilters): Promise<TermsListResponse> {
   const response = await client.get<ApiResponse<TermsListResponse>>(
@@ -104,18 +104,18 @@ export async function listTerms(filters?: TermFilters): Promise<TermsListRespons
 }
 
 /**
- * GET /api/v2/calendar/terms/:id - Get term details
+ * GET /calendar/terms/:id - Get term details
  */
 export async function getTerm(id: string, includeClasses?: boolean): Promise<Term> {
   const response = await client.get<ApiResponse<Term>>(
-    `/api/v2/calendar/terms/${id}`,
+    `/calendar/terms/${id}`,
     { params: { includeClasses } }
   );
   return response.data.data;
 }
 
 /**
- * POST /api/v2/calendar/terms - Create new term
+ * POST /calendar/terms - Create new term
  */
 export async function createTerm(payload: CreateTermPayload): Promise<Term> {
   const response = await client.post<ApiResponse<Term>>(
@@ -126,21 +126,21 @@ export async function createTerm(payload: CreateTermPayload): Promise<Term> {
 }
 
 /**
- * PUT /api/v2/calendar/terms/:id - Update term
+ * PUT /calendar/terms/:id - Update term
  */
 export async function updateTerm(id: string, payload: UpdateTermPayload): Promise<Term> {
   const response = await client.put<ApiResponse<Term>>(
-    `/api/v2/calendar/terms/${id}`,
+    `/calendar/terms/${id}`,
     payload
   );
   return response.data.data;
 }
 
 /**
- * DELETE /api/v2/calendar/terms/:id - Delete term
+ * DELETE /calendar/terms/:id - Delete term
  */
 export async function deleteTerm(id: string): Promise<void> {
-  await client.delete(`/api/v2/calendar/terms/${id}`);
+  await client.delete(`/calendar/terms/${id}`);
 }
 
 // =====================
@@ -148,7 +148,7 @@ export async function deleteTerm(id: string): Promise<void> {
 // =====================
 
 /**
- * GET /api/v2/calendar/cohorts - List all cohorts
+ * GET /calendar/cohorts - List all cohorts
  */
 export async function listCohorts(filters?: CohortFilters): Promise<CohortsListResponse> {
   const response = await client.get<ApiResponse<CohortsListResponse>>(
@@ -159,18 +159,18 @@ export async function listCohorts(filters?: CohortFilters): Promise<CohortsListR
 }
 
 /**
- * GET /api/v2/calendar/cohorts/:id - Get cohort details
+ * GET /calendar/cohorts/:id - Get cohort details
  */
 export async function getCohort(id: string, includeLearners?: boolean): Promise<Cohort> {
   const response = await client.get<ApiResponse<Cohort>>(
-    `/api/v2/calendar/cohorts/${id}`,
+    `/calendar/cohorts/${id}`,
     { params: { includeLearners } }
   );
   return response.data.data;
 }
 
 /**
- * POST /api/v2/calendar/cohorts - Create new cohort
+ * POST /calendar/cohorts - Create new cohort
  */
 export async function createCohort(payload: CreateCohortPayload): Promise<Cohort> {
   const response = await client.post<ApiResponse<Cohort>>(
@@ -181,19 +181,19 @@ export async function createCohort(payload: CreateCohortPayload): Promise<Cohort
 }
 
 /**
- * PUT /api/v2/calendar/cohorts/:id - Update cohort
+ * PUT /calendar/cohorts/:id - Update cohort
  */
 export async function updateCohort(id: string, payload: UpdateCohortPayload): Promise<Cohort> {
   const response = await client.put<ApiResponse<Cohort>>(
-    `/api/v2/calendar/cohorts/${id}`,
+    `/calendar/cohorts/${id}`,
     payload
   );
   return response.data.data;
 }
 
 /**
- * DELETE /api/v2/calendar/cohorts/:id - Delete cohort
+ * DELETE /calendar/cohorts/:id - Delete cohort
  */
 export async function deleteCohort(id: string): Promise<void> {
-  await client.delete(`/api/v2/calendar/cohorts/${id}`);
+  await client.delete(`/calendar/cohorts/${id}`);
 }

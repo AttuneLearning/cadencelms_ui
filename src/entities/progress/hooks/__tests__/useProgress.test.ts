@@ -388,7 +388,7 @@ describe('Progress Hooks', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/reports/summary`, () => {
+        http.get(`${baseUrl}/progress/reports/summary`, () => {
           return HttpResponse.json({
             success: true,
             data: mockProgressSummary,
@@ -408,7 +408,7 @@ describe('Progress Hooks', () => {
 
     it('should fetch summary without filters', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/reports/summary`, () => {
+        http.get(`${baseUrl}/progress/reports/summary`, () => {
           return HttpResponse.json({
             success: true,
             data: mockProgressSummary,
@@ -440,7 +440,7 @@ describe('Progress Hooks', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/reports/detailed`, () => {
+        http.get(`${baseUrl}/progress/reports/detailed`, () => {
           return HttpResponse.json({
             success: true,
             data: mockDetailedProgressReport,

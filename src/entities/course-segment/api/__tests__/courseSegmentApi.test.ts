@@ -52,7 +52,7 @@ describe('courseSegmentApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses/${courseId}/modules`, () => {
+        http.get(`${baseUrl}/courses/${courseId}/modules`, () => {
           return HttpResponse.json({ data: mockResponse });
         })
       );
@@ -76,7 +76,7 @@ describe('courseSegmentApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses/${courseId}/modules`, ({ request }) => {
+        http.get(`${baseUrl}/courses/${courseId}/modules`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({ data: mockResponse });
         })
@@ -102,7 +102,7 @@ describe('courseSegmentApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses/${courseId}/modules`, ({ request }) => {
+        http.get(`${baseUrl}/courses/${courseId}/modules`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({ data: mockResponse });
         })
@@ -123,7 +123,7 @@ describe('courseSegmentApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/courses/${courseId}/modules`, () => {
+        http.get(`${baseUrl}/courses/${courseId}/modules`, () => {
           return HttpResponse.json({ data: mockResponse });
         })
       );
@@ -136,7 +136,7 @@ describe('courseSegmentApi', () => {
 
     it('should handle API error', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/courses/${courseId}/modules`, () => {
+        http.get(`${baseUrl}/courses/${courseId}/modules`, () => {
           return HttpResponse.json(
             { message: 'Internal server error' },
             { status: 500 }
@@ -149,7 +149,7 @@ describe('courseSegmentApi', () => {
 
     it('should handle course not found error', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/courses/${courseId}/modules`, () => {
+        http.get(`${baseUrl}/courses/${courseId}/modules`, () => {
           return HttpResponse.json(
             { message: 'Course not found' },
             { status: 404 }
@@ -164,7 +164,7 @@ describe('courseSegmentApi', () => {
   describe('getCourseSegment', () => {
     it('should fetch single course segment by ID', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/courses/${courseId}/modules/${moduleId}`, () => {
+        http.get(`${baseUrl}/courses/${courseId}/modules/${moduleId}`, () => {
           return HttpResponse.json({ data: mockFullCourseSegment });
         })
       );
@@ -178,7 +178,7 @@ describe('courseSegmentApi', () => {
 
     it('should fetch SCORM segment with complex settings', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/courses/${courseId}/modules/${mockScormSegment.id}`, () => {
+        http.get(`${baseUrl}/courses/${courseId}/modules/${mockScormSegment.id}`, () => {
           return HttpResponse.json({ data: mockScormSegment });
         })
       );
@@ -193,7 +193,7 @@ describe('courseSegmentApi', () => {
 
     it('should handle module not found error', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/courses/${courseId}/modules/${moduleId}`, () => {
+        http.get(`${baseUrl}/courses/${courseId}/modules/${moduleId}`, () => {
           return HttpResponse.json(
             { message: 'Module not found' },
             { status: 404 }
@@ -206,7 +206,7 @@ describe('courseSegmentApi', () => {
 
     it('should handle unauthorized access', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/courses/${courseId}/modules/${moduleId}`, () => {
+        http.get(`${baseUrl}/courses/${courseId}/modules/${moduleId}`, () => {
           return HttpResponse.json(
             { message: 'Unauthorized' },
             { status: 401 }
@@ -229,7 +229,7 @@ describe('courseSegmentApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses/${courseId}/modules`, async ({ request }) => {
+        http.post(`${baseUrl}/courses/${courseId}/modules`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json({ data: newSegment }, { status: 201 });
         })
@@ -263,7 +263,7 @@ describe('courseSegmentApi', () => {
       const newSegment = createMockCourseSegment(payload);
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses/${courseId}/modules`, () => {
+        http.post(`${baseUrl}/courses/${courseId}/modules`, () => {
           return HttpResponse.json({ data: newSegment }, { status: 201 });
         })
       );
@@ -288,7 +288,7 @@ describe('courseSegmentApi', () => {
       });
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses/${courseId}/modules`, () => {
+        http.post(`${baseUrl}/courses/${courseId}/modules`, () => {
           return HttpResponse.json({ data: scormSegment }, { status: 201 });
         })
       );
@@ -306,7 +306,7 @@ describe('courseSegmentApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses/${courseId}/modules`, () => {
+        http.post(`${baseUrl}/courses/${courseId}/modules`, () => {
           return HttpResponse.json(
             {
               message: 'Validation failed',
@@ -329,7 +329,7 @@ describe('courseSegmentApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/courses/${courseId}/modules`, () => {
+        http.post(`${baseUrl}/courses/${courseId}/modules`, () => {
           return HttpResponse.json(
             { message: 'Order must be a positive integer' },
             { status: 400 }
@@ -354,7 +354,7 @@ describe('courseSegmentApi', () => {
 
       server.use(
         http.put(
-          `${baseUrl}/api/v2/courses/${courseId}/modules/${moduleId}`,
+          `${baseUrl}/courses/${courseId}/modules/${moduleId}`,
           async ({ request }) => {
             capturedRequestBody = await request.json();
             return HttpResponse.json({ data: updatedSegment });
@@ -378,7 +378,7 @@ describe('courseSegmentApi', () => {
       const updatedSegment = { ...mockFullCourseSegment, title: 'Updated Title Only' };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/courses/${courseId}/modules/${moduleId}`, () => {
+        http.put(`${baseUrl}/courses/${courseId}/modules/${moduleId}`, () => {
           return HttpResponse.json({ data: updatedSegment });
         })
       );
@@ -405,7 +405,7 @@ describe('courseSegmentApi', () => {
       };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/courses/${courseId}/modules/${moduleId}`, () => {
+        http.put(`${baseUrl}/courses/${courseId}/modules/${moduleId}`, () => {
           return HttpResponse.json({ data: updatedSegment });
         })
       );
@@ -421,7 +421,7 @@ describe('courseSegmentApi', () => {
       const publishedSegment = { ...mockFullCourseSegment, isPublished: true };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/courses/${courseId}/modules/${moduleId}`, () => {
+        http.put(`${baseUrl}/courses/${courseId}/modules/${moduleId}`, () => {
           return HttpResponse.json({ data: publishedSegment });
         })
       );
@@ -433,7 +433,7 @@ describe('courseSegmentApi', () => {
 
     it('should handle module not found error', async () => {
       server.use(
-        http.put(`${baseUrl}/api/v2/courses/${courseId}/modules/${moduleId}`, () => {
+        http.put(`${baseUrl}/courses/${courseId}/modules/${moduleId}`, () => {
           return HttpResponse.json(
             { message: 'Module not found' },
             { status: 404 }
@@ -452,7 +452,7 @@ describe('courseSegmentApi', () => {
       };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/courses/${courseId}/modules/${moduleId}`, () => {
+        http.put(`${baseUrl}/courses/${courseId}/modules/${moduleId}`, () => {
           return HttpResponse.json(
             {
               message: 'Validation failed',
@@ -484,7 +484,7 @@ describe('courseSegmentApi', () => {
       let deleteCalled = false;
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/courses/${courseId}/modules/${moduleId}`, () => {
+        http.delete(`${baseUrl}/courses/${courseId}/modules/${moduleId}`, () => {
           deleteCalled = true;
           return HttpResponse.json({ data: mockDeleteResponse });
         })
@@ -512,7 +512,7 @@ describe('courseSegmentApi', () => {
 
       server.use(
         http.delete(
-          `${baseUrl}/api/v2/courses/${courseId}/modules/${moduleId}`,
+          `${baseUrl}/courses/${courseId}/modules/${moduleId}`,
           ({ request }) => {
             capturedParams = new URL(request.url).searchParams;
             return HttpResponse.json({ data: mockDeleteResponse });
@@ -542,7 +542,7 @@ describe('courseSegmentApi', () => {
       };
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/courses/${courseId}/modules/${moduleId}`, () => {
+        http.delete(`${baseUrl}/courses/${courseId}/modules/${moduleId}`, () => {
           return HttpResponse.json({ data: mockDeleteResponse });
         })
       );
@@ -558,7 +558,7 @@ describe('courseSegmentApi', () => {
 
     it('should handle module not found error', async () => {
       server.use(
-        http.delete(`${baseUrl}/api/v2/courses/${courseId}/modules/${moduleId}`, () => {
+        http.delete(`${baseUrl}/courses/${courseId}/modules/${moduleId}`, () => {
           return HttpResponse.json(
             { message: 'Module not found' },
             { status: 404 }
@@ -571,7 +571,7 @@ describe('courseSegmentApi', () => {
 
     it('should handle forbidden deletion error', async () => {
       server.use(
-        http.delete(`${baseUrl}/api/v2/courses/${courseId}/modules/${moduleId}`, () => {
+        http.delete(`${baseUrl}/courses/${courseId}/modules/${moduleId}`, () => {
           return HttpResponse.json(
             { message: 'Cannot delete module with active enrollments' },
             { status: 403 }
@@ -600,7 +600,7 @@ describe('courseSegmentApi', () => {
 
       server.use(
         http.patch(
-          `${baseUrl}/api/v2/courses/${courseId}/modules/reorder`,
+          `${baseUrl}/courses/${courseId}/modules/reorder`,
           async ({ request }) => {
             capturedRequestBody = await request.json();
             return HttpResponse.json({ data: mockReorderResponse });
@@ -629,7 +629,7 @@ describe('courseSegmentApi', () => {
       };
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/courses/${courseId}/modules/reorder`, () => {
+        http.patch(`${baseUrl}/courses/${courseId}/modules/reorder`, () => {
           return HttpResponse.json({ data: mockReorderResponse });
         })
       );
@@ -649,7 +649,7 @@ describe('courseSegmentApi', () => {
       };
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/courses/${courseId}/modules/reorder`, () => {
+        http.patch(`${baseUrl}/courses/${courseId}/modules/reorder`, () => {
           return HttpResponse.json({ data: mockReorderResponse });
         })
       );
@@ -667,7 +667,7 @@ describe('courseSegmentApi', () => {
       };
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/courses/${courseId}/modules/reorder`, () => {
+        http.patch(`${baseUrl}/courses/${courseId}/modules/reorder`, () => {
           return HttpResponse.json({ data: mockReorderResponse });
         })
       );
@@ -682,7 +682,7 @@ describe('courseSegmentApi', () => {
       const moduleIds = ['segment-1', 'invalid-id', 'segment-2'];
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/courses/${courseId}/modules/reorder`, () => {
+        http.patch(`${baseUrl}/courses/${courseId}/modules/reorder`, () => {
           return HttpResponse.json(
             { message: 'Invalid module ID: invalid-id' },
             { status: 400 }
@@ -697,7 +697,7 @@ describe('courseSegmentApi', () => {
       const moduleIds = ['segment-1', 'segment-2'];
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/courses/${courseId}/modules/reorder`, () => {
+        http.patch(`${baseUrl}/courses/${courseId}/modules/reorder`, () => {
           return HttpResponse.json(
             { message: 'Course not found' },
             { status: 404 }
@@ -712,7 +712,7 @@ describe('courseSegmentApi', () => {
       const moduleIds = ['segment-1', 'segment-2'];
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/courses/${courseId}/modules/reorder`, () => {
+        http.patch(`${baseUrl}/courses/${courseId}/modules/reorder`, () => {
           return HttpResponse.json(
             { message: 'Internal server error' },
             { status: 500 }

@@ -68,7 +68,7 @@ describe('templateApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/templates`, () => {
+        http.get(`${baseUrl}/templates`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -98,7 +98,7 @@ describe('templateApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/templates`, ({ request }) => {
+        http.get(`${baseUrl}/templates`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -131,7 +131,7 @@ describe('templateApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/templates`, () => {
+        http.get(`${baseUrl}/templates`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -161,7 +161,7 @@ describe('templateApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/templates`, () => {
+        http.get(`${baseUrl}/templates`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -191,7 +191,7 @@ describe('templateApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/templates`, () => {
+        http.get(`${baseUrl}/templates`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -221,7 +221,7 @@ describe('templateApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/templates`, () => {
+        http.get(`${baseUrl}/templates`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -250,7 +250,7 @@ describe('templateApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/templates`, () => {
+        http.get(`${baseUrl}/templates`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -279,7 +279,7 @@ describe('templateApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/templates`, () => {
+        http.get(`${baseUrl}/templates`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -311,7 +311,7 @@ describe('templateApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/templates`, () => {
+        http.get(`${baseUrl}/templates`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -326,7 +326,7 @@ describe('templateApi', () => {
 
     it('should handle error response', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/templates`, () => {
+        http.get(`${baseUrl}/templates`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -348,7 +348,7 @@ describe('templateApi', () => {
   describe('getTemplate', () => {
     it('should fetch master template by id', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/templates/${mockMasterTemplate.id}`, () => {
+        http.get(`${baseUrl}/templates/${mockMasterTemplate.id}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockMasterTemplate,
@@ -367,7 +367,7 @@ describe('templateApi', () => {
 
     it('should fetch department template by id', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/templates/${mockDepartmentTemplate.id}`, () => {
+        http.get(`${baseUrl}/templates/${mockDepartmentTemplate.id}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockDepartmentTemplate,
@@ -385,7 +385,7 @@ describe('templateApi', () => {
 
     it('should fetch custom template by id', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/templates/${mockCustomTemplate.id}`, () => {
+        http.get(`${baseUrl}/templates/${mockCustomTemplate.id}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockCustomTemplate,
@@ -403,7 +403,7 @@ describe('templateApi', () => {
 
     it('should include usage information', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/templates/${mockMasterTemplate.id}`, () => {
+        http.get(`${baseUrl}/templates/${mockMasterTemplate.id}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockMasterTemplate,
@@ -420,7 +420,7 @@ describe('templateApi', () => {
 
     it('should handle template not found error', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/templates/non-existent-id`, () => {
+        http.get(`${baseUrl}/templates/non-existent-id`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -448,7 +448,7 @@ describe('templateApi', () => {
       });
 
       server.use(
-        http.post(`${baseUrl}/api/v2/templates`, async ({ request }) => {
+        http.post(`${baseUrl}/templates`, async ({ request }) => {
           const body = await request.json();
           expect(body).toEqual(mockCreateMasterTemplatePayload);
 
@@ -475,7 +475,7 @@ describe('templateApi', () => {
       });
 
       server.use(
-        http.post(`${baseUrl}/api/v2/templates`, async ({ request }) => {
+        http.post(`${baseUrl}/templates`, async ({ request }) => {
           const body = await request.json();
           expect(body).toEqual(mockCreateDepartmentTemplatePayload);
 
@@ -500,7 +500,7 @@ describe('templateApi', () => {
       });
 
       server.use(
-        http.post(`${baseUrl}/api/v2/templates`, async ({ request }) => {
+        http.post(`${baseUrl}/templates`, async ({ request }) => {
           const body = await request.json();
           expect(body).toEqual(mockCreateCustomTemplatePayload);
 
@@ -530,7 +530,7 @@ describe('templateApi', () => {
       });
 
       server.use(
-        http.post(`${baseUrl}/api/v2/templates`, () => {
+        http.post(`${baseUrl}/templates`, () => {
           return HttpResponse.json({
             success: true,
             data: newTemplate,
@@ -545,7 +545,7 @@ describe('templateApi', () => {
 
     it('should handle validation error', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/templates`, () => {
+        http.post(`${baseUrl}/templates`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -573,7 +573,7 @@ describe('templateApi', () => {
       });
 
       server.use(
-        http.put(`${baseUrl}/api/v2/templates/${mockCustomTemplate.id}`, async ({ request }) => {
+        http.put(`${baseUrl}/templates/${mockCustomTemplate.id}`, async ({ request }) => {
           const body = await request.json() as Record<string, unknown> | null;
           if (body && 'name' in body) {
             expect(body.name).toBe(mockUpdateTemplatePayload.name);
@@ -600,7 +600,7 @@ describe('templateApi', () => {
       });
 
       server.use(
-        http.put(`${baseUrl}/api/v2/templates/${mockCustomTemplate.id}`, () => {
+        http.put(`${baseUrl}/templates/${mockCustomTemplate.id}`, () => {
           return HttpResponse.json({
             success: true,
             data: updatedTemplate,
@@ -622,7 +622,7 @@ describe('templateApi', () => {
       });
 
       server.use(
-        http.put(`${baseUrl}/api/v2/templates/${mockCustomTemplate.id}`, () => {
+        http.put(`${baseUrl}/templates/${mockCustomTemplate.id}`, () => {
           return HttpResponse.json({
             success: true,
             data: updatedTemplate,
@@ -644,7 +644,7 @@ describe('templateApi', () => {
       });
 
       server.use(
-        http.put(`${baseUrl}/api/v2/templates/${mockDraftTemplate.id}`, () => {
+        http.put(`${baseUrl}/templates/${mockDraftTemplate.id}`, () => {
           return HttpResponse.json({
             success: true,
             data: updatedTemplate,
@@ -666,7 +666,7 @@ describe('templateApi', () => {
       });
 
       server.use(
-        http.put(`${baseUrl}/api/v2/templates/${mockMasterTemplate.id}`, () => {
+        http.put(`${baseUrl}/templates/${mockMasterTemplate.id}`, () => {
           return HttpResponse.json({
             success: true,
             data: updatedTemplate,
@@ -688,7 +688,7 @@ describe('templateApi', () => {
       });
 
       server.use(
-        http.put(`${baseUrl}/api/v2/templates/${mockCustomTemplate.id}`, async ({ request }) => {
+        http.put(`${baseUrl}/templates/${mockCustomTemplate.id}`, async ({ request }) => {
           const body = await request.json();
           expect(body).toEqual(mockUpdateTemplatePayload);
 
@@ -709,7 +709,7 @@ describe('templateApi', () => {
 
     it('should handle template not found error', async () => {
       server.use(
-        http.put(`${baseUrl}/api/v2/templates/non-existent-id`, () => {
+        http.put(`${baseUrl}/templates/non-existent-id`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -733,7 +733,7 @@ describe('templateApi', () => {
   describe('deleteTemplate', () => {
     it('should delete template without usage', async () => {
       server.use(
-        http.delete(`${baseUrl}/api/v2/templates/${mockDraftTemplate.id}`, () => {
+        http.delete(`${baseUrl}/templates/${mockDraftTemplate.id}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockDeleteTemplateResponse,
@@ -750,7 +750,7 @@ describe('templateApi', () => {
 
     it('should delete template with replacement', async () => {
       server.use(
-        http.delete(`${baseUrl}/api/v2/templates/${mockDepartmentTemplate.id}`, () => {
+        http.delete(`${baseUrl}/templates/${mockDepartmentTemplate.id}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockDeleteWithReplacementResponse,
@@ -769,7 +769,7 @@ describe('templateApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/templates/${mockCustomTemplate.id}`, ({ request }) => {
+        http.delete(`${baseUrl}/templates/${mockCustomTemplate.id}`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -788,7 +788,7 @@ describe('templateApi', () => {
 
     it('should handle delete error for template in use without force', async () => {
       server.use(
-        http.delete(`${baseUrl}/api/v2/templates/${mockMasterTemplate.id}`, () => {
+        http.delete(`${baseUrl}/templates/${mockMasterTemplate.id}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -804,7 +804,7 @@ describe('templateApi', () => {
 
     it('should handle template not found error', async () => {
       server.use(
-        http.delete(`${baseUrl}/api/v2/templates/non-existent-id`, () => {
+        http.delete(`${baseUrl}/templates/non-existent-id`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -827,7 +827,7 @@ describe('templateApi', () => {
     it('should duplicate master template as department template', async () => {
       server.use(
         http.post(
-          `${baseUrl}/api/v2/templates/${mockMasterTemplate.id}/duplicate`,
+          `${baseUrl}/templates/${mockMasterTemplate.id}/duplicate`,
           async ({ request }) => {
             const body = await request.json();
             expect(body).toEqual(mockDuplicateMasterPayload);
@@ -863,7 +863,7 @@ describe('templateApi', () => {
 
       server.use(
         http.post(
-          `${baseUrl}/api/v2/templates/${mockCustomTemplate.id}/duplicate`,
+          `${baseUrl}/templates/${mockCustomTemplate.id}/duplicate`,
           async ({ request }) => {
             const body = await request.json();
             expect(body).toEqual(mockDuplicateCustomPayload);
@@ -898,7 +898,7 @@ describe('templateApi', () => {
       });
 
       server.use(
-        http.post(`${baseUrl}/api/v2/templates/${mockCustomTemplate.id}/duplicate`, () => {
+        http.post(`${baseUrl}/templates/${mockCustomTemplate.id}/duplicate`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -917,7 +917,7 @@ describe('templateApi', () => {
 
     it('should preserve CSS and HTML from original', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/templates/${mockMasterTemplate.id}/duplicate`, () => {
+        http.post(`${baseUrl}/templates/${mockMasterTemplate.id}/duplicate`, () => {
           return HttpResponse.json({
             success: true,
             data: mockDuplicateTemplateResponse,
@@ -936,7 +936,7 @@ describe('templateApi', () => {
 
     it('should handle template not found error', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/templates/non-existent-id/duplicate`, () => {
+        http.post(`${baseUrl}/templates/non-existent-id/duplicate`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -960,7 +960,7 @@ describe('templateApi', () => {
   describe('previewTemplate', () => {
     it('should preview template in JSON format', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/templates/${mockMasterTemplate.id}/preview`, () => {
+        http.get(`${baseUrl}/templates/${mockMasterTemplate.id}/preview`, () => {
           return HttpResponse.json({
             success: true,
             data: mockPreviewDataJSON,
@@ -979,7 +979,7 @@ describe('templateApi', () => {
 
     it('should preview template in HTML format', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/templates/${mockMasterTemplate.id}/preview`, () => {
+        http.get(`${baseUrl}/templates/${mockMasterTemplate.id}/preview`, () => {
           return HttpResponse.text(mockPreviewHTML);
         })
       );
@@ -996,7 +996,7 @@ describe('templateApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/templates/${mockMasterTemplate.id}/preview`, ({ request }) => {
+        http.get(`${baseUrl}/templates/${mockMasterTemplate.id}/preview`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -1027,7 +1027,7 @@ describe('templateApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/templates/${mockMasterTemplate.id}/preview`, ({ request }) => {
+        http.get(`${baseUrl}/templates/${mockMasterTemplate.id}/preview`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -1057,7 +1057,7 @@ describe('templateApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/api/v2/templates/${mockMasterTemplate.id}/preview`, ({ request }) => {
+        http.get(`${baseUrl}/templates/${mockMasterTemplate.id}/preview`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -1074,7 +1074,7 @@ describe('templateApi', () => {
 
     it('should include placeholder metadata in JSON preview', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/templates/${mockMasterTemplate.id}/preview`, () => {
+        http.get(`${baseUrl}/templates/${mockMasterTemplate.id}/preview`, () => {
           return HttpResponse.json({
             success: true,
             data: mockPreviewDataJSON,
@@ -1098,7 +1098,7 @@ describe('templateApi', () => {
 
     it('should handle template not found error', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/templates/non-existent-id/preview`, () => {
+        http.get(`${baseUrl}/templates/non-existent-id/preview`, () => {
           return HttpResponse.json(
             {
               success: false,

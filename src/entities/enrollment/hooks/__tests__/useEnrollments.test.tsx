@@ -78,7 +78,7 @@ describe('Enrollment Hooks', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments`, () => {
+        http.get(`${baseUrl}/enrollments`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -111,7 +111,7 @@ describe('Enrollment Hooks', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments`, () => {
+        http.get(`${baseUrl}/enrollments`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -130,7 +130,7 @@ describe('Enrollment Hooks', () => {
 
     it('should handle error', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments`, () => {
+        http.get(`${baseUrl}/enrollments`, () => {
           return HttpResponse.json(
             { success: false, message: 'Server error' },
             { status: 500 }
@@ -153,7 +153,7 @@ describe('Enrollment Hooks', () => {
       const enrollmentId = 'enrollment-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments/${enrollmentId}`, () => {
+        http.get(`${baseUrl}/enrollments/${enrollmentId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockEnrollmentDetail,
@@ -196,7 +196,7 @@ describe('Enrollment Hooks', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments`, ({ request }) => {
+        http.get(`${baseUrl}/enrollments`, ({ request }) => {
           const url = new URL(request.url);
           // In real implementation, would check for learner=current or similar
           return HttpResponse.json({
@@ -221,7 +221,7 @@ describe('Enrollment Hooks', () => {
       const programId = 'program-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments/program/${programId}`, () => {
+        http.get(`${baseUrl}/enrollments/program/${programId}`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -268,7 +268,7 @@ describe('Enrollment Hooks', () => {
       const courseId = 'course-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments/course/${courseId}`, () => {
+        http.get(`${baseUrl}/enrollments/course/${courseId}`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -316,7 +316,7 @@ describe('Enrollment Hooks', () => {
       const classId = 'class-1';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/enrollments/class/${classId}`, () => {
+        http.get(`${baseUrl}/enrollments/class/${classId}`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -379,7 +379,7 @@ describe('Enrollment Hooks', () => {
   describe('useEnrollInProgram', () => {
     it('should enroll in program', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/enrollments/program`, () => {
+        http.post(`${baseUrl}/enrollments/program`, () => {
           return HttpResponse.json(
             {
               success: true,
@@ -407,7 +407,7 @@ describe('Enrollment Hooks', () => {
 
     it('should handle enrollment error', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/enrollments/program`, () => {
+        http.post(`${baseUrl}/enrollments/program`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -437,7 +437,7 @@ describe('Enrollment Hooks', () => {
   describe('useEnrollInCourse', () => {
     it('should enroll in course', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/enrollments/course`, () => {
+        http.post(`${baseUrl}/enrollments/course`, () => {
           return HttpResponse.json(
             {
               success: true,
@@ -467,7 +467,7 @@ describe('Enrollment Hooks', () => {
   describe('useEnrollInClass', () => {
     it('should enroll in class', async () => {
       server.use(
-        http.post(`${baseUrl}/api/v2/enrollments/class`, () => {
+        http.post(`${baseUrl}/enrollments/class`, () => {
           return HttpResponse.json(
             {
               success: true,
@@ -499,7 +499,7 @@ describe('Enrollment Hooks', () => {
       const enrollmentId = 'enrollment-1';
 
       server.use(
-        http.patch(`${baseUrl}/api/v2/enrollments/${enrollmentId}/status`, () => {
+        http.patch(`${baseUrl}/enrollments/${enrollmentId}/status`, () => {
           return HttpResponse.json({
             success: true,
             message: 'Enrollment status updated successfully',
@@ -553,7 +553,7 @@ describe('Enrollment Hooks', () => {
       const enrollmentId = 'enrollment-1';
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/enrollments/${enrollmentId}`, () => {
+        http.delete(`${baseUrl}/enrollments/${enrollmentId}`, () => {
           return HttpResponse.json({
             success: true,
             message: 'Successfully withdrawn from enrollment',
@@ -588,7 +588,7 @@ describe('Enrollment Hooks', () => {
       const enrollmentId = 'enrollment-3';
 
       server.use(
-        http.delete(`${baseUrl}/api/v2/enrollments/${enrollmentId}`, () => {
+        http.delete(`${baseUrl}/enrollments/${enrollmentId}`, () => {
           return HttpResponse.json(
             {
               success: false,
