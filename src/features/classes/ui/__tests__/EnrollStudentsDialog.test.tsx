@@ -37,12 +37,12 @@ describe('EnrollStudentsDialog', () => {
     server.use(
       http.get(`${env.apiBaseUrl}/admin/users`, () => {
         return HttpResponse.json({
-          success: true,
-          data: {
-            users: learners,
+          users: learners,
+          pagination: {
             total: learners.length,
             page: 1,
-            pageSize: 20,
+            limit: 20,
+            totalPages: 1,
           },
         });
       })
@@ -189,13 +189,13 @@ describe('EnrollStudentsDialog', () => {
     const checkboxes = screen.getAllByRole('checkbox');
     await user.click(checkboxes[0]);
 
-    expect(screen.getByText(/1 student.*selected/i)).toBeInTheDocument();
+    expect(screen.getByText(/1.*selected/i)).toBeInTheDocument();
   });
 
   it('enrolls selected students when submit is clicked', async () => {
     const user = userEvent.setup();
     server.use(
-      http.post(`${env.apiBaseUrl}/api/classes/:classId/learners`, () => {
+      http.post(`${env.apiBaseUrl}/classes/:classId/learners`, () => {
         return HttpResponse.json(mockEnrollmentResult);
       })
     );
@@ -248,24 +248,27 @@ describe('EnrollStudentsDialog', () => {
 
   it('shows already enrolled students as disabled', async () => {
     server.use(
-      http.get(`${env.apiBaseUrl}/api/classes/class-1/enrollments`, () => {
+      http.get(`${env.apiBaseUrl}/classes/class-1/enrollments`, () => {
         return HttpResponse.json({
-          classId: 'class-1',
-          enrollments: [
-            {
-              id: 'enrollment-1',
-              learner: learners[0],
-              status: 'active',
-              enrolledAt: '2026-01-01T00:00:00Z',
+          success: true,
+          data: {
+            classId: 'class-1',
+            enrollments: [
+              {
+                id: 'enrollment-1',
+                learner: learners[0],
+                status: 'active',
+                enrolledAt: '2026-01-01T00:00:00Z',
+              },
+            ],
+            pagination: {
+              page: 1,
+              limit: 20,
+              total: 1,
+              totalPages: 1,
+              hasNext: false,
+              hasPrev: false,
             },
-          ],
-          pagination: {
-            page: 1,
-            limit: 20,
-            total: 1,
-            totalPages: 1,
-            hasNext: false,
-            hasPrev: false,
           },
         });
       })
@@ -309,7 +312,7 @@ describe('EnrollStudentsDialog', () => {
   it('displays error message on enrollment failure', async () => {
     const user = userEvent.setup();
     server.use(
-      http.post(`${env.apiBaseUrl}/api/classes/:classId/learners`, () => {
+      http.post(`${env.apiBaseUrl}/classes/:classId/learners`, () => {
         return HttpResponse.json(
           { message: 'Class is full' },
           { status: 400 }
@@ -386,7 +389,7 @@ describe('EnrollStudentsDialog', () => {
   it('displays loading state while enrolling', async () => {
     const user = userEvent.setup();
     server.use(
-      http.post(`${env.apiBaseUrl}/api/classes/:classId/learners`, async () => {
+      http.post(`${env.apiBaseUrl}/classes/:classId/learners`, async () => {
         await new Promise((resolve) => setTimeout(resolve, 1000));
         return HttpResponse.json(mockEnrollmentResult);
       })

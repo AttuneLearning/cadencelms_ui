@@ -62,10 +62,10 @@ describe('DepartmentManagementPage', () => {
     it('should render page title and description', async () => {
       server.use(
         http.get(`${baseUrl}/departments`, () => {
-          return HttpResponse.json({
+          return HttpResponse.json({ success: true, data: {
             departments: [],
             pagination: { page: 1, limit: 50, total: 0, totalPages: 0 },
-          });
+          }});
         })
       );
 
@@ -78,10 +78,10 @@ describe('DepartmentManagementPage', () => {
     it('should render Add Department button', async () => {
       server.use(
         http.get(`${baseUrl}/departments`, () => {
-          return HttpResponse.json({
+          return HttpResponse.json({ success: true, data: {
             departments: [],
             pagination: { page: 1, limit: 50, total: 0, totalPages: 0 },
-          });
+          }});
         })
       );
 
@@ -96,10 +96,10 @@ describe('DepartmentManagementPage', () => {
       server.use(
         http.get(`${baseUrl}/departments`, async () => {
           await new Promise(resolve => setTimeout(resolve, 100));
-          return HttpResponse.json({
+          return HttpResponse.json({ success: true, data: {
             departments: [],
             pagination: { page: 1, limit: 50, total: 0, totalPages: 0 },
-          });
+          }});
         })
       );
 
@@ -113,10 +113,10 @@ describe('DepartmentManagementPage', () => {
     it('should display list of departments', async () => {
       server.use(
         http.get(`${baseUrl}/departments`, () => {
-          return HttpResponse.json({
+          return HttpResponse.json({ success: true, data: {
             departments: mockDepartments,
             pagination: { page: 1, limit: 50, total: mockDepartments.length, totalPages: 1 },
-          });
+          }});
         })
       );
 
@@ -131,10 +131,10 @@ describe('DepartmentManagementPage', () => {
     it('should display department stats', async () => {
       server.use(
         http.get(`${baseUrl}/departments`, () => {
-          return HttpResponse.json({
+          return HttpResponse.json({ success: true, data: {
             departments: mockDepartments,
             pagination: { page: 1, limit: 50, total: mockDepartments.length, totalPages: 1 },
-          });
+          }});
         })
       );
 
@@ -150,10 +150,10 @@ describe('DepartmentManagementPage', () => {
     it('should display hierarchical relationship indicators', async () => {
       server.use(
         http.get(`${baseUrl}/departments`, () => {
-          return HttpResponse.json({
+          return HttpResponse.json({ success: true, data: {
             departments: mockDepartments,
             pagination: { page: 1, limit: 50, total: mockDepartments.length, totalPages: 1 },
-          });
+          }});
         })
       );
 
@@ -175,10 +175,10 @@ describe('DepartmentManagementPage', () => {
           const filtered = search
             ? mockDepartments.filter(d => d.name.toLowerCase().includes(search.toLowerCase()))
             : mockDepartments;
-          return HttpResponse.json({
+          return HttpResponse.json({ success: true, data: {
             departments: filtered,
             pagination: { page: 1, limit: 50, total: filtered.length, totalPages: 1 },
-          });
+          }});
         })
       );
 
@@ -206,10 +206,10 @@ describe('DepartmentManagementPage', () => {
           const filtered = parentId
             ? mockDepartments.filter(d => d.parentId === parentId)
             : mockDepartments;
-          return HttpResponse.json({
+          return HttpResponse.json({ success: true, data: {
             departments: filtered,
             pagination: { page: 1, limit: 50, total: filtered.length, totalPages: 1 },
-          });
+          }});
         })
       );
 
@@ -225,10 +225,10 @@ describe('DepartmentManagementPage', () => {
     it('should open create dialog when Add Department button is clicked', async () => {
       server.use(
         http.get(`${baseUrl}/departments`, () => {
-          return HttpResponse.json({
+          return HttpResponse.json({ success: true, data: {
             departments: [],
             pagination: { page: 1, limit: 50, total: 0, totalPages: 0 },
-          });
+          }});
         })
       );
 
@@ -246,10 +246,10 @@ describe('DepartmentManagementPage', () => {
     it('should open edit dialog when Edit button is clicked', async () => {
       server.use(
         http.get(`${baseUrl}/departments`, () => {
-          return HttpResponse.json({
+          return HttpResponse.json({ success: true, data: {
             departments: mockDepartments,
             pagination: { page: 1, limit: 50, total: mockDepartments.length, totalPages: 1 },
-          });
+          }});
         })
       );
 
@@ -274,20 +274,20 @@ describe('DepartmentManagementPage', () => {
       let createCalled = false;
       server.use(
         http.get(`${baseUrl}/departments`, () => {
-          return HttpResponse.json({
+          return HttpResponse.json({ success: true, data: {
             departments: [],
             pagination: { page: 1, limit: 50, total: 0, totalPages: 0 },
-          });
+          }});
         }),
         http.post(`${baseUrl}/departments`, async ({ request }) => {
           createCalled = true;
           const data = await request.json();
-          return HttpResponse.json({
+          return HttpResponse.json({ success: true, data: {
             id: 'new-dept',
             ...data,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-          });
+          }});
         })
       );
 
@@ -306,10 +306,10 @@ describe('DepartmentManagementPage', () => {
       let deleteCalled = false;
       server.use(
         http.get(`${baseUrl}/departments`, () => {
-          return HttpResponse.json({
+          return HttpResponse.json({ success: true, data: {
             departments: mockDepartments,
             pagination: { page: 1, limit: 50, total: mockDepartments.length, totalPages: 1 },
-          });
+          }});
         }),
         http.delete(`${baseUrl}/departments/:id`, () => {
           deleteCalled = true;
@@ -356,10 +356,10 @@ describe('DepartmentManagementPage', () => {
     it('should show error toast on delete failure', async () => {
       server.use(
         http.get(`${baseUrl}/departments`, () => {
-          return HttpResponse.json({
+          return HttpResponse.json({ success: true, data: {
             departments: mockDepartments,
             pagination: { page: 1, limit: 50, total: mockDepartments.length, totalPages: 1 },
-          });
+          }});
         }),
         http.delete(`${baseUrl}/departments/:id`, () => {
           return HttpResponse.json(
@@ -387,10 +387,10 @@ describe('DepartmentManagementPage', () => {
 
       server.use(
         http.get(`${baseUrl}/departments`, () => {
-          return HttpResponse.json({
+          return HttpResponse.json({ success: true, data: {
             departments: largeMockList.slice(0, 50),
             pagination: { page: 1, limit: 50, total: 100, totalPages: 2 },
-          });
+          }});
         })
       );
 
@@ -406,10 +406,10 @@ describe('DepartmentManagementPage', () => {
     it('should have proper ARIA labels', async () => {
       server.use(
         http.get(`${baseUrl}/departments`, () => {
-          return HttpResponse.json({
+          return HttpResponse.json({ success: true, data: {
             departments: mockDepartments,
             pagination: { page: 1, limit: 50, total: mockDepartments.length, totalPages: 1 },
-          });
+          }});
         })
       );
 
