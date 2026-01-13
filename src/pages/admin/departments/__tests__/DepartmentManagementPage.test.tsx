@@ -22,6 +22,10 @@ const mockDepartments = [
     parentId: null,
     staffCount: 5,
     learnerCount: 150,
+    metadata: {
+      totalStaff: 5,
+      totalPrograms: 3,
+    },
     createdAt: new Date('2024-01-01').toISOString(),
     updatedAt: new Date('2024-01-08').toISOString(),
   },
@@ -33,6 +37,10 @@ const mockDepartments = [
     parentId: 'dept-1',
     staffCount: 3,
     learnerCount: 100,
+    metadata: {
+      totalStaff: 3,
+      totalPrograms: 2,
+    },
     createdAt: new Date('2024-01-02').toISOString(),
     updatedAt: new Date('2024-01-08').toISOString(),
   },
