@@ -14,6 +14,8 @@ vi.mock('@/entities/enrollment', () => ({
   useMyEnrollments: vi.fn(),
 }));
 
+import { useMyEnrollments } from '@/entities/enrollment';
+
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -36,7 +38,7 @@ describe('MyCoursesPage', () => {
 
   describe('Rendering', () => {
     it('should render page title', () => {
-      const { useMyEnrollments } = require('@/entities/enrollment');
+      
       useMyEnrollments.mockReturnValue({
         data: { enrollments: [], pagination: { page: 1, total: 0 } },
         isLoading: false,
@@ -49,7 +51,7 @@ describe('MyCoursesPage', () => {
     });
 
     it('should render search bar', () => {
-      const { useMyEnrollments } = require('@/entities/enrollment');
+      
       useMyEnrollments.mockReturnValue({
         data: { enrollments: [], pagination: { page: 1, total: 0 } },
         isLoading: false,
@@ -62,7 +64,7 @@ describe('MyCoursesPage', () => {
     });
 
     it('should render filter tabs', () => {
-      const { useMyEnrollments } = require('@/entities/enrollment');
+      
       useMyEnrollments.mockReturnValue({
         data: { enrollments: [], pagination: { page: 1, total: 0 } },
         isLoading: false,
@@ -80,7 +82,7 @@ describe('MyCoursesPage', () => {
 
   describe('Loading State', () => {
     it('should show loading skeleton', () => {
-      const { useMyEnrollments } = require('@/entities/enrollment');
+      
       useMyEnrollments.mockReturnValue({
         data: null,
         isLoading: true,
@@ -95,7 +97,7 @@ describe('MyCoursesPage', () => {
 
   describe('Empty State', () => {
     it('should show empty state when no enrollments', () => {
-      const { useMyEnrollments } = require('@/entities/enrollment');
+      
       useMyEnrollments.mockReturnValue({
         data: { enrollments: [], pagination: { page: 1, total: 0 } },
         isLoading: false,
@@ -108,7 +110,7 @@ describe('MyCoursesPage', () => {
     });
 
     it('should show link to course catalog in empty state', () => {
-      const { useMyEnrollments } = require('@/entities/enrollment');
+      
       useMyEnrollments.mockReturnValue({
         data: { enrollments: [], pagination: { page: 1, total: 0 } },
         isLoading: false,
@@ -124,7 +126,7 @@ describe('MyCoursesPage', () => {
 
   describe('Course Display', () => {
     it('should display enrolled courses', () => {
-      const { useMyEnrollments } = require('@/entities/enrollment');
+      
       const mockEnrollments = [
         {
           id: '1',
@@ -157,7 +159,7 @@ describe('MyCoursesPage', () => {
     });
 
     it('should display progress for each course', () => {
-      const { useMyEnrollments } = require('@/entities/enrollment');
+      
       const mockEnrollments = [
         {
           id: '1',
@@ -181,14 +183,14 @@ describe('MyCoursesPage', () => {
     });
 
     it('should display status badge for each course', () => {
-      const { useMyEnrollments } = require('@/entities/enrollment');
+      
       const mockEnrollments = [
         {
           id: '1',
           type: 'course',
           target: { id: 'c1', name: 'Test Course', code: 'TEST' },
           status: 'completed',
-          progress: { percentage: 100, completedItems: 5, totalItems: 5 },
+          progress: { percentage: 100, completedItems: 5, totalItems: 5, score: 95 },
           completedAt: '2024-02-01',
           enrolledAt: '2024-01-01',
         },
@@ -206,7 +208,7 @@ describe('MyCoursesPage', () => {
     });
 
     it('should have Continue Learning button for each course', () => {
-      const { useMyEnrollments } = require('@/entities/enrollment');
+      
       const mockEnrollments = [
         {
           id: '1',
@@ -232,7 +234,7 @@ describe('MyCoursesPage', () => {
 
   describe('Filtering', () => {
     it('should filter by In Progress status', async () => {
-      const { useMyEnrollments } = require('@/entities/enrollment');
+      
       useMyEnrollments.mockReturnValue({
         data: { enrollments: [], pagination: { page: 1, total: 0 } },
         isLoading: false,
@@ -254,7 +256,7 @@ describe('MyCoursesPage', () => {
     });
 
     it('should filter by Completed status', async () => {
-      const { useMyEnrollments } = require('@/entities/enrollment');
+      
       useMyEnrollments.mockReturnValue({
         data: { enrollments: [], pagination: { page: 1, total: 0 } },
         isLoading: false,
@@ -278,7 +280,7 @@ describe('MyCoursesPage', () => {
 
   describe('Search', () => {
     it('should filter courses by search query', async () => {
-      const { useMyEnrollments } = require('@/entities/enrollment');
+      
       useMyEnrollments.mockReturnValue({
         data: { enrollments: [], pagination: { page: 1, total: 0 } },
         isLoading: false,
@@ -302,7 +304,7 @@ describe('MyCoursesPage', () => {
 
   describe('Sorting', () => {
     it('should sort by enrollment date', async () => {
-      const { useMyEnrollments } = require('@/entities/enrollment');
+      
       useMyEnrollments.mockReturnValue({
         data: { enrollments: [], pagination: { page: 1, total: 0 } },
         isLoading: false,
@@ -326,7 +328,7 @@ describe('MyCoursesPage', () => {
 
   describe('Error Handling', () => {
     it('should display error message when fetch fails', () => {
-      const { useMyEnrollments } = require('@/entities/enrollment');
+      
       useMyEnrollments.mockReturnValue({
         data: null,
         isLoading: false,

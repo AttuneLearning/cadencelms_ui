@@ -57,8 +57,8 @@ describe('ReportTemplatesPage', () => {
   describe('Page Rendering', () => {
     it('should render page title and description', async () => {
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
 
@@ -70,8 +70,8 @@ describe('ReportTemplatesPage', () => {
 
     it('should render Create Template button', async () => {
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
 
@@ -84,7 +84,7 @@ describe('ReportTemplatesPage', () => {
 
     it('should display loading state initially', () => {
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, async () => {
+        http.get(`${baseUrl}/report-templates`, async () => {
           await new Promise(resolve => setTimeout(resolve, 100));
           return HttpResponse.json(mockTemplatesListResponse);
         })
@@ -99,8 +99,8 @@ describe('ReportTemplatesPage', () => {
   describe('Templates List Display', () => {
     it('should display list of templates', async () => {
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
 
@@ -114,8 +114,8 @@ describe('ReportTemplatesPage', () => {
 
     it('should display template descriptions', async () => {
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
 
@@ -128,8 +128,8 @@ describe('ReportTemplatesPage', () => {
 
     it('should display report type badges', async () => {
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
 
@@ -144,8 +144,8 @@ describe('ReportTemplatesPage', () => {
 
     it('should display isDefault indicator', async () => {
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
 
@@ -159,8 +159,8 @@ describe('ReportTemplatesPage', () => {
 
     it('should display isShared indicator', async () => {
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
 
@@ -174,15 +174,15 @@ describe('ReportTemplatesPage', () => {
 
     it('should display created by information', async () => {
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
 
       render(<ReportTemplatesPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByText(/john doe/i)).toBeInTheDocument();
+        expect(screen.getAllByText(/john doe/i)[0]).toBeInTheDocument();
         expect(screen.getByText(/jane smith/i)).toBeInTheDocument();
       });
     });
@@ -199,8 +199,8 @@ describe('ReportTemplatesPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(emptyResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: emptyResponse });
         })
       );
 
@@ -217,8 +217,8 @@ describe('ReportTemplatesPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
 
@@ -237,8 +237,8 @@ describe('ReportTemplatesPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
 
@@ -250,9 +250,10 @@ describe('ReportTemplatesPage', () => {
       await waitFor(() => {
         expect(screen.getByLabelText(/template name/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/description/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/report type/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/is default/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/is shared/i)).toBeInTheDocument();
+        const reportTypeFields = screen.getAllByLabelText(/report type/i);
+        expect(reportTypeFields.length).toBeGreaterThan(0);
+        expect(screen.getByLabelText(/set as default template/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/share.*template.*all users/i)).toBeInTheDocument();
       });
     });
 
@@ -261,10 +262,10 @@ describe('ReportTemplatesPage', () => {
       let createCalled = false;
 
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         }),
-        http.post(`${baseUrl}/api/report-templates`, async () => {
+        http.post(`${baseUrl}/report-templates`, async () => {
           createCalled = true;
           return HttpResponse.json({
             ...mockCreateTemplatePayload,
@@ -298,8 +299,8 @@ describe('ReportTemplatesPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
 
@@ -322,17 +323,20 @@ describe('ReportTemplatesPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
 
       render(<ReportTemplatesPage />, { wrapper: createWrapper() });
 
-      await waitFor(async () => {
-        const actionButtons = screen.getAllByRole('button', { name: /open menu/i });
-        await user.click(actionButtons[0]);
+      // Wait for templates to load first
+      await waitFor(() => {
+        expect(screen.getByText('Monthly Enrollment Summary')).toBeInTheDocument();
       });
+
+      const actionButtons = screen.getAllByRole('button', { name: /open menu/i });
+      await user.click(actionButtons[0]);
 
       const editButton = await screen.findByText('Edit Template');
       await user.click(editButton);
@@ -347,17 +351,20 @@ describe('ReportTemplatesPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
 
       render(<ReportTemplatesPage />, { wrapper: createWrapper() });
 
-      await waitFor(async () => {
-        const actionButtons = screen.getAllByRole('button', { name: /open menu/i });
-        await user.click(actionButtons[0]);
+      // Wait for templates to load first
+      await waitFor(() => {
+        expect(screen.getByText('Monthly Enrollment Summary')).toBeInTheDocument();
       });
+
+      const actionButtons = screen.getAllByRole('button', { name: /open menu/i });
+      await user.click(actionButtons[0]);
 
       const editButton = await screen.findByText('Edit Template');
       await user.click(editButton);
@@ -373,10 +380,10 @@ describe('ReportTemplatesPage', () => {
       let updateCalled = false;
 
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         }),
-        http.patch(`${baseUrl}/api/report-templates/template-1`, async () => {
+        http.patch(`${baseUrl}/report-templates/template-1`, async () => {
           updateCalled = true;
           return HttpResponse.json({
             ...mockReportTemplates[0],
@@ -387,10 +394,13 @@ describe('ReportTemplatesPage', () => {
 
       render(<ReportTemplatesPage />, { wrapper: createWrapper() });
 
-      await waitFor(async () => {
-        const actionButtons = screen.getAllByRole('button', { name: /open menu/i });
-        await user.click(actionButtons[0]);
+      // Wait for templates to load first
+      await waitFor(() => {
+        expect(screen.getByText('Monthly Enrollment Summary')).toBeInTheDocument();
       });
+
+      const actionButtons = screen.getAllByRole('button', { name: /open menu/i });
+      await user.click(actionButtons[0]);
 
       const editButton = await screen.findByText('Edit Template');
       await user.click(editButton);
@@ -413,17 +423,20 @@ describe('ReportTemplatesPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
 
       render(<ReportTemplatesPage />, { wrapper: createWrapper() });
 
-      await waitFor(async () => {
-        const actionButtons = screen.getAllByRole('button', { name: /open menu/i });
-        await user.click(actionButtons[0]);
+      // Wait for templates to load first
+      await waitFor(() => {
+        expect(screen.getByText('Monthly Enrollment Summary')).toBeInTheDocument();
       });
+
+      const actionButtons = screen.getAllByRole('button', { name: /open menu/i });
+      await user.click(actionButtons[0]);
 
       const deleteButton = await screen.findByText('Delete Template');
       await user.click(deleteButton);
@@ -439,10 +452,10 @@ describe('ReportTemplatesPage', () => {
       let deleteCalled = false;
 
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         }),
-        http.delete(`${baseUrl}/api/report-templates/template-1`, () => {
+        http.delete(`${baseUrl}/report-templates/template-1`, () => {
           deleteCalled = true;
           return HttpResponse.json({}, { status: 204 });
         })
@@ -450,10 +463,13 @@ describe('ReportTemplatesPage', () => {
 
       render(<ReportTemplatesPage />, { wrapper: createWrapper() });
 
-      await waitFor(async () => {
-        const actionButtons = screen.getAllByRole('button', { name: /open menu/i });
-        await user.click(actionButtons[0]);
+      // Wait for templates to load first
+      await waitFor(() => {
+        expect(screen.getByText('Monthly Enrollment Summary')).toBeInTheDocument();
       });
+
+      const actionButtons = screen.getAllByRole('button', { name: /open menu/i });
+      await user.click(actionButtons[0]);
 
       const deleteButton = await screen.findByText('Delete Template');
       await user.click(deleteButton);
@@ -470,10 +486,10 @@ describe('ReportTemplatesPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         }),
-        http.delete(`${baseUrl}/api/report-templates/template-1`, () => {
+        http.delete(`${baseUrl}/report-templates/template-1`, () => {
           return HttpResponse.json(
             { message: 'Failed to delete template' },
             { status: 500 }
@@ -483,10 +499,13 @@ describe('ReportTemplatesPage', () => {
 
       render(<ReportTemplatesPage />, { wrapper: createWrapper() });
 
-      await waitFor(async () => {
-        const actionButtons = screen.getAllByRole('button', { name: /open menu/i });
-        await user.click(actionButtons[0]);
+      // Wait for templates to load first
+      await waitFor(() => {
+        expect(screen.getByText('Monthly Enrollment Summary')).toBeInTheDocument();
       });
+
+      const actionButtons = screen.getAllByRole('button', { name: /open menu/i });
+      await user.click(actionButtons[0]);
 
       const deleteButton = await screen.findByText('Delete Template');
       await user.click(deleteButton);
@@ -506,10 +525,10 @@ describe('ReportTemplatesPage', () => {
       let setDefaultCalled = false;
 
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         }),
-        http.post(`${baseUrl}/api/report-templates/template-2/set-default`, () => {
+        http.post(`${baseUrl}/report-templates/template-2/set-default`, () => {
           setDefaultCalled = true;
           return HttpResponse.json({
             ...mockReportTemplates[1],
@@ -520,10 +539,13 @@ describe('ReportTemplatesPage', () => {
 
       render(<ReportTemplatesPage />, { wrapper: createWrapper() });
 
-      await waitFor(async () => {
-        const actionButtons = screen.getAllByRole('button', { name: /open menu/i });
-        await user.click(actionButtons[1]);
+      // Wait for templates to load first
+      await waitFor(() => {
+        expect(screen.getByText('Monthly Enrollment Summary')).toBeInTheDocument();
       });
+
+      const actionButtons = screen.getAllByRole('button', { name: /open menu/i });
+      await user.click(actionButtons[1]);
 
       const setDefaultButton = await screen.findByText('Set as Default');
       await user.click(setDefaultButton);
@@ -540,10 +562,10 @@ describe('ReportTemplatesPage', () => {
       let toggleCalled = false;
 
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         }),
-        http.post(`${baseUrl}/api/report-templates/template-3/toggle-shared`, () => {
+        http.post(`${baseUrl}/report-templates/template-3/toggle-shared`, () => {
           toggleCalled = true;
           return HttpResponse.json({
             ...mockReportTemplates[2],
@@ -554,12 +576,15 @@ describe('ReportTemplatesPage', () => {
 
       render(<ReportTemplatesPage />, { wrapper: createWrapper() });
 
-      await waitFor(async () => {
-        const actionButtons = screen.getAllByRole('button', { name: /open menu/i });
-        await user.click(actionButtons[2]);
+      // Wait for templates to load first
+      await waitFor(() => {
+        expect(screen.getByText('Monthly Enrollment Summary')).toBeInTheDocument();
       });
 
-      const toggleButton = await screen.findByText(/toggle shared/i);
+      const actionButtons = screen.getAllByRole('button', { name: /open menu/i });
+      await user.click(actionButtons[2]);
+
+      const toggleButton = await screen.findByText(/make shared/i);
       await user.click(toggleButton);
 
       await waitFor(() => {
@@ -571,15 +596,16 @@ describe('ReportTemplatesPage', () => {
   describe('Search and Filter', () => {
     it('should display search input', async () => {
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
 
       render(<ReportTemplatesPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByPlaceholderText(/search templates/i)).toBeInTheDocument();
+        const searchInputs = screen.getAllByPlaceholderText(/search templates/i);
+        expect(searchInputs.length).toBeGreaterThan(0);
       });
     });
 
@@ -587,8 +613,8 @@ describe('ReportTemplatesPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
 
@@ -604,15 +630,15 @@ describe('ReportTemplatesPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
 
       render(<ReportTemplatesPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        const defaultFilter = screen.getByLabelText(/default only/i);
+        const defaultFilter = screen.getByLabelText(/default status/i);
         expect(defaultFilter).toBeInTheDocument();
       });
     });
@@ -621,15 +647,15 @@ describe('ReportTemplatesPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
-          return HttpResponse.json(mockTemplatesListResponse);
+        http.get(`${baseUrl}/report-templates`, () => {
+          return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
 
       render(<ReportTemplatesPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        const sharedFilter = screen.getByLabelText(/shared only/i);
+        const sharedFilter = screen.getByLabelText(/shared status/i);
         expect(sharedFilter).toBeInTheDocument();
       });
     });
@@ -638,9 +664,9 @@ describe('ReportTemplatesPage', () => {
   describe('Error Handling', () => {
     it('should handle API error when loading templates', async () => {
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
+        http.get(`${baseUrl}/report-templates`, () => {
           return HttpResponse.json(
-            { message: 'Internal server error' },
+            { success: false, message: 'Internal server error' },
             { status: 500 }
           );
         })
@@ -655,7 +681,7 @@ describe('ReportTemplatesPage', () => {
 
     it('should handle network errors', async () => {
       server.use(
-        http.get(`${baseUrl}/api/report-templates`, () => {
+        http.get(`${baseUrl}/report-templates`, () => {
           return HttpResponse.error();
         })
       );

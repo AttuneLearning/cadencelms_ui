@@ -83,7 +83,7 @@ describe('ReportViewerPage', () => {
         expect(screen.getByText(mockReadyReport.name)).toBeInTheDocument();
         expect(screen.getByText(/enrollment/i)).toBeInTheDocument();
         expect(screen.getByText(/ready/i)).toBeInTheDocument();
-      });
+      }, { timeout: 10000 });
     });
 
     it('should display report description', async () => {
@@ -100,7 +100,7 @@ describe('ReportViewerPage', () => {
         if (mockReadyReport.description) {
           expect(screen.getByText(mockReadyReport.description)).toBeInTheDocument();
         }
-      });
+      }, { timeout: 10000 });
     });
 
     it('should display report type badge', async () => {

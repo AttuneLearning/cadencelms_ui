@@ -35,12 +35,15 @@ describe('EnrollStudentsDialog', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     server.use(
-      http.get(`${env.apiBaseUrl}/api/users`, () => {
+      http.get(`${env.apiBaseUrl}/admin/users`, () => {
         return HttpResponse.json({
-          users: learners,
-          total: learners.length,
-          page: 1,
-          pageSize: 20,
+          success: true,
+          data: {
+            users: learners,
+            total: learners.length,
+            page: 1,
+            pageSize: 20,
+          },
         });
       })
     );

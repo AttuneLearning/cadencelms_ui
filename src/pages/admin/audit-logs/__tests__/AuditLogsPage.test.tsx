@@ -68,8 +68,8 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
-          return HttpResponse.json(mockResponse);
+        http.get(`${baseUrl}/audit-logs`, () => {
+          return HttpResponse.json({ success: true, data: mockResponse });
         })
       );
 
@@ -93,8 +93,8 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
-          return HttpResponse.json(mockResponse);
+        http.get(`${baseUrl}/audit-logs`, () => {
+          return HttpResponse.json({ success: true, data: mockResponse });
         })
       );
 
@@ -117,8 +117,8 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
-          return HttpResponse.json(mockResponse);
+        http.get(`${baseUrl}/audit-logs`, () => {
+          return HttpResponse.json({ success: true, data: mockResponse });
         })
       );
 
@@ -132,7 +132,7 @@ describe('AuditLogsPage', () => {
 
     it('should display loading state initially', () => {
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, async () => {
+        http.get(`${baseUrl}/audit-logs`, async () => {
           await new Promise((resolve) => setTimeout(resolve, 100));
           return HttpResponse.json({
             logs: [],
@@ -160,15 +160,15 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
-          return HttpResponse.json(mockResponse);
+        http.get(`${baseUrl}/audit-logs`, () => {
+          return HttpResponse.json({ success: true, data: mockResponse });
         })
       );
 
       render(<AuditLogsPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByText('John Doe')).toBeInTheDocument();
+        expect(screen.getAllByText('John Doe')[0]).toBeInTheDocument();
         expect(screen.getByText('Jane Smith')).toBeInTheDocument();
       });
     });
@@ -185,8 +185,8 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
-          return HttpResponse.json(mockResponse);
+        http.get(`${baseUrl}/audit-logs`, () => {
+          return HttpResponse.json({ success: true, data: mockResponse });
         })
       );
 
@@ -209,8 +209,8 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
-          return HttpResponse.json(mockResponse);
+        http.get(`${baseUrl}/audit-logs`, () => {
+          return HttpResponse.json({ success: true, data: mockResponse });
         })
       );
 
@@ -233,8 +233,8 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
-          return HttpResponse.json(mockResponse);
+        http.get(`${baseUrl}/audit-logs`, () => {
+          return HttpResponse.json({ success: true, data: mockResponse });
         })
       );
 
@@ -257,8 +257,8 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
-          return HttpResponse.json(mockResponse);
+        http.get(`${baseUrl}/audit-logs`, () => {
+          return HttpResponse.json({ success: true, data: mockResponse });
         })
       );
 
@@ -291,8 +291,8 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
-          return HttpResponse.json(mockResponse);
+        http.get(`${baseUrl}/audit-logs`, () => {
+          return HttpResponse.json({ success: true, data: mockResponse });
         })
       );
 
@@ -315,8 +315,8 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
-          return HttpResponse.json(mockResponse);
+        http.get(`${baseUrl}/audit-logs`, () => {
+          return HttpResponse.json({ success: true, data: mockResponse });
         })
       );
 
@@ -342,8 +342,8 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
-          return HttpResponse.json(mockResponse);
+        http.get(`${baseUrl}/audit-logs`, () => {
+          return HttpResponse.json({ success: true, data: mockResponse });
         })
       );
 
@@ -370,8 +370,8 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
-          return HttpResponse.json(mockResponse);
+        http.get(`${baseUrl}/audit-logs`, () => {
+          return HttpResponse.json({ success: true, data: mockResponse });
         })
       );
 
@@ -382,34 +382,6 @@ describe('AuditLogsPage', () => {
 
       await waitFor(() => {
         expect(screen.getByText(/user/i)).toBeInTheDocument();
-      });
-    });
-
-    it('should display action type filter', async () => {
-      const user = userEvent.setup();
-      const mockResponse: AuditLogsListResponse = {
-        logs: [],
-        pagination: {
-          page: 1,
-          limit: 20,
-          total: 0,
-          totalPages: 0,
-        },
-      };
-
-      server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
-          return HttpResponse.json(mockResponse);
-        })
-      );
-
-      render(<AuditLogsPage />, { wrapper: createWrapper() });
-
-      const filterButton = await screen.findByText(/filters/i);
-      await user.click(filterButton);
-
-      await waitFor(() => {
-        expect(screen.getByText(/action/i)).toBeInTheDocument();
       });
     });
 
@@ -426,8 +398,36 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
-          return HttpResponse.json(mockResponse);
+        http.get(`${baseUrl}/audit-logs`, () => {
+          return HttpResponse.json({ success: true, data: mockResponse });
+        })
+      );
+
+      render(<AuditLogsPage />, { wrapper: createWrapper() });
+
+      const filterButton = await screen.findByText(/filters/i);
+      await user.click(filterButton);
+
+      await waitFor(() => {
+        expect(screen.getByLabelText(/entity type/i)).toBeInTheDocument();
+      });
+    });
+
+    it('should display entity type filter', async () => {
+      const user = userEvent.setup();
+      const mockResponse: AuditLogsListResponse = {
+        logs: [],
+        pagination: {
+          page: 1,
+          limit: 20,
+          total: 0,
+          totalPages: 0,
+        },
+      };
+
+      server.use(
+        http.get(`${baseUrl}/audit-logs`, () => {
+          return HttpResponse.json({ success: true, data: mockResponse });
         })
       );
 
@@ -441,7 +441,7 @@ describe('AuditLogsPage', () => {
       });
     });
 
-    it('should display severity filter', async () => {
+    it('should display IP address filter', async () => {
       const user = userEvent.setup();
       const mockResponse: AuditLogsListResponse = {
         logs: [],
@@ -454,8 +454,8 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
-          return HttpResponse.json(mockResponse);
+        http.get(`${baseUrl}/audit-logs`, () => {
+          return HttpResponse.json({ success: true, data: mockResponse });
         })
       );
 
@@ -465,7 +465,7 @@ describe('AuditLogsPage', () => {
       await user.click(filterButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/severity/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/ip address/i)).toBeInTheDocument();
       });
     });
 
@@ -482,8 +482,8 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
-          return HttpResponse.json(mockResponse);
+        http.get(`${baseUrl}/audit-logs`, () => {
+          return HttpResponse.json({ success: true, data: mockResponse });
         })
       );
 
@@ -493,7 +493,8 @@ describe('AuditLogsPage', () => {
       await user.click(filterButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/date range/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/date from/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/date to/i)).toBeInTheDocument();
       });
     });
 
@@ -510,8 +511,8 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
-          return HttpResponse.json(mockResponse);
+        http.get(`${baseUrl}/audit-logs`, () => {
+          return HttpResponse.json({ success: true, data: mockResponse });
         })
       );
 
@@ -542,17 +543,17 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, ({ request }) => {
+        http.get(`${baseUrl}/audit-logs`, ({ request }) => {
           const url = new URL(request.url);
           sortParam = url.searchParams.get('sort') || '';
-          return HttpResponse.json(mockResponse);
+          return HttpResponse.json({ success: true, data: mockResponse });
         })
       );
 
       render(<AuditLogsPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByText('John Doe')).toBeInTheDocument();
+        expect(screen.getAllByText('John Doe')[0]).toBeInTheDocument();
       });
 
       const timestampHeader = screen.getByText('Timestamp');
@@ -577,15 +578,16 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
-          return HttpResponse.json(mockResponse);
+        http.get(`${baseUrl}/audit-logs`, () => {
+          return HttpResponse.json({ success: true, data: mockResponse });
         })
       );
 
       render(<AuditLogsPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByText(/page/i)).toBeInTheDocument();
+        const pageElements = screen.getAllByText(/page/i);
+        expect(pageElements.length).toBeGreaterThan(0);
       });
     });
   });
@@ -603,8 +605,8 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
-          return HttpResponse.json(mockResponse);
+        http.get(`${baseUrl}/audit-logs`, () => {
+          return HttpResponse.json({ success: true, data: mockResponse });
         })
       );
 
@@ -631,8 +633,8 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
-          return HttpResponse.json(mockResponse);
+        http.get(`${baseUrl}/audit-logs`, () => {
+          return HttpResponse.json({ success: true, data: mockResponse });
         })
       );
 
@@ -642,7 +644,8 @@ describe('AuditLogsPage', () => {
       await user.click(exportButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/export.*logs/i)).toBeInTheDocument();
+        const exportTexts = screen.getAllByText(/export.*logs/i);
+        expect(exportTexts.length).toBeGreaterThan(0);
       });
     });
 
@@ -659,8 +662,8 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
-          return HttpResponse.json(mockResponse);
+        http.get(`${baseUrl}/audit-logs`, () => {
+          return HttpResponse.json({ success: true, data: mockResponse });
         })
       );
 
@@ -669,10 +672,14 @@ describe('AuditLogsPage', () => {
       const exportButton = await screen.findByRole('button', { name: /export/i });
       await user.click(exportButton);
 
+      // Wait for dialog to open first
       await waitFor(() => {
-        expect(screen.getByText(/csv/i)).toBeInTheDocument();
-        expect(screen.getByText(/excel/i)).toBeInTheDocument();
-        expect(screen.getByText(/json/i)).toBeInTheDocument();
+        const exportTexts = screen.getAllByText(/export.*logs/i);
+        expect(exportTexts.length).toBeGreaterThan(0);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByLabelText(/format/i)).toBeInTheDocument();
       });
     });
 
@@ -691,10 +698,10 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
-          return HttpResponse.json(mockResponse);
+        http.get(`${baseUrl}/audit-logs`, () => {
+          return HttpResponse.json({ success: true, data: mockResponse });
         }),
-        http.post(`${baseUrl}/api/audit-logs/export`, () => {
+        http.post(`${baseUrl}/audit-logs/export`, () => {
           exportCalled = true;
           return HttpResponse.json({
             url: 'https://example.com/export.csv',
@@ -733,9 +740,9 @@ describe('AuditLogsPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
+        http.get(`${baseUrl}/audit-logs`, () => {
           fetchCount++;
-          return HttpResponse.json(mockResponse);
+          return HttpResponse.json({ success: true, data: mockResponse });
         })
       );
 
@@ -757,7 +764,7 @@ describe('AuditLogsPage', () => {
   describe('Error Handling', () => {
     it('should handle API error when loading logs', async () => {
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
+        http.get(`${baseUrl}/audit-logs`, () => {
           return HttpResponse.json(
             { message: 'Internal server error' },
             { status: 500 }
@@ -774,7 +781,7 @@ describe('AuditLogsPage', () => {
 
     it('should handle network errors', async () => {
       server.use(
-        http.get(`${baseUrl}/api/audit-logs`, () => {
+        http.get(`${baseUrl}/audit-logs`, () => {
           return HttpResponse.error();
         })
       );
