@@ -93,31 +93,43 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const { selectedDepartmentId } = useNavigationStore();
   const location = useLocation();
 
-  // Prevent infinite redirect loops
-  const redirectCount = React.useRef(0);
-  const lastPath = React.useRef(location.pathname);
+  // Prevent infinite redirect loops (use sessionStorage to survive React.StrictMode)
+  const loopKey = `redirectLoop_${location.pathname}`;
+  const loopData = sessionStorage.getItem(loopKey);
+  const { count = 0, timestamp = Date.now() } = loopData ? JSON.parse(loopData) : {};
 
-  if (lastPath.current !== location.pathname) {
-    lastPath.current = location.pathname;
-    redirectCount.current = 0;
-  } else {
-    redirectCount.current++;
-    if (redirectCount.current > 5) {
-      console.error('[ProtectedRoute] Too many redirects detected! Breaking loop.');
-      return (
-        <div className="flex min-h-screen items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold mb-4">Redirect Loop Detected</h1>
-            <p className="text-muted-foreground mb-4">
-              There's a configuration issue with route permissions.
-            </p>
-            <a href="/login" className="text-primary hover:underline">
-              Return to Login
-            </a>
-          </div>
+  // Reset counter if more than 1 second has passed
+  const timeSinceLastCheck = Date.now() - timestamp;
+  const currentCount = timeSinceLastCheck > 1000 ? 1 : count + 1;
+
+  sessionStorage.setItem(loopKey, JSON.stringify({ count: currentCount, timestamp: Date.now() }));
+
+  if (currentCount > 10) {
+    console.error('[ProtectedRoute] Too many redirects detected! Breaking loop.', {
+      path: location.pathname,
+      count: currentCount,
+      userTypes,
+      allUserTypes: roleHierarchy?.allUserTypes,
+    });
+
+    // Clear the loop counter
+    sessionStorage.removeItem(loopKey);
+
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Redirect Loop Detected</h1>
+          <p className="text-muted-foreground mb-4">
+            Cannot access {location.pathname}<br />
+            {userTypes && `Required: ${userTypes.join(', ')}`}<br />
+            {roleHierarchy && `You have: ${roleHierarchy.allUserTypes.join(', ')}`}
+          </p>
+          <a href="/login" className="text-primary hover:underline">
+            Return to Login
+          </a>
         </div>
-      );
-    }
+      </div>
+    );
   }
 
   // ================================================================
