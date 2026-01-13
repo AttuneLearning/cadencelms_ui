@@ -31,20 +31,38 @@ if (!(window as any).__loopBreaker) {
 }
 
 export const App: React.FC = () => {
+  const renderCount = React.useRef(0);
+  renderCount.current++;
+  console.log(`[App] Render #${renderCount.current}`);
+
   // EMERGENCY: Detect page reload loops (use both storage AND global variable)
-  const globalBreaker = (window as any).__loopBreaker;
-  const timeSince = Date.now() - globalBreaker.time;
+  // BUT ONLY CHECK ON MOUNT, NOT EVERY RENDER
+  const [loopDetected, setLoopDetected] = React.useState(false);
 
-  // Reset if more than 1 second passed
-  if (timeSince > 1000) {
-    globalBreaker.count = 1;
-    globalBreaker.time = Date.now();
-  } else {
-    globalBreaker.count++;
-  }
+  React.useEffect(() => {
+    const globalBreaker = (window as any).__loopBreaker;
+    const timeSince = Date.now() - globalBreaker.time;
 
-  // If app loaded more than 3 times in 1 second, we have a reload loop - BE VERY AGGRESSIVE
-  if (timeSince < 1000 && globalBreaker.count > 3) {
+    console.log(`[App] useEffect - loop check:`, { count: globalBreaker.count, timeSince });
+
+    // Reset if more than 1 second passed
+    if (timeSince > 1000) {
+      globalBreaker.count = 1;
+      globalBreaker.time = Date.now();
+    } else {
+      globalBreaker.count++;
+    }
+
+    // If app MOUNTED more than 3 times in 1 second, we have a reload loop
+    if (timeSince < 1000 && globalBreaker.count > 3) {
+      console.error('[App] EMERGENCY: Page reload loop detected in useEffect!');
+      setLoopDetected(true);
+    }
+
+    (window as any).__loopBreaker = globalBreaker;
+  }, []); // Only run on mount
+
+  if (loopDetected) {
     console.error('[App] EMERGENCY: Page reload loop detected!');
     sessionStorage.clear();
     localStorage.clear();
@@ -83,9 +101,6 @@ export const App: React.FC = () => {
       </div>
     );
   }
-
-  // Keep global breaker updated
-  (window as any).__loopBreaker = globalBreaker;
 
   return (
     <QueryClientProvider client={queryClient}>
