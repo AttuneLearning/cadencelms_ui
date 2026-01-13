@@ -57,19 +57,34 @@ export const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) =>
         <div className="text-center max-w-md p-6">
           <h1 className="text-2xl font-bold mb-4 text-destructive">Emergency Loop Break</h1>
           <p className="text-muted-foreground mb-4">
-            Detected infinite initialization loop. All storage has been cleared.
+            Loop counter: {count} (triggered at &gt;5 in &lt;2s)
           </p>
-          <a
-            href="/login"
-            className="inline-block px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90"
-            onClick={() => {
-              sessionStorage.clear();
-              localStorage.clear();
-              window.location.href = '/login';
-            }}
-          >
-            Go to Login
-          </a>
+          <p className="text-sm text-muted-foreground mb-6">
+            This may be from a previous attempt. Click "Reset & Try Again" to clear the counter
+            and see the actual error.
+          </p>
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={() => {
+                console.log('[AuthInitializer] Clearing loop counter, staying on page');
+                sessionStorage.removeItem('auth_init_loop_check');
+                window.location.reload();
+              }}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Reset & Try Again
+            </button>
+            <a
+              href="/login"
+              className="inline-block px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+              onClick={() => {
+                sessionStorage.clear();
+                localStorage.clear();
+              }}
+            >
+              Go to Login
+            </a>
+          </div>
         </div>
       </div>
     );
