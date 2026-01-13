@@ -1,425 +1,333 @@
 {
   "team": {
-    "name": "LMS Frontend Team - Bug Resolution & Implementation",
+    "name": "Person Data Migration Team",
     "version": "1.0.0",
-    "description": "Dual-purpose team for systematic bug fixing and feature implementation from issue queue",
-    "activeProject": "Issue Queue - Bug Fixes and UI Features",
-    "issueQueuePath": "api/agent_coms/ui/ISSUE_QUEUE.md",
-    "messageLogPath": "api/agent_coms/ui/MESSAGE_LOG.md",
-    "coordinationStandard": "api/agent_coms/messages/COORDINATION_STANDARD.md"
+    "description": "Specialized team for migrating UI to Person Data v2.0 architecture (ISS-001)",
+    "activeProject": "Person Data v2.0 Migration - Breaking Changes",
+    "implementationPlan": "impl_plans/person_change_implementation_plan.md",
+    "apiContracts": [
+      "/home/adam/github/cadencelms_api/contracts/api/person.contract.ts",
+      "/home/adam/github/cadencelms_api/contracts/api/demographics.contract.ts",
+      "/home/adam/github/cadencelms_api/contracts/api/users.contract.ts"
+    ]
   },
   "workflow": {
-    "issueSource": "api/agent_coms/ui/ISSUE_QUEUE.md",
-    "issueFormat": "Uses ISS-XXX identifiers with priority levels P0-P3",
-    "agentCommunication": "Markdown-based messaging in api/agent_coms/messages/",
-    "threadNaming": "THR-{CATEGORY}-XXX (e.g., THR-AUTH-001, THR-UI-002)",
-    "developmentApproach": "Test-Driven Development (TDD)",
-    "workCycle": [
-      "1. Human adds issue to ISSUE_QUEUE.md",
-      "2. Agent picks highest priority issue",
-      "3. Agent creates thread in messages/ if coordination needed",
-      "4. TDD CYCLE:",
-      "   a. Write failing test first (RED)",
-      "   b. Implement minimal code to pass test (GREEN)",
-      "   c. Refactor while keeping tests green (REFACTOR)",
-      "   d. Check test coverage (vitest --coverage)",
-      "   e. Run full test suite to catch regressions",
-      "5. Agent validates all tests pass with no regressions",
-      "6. Agent updates MESSAGE_LOG.md with test coverage report",
-      "7. Agent marks issue complete in ISSUE_QUEUE.md",
-      "8. Human validates and closes thread"
+    "developmentApproach": "Test-Driven Development (TDD) - Comprehensive coverage",
+    "phaseStructure": "5 sequential phases with parallel work streams",
+    "phases": [
+      "Phase 1: Foundation & Setup (types, helpers, API layer)",
+      "Phase 2: Auth Store & Context Updates",
+      "Phase 3: Core UI Components (header, sidebar, user menu)",
+      "Phase 4: Profile Pages (ISS-001 unblocked)",
+      "Phase 5: Profile-Related Features (staff directory, settings)"
     ],
-    "testingCadence": {
-      "duringDevelopment": "Run tests after each TDD cycle (npm run test -- --watch)",
-      "beforeCompletion": "Run full suite with coverage (npm run test:coverage)",
-      "regressionCheck": "Run all tests to ensure no existing functionality broken",
-      "coverageThreshold": "Minimum 70% overall, 80% for critical paths"
-    }
+    "commitStrategy": "Commit after each phase completion",
+    "testCoverage": "80%+ comprehensive coverage",
+    "autoSave": "Implement 2-minute debounced auto-save for profile forms",
+    "avatarHandling": "URL input only (no file upload yet)",
+    "demographicsConsent": "Prominent but optional consent checkboxes"
   },
   "agents": [
     {
-      "id": "bug-hunter",
-      "role": "Bug Resolution Specialist",
-      "priority": "P0-P1 issues",
-      "description": "Diagnoses and fixes bugs, security issues, and critical defects",
+      "id": "foundation-builder",
+      "role": "Foundation & Infrastructure Specialist",
+      "phase": "Phase 1",
+      "description": "Creates TypeScript types, helper functions, and API service layer for person data",
       "responsibilities": [
-        "Analyze bug reports from ISSUE_QUEUE.md",
-        "Reproduce issues in development environment",
-        "Identify root cause through debugging",
-        "Write failing test that reproduces the bug (TDD RED)",
-        "Implement fix with minimal scope (TDD GREEN)",
-        "Refactor if needed while tests stay green (TDD REFACTOR)",
-        "Run test suite to ensure no regressions",
-        "Check test coverage meets minimum threshold (70%)",
-        "Validate fix doesn't introduce new issues",
-        "Update MESSAGE_LOG.md with fix details and test coverage",
-        "Create coordination thread if API changes needed"
+        "Create TypeScript types matching API contracts exactly",
+        "Write comprehensive type definitions for IPerson, IPersonExtended, IDemographics",
+        "Implement helper functions with full test coverage",
+        "Create API service layer with proper error handling",
+        "Update test mocks and fixtures",
+        "Follow TDD: Write tests FIRST, then implementation",
+        "Achieve 80%+ test coverage for all utilities",
+        "Validate types match API contracts exactly"
       ],
-      "workingDirectories": [
-        "src/**/*.ts",
-        "src/**/*.tsx"
+      "deliverables": [
+        "src/shared/types/person.ts - IPerson, IPersonExtended, IDemographics interfaces",
+        "src/shared/types/enums.ts - All enum types from contracts",
+        "src/shared/lib/person-helpers.ts - Utility functions with tests",
+        "src/shared/api/personApi.ts - Person API client",
+        "src/shared/api/demographicsApi.ts - Demographics API client",
+        "src/test/fixtures/person.fixtures.ts - Mock data",
+        "src/shared/types/person.ts.__tests__/ - Type validation tests",
+        "src/shared/lib/__tests__/person-helpers.test.ts - Helper tests",
+        "Updated src/shared/api/userApi.ts - Handle person object",
+        "Updated src/test/mocks/server.ts - New endpoints"
       ],
-      "contextFiles": [
-        "api/agent_coms/ui/ISSUE_QUEUE.md",
-        "api/agent_coms/messages/ACTIVE_THREADS.md",
-        "api_contracts/**/*.md",
-        "devdocs/**/*.md"
-      ],
-      "specialization": [
-        "Authentication bugs (auth store, token handling, sessions)",
-        "Permission/authorization bugs (role checking, access rights)",
-        "Navigation bugs (routing, protected routes, redirects)",
-        "State management bugs (Zustand stores, context)",
-        "UI rendering bugs (conditional display, context-aware UI)",
-        "API integration bugs (endpoints, response handling, error states)"
-      ],
-      "debuggingPatterns": {
-        "authIssues": "Check authStore state, token storage, API response format",
-        "permissionIssues": "Verify hasGlobalPermission vs hasDeptPermission usage, departmentScoped flag",
-        "navigationIssues": "Check route definitions, ProtectedRoute logic, redirect paths",
-        "uiContextIssues": "Verify useLocation, dashboard detection, userType context"
-      },
       "testingRequirements": {
-        "tddCycle": "RED (failing test) → GREEN (passing code) → REFACTOR (clean up)",
-        "unitTests": "Required for utility functions and pure logic - write BEFORE implementation",
-        "integrationTests": "Required for auth flows and navigation - write BEFORE implementation",
-        "manualTesting": "Required for UI bugs - document test steps",
-        "coverageCheck": "Run vitest --coverage after each implementation",
-        "regressionSuite": "Run full test suite before marking issue complete"
+        "tddCycle": "RED (test first) → GREEN (minimal code) → REFACTOR",
+        "coverage": "80%+ for all helper functions",
+        "edgeCases": "Test null, undefined, empty arrays",
+        "typeValidation": "Ensure types match contracts exactly"
       },
       "canRunParallel": false,
-      "dependencies": []
+      "dependencies": [],
+      "blocksPhases": [2, 3, 4, 5]
     },
     {
-      "id": "feature-builder",
-      "role": "Feature Implementation Lead",
-      "priority": "P2-P3 issues",
-      "description": "Implements new features, UI components, and enhancements from specifications",
+      "id": "state-coordinator",
+      "role": "State Management & Auth Specialist",
+      "phase": "Phase 2",
+      "description": "Updates authentication store and hooks to use new person structure",
       "responsibilities": [
-        "Review feature specifications from ISSUE_QUEUE.md",
-        "Design component structure following FSD architecture",
-        "Write failing tests first for new functionality (TDD RED)",
-        "Implement UI components with Tailwind + shadcn/ui (TDD GREEN)",
-        "Refactor for clean code while keeping tests green (TDD REFACTOR)",
-        "Create API integration if new endpoints needed",
-        "Run test suite to check for regressions",
-        "Validate test coverage meets minimum 70% threshold",
-        "Add TypeScript types for new entities",
-        "Document component usage and patterns",
-        "Create coordination thread for API requirements",
-        "Update MESSAGE_LOG.md with implementation notes and coverage report"
+        "Update authStore to handle person object",
+        "Migrate all firstName/lastName references to person.firstName/person.lastName",
+        "Update auth hooks to expose person data",
+        "Create new hooks: usePersonData(), useDisplayName()",
+        "Update login/refresh flows to map person data",
+        "Write comprehensive tests for state management",
+        "Follow TDD for all store updates",
+        "Ensure backward compatibility during transition",
+        "Achieve 80%+ coverage for auth store changes"
       ],
-      "workingDirectories": [
-        "src/pages/",
-        "src/widgets/",
-        "src/features/",
-        "src/entities/",
-        "src/shared/"
+      "deliverables": [
+        "Updated src/features/auth/model/authStore.ts",
+        "Updated src/features/auth/api/authApi.ts",
+        "Updated src/features/auth/hooks/useCurrentUser.ts",
+        "src/features/auth/hooks/usePersonData.ts - New hook",
+        "src/features/auth/hooks/useDisplayName.ts - New hook",
+        "src/features/auth/model/__tests__/authStore.test.ts - Updated tests",
+        "src/features/auth/hooks/__tests__/usePersonData.test.ts",
+        "src/features/auth/hooks/__tests__/useDisplayName.test.ts"
       ],
-      "contextFiles": [
-        "api/agent_coms/ui/ISSUE_QUEUE.md",
-        "api/agent_coms/messages/ACTIVE_THREADS.md",
-        "api_contracts/**/*.md",
-        "devdocs/**/*.md",
-        "devdocs/UI_AUTH_QUICK_REFERENCE.md"
-      ],
-      "specialization": [
-        "Profile pages (user, learner, staff profiles)",
-        "Form components (auto-save, validation, error handling)",
-        "Dashboard features (tabs, widgets, cards)",
-        "Settings pages (password change, preferences)",
-        "Data tables (sorting, filtering, pagination)",
-        "Modal dialogs (confirmation, forms, info)",
-        "Navigation enhancements (breadcrumbs, tabs, menus)"
-      ],
-      "architecturePatterns": {
-        "featureSlicedDesign": "Follow FSD layers: app > pages > widgets > features > entities > shared",
-        "stateManagement": "React Query for server state, Zustand for client state",
-        "componentComposition": "Build widgets from features, features from entities",
-        "styling": "Tailwind utility classes + shadcn/ui components + cn() helper",
-        "typeDefinition": "Define types in entity layer, import upward"
-      },
-      "implementationStandards": {
-        "tdd": "Write tests first, then implementation - follow RED-GREEN-REFACTOR cycle",
-        "typescript": "Strict mode, no implicit any, define all types",
-        "accessibility": "WCAG 2.1 AA - semantic HTML, ARIA labels, keyboard navigation",
-        "responsiveness": "Mobile-first, test at 320px, 768px, 1024px, 1440px",
-        "errorHandling": "Try-catch API calls, display user-friendly errors, log to console",
-        "validation": "Client-side validation + server validation, clear error messages",
-        "testCoverage": "Check coverage after implementation - minimum 70% overall, 80% critical paths",
-        "regressionTesting": "Run full test suite before committing"
-      },
-      "canRunParallel": true,
-      "dependencies": []
-    },
-    {
-      "id": "integration-coordinator",
-      "role": "API Integration & Coordination Specialist",
-      "priority": "All issues requiring API changes",
-      "description": "Manages API-UI integration and coordinates with backend team",
-      "responsibilities": [
-        "Review API requirements in issue specifications",
-        "Check api_contracts/ for existing endpoints",
-        "Create coordination threads for new API needs",
-        "Post messages in api/agent_coms/messages/",
-        "Monitor ACTIVE_THREADS.md for API responses",
-        "Validate API responses match contract specifications",
-        "Update frontend API clients with new endpoints",
-        "Handle API error states and edge cases",
-        "Document API integration patterns"
-      ],
-      "workingDirectories": [
-        "src/shared/api/",
-        "src/entities/*/api/",
-        "api/agent_coms/messages/",
-        "api_contracts/"
-      ],
-      "contextFiles": [
-        "api/agent_coms/messages/COORDINATION_STANDARD.md",
-        "api/agent_coms/messages/ACTIVE_THREADS.md",
-        "api/agent_coms/ui/MESSAGE_LOG.md",
-        "api_contracts/**/*.md"
-      ],
-      "communicationPatterns": {
-        "newEndpointRequest": "Use REQUEST template from COORDINATION_STANDARD.md",
-        "bugReport": "Use BUG_REPORT template with reproduction steps",
-        "contractClarification": "Use QUESTION template for ambiguities",
-        "updateNotification": "Use UPDATE template when frontend changes affect backend"
-      },
-      "validationChecks": {
-        "contractAlignment": "Ensure TypeScript types match API response structure",
-        "errorHandling": "Handle all documented error codes (400, 401, 403, 404, 500)",
-        "edgeCases": "Test empty arrays, null values, missing optional fields",
-        "authentication": "Verify token handling, admin token priority, refresh logic"
-      },
-      "canRunParallel": true,
-      "dependencies": []
-    },
-    {
-      "id": "qa-validator",
-      "role": "Quality Assurance & Testing Lead",
-      "priority": "All issues post-implementation",
-      "description": "Validates implementations, writes tests, ensures quality standards",
-      "responsibilities": [
-        "Review completed implementations",
-        "Verify TDD approach was followed (tests written first)",
-        "Run full test suite to check for regressions",
-        "Validate test coverage meets minimum thresholds (70% overall, 80% critical)",
-        "Review test quality and edge case coverage",
-        "Write additional tests if coverage gaps found",
-        "Perform manual testing of UI changes",
-        "Validate accessibility compliance",
-        "Check responsive design at all breakpoints",
-        "Verify error handling and edge cases",
-        "Ensure code follows conventions",
-        "Generate and review coverage report",
-        "Update test documentation"
-      ],
-      "workingDirectories": [
-        "src/**/__tests__/",
-        "src/**/*.test.ts",
-        "src/**/*.test.tsx"
-      ],
-      "contextFiles": [
-        "vitest.config.ts",
-        "devdocs/**/*.md"
-      ],
-      "testingStandards": {
-        "tddWorkflow": "Verify RED-GREEN-REFACTOR cycle followed for all code",
-        "unitTests": "Test pure functions, utilities, state management logic - written BEFORE implementation",
-        "integrationTests": "Test auth flows, navigation, API integration - written BEFORE implementation",
-        "componentTests": "Test UI components with React Testing Library",
-        "e2eTests": "Critical user journeys (login, navigation, CRUD operations)",
-        "coverage": "Minimum 70% overall, 80% for critical paths",
-        "regressionSuite": "All existing tests must pass before approval",
-        "coverageReport": "Generate with npm run test:coverage and review"
-      },
-      "qualityChecks": {
-        "tdd": "Tests written before implementation code",
-        "testCoverage": "Meets minimum 70% overall, 80% critical paths",
-        "regressionTests": "All existing tests pass with no failures",
-        "typescript": "No 'any' types, no ts-ignore comments, all types defined",
-        "linting": "No ESLint errors, fix all warnings",
-        "formatting": "Prettier formatting consistent",
-        "accessibility": "No missing alt text, proper ARIA labels, keyboard accessible",
-        "performance": "No console errors, reasonable bundle size, fast load times"
+      "testingRequirements": {
+        "storeTests": "Test state updates, selectors, computed values",
+        "hookTests": "Test custom hooks with React Testing Library",
+        "integrationTests": "Test login flow with new person structure",
+        "regressionTests": "Ensure existing auth tests still pass"
       },
       "canRunParallel": false,
-      "dependencies": ["bug-hunter", "feature-builder", "integration-coordinator"],
-      "runsAfterImplementation": true
+      "dependencies": ["foundation-builder"],
+      "blocksPhases": [3, 4, 5]
+    },
+    {
+      "id": "ui-builder",
+      "role": "Core UI Components Specialist",
+      "phase": "Phase 3",
+      "description": "Updates foundational UI components (Header, Sidebar, User Menu) to display person data",
+      "responsibilities": [
+        "Update Header to use getDisplayName() for user name",
+        "Update Sidebar user info section",
+        "Update UserMenu to show person data",
+        "Create UserAvatar component with fallback to initials",
+        "Create UserCard component with person data display",
+        "Add pronouns display support",
+        "Write component tests for all updates",
+        "Follow TDD for new components",
+        "Ensure accessibility compliance",
+        "Test responsive design",
+        "Achieve 80%+ coverage"
+      ],
+      "deliverables": [
+        "Updated src/widgets/header/Header.tsx",
+        "Updated src/widgets/sidebar/Sidebar.tsx",
+        "Updated src/widgets/header/UserMenu.tsx",
+        "src/shared/ui/UserAvatar.tsx - New component",
+        "src/shared/ui/UserCard.tsx - New component",
+        "src/widgets/header/__tests__/Header.test.tsx - Updated tests",
+        "src/widgets/sidebar/__tests__/Sidebar.test.tsx - Updated tests",
+        "src/shared/ui/__tests__/UserAvatar.test.tsx",
+        "src/shared/ui/__tests__/UserCard.test.tsx"
+      ],
+      "testingRequirements": {
+        "componentTests": "Test rendering, props, interactions",
+        "accessibilityTests": "ARIA labels, keyboard navigation",
+        "responsiveTests": "Test at multiple breakpoints",
+        "visualTests": "Verify correct data display"
+      },
+      "canRunParallel": true,
+      "dependencies": ["foundation-builder", "state-coordinator"],
+      "blocksPhases": []
+    },
+    {
+      "id": "page-builder",
+      "role": "Profile Pages Implementation Lead",
+      "phase": "Phase 4",
+      "description": "Implements profile management pages with forms and auto-save functionality",
+      "responsibilities": [
+        "Create ProfilePage with tabbed sections",
+        "Implement BasicInfoForm with auto-save (2-minute debounce)",
+        "Implement ContactInfoForm for emails/phones/addresses arrays",
+        "Implement PreferencesForm for timezone, language, notifications",
+        "Implement ConsentForm for legal consent tracking",
+        "Create ExtendedProfilePage with role-specific rendering",
+        "Implement EmergencyContactsForm (learners)",
+        "Implement ProfessionalInfoForm (staff)",
+        "Create DemographicsPage with prominent consent UI",
+        "Implement DemographicsForm with all optional fields",
+        "Add form validation and error handling",
+        "Write comprehensive form tests",
+        "Test auto-save functionality",
+        "Test array management (add/edit/remove)",
+        "Achieve 80%+ coverage"
+      ],
+      "deliverables": [
+        "src/pages/profile/ProfilePage.tsx",
+        "src/pages/profile/ExtendedProfilePage.tsx",
+        "src/pages/profile/DemographicsPage.tsx",
+        "src/features/profile/ui/BasicInfoForm.tsx",
+        "src/features/profile/ui/ContactInfoForm.tsx",
+        "src/features/profile/ui/PreferencesForm.tsx",
+        "src/features/profile/ui/ConsentForm.tsx",
+        "src/features/profile/ui/EmergencyContactsForm.tsx",
+        "src/features/profile/ui/HousingInfoForm.tsx",
+        "src/features/profile/ui/AccommodationsForm.tsx",
+        "src/features/profile/ui/ProfessionalInfoForm.tsx",
+        "src/features/profile/ui/CredentialsForm.tsx",
+        "src/features/profile/ui/OfficeHoursForm.tsx",
+        "src/features/profile/ui/DemographicsForm.tsx",
+        "src/features/profile/hooks/useAutoSave.ts - Auto-save hook",
+        "Updated src/app/router.tsx - Add profile routes",
+        "Comprehensive test suite for all forms"
+      ],
+      "testingRequirements": {
+        "formTests": "Test validation, submission, error handling",
+        "autoSaveTests": "Test debounce, save triggers, error recovery",
+        "arrayTests": "Test add/edit/remove for emails/phones/addresses",
+        "roleTests": "Test role-specific rendering (staff vs learner)",
+        "consentTests": "Test prominent consent UI, optional submission"
+      },
+      "canRunParallel": true,
+      "dependencies": ["foundation-builder", "state-coordinator"],
+      "blocksPhases": []
+    },
+    {
+      "id": "feature-integrator",
+      "role": "Feature Integration & Enhancement Specialist",
+      "phase": "Phase 5",
+      "description": "Updates existing features to use new person data structure",
+      "responsibilities": [
+        "Update StaffDirectoryPage to display person data",
+        "Add pronouns and preferred names to staff cards",
+        "Update student record views to use person object",
+        "Update search components to search preferred names",
+        "Create NotificationSettingsPage for communication preferences",
+        "Update any other features using person data",
+        "Write tests for all updated features",
+        "Ensure no data inconsistencies",
+        "Achieve 80%+ coverage for changes"
+      ],
+      "deliverables": [
+        "Updated src/pages/staff/directory/StaffDirectoryPage.tsx",
+        "Updated src/features/staff/ui/StaffCard.tsx (if exists)",
+        "Updated src/pages/staff/students/StudentListPage.tsx (if exists)",
+        "Updated search and filter components",
+        "src/pages/settings/NotificationSettingsPage.tsx",
+        "Test suite for all feature updates"
+      ],
+      "testingRequirements": {
+        "featureTests": "Test updated features work correctly",
+        "integrationTests": "Test data flows through features",
+        "searchTests": "Test search with preferred names",
+        "settingsTests": "Test notification settings UI"
+      },
+      "canRunParallel": true,
+      "dependencies": ["foundation-builder", "state-coordinator"],
+      "blocksPhases": []
     }
   ],
   "parallelizationConfig": {
-    "maxConcurrentAgents": 2,
+    "maxConcurrentAgents": 3,
     "parallelStrategy": {
-      "bugFixes": "bug-hunter works solo on critical bugs (P0-P1)",
-      "features": "feature-builder + integration-coordinator work in parallel on P2-P3",
-      "validation": "qa-validator runs after implementation complete"
+      "phase1": "foundation-builder works solo (blocks all others)",
+      "phase2": "state-coordinator works solo (blocks UI work)",
+      "phase3-5": "ui-builder, page-builder, feature-integrator can work in parallel"
     },
-    "syncPoints": [
-      {
-        "name": "Issue Assignment",
-        "timing": "Start of work session",
-        "participants": ["bug-hunter", "feature-builder"],
-        "purpose": "Assign issues from queue based on priority and type",
-        "deliverables": ["Issue assignments documented"],
-        "gatekeeper": "Human"
-      },
-      {
-        "name": "Implementation Review",
-        "timing": "After code complete",
-        "participants": ["implementer", "qa-validator"],
-        "purpose": "Review implementation and verify TDD approach followed",
-        "deliverables": ["Code review notes", "Test coverage report", "Regression test results"],
-        "gatekeeper": "qa-validator"
-      },
-      {
-        "name": "API Coordination",
-        "timing": "As needed during implementation",
-        "participants": ["integration-coordinator", "backend-team"],
-        "purpose": "Coordinate API changes via message threads",
-        "deliverables": ["Coordination thread created/updated"],
-        "gatekeeper": "integration-coordinator"
-      },
-      {
-        "name": "Issue Completion",
-        "timing": "After QA validation",
-        "participants": ["implementer", "qa-validator", "Human"],
-        "purpose": "Mark issue complete in queue after all tests pass",
-        "deliverables": ["ISSUE_QUEUE.md updated", "MESSAGE_LOG.md updated", "Coverage report", "All tests passing"],
-        "gatekeeper": "Human"
-      }
+    "executionOrder": [
+      "Phase 1: foundation-builder (sequential, blocks all)",
+      "Phase 2: state-coordinator (sequential, blocks UI)",
+      "Phase 3-5: ui-builder + page-builder + feature-integrator (parallel)"
     ]
   },
   "sharedContext": {
-    "projectStructure": {
-      "app": "src/app/ - Application setup, providers, routing",
-      "pages": "src/pages/ - Page components (route level)",
-      "widgets": "src/widgets/ - Complex UI blocks (sidebar, header, etc.)",
-      "features": "src/features/ - Business logic modules",
-      "entities": "src/entities/ - Domain models, API clients, hooks",
-      "shared": "src/shared/ - Shared utilities, UI components, API config"
+    "migrationGoals": {
+      "primary": "Migrate from flat person fields to nested person object",
+      "secondary": "Enable preferred names, pronouns, multiple contacts",
+      "tertiary": "Support demographics collection for compliance"
     },
-    "conventions": {
-      "naming": {
-        "components": "PascalCase.tsx (e.g., ProfilePage.tsx)",
-        "hooks": "useCamelCase.ts (e.g., useProfile.ts)",
-        "types": "PascalCase for interfaces (e.g., IPerson, IUserProfile)",
-        "utils": "camelCase.ts",
-        "tests": "*.test.ts or *.test.tsx matching source file"
-      },
-      "architecture": "Feature-Sliced Design (FSD)",
+    "breakingChanges": {
+      "dataStructure": "data.firstName → data.person.firstName",
+      "phoneField": "data.phone → data.person.phones[0].number (string → array)",
+      "avatarField": "data.profileImage → data.person.avatar (renamed)",
+      "newFields": "preferredFirstName, preferredLastName, pronouns, emails[], addresses[]"
+    },
+    "apiEndpoints": {
+      "basic": "GET/PUT /api/v2/users/me/person",
+      "extended": "GET/PUT /api/v2/users/me/person/extended",
+      "demographics": "GET/PUT /api/v2/users/me/demographics"
+    },
+    "helperFunctions": {
+      "getPrimaryEmail": "Find primary email or return first",
+      "getPrimaryPhone": "Find primary phone or return first",
+      "getPrimaryAddress": "Find primary address or return first",
+      "getDisplayName": "Use preferred name if set, else legal name",
+      "getFullLegalName": "Full legal name with middle name and suffix",
+      "formatPhoneNumber": "Format phone for display"
+    },
+    "architecturePatterns": {
+      "featureSlicedDesign": "Follow FSD layers: app > pages > widgets > features > entities > shared",
       "stateManagement": "React Query for server state, Zustand for client state",
-      "styling": "Tailwind CSS + shadcn/ui components + cn() helper"
+      "autoSave": "2-minute debounce with useAutoSave hook",
+      "validation": "Client-side + server validation with clear error messages",
+      "arrays": "Support add/edit/remove for emails, phones, addresses"
     },
-    "authPatterns": {
-      "multiUserType": "Users can have multiple userTypes (learner, staff, global-admin)",
-      "dashboardContext": "UI is context-aware based on current dashboard (/admin, /staff, /learner)",
-      "permissionChecking": "hasGlobalPermission() for global items, hasDeptPermission() for department-scoped",
-      "departmentScoped": "Navigation items have departmentScoped flag",
-      "adminToken": "Memory-only storage, never localStorage",
-      "displayLabels": "Use roleHierarchy.userTypeDisplayMap for display names"
+    "testingStandards": {
+      "tdd": "Write tests FIRST, then implementation (RED-GREEN-REFACTOR)",
+      "coverage": "80%+ comprehensive coverage required",
+      "unitTests": "Test helpers, hooks, utilities",
+      "componentTests": "Test UI components with React Testing Library",
+      "integrationTests": "Test data flows, auth updates, form submissions",
+      "edgeCases": "Test null, undefined, empty arrays, missing optional fields"
     },
-    "contractAlignment": [
-      "1. Check api_contracts/ for API endpoint documentation",
-      "2. Validate TypeScript types match backend response structure",
-      "3. Use exact field names from backend (camelCase)",
-      "4. Handle all documented error codes",
-      "5. Create coordination thread if contract unclear or missing"
-    ],
-    "issueQueueWorkflow": [
-      "1. Human creates issue in ISSUE_QUEUE.md with ISS-XXX identifier",
-      "2. Agent picks issue based on priority and specialization",
-      "3. Agent creates coordination thread if API/backend work needed",
-      "4. Agent follows TDD cycle: Write test (RED) → Implement (GREEN) → Refactor",
-      "5. Agent runs tests continuously during development",
-      "6. Agent checks test coverage meets minimum threshold (70%)",
-      "7. Agent runs full regression suite to ensure no existing tests break",
-      "8. Agent writes tests and validates",
-      "9. Agent updates MESSAGE_LOG.md with changes and coverage report",
-      "10. Agent marks issue complete (or blocked) in ISSUE_QUEUE.md",
-      "11. Human reviews coverage report and validates completion"
-    ]
-  },
-  "workflowRules": {
-    "branchNaming": "fix/<ISS-XXX>-<description> or feat/<ISS-XXX>-<description>",
-    "commitFormat": "fix(ISS-XXX): <description> or feat(ISS-XXX): <description>",
-    "prRequired": false,
-    "tddRequired": true,
-    "testFirst": "Write failing tests before implementation code (RED phase)",
-    "minTestCoverage": 70,
-    "criticalPathCoverage": 80,
-    "regressionTestsRequired": "All existing tests must pass before marking complete",
-    "coverageReportRequired": "Include coverage report in MESSAGE_LOG.md updates",
-    "manualTestingRequired": "Document test steps for UI changes",
-    "messageLogUpdates": "Required for all implementations with test results",
-    "coordinationThreads": "Required for API changes or cross-team work"
-  },
-  "communicationChannels": {
-    "issueQueue": {
-      "path": "api/agent_coms/ui/ISSUE_QUEUE.md",
-      "purpose": "Human-to-agent issue submission",
-      "format": "Full or quick issue format",
-      "updateFrequency": "After each issue completion"
-    },
-    "messageLog": {
-      "path": "api/agent_coms/ui/MESSAGE_LOG.md",
-      "purpose": "Agent change log for messages folder",
-      "format": "Chronological entries with rollback notes",
-      "updateFrequency": "Every time agent posts/updates message"
-    },
-    "coordinationThreads": {
-      "path": "api/agent_coms/messages/",
-      "purpose": "UI-to-API agent communication",
-      "format": "Follow COORDINATION_STANDARD.md templates",
-      "activeThreads": "Track in ACTIVE_THREADS.md"
+    "uiRequirements": {
+      "avatarUpload": "URL input only (no file upload)",
+      "autoSave": "2-minute debounce on all profile forms",
+      "demographicsConsent": "Prominent but optional consent checkboxes",
+      "preferredNames": "Display preferred names throughout app",
+      "pronouns": "Show pronouns in appropriate contexts",
+      "arrays": "Manage multiple emails/phones/addresses with primary flag"
     }
   },
-  "priorityGuidelines": {
-    "P0": {
-      "label": "CRITICAL",
-      "description": "Production blockers, security issues, data loss bugs",
-      "sla": "Immediate - start within 1 hour",
-      "assignTo": "bug-hunter",
-      "testing": "Full regression + manual validation + coverage report required",
-      "tdd": "Write comprehensive test suite before fixing"
+  "workflowRules": {
+    "phaseCommits": "Commit after each phase completion",
+    "branchNaming": "feat/person-data-v2-migration",
+    "commitFormat": "feat(person-v2): <phase description>",
+    "tddRequired": true,
+    "testFirst": "Write failing tests before implementation (RED phase)",
+    "minTestCoverage": 80,
+    "regressionTestsRequired": "All existing tests must pass",
+    "phaseValidation": "Each phase must be complete and tested before next phase"
+  },
+  "communicationChannels": {
+    "implementationPlan": {
+      "path": "impl_plans/person_change_implementation_plan.md",
+      "purpose": "Master plan for migration",
+      "format": "8-phase detailed plan",
+      "updateFrequency": "Update completion status after each phase"
     },
-    "P1": {
-      "label": "HIGH",
-      "description": "Major bugs affecting core functionality, user-visible errors",
-      "sla": "Same day - start within 4 hours",
-      "assignTo": "bug-hunter",
-      "testing": "Integration tests + manual validation + regression suite",
-      "tdd": "Write failing test reproducing bug before implementing fix"
+    "apiContracts": {
+      "path": "/home/adam/github/cadencelms_api/contracts/api/",
+      "files": ["person.contract.ts", "demographics.contract.ts", "users.contract.ts"],
+      "purpose": "Source of truth for API structure"
     },
-    "P2": {
-      "label": "MEDIUM",
-      "description": "Feature implementations, UI enhancements, minor bugs",
-      "sla": "Within 2 days",
-      "assignTo": "feature-builder",
-      "testing": "Unit tests + component tests + coverage check",
-      "tdd": "Follow RED-GREEN-REFACTOR for all new code"
-    },
-    "P3": {
-      "label": "LOW",
-      "description": "Nice-to-haves, polish, refactoring, documentation",
-      "sla": "When capacity available",
-      "assignTo": "feature-builder",
-      "testing": "Basic validation + regression check sufficient",
-      "tdd": "Write tests for critical paths only"
+    "breakingChangesDoc": {
+      "path": "/home/adam/github/cadencelms_api/agent_coms/messages/2026-01-12_BREAKING_CHANGES_IPerson_v2.md",
+      "purpose": "API team's breaking changes notification",
+      "contains": "Migration guide, examples, new features"
     }
   },
   "tooling": {
     "development": {
-      "vite": "v5.4.21 - Development server with HMR",
+      "vite": "v7.3.1 - Development server with HMR",
       "typescript": "Strict mode enabled",
       "react": "18+ with hooks",
-      "reactRouter": "v6 with route-based code splitting"
+      "reactRouter": "v7 with future flags enabled"
     },
     "stateManagement": {
       "zustand": "Client state (auth, navigation)",
       "reactQuery": "Server state (API data, caching)",
-      "context": "Department context for scoped operations"
+      "customHooks": "useAutoSave for 2-minute debounced saves"
     },
     "uiComponents": {
       "shadcn": "Accessible component primitives",
@@ -427,15 +335,10 @@
       "lucideReact": "Icon library"
     },
     "testing": {
-      "vitest": "Unit testing framework - run with --watch during development",
+      "vitest": "v4.0.17 - Unit testing framework",
       "reactTestingLibrary": "Component testing",
-      "msw": "API mocking for tests",
-      "coverage": "vitest --coverage for coverage reports",
-      "testCommands": {
-        "watch": "npm run test -- --watch (during TDD development)",
-        "coverage": "npm run test:coverage (before marking complete)",
-        "all": "npm run test (full regression suite)"
-      }
+      "msw": "v2.12.7 - API mocking for tests",
+      "coverage": "80%+ required for all new code"
     }
   }
 }

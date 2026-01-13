@@ -42,6 +42,12 @@ import {
   createMockCourseSegment,
 } from './data/courseSegments';
 
+import {
+  mockPersonResponse,
+  mockPersonExtendedLearnerResponse,
+  mockDemographicsResponse,
+} from '../fixtures/person.fixtures';
+
 const baseUrl = env.apiBaseUrl;
 
 /**
@@ -711,6 +717,66 @@ export const handlers = [
       });
     }
   ),
+
+  // ==================== PERSON API V2.0 HANDLERS ====================
+
+  // GET /api/v2/users/me/person - Get person data
+  http.get(`${baseUrl}/api/v2/users/me/person`, () => {
+    return HttpResponse.json(mockPersonResponse);
+  }),
+
+  // PUT /api/v2/users/me/person - Update person data
+  http.put(`${baseUrl}/api/v2/users/me/person`, async ({ request }) => {
+    const body = await request.json();
+    return HttpResponse.json({
+      success: true,
+      message: 'Person data updated successfully',
+      data: {
+        ...mockPersonResponse.data,
+        ...body,
+      },
+    });
+  }),
+
+  // GET /api/v2/users/me/person/extended - Get extended person data
+  http.get(`${baseUrl}/api/v2/users/me/person/extended`, () => {
+    return HttpResponse.json(mockPersonExtendedLearnerResponse);
+  }),
+
+  // PUT /api/v2/users/me/person/extended - Update extended person data
+  http.put(`${baseUrl}/api/v2/users/me/person/extended`, async ({ request }) => {
+    const body = await request.json();
+    return HttpResponse.json({
+      success: true,
+      message: 'Extended person data updated successfully',
+      data: {
+        ...mockPersonExtendedLearnerResponse.data,
+        ...(mockPersonExtendedLearnerResponse.data.role === 'learner'
+          ? { learner: { ...mockPersonExtendedLearnerResponse.data.learner, ...body } }
+          : {}),
+      },
+    });
+  }),
+
+  // ==================== DEMOGRAPHICS API V2.0 HANDLERS ====================
+
+  // GET /api/v2/users/me/demographics - Get demographics data
+  http.get(`${baseUrl}/api/v2/users/me/demographics`, () => {
+    return HttpResponse.json(mockDemographicsResponse);
+  }),
+
+  // PUT /api/v2/users/me/demographics - Update demographics data
+  http.put(`${baseUrl}/api/v2/users/me/demographics`, async ({ request }) => {
+    const body = await request.json();
+    return HttpResponse.json({
+      success: true,
+      message: 'Demographics data updated successfully',
+      data: {
+        ...mockDemographicsResponse.data,
+        ...body,
+      },
+    });
+  }),
 
   // ==================== DEFAULT HANDLERS ====================
 
