@@ -1,6 +1,7 @@
 /**
  * Staff Card Component
  * Displays staff member information in a card format
+ * Phase 5: Updated to use Person v2.0 data structure
  */
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -8,16 +9,26 @@ import { Badge } from '@/shared/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Mail, Calendar, Shield, Briefcase, Activity } from 'lucide-react';
 import type { Staff } from '../model/types';
+import type { IPerson } from '@/shared/types/person';
+import { getDisplayName, getPrimaryEmail } from '@/shared/lib/person-helpers';
 
 interface StaffCardProps {
   staff: Staff;
+  person?: IPerson;
   showDetails?: boolean;
   showMetadata?: boolean;
 }
 
-export function StaffCard({ staff, showDetails = true, showMetadata = false }: StaffCardProps) {
-  const initials = `${staff.firstName[0]}${staff.lastName[0]}`.toUpperCase();
-  const fullName = `${staff.firstName} ${staff.lastName}`;
+export function StaffCard({ staff, person, showDetails = true, showMetadata = false }: StaffCardProps) {
+  // Use person data if available, fallback to legacy staff data
+  const displayName = person ? getDisplayName(person) : `${staff.firstName} ${staff.lastName}`;
+  const primaryEmail = person ? getPrimaryEmail(person)?.email : staff.email;
+  const avatar = person?.avatar || staff.profileImage;
+  const pronouns = person?.pronouns;
+
+  const initials = person
+    ? `${person.firstName[0] || ''}${person.lastName[0] || ''}`.toUpperCase()
+    : `${staff.firstName[0]}${staff.lastName[0]}`.toUpperCase();
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
@@ -50,19 +61,22 @@ export function StaffCard({ staff, showDetails = true, showMetadata = false }: S
       <CardHeader>
         <div className="flex items-start gap-4">
           <Avatar className="h-16 w-16">
-            <AvatarImage src={staff.profileImage || undefined} alt={fullName} />
+            <AvatarImage src={avatar || undefined} alt={displayName} />
             <AvatarFallback className="text-lg">{initials}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
             <CardTitle className="flex items-center gap-2 flex-wrap">
-              {fullName}
+              {displayName}
+              {pronouns && (
+                <span className="text-sm font-normal text-muted-foreground">({pronouns})</span>
+              )}
               <Badge variant="outline" className={getStatusBadgeColor(staff.status)}>
                 {staff.status}
               </Badge>
             </CardTitle>
             <CardDescription className="flex items-center gap-2 mt-1">
               <Mail className="h-4 w-4" />
-              {staff.email}
+              {primaryEmail || 'No email'}
             </CardDescription>
           </div>
         </div>

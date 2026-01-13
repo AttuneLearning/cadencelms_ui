@@ -1,6 +1,7 @@
 /**
  * StudentDetailView Component
  * Comprehensive student information display with progress details
+ * Phase 5: Updated to use Person v2.0 data structure
  */
 
 import React from 'react';
@@ -9,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
 import { Progress } from '@/shared/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
-import { Avatar, AvatarFallback } from '@/shared/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import {
   BookOpen,
   Award,
@@ -20,15 +21,19 @@ import {
   Calendar,
 } from 'lucide-react';
 import type { LearnerProgress } from '@/entities/progress/model/types';
+import type { IPerson } from '@/shared/types/person';
+import { getDisplayName, getPrimaryEmail } from '@/shared/lib/person-helpers';
 
 export interface StudentDetailViewProps {
   studentId: string;
   data?: LearnerProgress;
+  person?: IPerson;
   isLoading: boolean;
 }
 
 export const StudentDetailView: React.FC<StudentDetailViewProps> = ({
   data,
+  person,
   isLoading,
 }) => {
   if (isLoading) {
@@ -49,6 +54,12 @@ export const StudentDetailView: React.FC<StudentDetailViewProps> = ({
       </div>
     );
   }
+
+  // Use person data if available, fallback to legacy data
+  const displayName = person ? getDisplayName(person) : data.learnerName;
+  const email = person ? getPrimaryEmail(person)?.email : data.learnerEmail;
+  const avatar = person?.avatar;
+  const pronouns = person?.pronouns;
 
   const isAtRisk = () => {
     const daysSinceActivity = data.summary.lastActivityAt
@@ -99,13 +110,21 @@ export const StudentDetailView: React.FC<StudentDetailViewProps> = ({
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-4">
               <Avatar className="h-16 w-16">
+                {avatar && <AvatarImage src={avatar} alt={displayName} />}
                 <AvatarFallback className="text-lg">
-                  {getInitials(data.learnerName)}
+                  {getInitials(displayName)}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h2 className="text-2xl font-bold">{data.learnerName}</h2>
-                <p className="text-muted-foreground">{data.learnerEmail}</p>
+                <h2 className="text-2xl font-bold">
+                  {displayName}
+                  {pronouns && (
+                    <span className="text-base font-normal text-muted-foreground ml-2">
+                      ({pronouns})
+                    </span>
+                  )}
+                </h2>
+                <p className="text-muted-foreground">{email || data.learnerEmail}</p>
                 <p className="text-sm text-muted-foreground mt-1">
                   Joined {new Date(data.summary.joinedAt).toLocaleDateString()}
                 </p>

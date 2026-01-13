@@ -1,6 +1,7 @@
 /**
  * StaffDetail Component
  * Displays detailed information about a staff member
+ * Phase 5: Updated to use Person v2.0 data structure
  */
 
 import React from 'react';
@@ -17,17 +18,27 @@ import { UserAvatar } from '@/entities/user';
 import { Mail, Phone, Briefcase, Building2, Calendar, Shield } from 'lucide-react';
 import { Skeleton } from '@/shared/ui/skeleton';
 import type { Staff } from '../model/types';
+import type { IPerson } from '@/shared/types/person';
 import { format } from 'date-fns';
+import { getDisplayName, getPrimaryEmail, getPrimaryPhone, formatPhoneNumber } from '@/shared/lib/person-helpers';
 
 interface StaffDetailProps {
   staff: Staff;
+  person?: IPerson;
   isLoading?: boolean;
 }
 
-export const StaffDetail: React.FC<StaffDetailProps> = ({ staff, isLoading = false }) => {
+export const StaffDetail: React.FC<StaffDetailProps> = ({ staff, person, isLoading = false }) => {
   if (isLoading) {
     return <StaffDetailSkeleton />;
   }
+
+  // Use person data if available, fallback to legacy staff data
+  const displayName = person ? getDisplayName(person) : `${staff.firstName} ${staff.lastName}`;
+  const primaryEmail = person ? getPrimaryEmail(person) : { email: staff.email };
+  const primaryPhone = person ? getPrimaryPhone(person) : { number: staff.phoneNumber };
+  const pronouns = person?.pronouns;
+  const avatar = person?.avatar;
 
   return (
     <div className="space-y-6">
@@ -36,15 +47,19 @@ export const StaffDetail: React.FC<StaffDetailProps> = ({ staff, isLoading = fal
         <CardHeader>
           <div className="flex items-start gap-6">
             <UserAvatar
-              firstName={staff.firstName}
-              lastName={staff.lastName}
+              firstName={person?.firstName || staff.firstName}
+              lastName={person?.lastName || staff.lastName}
+              avatarUrl={avatar}
               className="h-20 w-20"
             />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-3 flex-wrap">
                 <CardTitle className="text-2xl">
-                  {staff.firstName} {staff.lastName}
+                  {displayName}
                 </CardTitle>
+                {pronouns && (
+                  <span className="text-base font-normal text-muted-foreground">({pronouns})</span>
+                )}
                 <Badge variant={staff.isActive ? 'default' : 'secondary'}>
                   {staff.isActive ? 'Active' : 'Inactive'}
                 </Badge>
@@ -60,22 +75,34 @@ export const StaffDetail: React.FC<StaffDetailProps> = ({ staff, isLoading = fal
         </CardHeader>
 
         <CardContent className="space-y-4">
-          {staff.email && (
+          {primaryEmail?.email && (
             <div className="flex items-center gap-3">
               <Mail className="h-5 w-5 text-muted-foreground" />
               <div>
-                <div className="text-sm font-medium">Email</div>
-                <div className="text-sm text-muted-foreground">{staff.email}</div>
+                <div className="text-sm font-medium">
+                  Email
+                  {person && primaryEmail.isPrimary && (
+                    <Badge variant="outline" className="ml-2 text-xs">Primary</Badge>
+                  )}
+                </div>
+                <div className="text-sm text-muted-foreground">{primaryEmail.email}</div>
               </div>
             </div>
           )}
 
-          {staff.phoneNumber && (
+          {primaryPhone?.number && (
             <div className="flex items-center gap-3">
               <Phone className="h-5 w-5 text-muted-foreground" />
               <div>
-                <div className="text-sm font-medium">Phone</div>
-                <div className="text-sm text-muted-foreground">{staff.phoneNumber}</div>
+                <div className="text-sm font-medium">
+                  Phone
+                  {person && primaryPhone.isPrimary && (
+                    <Badge variant="outline" className="ml-2 text-xs">Primary</Badge>
+                  )}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {person ? formatPhoneNumber(primaryPhone) : primaryPhone.number}
+                </div>
               </div>
             </div>
           )}
