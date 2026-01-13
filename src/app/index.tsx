@@ -25,15 +25,26 @@ const queryClient = new QueryClient({
   },
 });
 
-export const App: React.FC = () => {
-  // EMERGENCY: Detect page reload loops
-  const loopKey = 'app_load_loop_check';
-  const loopData = sessionStorage.getItem(loopKey);
-  const { count = 0, time = Date.now() } = loopData ? JSON.parse(loopData) : {};
-  const timeSince = Date.now() - time;
+// Global variable to survive sessionStorage clears
+if (!(window as any).__loopBreaker) {
+  (window as any).__loopBreaker = { count: 0, time: Date.now() };
+}
 
-  // If app loaded more than 10 times in 3 seconds, we have a reload loop
-  if (timeSince < 3000 && count > 10) {
+export const App: React.FC = () => {
+  // EMERGENCY: Detect page reload loops (use both storage AND global variable)
+  const globalBreaker = (window as any).__loopBreaker;
+  const timeSince = Date.now() - globalBreaker.time;
+
+  // Reset if more than 1 second passed
+  if (timeSince > 1000) {
+    globalBreaker.count = 1;
+    globalBreaker.time = Date.now();
+  } else {
+    globalBreaker.count++;
+  }
+
+  // If app loaded more than 3 times in 1 second, we have a reload loop - BE VERY AGGRESSIVE
+  if (timeSince < 1000 && globalBreaker.count > 3) {
     console.error('[App] EMERGENCY: Page reload loop detected!');
     sessionStorage.clear();
     localStorage.clear();
@@ -73,11 +84,8 @@ export const App: React.FC = () => {
     );
   }
 
-  // Update loop counter
-  sessionStorage.setItem(loopKey, JSON.stringify({
-    count: timeSince < 3000 ? count + 1 : 1,
-    time: Date.now()
-  }));
+  // Keep global breaker updated
+  (window as any).__loopBreaker = globalBreaker;
 
   return (
     <QueryClientProvider client={queryClient}>
