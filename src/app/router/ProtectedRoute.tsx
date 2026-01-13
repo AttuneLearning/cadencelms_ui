@@ -155,6 +155,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       hasRequiredUserType,
       currentPath: location.pathname,
       willRedirect: !hasRequiredUserType,
+      defaultDashboard: roleHierarchy.defaultDashboard,
+      redirectTarget: !hasRequiredUserType ? `/${roleHierarchy.defaultDashboard}/dashboard` : 'NONE'
     });
 
     if (!hasRequiredUserType) {
