@@ -93,6 +93,33 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const { selectedDepartmentId } = useNavigationStore();
   const location = useLocation();
 
+  // Prevent infinite redirect loops
+  const redirectCount = React.useRef(0);
+  const lastPath = React.useRef(location.pathname);
+
+  if (lastPath.current !== location.pathname) {
+    lastPath.current = location.pathname;
+    redirectCount.current = 0;
+  } else {
+    redirectCount.current++;
+    if (redirectCount.current > 5) {
+      console.error('[ProtectedRoute] Too many redirects detected! Breaking loop.');
+      return (
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Redirect Loop Detected</h1>
+            <p className="text-muted-foreground mb-4">
+              There's a configuration issue with route permissions.
+            </p>
+            <a href="/login" className="text-primary hover:underline">
+              Return to Login
+            </a>
+          </div>
+        </div>
+      );
+    }
+  }
+
   // ================================================================
   // 1. Check Authentication
   // ================================================================
