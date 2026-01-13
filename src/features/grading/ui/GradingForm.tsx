@@ -43,22 +43,29 @@ interface GradingFormProps {
 // Create validation schema dynamically based on questions
 const createGradingSchema = (questions: ExamQuestion[]) => {
   return z.object({
-    questionGrades: z.array(
-      z.object({
-        questionId: z.string(),
-        scoreEarned: z.number().min(0, 'Score must be positive'),
-        feedback: z.string().optional(),
-      })
-    ).refine(
-      (grades) => {
-        // Check each grade doesn't exceed max points for that question
-        return grades.every((grade) => {
+    questionGrades: z
+      .array(
+        z.object({
+          questionId: z.string(),
+          scoreEarned: z.number().nullable().refine((val) => val === null || val >= 0, {
+            message: 'Score must be positive',
+          }),
+          feedback: z.string().optional(),
+        })
+      )
+      .superRefine((grades, ctx) => {
+        // Validate each grade against its question's max points
+        grades.forEach((grade, index) => {
           const question = questions.find((q) => q.id === grade.questionId);
-          return !question || grade.scoreEarned <= question.points;
+          if (question && grade.scoreEarned !== null && grade.scoreEarned > question.points) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: 'Score cannot exceed maximum points for question',
+              path: [index, 'scoreEarned'],
+            });
+          }
         });
-      },
-      { message: 'Score cannot exceed maximum points for question' }
-    ),
+      }),
     overallFeedback: z.string().optional(),
   });
 };
@@ -73,6 +80,7 @@ export function GradingForm({
 }: GradingFormProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Initialize form with validation
   const schema = useMemo(() => createGradingSchema(questions), [questions]);
@@ -84,10 +92,11 @@ export function GradingForm({
     formState: { errors },
   } = useForm<GradeFormData>({
     resolver: zodResolver(schema),
+    mode: 'onChange',
     defaultValues: initialData || {
       questionGrades: questions.map((q) => ({
         questionId: q.id,
-        scoreEarned: q.scoreEarned || 0,
+        scoreEarned: q.scoreEarned !== undefined ? q.scoreEarned : (null as any),
         feedback: q.feedback || '',
       })),
       overallFeedback: '',
@@ -119,11 +128,14 @@ export function GradingForm({
   const percentage = maxScore > 0 ? Math.round((totalScore / maxScore) * 100) : 0;
 
   const handleFormSubmit = (data: GradeFormData) => {
+    // Clear any previous error
+    setSubmitError(null);
+
     // Validate all questions have scores
-    const allGraded = data.questionGrades.every((g) => g.scoreEarned !== undefined);
+    const allGraded = data.questionGrades.every((g) => g.scoreEarned !== undefined && g.scoreEarned !== null);
 
     if (!allGraded) {
-      alert('All questions must be graded before submitting');
+      setSubmitError('All questions must be graded before submitting');
       return;
     }
 
@@ -240,14 +252,17 @@ export function GradingForm({
                         render={({ field }) => (
                           <Input
                             {...field}
+                            value={field.value === null ? '' : field.value}
                             id={`score-${question.id}`}
                             type="number"
-                            min="0"
-                            max={question.points}
                             step="0.5"
                             placeholder="0"
                             className={error ? 'border-destructive' : ''}
-                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              // Allow empty (null), parse to number (including negative)
+                              field.onChange(value === '' ? null : parseFloat(value));
+                            }}
                             aria-label={`Score for Question ${question.order}`}
                           />
                         )}
@@ -330,6 +345,12 @@ export function GradingForm({
       </Card>
 
       {/* Form Errors */}
+      {submitError && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{submitError}</AlertDescription>
+        </Alert>
+      )}
       {errors.questionGrades && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />

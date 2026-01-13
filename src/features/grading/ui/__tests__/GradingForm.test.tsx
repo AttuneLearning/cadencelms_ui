@@ -166,12 +166,21 @@ describe('GradingForm', () => {
     it('should show error when submitting without all scores', async () => {
       const user = userEvent.setup();
 
+      const mockSubmit = vi.fn();
+
+      // Create questions without scores
+      const questionsWithoutScores = mockQuestions.map((q) => ({
+        ...q,
+        scoreEarned: undefined,
+      }));
+
       render(
         <GradingForm
           attemptId="attempt-1"
-          questions={mockQuestions}
+          questions={questionsWithoutScores}
           maxScore={100}
-          {...mockHandlers}
+          onSubmit={mockSubmit}
+          // No onSaveDraft to avoid auto-save interference
         />,
         { wrapper: createWrapper() }
       );
@@ -179,9 +188,17 @@ describe('GradingForm', () => {
       const submitButton = screen.getByRole('button', { name: /submit grade/i });
       await user.click(submitButton);
 
-      await waitFor(() => {
-        expect(screen.getByText(/all questions must be graded/i)).toBeInTheDocument();
-      });
+      // Wait for error message to appear
+      await waitFor(
+        () => {
+          const errorMessage = screen.queryByText(/all questions must be graded/i);
+          expect(errorMessage).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
+
+      // Verify that onSubmit was NOT called
+      expect(mockSubmit).not.toHaveBeenCalled();
     });
   });
 
@@ -205,7 +222,12 @@ describe('GradingForm', () => {
       await user.type(scoreInputs[0], '10');
 
       await waitFor(() => {
-        expect(screen.getByText(/10/)).toBeInTheDocument();
+        // Check that the input has the value
+        expect(scoreInputs[0]).toHaveValue(10);
+        // Find the total score display - it should show the updated total
+        const totalScoreElements = screen.getAllByText('10');
+        // Should find at least the input value and the total
+        expect(totalScoreElements.length).toBeGreaterThan(0);
       });
     });
 
@@ -233,7 +255,13 @@ describe('GradingForm', () => {
       await user.type(scoreInputs[2], '15');
 
       await waitFor(() => {
-        expect(screen.getByText(/100%/)).toBeInTheDocument();
+        // Check that all inputs have correct values
+        expect(scoreInputs[0]).toHaveValue(10);
+        expect(scoreInputs[1]).toHaveValue(5);
+        expect(scoreInputs[2]).toHaveValue(15);
+        // Check for 100% being displayed
+        const percentageElements = screen.getAllByText(/100%/);
+        expect(percentageElements.length).toBeGreaterThan(0);
       });
     });
   });
@@ -241,7 +269,6 @@ describe('GradingForm', () => {
   describe('Auto-save', () => {
     it('should trigger auto-save after typing', async () => {
       const user = userEvent.setup();
-      vi.useFakeTimers();
 
       render(
         <GradingForm
@@ -256,19 +283,17 @@ describe('GradingForm', () => {
       const feedbackInput = screen.getAllByLabelText(/feedback/i)[0];
       await user.type(feedbackInput, 'Good answer');
 
-      // Fast forward time to trigger debounce
-      vi.advanceTimersByTime(2000);
-
-      await waitFor(() => {
-        expect(mockHandlers.onSaveDraft).toHaveBeenCalled();
-      });
-
-      vi.useRealTimers();
+      // Wait for debounce to complete (2000ms + buffer)
+      await waitFor(
+        () => {
+          expect(mockHandlers.onSaveDraft).toHaveBeenCalled();
+        },
+        { timeout: 3000 }
+      );
     });
 
     it('should show saving indicator during auto-save', async () => {
       const user = userEvent.setup();
-      vi.useFakeTimers();
 
       render(
         <GradingForm
@@ -283,14 +308,13 @@ describe('GradingForm', () => {
       const feedbackInput = screen.getAllByLabelText(/feedback/i)[0];
       await user.type(feedbackInput, 'Good answer');
 
-      vi.advanceTimersByTime(2000);
-
-      // Should show some indication of saving
-      await waitFor(() => {
-        expect(mockHandlers.onSaveDraft).toHaveBeenCalled();
-      });
-
-      vi.useRealTimers();
+      // Wait for debounce and save to complete
+      await waitFor(
+        () => {
+          expect(mockHandlers.onSaveDraft).toHaveBeenCalled();
+        },
+        { timeout: 3000 }
+      );
     });
   });
 

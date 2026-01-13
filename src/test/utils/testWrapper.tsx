@@ -11,7 +11,7 @@
 
 import { ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { MemoryRouter, MemoryRouterProps } from 'react-router-dom';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { render, RenderOptions } from '@testing-library/react';
 
 // ============================================================================
@@ -66,6 +66,14 @@ export interface TestWrapperOptions {
   initialIndex?: number;
 
   /**
+   * Route path pattern for Routes configuration
+   * If provided, wraps children in <Routes><Route path={routePath} element={children} /></Routes>
+   * This is needed for components that use useParams or other route-based hooks
+   * @example '/admin/audit-logs/:logId'
+   */
+  routePath?: string;
+
+  /**
    * Additional wrapper components to nest
    * Applied from outer to inner (first = outermost)
    */
@@ -94,11 +102,21 @@ export function createTestWrapper(options: TestWrapperOptions = {}) {
     queryClient = createTestQueryClient(),
     initialEntries = ['/'],
     initialIndex = 0,
+    routePath,
     additionalWrappers = [],
   } = options;
 
   return function TestWrapper({ children }: { children: ReactNode }) {
     let wrapped = children;
+
+    // If routePath is provided, wrap in Routes/Route for param support
+    if (routePath) {
+      wrapped = (
+        <Routes>
+          <Route path={routePath} element={wrapped} />
+        </Routes>
+      );
+    }
 
     // Apply additional wrappers from innermost to outermost
     for (let i = additionalWrappers.length - 1; i >= 0; i--) {

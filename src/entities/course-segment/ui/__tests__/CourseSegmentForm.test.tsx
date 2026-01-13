@@ -404,7 +404,8 @@ describe('CourseSegmentForm', () => {
 
       const longTitle = 'A'.repeat(201);
       const titleInput = screen.getByLabelText(/Title/);
-      await user.type(titleInput, longTitle);
+      await user.click(titleInput);
+      await user.paste(longTitle);
 
       const submitButton = screen.getByText('Create Module');
       await user.click(submitButton);
@@ -422,7 +423,8 @@ describe('CourseSegmentForm', () => {
 
       const longDescription = 'B'.repeat(2001);
       const descriptionInput = screen.getByLabelText(/Description/);
-      await user.type(descriptionInput, longDescription);
+      await user.click(descriptionInput);
+      await user.paste(longDescription);
 
       const submitButton = screen.getByText('Create Module');
       await user.click(submitButton);
