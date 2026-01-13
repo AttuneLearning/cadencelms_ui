@@ -165,8 +165,13 @@ export const useAuthStore = create<AuthState>()(
 
           const { data } = response;
 
+          // DEBUG: Log raw API response userTypes
+          console.log('[AuthStore] Raw userTypes from API:', data.userTypes);
+          console.log('[AuthStore] departmentMemberships:', data.departmentMemberships);
+
           // V2.1: Extract UserType keys from UserTypeObject[]
           const userTypeKeys: UserType[] = extractUserTypeKeys(data.userTypes);
+          console.log('[AuthStore] Extracted userTypeKeys:', userTypeKeys);
 
           // V2.1: Build display maps from server-provided displayAs values
           const userTypeDisplayMap = buildUserTypeDisplayMap(data.userTypes);

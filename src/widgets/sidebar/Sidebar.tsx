@@ -73,14 +73,17 @@ export const Sidebar: React.FC = () => {
   }
 
   const primaryUserType = roleHierarchy.primaryUserType;
+  const allUserTypes = roleHierarchy.allUserTypes || [primaryUserType];
 
   // ================================================================
   // Filter Global Nav Items
   // ================================================================
 
   const globalNavItems = GLOBAL_NAV_ITEMS.filter((item) => {
-    // Check if this item applies to current userType
-    if (!item.userTypes.includes(primaryUserType)) {
+    // Check if user has ANY of the allowed userTypes for this item
+    // This allows global-admin users to see staff/learner items if they have those userTypes
+    const hasMatchingUserType = item.userTypes.some(ut => allUserTypes.includes(ut));
+    if (!hasMatchingUserType) {
       return false;
     }
 
@@ -192,8 +195,9 @@ export const Sidebar: React.FC = () => {
     if (!selectedDepartmentId) return [];
 
     return DEPARTMENT_NAV_ITEMS.filter((item) => {
-      // Check if this item applies to current userType
-      if (!item.userTypes.includes(primaryUserType)) {
+      // Check if user has ANY of the allowed userTypes for this item
+      const hasMatchingUserType = item.userTypes.some(ut => allUserTypes.includes(ut));
+      if (!hasMatchingUserType) {
         return false;
       }
 
@@ -204,7 +208,7 @@ export const Sidebar: React.FC = () => {
       ...item,
       path: item.pathTemplate.replace(':deptId', selectedDepartmentId),
     }));
-  }, [selectedDepartmentId, primaryUserType, hasDeptPermission]);
+  }, [selectedDepartmentId, allUserTypes, hasDeptPermission]);
 
   // ================================================================
   // Render

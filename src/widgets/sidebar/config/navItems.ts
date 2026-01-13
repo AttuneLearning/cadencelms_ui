@@ -49,7 +49,7 @@ export const GLOBAL_NAV_ITEMS: GlobalNavItem[] = [
   },
   {
     label: 'My Profile',
-    path: '/learner/profile',
+    path: '/profile',
     icon: User,
     userTypes: ['learner'],
   },
@@ -79,7 +79,7 @@ export const GLOBAL_NAV_ITEMS: GlobalNavItem[] = [
   },
   {
     label: 'My Profile',
-    path: '/staff/profile',
+    path: '/profile',
     icon: User,
     userTypes: ['staff'],
   },
