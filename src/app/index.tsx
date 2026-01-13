@@ -26,6 +26,59 @@ const queryClient = new QueryClient({
 });
 
 export const App: React.FC = () => {
+  // EMERGENCY: Detect page reload loops
+  const loopKey = 'app_load_loop_check';
+  const loopData = sessionStorage.getItem(loopKey);
+  const { count = 0, time = Date.now() } = loopData ? JSON.parse(loopData) : {};
+  const timeSince = Date.now() - time;
+
+  // If app loaded more than 10 times in 3 seconds, we have a reload loop
+  if (timeSince < 3000 && count > 10) {
+    console.error('[App] EMERGENCY: Page reload loop detected!');
+    sessionStorage.clear();
+    localStorage.clear();
+
+    return (
+      <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+        <div style={{ textAlign: 'center', maxWidth: '500px' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px', color: '#ef4444' }}>
+            Emergency: Page Reload Loop
+          </h1>
+          <p style={{ marginBottom: '16px', color: '#666' }}>
+            The page was reloading infinitely. All storage has been cleared.
+          </p>
+          <p style={{ marginBottom: '16px', color: '#666' }}>
+            Please close this browser tab/window completely and open a new one.
+          </p>
+          <button
+            onClick={() => {
+              sessionStorage.clear();
+              localStorage.clear();
+              window.location.href = '/login';
+            }}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: '#3b82f6',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '16px'
+            }}
+          >
+            Force Navigate to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Update loop counter
+  sessionStorage.setItem(loopKey, JSON.stringify({
+    count: timeSince < 3000 ? count + 1 : 1,
+    time: Date.now()
+  }));
+
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
