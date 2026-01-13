@@ -778,6 +778,72 @@ export const handlers = [
     });
   }),
 
+  // ==================== PASSWORD CHANGE HANDLERS (PHASE 6) ====================
+
+  // POST /api/v2/users/me/password - Change user password
+  http.post(`${baseUrl}/api/v2/users/me/password`, async ({ request }) => {
+    const body = (await request.json()) as { currentPassword: string; newPassword: string };
+
+    // Simulate validation
+    if (!body.currentPassword || !body.newPassword) {
+      return HttpResponse.json(
+        {
+          success: false,
+          message: 'Current password and new password are required',
+        },
+        { status: 400 }
+      );
+    }
+
+    // Simulate wrong current password
+    if (body.currentPassword === 'wrongpassword') {
+      return HttpResponse.json(
+        {
+          success: false,
+          message: 'Current password is incorrect',
+        },
+        { status: 401 }
+      );
+    }
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Password changed successfully',
+    });
+  }),
+
+  // POST /api/v2/admin/me/password - Change admin password
+  http.post(`${baseUrl}/api/v2/admin/me/password`, async ({ request }) => {
+    const body = (await request.json()) as { currentPassword: string; newPassword: string };
+
+    // Simulate validation
+    if (!body.currentPassword || !body.newPassword) {
+      return HttpResponse.json(
+        {
+          success: false,
+          message: 'Current password and new password are required',
+        },
+        { status: 400 }
+      );
+    }
+
+    // Simulate wrong current password
+    if (body.currentPassword === 'wrongpassword') {
+      return HttpResponse.json(
+        {
+          success: false,
+          message: 'Current password is incorrect',
+        },
+        { status: 401 }
+      );
+    }
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Admin password changed successfully',
+    });
+  }),
+
   // ==================== DEFAULT HANDLERS ====================
 
   // Health check endpoint

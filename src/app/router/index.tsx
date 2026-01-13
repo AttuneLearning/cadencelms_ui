@@ -66,6 +66,9 @@ import { AuditLogsPage, AuditLogDetailPage } from '@/pages/admin/audit-logs';
 // Profile page
 import { ProfilePage } from '@/pages/profile/ProfilePage';
 
+// Settings pages
+import { ChangePasswordPage } from '@/pages/settings';
+
 // Select department page (V2)
 import { SelectDepartmentPage } from '@/pages/select-department';
 
@@ -137,6 +140,14 @@ export function AppRouter() {
         element={
           <ProtectedRoute>
             <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings/change-password"
+        element={
+          <ProtectedRoute>
+            <ChangePasswordPage />
           </ProtectedRoute>
         }
       />
