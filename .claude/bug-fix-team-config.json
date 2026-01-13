@@ -1,9 +1,12 @@
 {
+  "workingDirectory": "/home/adam/github/cadencelms_ui",
+  "CRITICAL_DIRECTIVE": "ONLY DEVELOP IN /home/adam/github/cadencelms_ui - NO OTHER DIRECTORIES",
   "team": {
-    "name": "LMS Frontend Team - Bug Resolution & Implementation",
+    "name": "CadenceLMS Frontend Team - Bug Resolution & Implementation",
     "version": "1.0.0",
     "description": "Dual-purpose team for systematic bug fixing and feature implementation from issue queue",
     "activeProject": "Issue Queue - Bug Fixes and UI Features",
+    "repositoryName": "cadencelms_ui",
     "issueQueuePath": "api/agent_coms/ui/ISSUE_QUEUE.md",
     "messageLogPath": "api/agent_coms/ui/MESSAGE_LOG.md",
     "coordinationStandard": "api/agent_coms/messages/COORDINATION_STANDARD.md"

@@ -1,8 +1,8 @@
 {
-  "name": "1_lms_ui_v2",
+  "name": "cadencelms_ui",
   "version": "1.0.0",
   "type": "module",
-  "description": "",
+  "description": "CadenceLMS UI - Primary development repository",
   "main": "index.js",
   "scripts": {
     "dev": "vite",

@@ -1,9 +1,12 @@
 {
+  "workingDirectory": "/home/adam/github/cadencelms_ui",
+  "CRITICAL_DIRECTIVE": "ONLY DEVELOP IN /home/adam/github/cadencelms_ui - NO OTHER DIRECTORIES",
   "team": {
-    "name": "LMS Frontend Team - UI Authorization Phase 1+2",
+    "name": "CadenceLMS Frontend Team - UI Authorization Phase 1+2",
     "version": "3.0.0",
     "description": "Frontend development team for UI Authorization compliance - Phases 1 & 2",
     "activeProject": "UI Authorization Implementation (Critical Security + Core Components)",
+    "repositoryName": "cadencelms_ui",
     "planDocument": "devdocs/impl_reports/UI_AUTH_NEW_IMPLEMENTATION_PLAN.md",
     "quickReference": "devdocs/UI_AUTH_QUICK_REFERENCE.md"
   },
