@@ -1,8 +1,8 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`UserAvatar > Snapshot Tests > should match snapshot with avatar image 1`] = `
+exports[`UserAvatar Component > Snapshot Tests > should match snapshot with deprecated props 1`] = `
 <span
-  class="relative flex shrink-0 overflow-hidden rounded-full h-10 w-10"
+  class="relative flex shrink-0 overflow-hidden rounded-full h-10 w-10 text-sm"
 >
   <span
     class="flex h-full w-full items-center justify-center rounded-full bg-muted"
@@ -12,9 +12,21 @@ exports[`UserAvatar > Snapshot Tests > should match snapshot with avatar image 1
 </span>
 `;
 
-exports[`UserAvatar > Snapshot Tests > should match snapshot with custom className 1`] = `
+exports[`UserAvatar Component > Snapshot Tests > should match snapshot with displayName 1`] = `
 <span
-  class="relative flex shrink-0 overflow-hidden rounded-full h-16 w-16 border-2 border-primary"
+  class="relative flex shrink-0 overflow-hidden rounded-full h-10 w-10 text-sm"
+>
+  <span
+    class="flex h-full w-full items-center justify-center rounded-full bg-muted"
+  >
+    AS
+  </span>
+</span>
+`;
+
+exports[`UserAvatar Component > Snapshot Tests > should match snapshot with person data 1`] = `
+<span
+  class="relative flex shrink-0 overflow-hidden rounded-full h-10 w-10 text-sm"
 >
   <span
     class="flex h-full w-full items-center justify-center rounded-full bg-muted"
@@ -24,9 +36,21 @@ exports[`UserAvatar > Snapshot Tests > should match snapshot with custom classNa
 </span>
 `;
 
-exports[`UserAvatar > Snapshot Tests > should match snapshot with initials only 1`] = `
+exports[`UserAvatar Component > Snapshot Tests > should match snapshot with size variants 1`] = `
 <span
-  class="relative flex shrink-0 overflow-hidden rounded-full h-10 w-10"
+  class="relative flex shrink-0 overflow-hidden rounded-full h-6 w-6 text-xs"
+>
+  <span
+    class="flex h-full w-full items-center justify-center rounded-full bg-muted"
+  >
+    JD
+  </span>
+</span>
+`;
+
+exports[`UserAvatar Component > Snapshot Tests > should match snapshot with size variants 2`] = `
+<span
+  class="relative flex shrink-0 overflow-hidden rounded-full h-16 w-16 text-base"
 >
   <span
     class="flex h-full w-full items-center justify-center rounded-full bg-muted"

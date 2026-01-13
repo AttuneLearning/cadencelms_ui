@@ -1,9 +1,13 @@
 /**
- * Header Component - Phase 3 Update (Track F)
- * Version: 2.1.0
- * Date: 2026-01-11
+ * Header Component - Phase 3 Update
+ * Version: 2.2.0
+ * Date: 2026-01-13
  *
- * Updated to use server-provided displayAs labels from roleHierarchy
+ * Updated to use Person Data v2.0:
+ * - Uses useDisplayName() hook for user display name
+ * - Uses useCurrentUser() hook for computed values
+ * - Uses UserAvatar component with person data
+ * - Shows pronouns (optional, subtle)
  */
 
 import React from 'react';
@@ -11,11 +15,13 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { GraduationCap, Menu, LogOut, Settings, BookOpen, Building2 } from 'lucide-react';
 import { ThemeToggle } from '@/features/theme/ui/ThemeToggle';
 import { useAuthStore } from '@/features/auth/model/authStore';
+import { useDisplayName } from '@/features/auth/hooks/useDisplayName';
+import { useCurrentUser } from '@/features/auth/hooks/useCurrentUser';
 import { useNavigation } from '@/shared/lib/navigation';
 import { useDepartmentContext } from '@/shared/hooks';
 import { Button } from '@/shared/ui/button';
 import { Separator } from '@/shared/ui/separator';
-import { Avatar, AvatarFallback } from '@/shared/ui/avatar';
+import { UserAvatar } from '@/entities/user/ui/UserAvatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -73,6 +79,8 @@ const getBasePath = (userType: UserType): string => {
 
 export const Header: React.FC = () => {
   const { isAuthenticated, user, roleHierarchy, logout } = useAuthStore();
+  const displayName = useDisplayName();
+  const { person, primaryEmail } = useCurrentUser();
   const { toggleSidebar } = useNavigation();
   const {
     currentDepartmentName,
@@ -84,13 +92,6 @@ export const Header: React.FC = () => {
   const handleLogout = async () => {
     await logout();
     navigate('/login');
-  };
-
-  // Get user initials for avatar
-  const getUserInitials = () => {
-    if (!user?.email) return 'U';
-    const email = user.email;
-    return email.charAt(0).toUpperCase();
   };
 
   // Detect current dashboard context from route
@@ -233,19 +234,33 @@ export const Header: React.FC = () => {
                       className="relative h-9 w-9 rounded-full"
                       aria-label="User menu"
                     >
-                      <Avatar className="h-9 w-9">
-                        <AvatarFallback>{getUserInitials()}</AvatarFallback>
-                      </Avatar>
+                      <UserAvatar
+                        person={person}
+                        displayName={displayName}
+                        size="md"
+                        className="h-9 w-9"
+                      />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-64" align="end" forceMount>
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col space-y-1">
+                        {/* Display Name */}
                         <p className="text-sm font-medium leading-none">
-                          {user?.email || 'User'}
+                          {displayName || 'User'}
+                        </p>
+                        {/* Pronouns (subtle) */}
+                        {person?.pronouns && (
+                          <p className="text-xs text-muted-foreground italic">
+                            {person.pronouns}
+                          </p>
+                        )}
+                        {/* Primary Email */}
+                        <p className="text-xs text-muted-foreground">
+                          {primaryEmail || user?.email || 'No email'}
                         </p>
                         {/* UserType with role badges */}
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1.5 mt-1">
                           <span className="text-xs leading-none text-muted-foreground">
                             {getContextualUserTypeLabel()}
                           </span>
