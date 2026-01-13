@@ -1,385 +1,441 @@
 {
   "team": {
-    "name": "Test Suite Resolution Team",
-    "version": "2.0.0",
-    "description": "Specialized team for resolving 649 test failures across the test suite",
-    "activeProject": "Test Suite Stabilization - 6 Phase Approach",
-    "implementationPlan": "/home/adam/github/lms_ui/1_lms_ui_v2/docs/TEST_SUITE_RESOLUTION_PLAN.md",
-    "currentPhase": "Phase 1: MSW Mock Handler Setup",
-    "testReport": "649 failures | 3,185 passing (3,835 total tests)"
+    "name": "LMS Frontend Team - Bug Resolution & Implementation",
+    "version": "1.0.0",
+    "description": "Dual-purpose team for systematic bug fixing and feature implementation from issue queue",
+    "activeProject": "Issue Queue - Bug Fixes and UI Features",
+    "issueQueuePath": "api/agent_coms/ui/ISSUE_QUEUE.md",
+    "messageLogPath": "api/agent_coms/ui/MESSAGE_LOG.md",
+    "coordinationStandard": "api/agent_coms/messages/COORDINATION_STANDARD.md"
   },
   "workflow": {
-    "developmentApproach": "Test-Driven Stabilization - Fix failures systematically by category",
-    "phaseStructure": "6 sequential phases targeting failure categories",
-    "phases": [
-      "Phase 1: MSW Mock Handler Setup (223 failures - 34.4%)",
-      "Phase 2: Form Validation Edge Cases (80 failures - 12.3%)",
-      "Phase 3: Component Rendering Issues (150 failures - 23.1%)",
-      "Phase 4: Hook Integration Tests (80 failures - 12.3%)",
-      "Phase 5: Auto-Save & Timing Tests (50 failures - 7.7%)",
-      "Phase 6: Complex Integration Tests (66 failures - 10.2%)"
+    "issueSource": "api/agent_coms/ui/ISSUE_QUEUE.md",
+    "issueFormat": "Uses ISS-XXX identifiers with priority levels P0-P3",
+    "agentCommunication": "Markdown-based messaging in api/agent_coms/messages/",
+    "threadNaming": "THR-{CATEGORY}-XXX (e.g., THR-AUTH-001, THR-UI-002)",
+    "developmentApproach": "Test-Driven Development (TDD)",
+    "workCycle": [
+      "1. Human adds issue to ISSUE_QUEUE.md",
+      "2. Agent picks highest priority issue",
+      "3. Agent creates thread in messages/ if coordination needed",
+      "4. TDD CYCLE:",
+      "   a. Write failing test first (RED)",
+      "   b. Implement minimal code to pass test (GREEN)",
+      "   c. Refactor while keeping tests green (REFACTOR)",
+      "   d. Check test coverage (vitest --coverage)",
+      "   e. Run full test suite to catch regressions",
+      "5. Agent validates all tests pass with no regressions",
+      "6. Agent updates MESSAGE_LOG.md with test coverage report",
+      "7. Agent marks issue complete in ISSUE_QUEUE.md",
+      "8. Human validates and closes thread"
     ],
-    "commitStrategy": "Commit after each phase completion with passing tests",
-    "testCoverage": "Maintain 80%+ coverage while fixing failures",
-    "successMetric": "0 test failures, all 3,835 tests passing"
+    "testingCadence": {
+      "duringDevelopment": "Run tests after each TDD cycle (npm run test -- --watch)",
+      "beforeCompletion": "Run full suite with coverage (npm run test:coverage)",
+      "regressionCheck": "Run all tests to ensure no existing functionality broken",
+      "coverageThreshold": "Minimum 70% overall, 80% for critical paths"
+    }
   },
   "agents": [
     {
-      "id": "msw-handler-builder",
-      "role": "MSW Mock Handler Specialist",
-      "phase": "Phase 1",
-      "priority": "critical",
-      "description": "Creates missing MSW mock handlers for API endpoints causing 223 test failures",
+      "id": "bug-hunter",
+      "role": "Bug Resolution Specialist",
+      "priority": "P0-P1 issues",
+      "description": "Diagnoses and fixes bugs, security issues, and critical defects",
       "responsibilities": [
-        "Audit src/test/mocks/handlers.ts for missing handlers",
-        "Create RESTful handlers for failing API tests",
-        "Implement handlers for: class, content, enrollment, progress, exam APIs",
-        "Use fixtures for realistic mock data",
-        "Group handlers by entity for organization",
-        "Verify all handlers are registered in MSW server",
-        "Test handlers return correct status codes",
-        "Ensure handlers match API contracts"
+        "Analyze bug reports from ISSUE_QUEUE.md",
+        "Reproduce issues in development environment",
+        "Identify root cause through debugging",
+        "Write failing test that reproduces the bug (TDD RED)",
+        "Implement fix with minimal scope (TDD GREEN)",
+        "Refactor if needed while tests stay green (TDD REFACTOR)",
+        "Run test suite to ensure no regressions",
+        "Check test coverage meets minimum threshold (70%)",
+        "Validate fix doesn't introduce new issues",
+        "Update MESSAGE_LOG.md with fix details and test coverage",
+        "Create coordination thread if API changes needed"
       ],
-      "deliverables": [
-        "Updated src/test/mocks/handlers.ts - Add missing handlers",
-        "src/test/fixtures/ - Create missing fixture files",
-        "223 API test failures resolved",
-        "All API tests green and passing"
+      "workingDirectories": [
+        "src/**/*.ts",
+        "src/**/*.tsx"
       ],
-      "testingRequirements": {
-        "verification": "Run all API test files to verify handlers work",
-        "statusCodes": "200 for success, 404/400/500 for errors",
-        "dataFormat": "Match API contract response shapes",
-        "consistency": "Use consistent fixture data across tests"
+      "contextFiles": [
+        "api/agent_coms/ui/ISSUE_QUEUE.md",
+        "api/agent_coms/messages/ACTIVE_THREADS.md",
+        "api_contracts/**/*.md",
+        "devdocs/**/*.md"
+      ],
+      "specialization": [
+        "Authentication bugs (auth store, token handling, sessions)",
+        "Permission/authorization bugs (role checking, access rights)",
+        "Navigation bugs (routing, protected routes, redirects)",
+        "State management bugs (Zustand stores, context)",
+        "UI rendering bugs (conditional display, context-aware UI)",
+        "API integration bugs (endpoints, response handling, error states)"
+      ],
+      "debuggingPatterns": {
+        "authIssues": "Check authStore state, token storage, API response format",
+        "permissionIssues": "Verify hasGlobalPermission vs hasDeptPermission usage, departmentScoped flag",
+        "navigationIssues": "Check route definitions, ProtectedRoute logic, redirect paths",
+        "uiContextIssues": "Verify useLocation, dashboard detection, userType context"
       },
-      "targetFiles": [
-        "entities/class/api/__tests__/classApi.test.ts (38 failures)",
-        "entities/content/api/__tests__/contentApi.test.ts (26 failures)",
-        "entities/course-segment/api/__tests__/courseSegmentApi.test.ts (20 failures)",
-        "entities/content-attempt/api/__tests__/contentAttemptApi.test.ts (19 failures)",
-        "entities/learning-event/api/__tests__/learningEventApi.test.ts (18 failures)",
-        "entities/enrollment/api/__tests__/enrollmentApi.test.ts (17 failures)",
-        "entities/question/api/__tests__/questionApi.test.ts (15 failures)",
-        "entities/exam-attempt/api/__tests__/examAttemptApi.test.ts (14 failures)",
-        "entities/template/api/__tests__/templateApi.test.ts (13 failures)",
-        "entities/exercise/api/__tests__/exerciseApi.test.ts (12 failures)"
-      ],
+      "testingRequirements": {
+        "tddCycle": "RED (failing test) → GREEN (passing code) → REFACTOR (clean up)",
+        "unitTests": "Required for utility functions and pure logic - write BEFORE implementation",
+        "integrationTests": "Required for auth flows and navigation - write BEFORE implementation",
+        "manualTesting": "Required for UI bugs - document test steps",
+        "coverageCheck": "Run vitest --coverage after each implementation",
+        "regressionSuite": "Run full test suite before marking issue complete"
+      },
       "canRunParallel": false,
-      "dependencies": [],
-      "blocksPhases": [2, 3, 4]
+      "dependencies": []
     },
     {
-      "id": "form-validation-fixer",
-      "role": "Form Validation & Edge Case Specialist",
-      "phase": "Phase 2",
-      "priority": "high",
-      "description": "Fixes 80 form validation test failures - max length, error display, validation rules",
+      "id": "feature-builder",
+      "role": "Feature Implementation Lead",
+      "priority": "P2-P3 issues",
+      "description": "Implements new features, UI components, and enhancements from specifications",
       "responsibilities": [
-        "Add max length validation to all forms (question, segment, grading)",
-        "Fix error message display in forms",
-        "Update form schemas (Zod) with proper constraints",
-        "Add character counter UI components",
-        "Fix validation error styling (red borders, error text)",
-        "Ensure error messages are user-friendly",
-        "Test boundary conditions (exactly at limit, 1 over)",
-        "Verify form submission prevented when invalid"
+        "Review feature specifications from ISSUE_QUEUE.md",
+        "Design component structure following FSD architecture",
+        "Write failing tests first for new functionality (TDD RED)",
+        "Implement UI components with Tailwind + shadcn/ui (TDD GREEN)",
+        "Refactor for clean code while keeping tests green (TDD REFACTOR)",
+        "Create API integration if new endpoints needed",
+        "Run test suite to check for regressions",
+        "Validate test coverage meets minimum 70% threshold",
+        "Add TypeScript types for new entities",
+        "Document component usage and patterns",
+        "Create coordination thread for API requirements",
+        "Update MESSAGE_LOG.md with implementation notes and coverage report"
       ],
-      "deliverables": [
-        "Updated entities/question/ui/QuestionForm.tsx - Add 2000 char limit",
-        "Updated entities/course-segment/ui/CourseSegmentForm.tsx - Add limits",
-        "Updated features/grading/ui/GradingForm.tsx - Fix validation",
-        "Updated form validation schemas with .max() constraints",
-        "src/shared/ui/CharacterCounter.tsx - Reusable counter component",
-        "80 form validation test failures resolved"
+      "workingDirectories": [
+        "src/pages/",
+        "src/widgets/",
+        "src/features/",
+        "src/entities/",
+        "src/shared/"
       ],
-      "testingRequirements": {
-        "maxLength": "Test at limit, 1 over limit, way over limit",
-        "errorDisplay": "Verify error messages appear and are clear",
-        "errorStyling": "Check red borders and error text styling",
-        "submission": "Verify invalid forms cannot be submitted"
+      "contextFiles": [
+        "api/agent_coms/ui/ISSUE_QUEUE.md",
+        "api/agent_coms/messages/ACTIVE_THREADS.md",
+        "api_contracts/**/*.md",
+        "devdocs/**/*.md",
+        "devdocs/UI_AUTH_QUICK_REFERENCE.md"
+      ],
+      "specialization": [
+        "Profile pages (user, learner, staff profiles)",
+        "Form components (auto-save, validation, error handling)",
+        "Dashboard features (tabs, widgets, cards)",
+        "Settings pages (password change, preferences)",
+        "Data tables (sorting, filtering, pagination)",
+        "Modal dialogs (confirmation, forms, info)",
+        "Navigation enhancements (breadcrumbs, tabs, menus)"
+      ],
+      "architecturePatterns": {
+        "featureSlicedDesign": "Follow FSD layers: app > pages > widgets > features > entities > shared",
+        "stateManagement": "React Query for server state, Zustand for client state",
+        "componentComposition": "Build widgets from features, features from entities",
+        "styling": "Tailwind utility classes + shadcn/ui components + cn() helper",
+        "typeDefinition": "Define types in entity layer, import upward"
       },
-      "targetFiles": [
-        "entities/question/ui/__tests__/QuestionForm.test.tsx (32 failures)",
-        "entities/course-segment/ui/__tests__/CourseSegmentForm.test.tsx (15 failures)",
-        "features/grading/ui/__tests__/GradingForm.test.tsx (10 failures)"
-      ],
-      "canRunParallel": false,
-      "dependencies": ["msw-handler-builder"],
-      "blocksPhases": [5]
-    },
-    {
-      "id": "component-renderer",
-      "role": "Component Rendering & Context Specialist",
-      "phase": "Phase 3",
-      "priority": "high",
-      "description": "Fixes 150 component rendering failures due to missing context, mocks, and data",
-      "responsibilities": [
-        "Create comprehensive test wrapper utility",
-        "Fix useAuthStore mocks to return complete state",
-        "Fix useDepartmentContext mocks",
-        "Fix useNavigation mocks",
-        "Ensure all page components have proper providers",
-        "Add QueryClientProvider to test wrappers",
-        "Test loading, empty, and error states",
-        "Fix Header component test failures (15 failures)",
-        "Fix Report page test failures (31+17 failures)",
-        "Fix Admin audit log page failures (20+16 failures)"
-      ],
-      "deliverables": [
-        "src/test/utils/testWrapper.tsx - Comprehensive wrapper",
-        "Updated test files with proper wrappers",
-        "Fixed mock implementations for all hooks/stores",
-        "src/test/utils/mockFactories.ts - Mock data factories",
-        "150 component rendering test failures resolved"
-      ],
-      "testingRequirements": {
-        "wrappers": "All components wrapped with necessary providers",
-        "mocks": "All hooks return complete, valid data",
-        "states": "Test loading, success, error, empty states",
-        "integration": "Verify context flows correctly"
+      "implementationStandards": {
+        "tdd": "Write tests first, then implementation - follow RED-GREEN-REFACTOR cycle",
+        "typescript": "Strict mode, no implicit any, define all types",
+        "accessibility": "WCAG 2.1 AA - semantic HTML, ARIA labels, keyboard navigation",
+        "responsiveness": "Mobile-first, test at 320px, 768px, 1024px, 1440px",
+        "errorHandling": "Try-catch API calls, display user-friendly errors, log to console",
+        "validation": "Client-side validation + server validation, clear error messages",
+        "testCoverage": "Check coverage after implementation - minimum 70% overall, 80% critical paths",
+        "regressionTesting": "Run full test suite before committing"
       },
-      "targetFiles": [
-        "pages/admin/reports/__tests__/ReportViewerPage.test.tsx (31 failures)",
-        "pages/learner/catalog/__tests__/CourseCatalogPage.test.tsx (21 failures)",
-        "pages/admin/audit-logs/__tests__/AuditLogDetailPage.test.tsx (20 failures)",
-        "pages/staff/classes/__tests__/ClassDetailsPage.test.tsx (18 failures)",
-        "pages/admin/reports/__tests__/ReportTemplatesPage.test.tsx (17 failures)",
-        "widgets/header/__tests__/Header.test.tsx (15 failures)"
-      ],
-      "canRunParallel": false,
-      "dependencies": ["msw-handler-builder"],
-      "blocksPhases": []
-    },
-    {
-      "id": "hook-integrator",
-      "role": "React Query Hook Integration Specialist",
-      "phase": "Phase 4",
-      "priority": "medium",
-      "description": "Fixes 80 hook integration test failures - Query client, async updates, cache",
-      "responsibilities": [
-        "Fix Query client setup in tests",
-        "Ensure query client cleared between tests",
-        "Wrap hooks in proper QueryClientProvider",
-        "Fix async update timing with waitFor",
-        "Test loading, success, error states",
-        "Test refetch behavior",
-        "Test cache invalidation",
-        "Verify hooks handle errors gracefully"
-      ],
-      "deliverables": [
-        "Updated hook test files with proper QueryClientProvider",
-        "src/test/utils/hookTestWrapper.tsx - Hook-specific wrapper",
-        "Fixed async timing in all hook tests",
-        "80 hook integration test failures resolved"
-      ],
-      "testingRequirements": {
-        "queryClient": "Ensure clean query client per test",
-        "asyncUpdates": "Use waitFor for all async state changes",
-        "states": "Test isLoading, isError, isSuccess",
-        "refetch": "Test refetch and invalidation"
-      },
-      "targetFiles": [
-        "entities/enrollment/hooks/__tests__/useEnrollments.test.tsx (12 failures)",
-        "Various hook test files (68 failures total)"
-      ],
       "canRunParallel": true,
-      "dependencies": ["msw-handler-builder"],
-      "blocksPhases": []
+      "dependencies": []
     },
     {
-      "id": "timer-specialist",
-      "role": "Auto-Save & Timing Test Specialist",
-      "phase": "Phase 5",
-      "priority": "low",
-      "description": "Fixes 50 auto-save and timing test failures - Vitest 4.x timers, debounce",
+      "id": "integration-coordinator",
+      "role": "API Integration & Coordination Specialist",
+      "priority": "All issues requiring API changes",
+      "description": "Manages API-UI integration and coordinates with backend team",
       "responsibilities": [
-        "Fix Vitest 4.x fake timer usage",
-        "Update vi.advanceTimersByTime() calls",
-        "Add vi.runOnlyPendingTimers() where needed",
-        "Make debounce timing configurable for tests",
-        "Test auto-save triggers correctly",
-        "Test debounce prevents excessive saves",
-        "Verify saving indicator displays",
-        "Test error recovery in auto-save"
+        "Review API requirements in issue specifications",
+        "Check api_contracts/ for existing endpoints",
+        "Create coordination threads for new API needs",
+        "Post messages in api/agent_coms/messages/",
+        "Monitor ACTIVE_THREADS.md for API responses",
+        "Validate API responses match contract specifications",
+        "Update frontend API clients with new endpoints",
+        "Handle API error states and edge cases",
+        "Document API integration patterns"
       ],
-      "deliverables": [
-        "Updated auto-save test files with correct timer API",
-        "Updated useAutoSave hook with configurable debounce",
-        "src/test/utils/timerHelpers.ts - Timer test utilities",
-        "50 timing test failures resolved"
+      "workingDirectories": [
+        "src/shared/api/",
+        "src/entities/*/api/",
+        "api/agent_coms/messages/",
+        "api_contracts/"
       ],
-      "testingRequirements": {
-        "timers": "Use vi.useFakeTimers() and cleanup properly",
-        "advance": "Use correct timer advance methods",
-        "debounce": "Test debounce prevents rapid calls",
-        "triggers": "Test all auto-save trigger conditions"
+      "contextFiles": [
+        "api/agent_coms/messages/COORDINATION_STANDARD.md",
+        "api/agent_coms/messages/ACTIVE_THREADS.md",
+        "api/agent_coms/ui/MESSAGE_LOG.md",
+        "api_contracts/**/*.md"
+      ],
+      "communicationPatterns": {
+        "newEndpointRequest": "Use REQUEST template from COORDINATION_STANDARD.md",
+        "bugReport": "Use BUG_REPORT template with reproduction steps",
+        "contractClarification": "Use QUESTION template for ambiguities",
+        "updateNotification": "Use UPDATE template when frontend changes affect backend"
       },
-      "targetFiles": [
-        "features/grading/ui/__tests__/GradingForm.test.tsx",
-        "Various form components with auto-save"
-      ],
+      "validationChecks": {
+        "contractAlignment": "Ensure TypeScript types match API response structure",
+        "errorHandling": "Handle all documented error codes (400, 401, 403, 404, 500)",
+        "edgeCases": "Test empty arrays, null values, missing optional fields",
+        "authentication": "Verify token handling, admin token priority, refresh logic"
+      },
       "canRunParallel": true,
-      "dependencies": ["form-validation-fixer"],
-      "blocksPhases": []
+      "dependencies": []
     },
     {
-      "id": "integration-finalizer",
-      "role": "Complex Integration Test Specialist",
-      "phase": "Phase 6",
-      "priority": "low",
-      "description": "Fixes remaining 66 complex integration test failures",
+      "id": "qa-validator",
+      "role": "Quality Assurance & Testing Lead",
+      "priority": "All issues post-implementation",
+      "description": "Validates implementations, writes tests, ensures quality standards",
       "responsibilities": [
-        "Address remaining test failures after Phases 1-5",
-        "Fix multi-step workflow tests",
-        "Fix tests with complex state changes",
-        "Fix tests with multiple async operations",
-        "Ensure all tests pass consistently",
-        "Verify no flaky tests",
-        "Document any remaining issues",
-        "Achieve 0 test failures"
+        "Review completed implementations",
+        "Verify TDD approach was followed (tests written first)",
+        "Run full test suite to check for regressions",
+        "Validate test coverage meets minimum thresholds (70% overall, 80% critical)",
+        "Review test quality and edge case coverage",
+        "Write additional tests if coverage gaps found",
+        "Perform manual testing of UI changes",
+        "Validate accessibility compliance",
+        "Check responsive design at all breakpoints",
+        "Verify error handling and edge cases",
+        "Ensure code follows conventions",
+        "Generate and review coverage report",
+        "Update test documentation"
       ],
-      "deliverables": [
-        "All remaining test failures resolved",
-        "Test suite documentation updated",
-        "Known issues documented (if any)",
-        "66 integration test failures resolved",
-        "FINAL: 0 failures, 3,835 tests passing"
+      "workingDirectories": [
+        "src/**/__tests__/",
+        "src/**/*.test.ts",
+        "src/**/*.test.tsx"
       ],
-      "testingRequirements": {
-        "consistency": "Tests pass consistently (no flakes)",
-        "integration": "Multi-step flows work correctly",
-        "async": "All async operations handled properly",
-        "cleanup": "No test pollution or side effects"
+      "contextFiles": [
+        "vitest.config.ts",
+        "devdocs/**/*.md"
+      ],
+      "testingStandards": {
+        "tddWorkflow": "Verify RED-GREEN-REFACTOR cycle followed for all code",
+        "unitTests": "Test pure functions, utilities, state management logic - written BEFORE implementation",
+        "integrationTests": "Test auth flows, navigation, API integration - written BEFORE implementation",
+        "componentTests": "Test UI components with React Testing Library",
+        "e2eTests": "Critical user journeys (login, navigation, CRUD operations)",
+        "coverage": "Minimum 70% overall, 80% for critical paths",
+        "regressionSuite": "All existing tests must pass before approval",
+        "coverageReport": "Generate with npm run test:coverage and review"
       },
-      "targetFiles": [
-        "Remaining failing test files from all categories"
-      ],
+      "qualityChecks": {
+        "tdd": "Tests written before implementation code",
+        "testCoverage": "Meets minimum 70% overall, 80% critical paths",
+        "regressionTests": "All existing tests pass with no failures",
+        "typescript": "No 'any' types, no ts-ignore comments, all types defined",
+        "linting": "No ESLint errors, fix all warnings",
+        "formatting": "Prettier formatting consistent",
+        "accessibility": "No missing alt text, proper ARIA labels, keyboard accessible",
+        "performance": "No console errors, reasonable bundle size, fast load times"
+      },
       "canRunParallel": false,
-      "dependencies": [
-        "msw-handler-builder",
-        "form-validation-fixer",
-        "component-renderer",
-        "hook-integrator",
-        "timer-specialist"
-      ],
-      "blocksPhases": []
+      "dependencies": ["bug-hunter", "feature-builder", "integration-coordinator"],
+      "runsAfterImplementation": true
     }
   ],
   "parallelizationConfig": {
     "maxConcurrentAgents": 2,
     "parallelStrategy": {
-      "phase1": "msw-handler-builder works solo (blocks phases 2-4)",
-      "phase2": "form-validation-fixer works solo",
-      "phase3": "component-renderer works solo",
-      "phase4-5": "hook-integrator + timer-specialist can work in parallel",
-      "phase6": "integration-finalizer works solo (after all dependencies)"
+      "bugFixes": "bug-hunter works solo on critical bugs (P0-P1)",
+      "features": "feature-builder + integration-coordinator work in parallel on P2-P3",
+      "validation": "qa-validator runs after implementation complete"
     },
-    "executionOrder": [
-      "Phase 1: msw-handler-builder (sequential, critical foundation)",
-      "Phase 2: form-validation-fixer (sequential)",
-      "Phase 3: component-renderer (sequential)",
-      "Phase 4-5: hook-integrator + timer-specialist (parallel)",
-      "Phase 6: integration-finalizer (sequential, cleanup)"
+    "syncPoints": [
+      {
+        "name": "Issue Assignment",
+        "timing": "Start of work session",
+        "participants": ["bug-hunter", "feature-builder"],
+        "purpose": "Assign issues from queue based on priority and type",
+        "deliverables": ["Issue assignments documented"],
+        "gatekeeper": "Human"
+      },
+      {
+        "name": "Implementation Review",
+        "timing": "After code complete",
+        "participants": ["implementer", "qa-validator"],
+        "purpose": "Review implementation and verify TDD approach followed",
+        "deliverables": ["Code review notes", "Test coverage report", "Regression test results"],
+        "gatekeeper": "qa-validator"
+      },
+      {
+        "name": "API Coordination",
+        "timing": "As needed during implementation",
+        "participants": ["integration-coordinator", "backend-team"],
+        "purpose": "Coordinate API changes via message threads",
+        "deliverables": ["Coordination thread created/updated"],
+        "gatekeeper": "integration-coordinator"
+      },
+      {
+        "name": "Issue Completion",
+        "timing": "After QA validation",
+        "participants": ["implementer", "qa-validator", "Human"],
+        "purpose": "Mark issue complete in queue after all tests pass",
+        "deliverables": ["ISSUE_QUEUE.md updated", "MESSAGE_LOG.md updated", "Coverage report", "All tests passing"],
+        "gatekeeper": "Human"
+      }
     ]
   },
   "sharedContext": {
-    "testInfrastructure": {
-      "vitest": "v4.0.17 - Unit testing framework",
-      "reactTestingLibrary": "Component testing",
-      "msw": "v2.12.7 - API mocking",
-      "mswHandlers": "src/test/mocks/handlers.ts",
-      "testFixtures": "src/test/fixtures/",
-      "testUtils": "src/test/utils/"
+    "projectStructure": {
+      "app": "src/app/ - Application setup, providers, routing",
+      "pages": "src/pages/ - Page components (route level)",
+      "widgets": "src/widgets/ - Complex UI blocks (sidebar, header, etc.)",
+      "features": "src/features/ - Business logic modules",
+      "entities": "src/entities/ - Domain models, API clients, hooks",
+      "shared": "src/shared/ - Shared utilities, UI components, API config"
     },
-    "currentStatus": {
-      "totalTests": 3835,
-      "passing": 3185,
-      "failing": 649,
-      "skipped": 1,
-      "passRate": "83.1%",
-      "targetPassRate": "100%"
+    "conventions": {
+      "naming": {
+        "components": "PascalCase.tsx (e.g., ProfilePage.tsx)",
+        "hooks": "useCamelCase.ts (e.g., useProfile.ts)",
+        "types": "PascalCase for interfaces (e.g., IPerson, IUserProfile)",
+        "utils": "camelCase.ts",
+        "tests": "*.test.ts or *.test.tsx matching source file"
+      },
+      "architecture": "Feature-Sliced Design (FSD)",
+      "stateManagement": "React Query for server state, Zustand for client state",
+      "styling": "Tailwind CSS + shadcn/ui components + cn() helper"
     },
-    "failureCategories": {
-      "apiMocks": {
-        "count": 223,
-        "percentage": "34.4%",
-        "issue": "Missing MSW mock handlers",
-        "files": "API test files across entities/"
-      },
-      "formValidation": {
-        "count": 80,
-        "percentage": "12.3%",
-        "issue": "Max length validation not enforced",
-        "files": "Form test files in entities/*/ui/"
-      },
-      "componentRendering": {
-        "count": 150,
-        "percentage": "23.1%",
-        "issue": "Missing context providers and mocks",
-        "files": "Page test files in pages/*/"
-      },
-      "hookIntegration": {
-        "count": 80,
-        "percentage": "12.3%",
-        "issue": "React Query setup and async handling",
-        "files": "Hook test files in entities/*/hooks/"
-      },
-      "timing": {
-        "count": 50,
-        "percentage": "7.7%",
-        "issue": "Vitest 4.x timer API changes",
-        "files": "Auto-save and debounced tests"
-      },
-      "integration": {
-        "count": 66,
-        "percentage": "10.2%",
-        "issue": "Complex multi-step workflows",
-        "files": "Integration test files"
-      }
+    "authPatterns": {
+      "multiUserType": "Users can have multiple userTypes (learner, staff, global-admin)",
+      "dashboardContext": "UI is context-aware based on current dashboard (/admin, /staff, /learner)",
+      "permissionChecking": "hasGlobalPermission() for global items, hasDeptPermission() for department-scoped",
+      "departmentScoped": "Navigation items have departmentScoped flag",
+      "adminToken": "Memory-only storage, never localStorage",
+      "displayLabels": "Use roleHierarchy.userTypeDisplayMap for display names"
     },
-    "commonPatterns": {
-      "apiMockHandler": {
-        "pattern": "http.get('/api/endpoint', () => HttpResponse.json(mockData))",
-        "location": "src/test/mocks/handlers.ts"
-      },
-      "testWrapper": {
-        "pattern": "render(<Component />, { wrapper: createTestWrapper() })",
-        "location": "src/test/utils/testWrapper.tsx"
-      },
-      "fakeTimers": {
-        "pattern": "vi.useFakeTimers() → vi.advanceTimersByTime() → vi.useRealTimers()",
-        "vitest4": "Use vi.runOnlyPendingTimers() for debounced functions"
-      },
-      "asyncWait": {
-        "pattern": "await waitFor(() => expect(...).toBe(...))",
-        "timeout": "Use { timeout: 5000 } for slow operations"
-      }
-    }
+    "contractAlignment": [
+      "1. Check api_contracts/ for API endpoint documentation",
+      "2. Validate TypeScript types match backend response structure",
+      "3. Use exact field names from backend (camelCase)",
+      "4. Handle all documented error codes",
+      "5. Create coordination thread if contract unclear or missing"
+    ],
+    "issueQueueWorkflow": [
+      "1. Human creates issue in ISSUE_QUEUE.md with ISS-XXX identifier",
+      "2. Agent picks issue based on priority and specialization",
+      "3. Agent creates coordination thread if API/backend work needed",
+      "4. Agent follows TDD cycle: Write test (RED) → Implement (GREEN) → Refactor",
+      "5. Agent runs tests continuously during development",
+      "6. Agent checks test coverage meets minimum threshold (70%)",
+      "7. Agent runs full regression suite to ensure no existing tests break",
+      "8. Agent writes tests and validates",
+      "9. Agent updates MESSAGE_LOG.md with changes and coverage report",
+      "10. Agent marks issue complete (or blocked) in ISSUE_QUEUE.md",
+      "11. Human reviews coverage report and validates completion"
+    ]
   },
   "workflowRules": {
-    "phaseCommits": "Commit after each phase with all tests passing",
-    "commitFormat": "fix(tests): <phase description> - <count> failures resolved",
-    "testFirst": "Fix tests to match expected behavior",
-    "verification": "Run full test suite after each phase",
-    "regressionCheck": "Ensure no new failures introduced",
-    "phaseValidation": "All phase tests must pass before next phase"
+    "branchNaming": "fix/<ISS-XXX>-<description> or feat/<ISS-XXX>-<description>",
+    "commitFormat": "fix(ISS-XXX): <description> or feat(ISS-XXX): <description>",
+    "prRequired": false,
+    "tddRequired": true,
+    "testFirst": "Write failing tests before implementation code (RED phase)",
+    "minTestCoverage": 70,
+    "criticalPathCoverage": 80,
+    "regressionTestsRequired": "All existing tests must pass before marking complete",
+    "coverageReportRequired": "Include coverage report in MESSAGE_LOG.md updates",
+    "manualTestingRequired": "Document test steps for UI changes",
+    "messageLogUpdates": "Required for all implementations with test results",
+    "coordinationThreads": "Required for API changes or cross-team work"
+  },
+  "communicationChannels": {
+    "issueQueue": {
+      "path": "api/agent_coms/ui/ISSUE_QUEUE.md",
+      "purpose": "Human-to-agent issue submission",
+      "format": "Full or quick issue format",
+      "updateFrequency": "After each issue completion"
+    },
+    "messageLog": {
+      "path": "api/agent_coms/ui/MESSAGE_LOG.md",
+      "purpose": "Agent change log for messages folder",
+      "format": "Chronological entries with rollback notes",
+      "updateFrequency": "Every time agent posts/updates message"
+    },
+    "coordinationThreads": {
+      "path": "api/agent_coms/messages/",
+      "purpose": "UI-to-API agent communication",
+      "format": "Follow COORDINATION_STANDARD.md templates",
+      "activeThreads": "Track in ACTIVE_THREADS.md"
+    }
+  },
+  "priorityGuidelines": {
+    "P0": {
+      "label": "CRITICAL",
+      "description": "Production blockers, security issues, data loss bugs",
+      "sla": "Immediate - start within 1 hour",
+      "assignTo": "bug-hunter",
+      "testing": "Full regression + manual validation + coverage report required",
+      "tdd": "Write comprehensive test suite before fixing"
+    },
+    "P1": {
+      "label": "HIGH",
+      "description": "Major bugs affecting core functionality, user-visible errors",
+      "sla": "Same day - start within 4 hours",
+      "assignTo": "bug-hunter",
+      "testing": "Integration tests + manual validation + regression suite",
+      "tdd": "Write failing test reproducing bug before implementing fix"
+    },
+    "P2": {
+      "label": "MEDIUM",
+      "description": "Feature implementations, UI enhancements, minor bugs",
+      "sla": "Within 2 days",
+      "assignTo": "feature-builder",
+      "testing": "Unit tests + component tests + coverage check",
+      "tdd": "Follow RED-GREEN-REFACTOR for all new code"
+    },
+    "P3": {
+      "label": "LOW",
+      "description": "Nice-to-haves, polish, refactoring, documentation",
+      "sla": "When capacity available",
+      "assignTo": "feature-builder",
+      "testing": "Basic validation + regression check sufficient",
+      "tdd": "Write tests for critical paths only"
+    }
   },
   "tooling": {
-    "testing": {
-      "runner": "vitest v4.0.17",
-      "rtl": "@testing-library/react",
-      "msw": "msw v2.12.7",
-      "commands": {
-        "all": "npm test",
-        "single": "npm test -- <filename>",
-        "watch": "npm test -- --watch",
-        "coverage": "npm test -- --coverage"
-      }
+    "development": {
+      "vite": "v5.4.21 - Development server with HMR",
+      "typescript": "Strict mode enabled",
+      "react": "18+ with hooks",
+      "reactRouter": "v6 with route-based code splitting"
     },
-    "debugging": {
-      "verbose": "npm test -- --reporter=verbose",
-      "grep": "npm test -- --grep='pattern'",
-      "bail": "npm test -- --bail"
+    "stateManagement": {
+      "zustand": "Client state (auth, navigation)",
+      "reactQuery": "Server state (API data, caching)",
+      "context": "Department context for scoped operations"
+    },
+    "uiComponents": {
+      "shadcn": "Accessible component primitives",
+      "tailwind": "Utility-first CSS framework",
+      "lucideReact": "Icon library"
+    },
+    "testing": {
+      "vitest": "Unit testing framework - run with --watch during development",
+      "reactTestingLibrary": "Component testing",
+      "msw": "API mocking for tests",
+      "coverage": "vitest --coverage for coverage reports",
+      "testCommands": {
+        "watch": "npm run test -- --watch (during TDD development)",
+        "coverage": "npm run test:coverage (before marking complete)",
+        "all": "npm run test (full regression suite)"
+      }
     }
   }
 }

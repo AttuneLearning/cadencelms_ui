@@ -1,8 +1,12 @@
 /**
  * Navigation Items Configuration
- * Defines global navigation and department-scoped navigation items
- * Version: 2.0.0
- * Date: 2026-01-10
+ * Three-section navigation structure (ISS-007)
+ * Version: 3.0.0
+ * Date: 2026-01-13
+ *
+ * Section 1: BASE_NAV_ITEMS - Always visible for all users
+ * Section 2: CONTEXT_NAV_ITEMS - Changes based on current dashboard
+ * Section 3: DEPARTMENT_NAV_ITEMS - Department-specific actions
  */
 
 import type { LucideIcon } from 'lucide-react';
@@ -20,44 +24,82 @@ import {
   Plus,
   BookOpen,
   Search,
+  CheckSquare,
 } from 'lucide-react';
 import type { UserType } from '@/shared/types/auth';
 
 // ============================================================================
-// Global Navigation Items
+// Navigation Item Types
 // ============================================================================
 
-export interface GlobalNavItem {
+export interface BaseNavItem {
+  label: string;
+  path: string | ((primaryUserType: UserType) => string);
+  icon: LucideIcon;
+  requiredPermission?: string;
+  userTypes?: UserType[]; // If specified, disabled if user doesn't have userType
+  showDisabled?: boolean; // Show grayed out when user lacks userType
+  departmentScoped?: boolean;
+}
+
+export interface ContextNavItem {
   label: string;
   path: string;
   icon: LucideIcon;
   requiredPermission?: string;
-  userTypes: UserType[];
-  /** If true, check permission in currently selected department only */
   departmentScoped?: boolean;
 }
 
-export const GLOBAL_NAV_ITEMS: GlobalNavItem[] = [
-  // ============================================================
-  // LEARNER Navigation
-  // ============================================================
+export interface DepartmentNavItem {
+  label: string;
+  pathTemplate: string; // e.g., '/staff/departments/:deptId/courses'
+  icon: LucideIcon;
+  requiredPermission: string;
+  userTypes: UserType[];
+  departmentScoped: true;
+}
+
+// ============================================================================
+// Helper Functions
+// ============================================================================
+
+/**
+ * Get primary dashboard path based on user's primaryUserType
+ */
+export const getPrimaryDashboardPath = (primaryUserType: UserType): string => {
+  switch (primaryUserType) {
+    case 'learner':
+      return '/learner/dashboard';
+    case 'staff':
+      return '/staff/dashboard';
+    case 'global-admin':
+      return '/admin/dashboard';
+    default:
+      return '/learner/dashboard';
+  }
+};
+
+// ============================================================================
+// SECTION 1: Base Navigation (Always Visible)
+// ============================================================================
+
+export const BASE_NAV_ITEMS: BaseNavItem[] = [
   {
     label: 'Dashboard',
-    path: '/learner/dashboard',
+    path: getPrimaryDashboardPath,
     icon: Home,
-    userTypes: ['learner'],
   },
   {
     label: 'My Profile',
     path: '/profile',
     icon: User,
-    userTypes: ['learner'],
   },
   {
     label: 'My Progress',
     path: '/learner/progress',
     icon: TrendingUp,
     userTypes: ['learner'],
+    showDisabled: true,
     requiredPermission: 'dashboard:view-my-progress',
   },
   {
@@ -65,111 +107,77 @@ export const GLOBAL_NAV_ITEMS: GlobalNavItem[] = [
     path: '/learner/certificates',
     icon: Award,
     userTypes: ['learner'],
+    showDisabled: true,
     requiredPermission: 'certificate:view-own-department',
   },
+];
 
-  // ============================================================
-  // STAFF Navigation
-  // ============================================================
-  {
-    label: 'Dashboard',
-    path: '/staff/dashboard',
-    icon: Home,
-    userTypes: ['staff'],
-  },
-  {
-    label: 'My Profile',
-    path: '/profile',
-    icon: User,
-    userTypes: ['staff'],
-  },
+// ============================================================================
+// SECTION 2: Context-Specific Navigation (Dashboard-Dependent)
+// ============================================================================
+
+export const LEARNER_CONTEXT_NAV: ContextNavItem[] = [
   {
     label: 'My Classes',
-    path: '/staff/classes',
+    path: '/learner/classes',
     icon: Calendar,
-    userTypes: ['staff'],
-    requiredPermission: 'class:view-own',
-    departmentScoped: true, // Check in current department only
   },
+];
+
+export const STAFF_CONTEXT_NAV: ContextNavItem[] = [
   {
     label: 'Analytics',
     path: '/staff/analytics',
     icon: BarChart,
-    userTypes: ['staff'],
     requiredPermission: 'dashboard:view-department-overview',
-    departmentScoped: true, // Check in current department only
+    departmentScoped: true,
   },
   {
     label: 'Reports',
     path: '/staff/reports',
     icon: FileText,
-    userTypes: ['staff'],
     requiredPermission: 'report:view-own-classes',
-    departmentScoped: true, // Check in current department only
+    departmentScoped: true,
   },
   {
     label: 'Grading',
     path: '/staff/grading',
-    icon: FileText,
-    userTypes: ['staff'],
+    icon: CheckSquare,
     requiredPermission: 'grade:edit-department',
-    departmentScoped: true, // Check in current department only
+    departmentScoped: true,
   },
+];
 
-  // ============================================================
-  // GLOBAL ADMIN Navigation
-  // ============================================================
-  {
-    label: 'Dashboard',
-    path: '/admin/dashboard',
-    icon: Home,
-    userTypes: ['global-admin'],
-    departmentScoped: false, // Global admin permissions (not department-specific)
-  },
+export const ADMIN_CONTEXT_NAV: ContextNavItem[] = [
   {
     label: 'User Management',
     path: '/admin/users',
     icon: Users,
-    userTypes: ['global-admin'],
     requiredPermission: 'user:view',
-    departmentScoped: false, // Global admin permissions (not department-specific)
+    departmentScoped: false,
   },
   {
     label: 'Department Management',
     path: '/admin/departments',
     icon: Building,
-    userTypes: ['global-admin'],
     requiredPermission: 'department:view',
-    departmentScoped: false, // Global admin permissions (not department-specific)
+    departmentScoped: false,
   },
   {
     label: 'System Settings',
     path: '/admin/settings',
     icon: Settings,
-    userTypes: ['global-admin'],
     requiredPermission: 'settings:view',
-    departmentScoped: false, // Global admin permissions (not department-specific)
+    departmentScoped: false,
   },
 ];
 
 // ============================================================================
-// Department-Scoped Navigation Items
+// SECTION 3: Department-Scoped Navigation Items
 // ============================================================================
 
-export interface DepartmentNavItem {
-  label: string;
-  pathTemplate: string; // e.g., '/staff/departments/:deptId/courses'
-  icon: LucideIcon;
-  requiredPermission: string; // Must have in selected department
-  userTypes: UserType[];
-  /** Always true for department items - permission must exist in the specific department */
-  departmentScoped: true;
-}
-
 export const DEPARTMENT_NAV_ITEMS: DepartmentNavItem[] = [
-  // ============================================================
   // STAFF Department Actions
-  // ============================================================
   {
     label: 'Create Course',
     pathTemplate: '/staff/departments/:deptId/courses/create',
@@ -219,9 +227,7 @@ export const DEPARTMENT_NAV_ITEMS: DepartmentNavItem[] = [
     departmentScoped: true,
   },
 
-  // ============================================================
   // LEARNER Department Actions
-  // ============================================================
   {
     label: 'Browse Courses',
     pathTemplate: '/learner/departments/:deptId/courses',

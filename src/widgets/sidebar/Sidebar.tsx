@@ -1,17 +1,16 @@
 /**
- * Sidebar Navigation Component - Phase 3 Implementation
- * Version: 2.0.0
- * Date: 2026-01-10
+ * Sidebar Navigation Component
+ * Three-section navigation structure (ISS-007)
+ * Version: 3.0.0
+ * Date: 2026-01-13
  *
- * Complete navigation system with:
- * - Section 1: Global Navigation (userType-based)
- * - Section 2: Department Selector (when user has departments)
- * - Section 3: Department Actions (when department selected)
- * - Mobile responsive with slide-in behavior
- * - Auto-restore last accessed department
+ * Section 1: Base Navigation - Always visible
+ * Section 2: Context Navigation - Changes based on current dashboard
+ * Section 3: Department Navigation - Collapsible department selector
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   ChevronDown,
   ChevronRight,
@@ -25,11 +24,19 @@ import {
 import { useAuthStore } from '@/features/auth/model/authStore';
 import { useNavigationStore } from '@/shared/stores/navigationStore';
 import { useDepartmentContext } from '@/shared/hooks';
-import { GLOBAL_NAV_ITEMS, DEPARTMENT_NAV_ITEMS } from './config/navItems';
+import {
+  BASE_NAV_ITEMS,
+  LEARNER_CONTEXT_NAV,
+  STAFF_CONTEXT_NAV,
+  ADMIN_CONTEXT_NAV,
+  DEPARTMENT_NAV_ITEMS,
+  getPrimaryDashboardPath,
+  type BaseNavItem,
+  type ContextNavItem,
+} from './config/navItems';
 import { NavLink } from './ui/NavLink';
 import { Badge } from '@/shared/ui/badge';
 import { cn } from '@/shared/lib/utils';
-import type { DepartmentNavItem } from './config/navItems';
 
 // ============================================================================
 // Types
@@ -42,8 +49,19 @@ interface UserDepartment {
   type: 'staff' | 'learner';
 }
 
-interface ProcessedDepartmentNavItem extends Omit<DepartmentNavItem, 'pathTemplate'> {
+interface ProcessedBaseNavItem extends BaseNavItem {
   path: string;
+  disabled: boolean;
+}
+
+interface ProcessedContextNavItem extends ContextNavItem {
+  disabled: boolean;
+}
+
+interface ProcessedDepartmentNavItem {
+  label: string;
+  path: string;
+  icon: React.ComponentType<{ className?: string }>;
 }
 
 // ============================================================================
@@ -51,6 +69,7 @@ interface ProcessedDepartmentNavItem extends Omit<DepartmentNavItem, 'pathTempla
 // ============================================================================
 
 export const Sidebar: React.FC = () => {
+  const location = useLocation();
   const { roleHierarchy, user, hasPermission: hasGlobalPermission } = useAuthStore();
   const {
     selectedDepartmentId,
@@ -67,10 +86,9 @@ export const Sidebar: React.FC = () => {
     switchError,
   } = useDepartmentContext();
 
-  // Local state: Department section expansion (auto-expand if switching)
   const [isDepartmentSectionExpanded, setIsDepartmentSectionExpanded] = React.useState(isSwitching);
 
-  // Auto-expand section when department switching starts (so user sees loading state)
+  // Auto-expand when switching
   React.useEffect(() => {
     if (isSwitching) {
       setIsDepartmentSectionExpanded(true);
@@ -86,51 +104,81 @@ export const Sidebar: React.FC = () => {
   const allUserTypes = roleHierarchy.allUserTypes || [primaryUserType];
 
   // ================================================================
-  // Process Global Nav Items (with disabled state for cross-userType links)
+  // Detect Current Dashboard Context
   // ================================================================
 
-  interface ProcessedNavItem extends GlobalNavItem {
-    disabled: boolean;
-  }
+  const currentDashboard = useMemo(() => {
+    const pathSegments = location.pathname.split('/');
+    return pathSegments[1]; // 'learner', 'staff', or 'admin'
+  }, [location.pathname]);
 
-  const globalNavItems: ProcessedNavItem[] = GLOBAL_NAV_ITEMS
-    .filter((item) => {
-      // ALWAYS show items for primaryUserType
-      if (item.userTypes.includes(primaryUserType)) {
-        return true;
-      }
+  // ================================================================
+  // SECTION 1: Process Base Navigation Items
+  // ================================================================
 
-      // Show cross-userType items (even if user doesn't have that userType)
-      // They will be marked as disabled if user lacks the userType
-      // Example: Show "My Progress" (learner) on staff dashboard (grayed out if no learner userType)
-      return true;
-    })
-    .map((item) => {
+  const baseNavItems: ProcessedBaseNavItem[] = useMemo(() => {
+    return BASE_NAV_ITEMS.map((item) => {
+      // Resolve path if it's a function
+      const path = typeof item.path === 'function' ? item.path(primaryUserType) : item.path;
+
       // Determine if link should be disabled
       let disabled = false;
 
-      // Check if user has the required userType
-      const hasRequiredUserType = item.userTypes.some((itemUserType) =>
-        allUserTypes.includes(itemUserType)
-      );
-
-      if (!hasRequiredUserType) {
-        disabled = true;
+      // Check if user has required userType (if specified)
+      if (item.userTypes && item.showDisabled) {
+        const hasRequiredUserType = item.userTypes.some((ut) => allUserTypes.includes(ut));
+        if (!hasRequiredUserType) {
+          disabled = true;
+        }
       }
 
-      // Check permission if required (only if not already disabled)
+      // Check permission (only if not already disabled)
       if (!disabled && item.requiredPermission) {
-        // Use department-scoped or global permission check based on item config
         if (item.departmentScoped) {
-          // Department-scoped: requires a department to be selected
-          if (!hasDeptPermission(item.requiredPermission)) {
-            disabled = true;
-          }
+          disabled = !hasDeptPermission(item.requiredPermission);
         } else {
-          // Global scope: check against allPermissions (no department required)
-          if (!hasGlobalPermission(item.requiredPermission)) {
-            disabled = true;
-          }
+          disabled = !hasGlobalPermission(item.requiredPermission);
+        }
+      }
+
+      return {
+        ...item,
+        path,
+        disabled,
+      };
+    });
+  }, [primaryUserType, allUserTypes, hasDeptPermission, hasGlobalPermission]);
+
+  // ================================================================
+  // SECTION 2: Get Context-Specific Navigation Items
+  // ================================================================
+
+  const contextNavItems: ProcessedContextNavItem[] = useMemo(() => {
+    let items: ContextNavItem[] = [];
+
+    switch (currentDashboard) {
+      case 'learner':
+        items = LEARNER_CONTEXT_NAV;
+        break;
+      case 'staff':
+        items = STAFF_CONTEXT_NAV;
+        break;
+      case 'admin':
+        items = ADMIN_CONTEXT_NAV;
+        break;
+      default:
+        items = [];
+    }
+
+    // Process items with permission checks
+    return items.map((item) => {
+      let disabled = false;
+
+      if (item.requiredPermission) {
+        if (item.departmentScoped) {
+          disabled = !hasDeptPermission(item.requiredPermission);
+        } else {
+          disabled = !hasGlobalPermission(item.requiredPermission);
         }
       }
 
@@ -139,15 +187,15 @@ export const Sidebar: React.FC = () => {
         disabled,
       };
     });
+  }, [currentDashboard, hasDeptPermission, hasGlobalPermission]);
 
   // ================================================================
   // Get User's Departments
   // ================================================================
 
-  const userDepartments: UserDepartment[] = React.useMemo(() => {
+  const userDepartments: UserDepartment[] = useMemo(() => {
     const departments: UserDepartment[] = [];
 
-    // Add staff departments
     if (roleHierarchy.staffRoles) {
       for (const deptGroup of roleHierarchy.staffRoles.departmentRoles) {
         departments.push({
@@ -159,7 +207,6 @@ export const Sidebar: React.FC = () => {
       }
     }
 
-    // Add learner departments
     if (roleHierarchy.learnerRoles) {
       for (const deptGroup of roleHierarchy.learnerRoles.departmentRoles) {
         departments.push({
@@ -180,71 +227,50 @@ export const Sidebar: React.FC = () => {
 
   React.useEffect(() => {
     if (!user || userDepartments.length === 0) return;
-    if (selectedDepartmentId) return; // Already selected
+    if (selectedDepartmentId) return;
 
-    // Try to restore last accessed department
     const lastDept = lastAccessedDepartments[user._id];
-
     if (lastDept && userDepartments.some((d) => d.id === lastDept)) {
       setSelectedDepartment(lastDept);
-      console.log('[Sidebar] Restored last department:', lastDept);
     }
-
-    // Otherwise, default to NO department selected
-    // User must explicitly choose
-  }, [
-    user,
-    userDepartments,
-    selectedDepartmentId,
-    lastAccessedDepartments,
-    setSelectedDepartment,
-  ]);
+  }, [user, userDepartments, selectedDepartmentId, lastAccessedDepartments, setSelectedDepartment]);
 
   // ================================================================
   // Handle Department Selection
   // ================================================================
 
   const handleDepartmentClick = async (deptId: string) => {
-    // Toggle: clicking selected department deselects it
     if (selectedDepartmentId === deptId) {
       setSelectedDepartment(null);
       return;
     }
 
-    // Call API to switch department
     try {
       await switchDepartment(deptId);
-
-      // Remember this selection for next time
       if (user) {
         rememberDepartment(user._id, deptId);
       }
     } catch (error) {
       console.error('[Sidebar] Failed to switch department:', error);
-      // Error is already stored in switchError from the hook
     }
   };
 
   // ================================================================
-  // Get Department-Specific Nav Items
+  // SECTION 3: Get Department-Specific Nav Items
   // ================================================================
 
-  const departmentNavItems: ProcessedDepartmentNavItem[] = React.useMemo(() => {
+  const departmentNavItems: ProcessedDepartmentNavItem[] = useMemo(() => {
     if (!selectedDepartmentId) return [];
 
     return DEPARTMENT_NAV_ITEMS.filter((item) => {
-      // Check if user has ANY of the allowed userTypes for this item
-      const hasMatchingUserType = item.userTypes.some(ut => allUserTypes.includes(ut));
-      if (!hasMatchingUserType) {
-        return false;
-      }
+      const hasMatchingUserType = item.userTypes.some((ut) => allUserTypes.includes(ut));
+      if (!hasMatchingUserType) return false;
 
-      // Check if user has permission in current department
-      // useDepartmentContext.hasPermission is already scoped to current department
       return hasDeptPermission(item.requiredPermission);
     }).map((item) => ({
-      ...item,
+      label: item.label,
       path: item.pathTemplate.replace(':deptId', selectedDepartmentId),
+      icon: item.icon,
     }));
   }, [selectedDepartmentId, allUserTypes, hasDeptPermission]);
 
@@ -274,21 +300,18 @@ export const Sidebar: React.FC = () => {
         {/* Mobile Close Button */}
         <div className="lg:hidden flex items-center justify-between p-4 border-b">
           <span className="font-semibold">Navigation</span>
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="p-1 hover:bg-accent rounded"
-          >
+          <button onClick={() => setSidebarOpen(false)} className="p-1 hover:bg-accent rounded">
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        {/* Section 1: Global Navigation */}
+        {/* SECTION 1: Base Navigation */}
         <div className="flex-shrink-0 border-b">
           <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Navigation
           </div>
           <nav className="space-y-1 px-2 pb-4">
-            {globalNavItems.map((item) => (
+            {baseNavItems.map((item) => (
               <NavLink
                 key={item.path}
                 label={item.label}
@@ -301,112 +324,131 @@ export const Sidebar: React.FC = () => {
           </nav>
         </div>
 
-        {/* Section 2: Department Selector */}
-        {userDepartments.length > 0 && (
+        {/* SECTION 2: Context-Specific Navigation */}
+        {contextNavItems.length > 0 && (
           <div className="flex-shrink-0 border-b">
-            {/* Collapsible Header */}
-            <button
-              onClick={() => setIsDepartmentSectionExpanded(!isDepartmentSectionExpanded)}
-              className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:bg-accent/50 transition-colors"
-            >
-              {isDepartmentSectionExpanded ? (
-                <ChevronDown className="h-4 w-4" />
-              ) : (
-                <ChevronRight className="h-4 w-4" />
-              )}
-              My Departments
-            </button>
-
-            {/* Department List - Only visible when expanded */}
-            {isDepartmentSectionExpanded && (
-              <>
-                {switchError && (
-                  <div className="mx-2 mb-2 px-3 py-2 text-xs bg-destructive/10 text-destructive rounded-md">
-                    {switchError}
-                  </div>
-                )}
-                <div className="space-y-1 px-2 pb-4">
-                  {userDepartments.map((dept) => {
-                    const isSelected = selectedDepartmentId === dept.id;
-
-                    return (
-                      <button
-                        key={dept.id}
-                        onClick={() => handleDepartmentClick(dept.id)}
-                        disabled={isSwitching}
-                        className={cn(
-                          'w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors',
-                          isSelected
-                            ? 'bg-primary text-primary-foreground'
-                            : 'hover:bg-accent text-muted-foreground',
-                          isSwitching && 'opacity-50 cursor-not-allowed'
-                        )}
-                      >
-                        {isSwitching && selectedDepartmentId === dept.id ? (
-                          <Loader2 className="h-4 w-4 flex-shrink-0 animate-spin" />
-                        ) : isSelected ? (
-                          <ChevronDown className="h-4 w-4 flex-shrink-0" />
-                        ) : (
-                          <ChevronRight className="h-4 w-4 flex-shrink-0" />
-                        )}
-                        <Folder className="h-4 w-4 flex-shrink-0" />
-                        <span className="flex-1 text-left truncate">{dept.name}</span>
-                        {dept.isPrimary && (
-                          <Badge variant="secondary" className="text-xs">
-                            Primary
-                          </Badge>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </>
-            )}
+            <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              {currentDashboard === 'learner' && 'Learner'}
+              {currentDashboard === 'staff' && 'Staff'}
+              {currentDashboard === 'admin' && 'Admin'}
+            </div>
+            <nav className="space-y-1 px-2 pb-4">
+              {contextNavItems.map((item) => (
+                <NavLink
+                  key={item.path}
+                  label={item.label}
+                  path={item.path}
+                  icon={item.icon}
+                  disabled={item.disabled}
+                  onClick={() => setSidebarOpen(false)}
+                />
+              ))}
+            </nav>
           </div>
         )}
 
-        {/* Section 3: Department-Specific Actions */}
+        {/* SECTION 3: Department Navigation */}
         {userDepartments.length > 0 && (
-          <div className="flex-1 overflow-y-auto border-b">
-            <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Department Actions
+          <>
+            {/* Department Selector */}
+            <div className="flex-shrink-0 border-b">
+              <button
+                onClick={() => setIsDepartmentSectionExpanded(!isDepartmentSectionExpanded)}
+                className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:bg-accent/50 transition-colors"
+              >
+                {isDepartmentSectionExpanded ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+                My Departments
+              </button>
+
+              {isDepartmentSectionExpanded && (
+                <>
+                  {switchError && (
+                    <div className="mx-2 mb-2 px-3 py-2 text-xs bg-destructive/10 text-destructive rounded-md">
+                      {switchError}
+                    </div>
+                  )}
+                  <div className="space-y-1 px-2 pb-4">
+                    {userDepartments.map((dept) => {
+                      const isSelected = selectedDepartmentId === dept.id;
+
+                      return (
+                        <button
+                          key={dept.id}
+                          onClick={() => handleDepartmentClick(dept.id)}
+                          disabled={isSwitching}
+                          className={cn(
+                            'w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors',
+                            isSelected
+                              ? 'bg-primary text-primary-foreground'
+                              : 'hover:bg-accent text-muted-foreground',
+                            isSwitching && 'opacity-50 cursor-not-allowed'
+                          )}
+                        >
+                          {isSwitching && selectedDepartmentId === dept.id ? (
+                            <Loader2 className="h-4 w-4 flex-shrink-0 animate-spin" />
+                          ) : isSelected ? (
+                            <ChevronDown className="h-4 w-4 flex-shrink-0" />
+                          ) : (
+                            <ChevronRight className="h-4 w-4 flex-shrink-0" />
+                          )}
+                          <Folder className="h-4 w-4 flex-shrink-0" />
+                          <span className="flex-1 text-left truncate">{dept.name}</span>
+                          {dept.isPrimary && (
+                            <Badge variant="secondary" className="text-xs">
+                              Primary
+                            </Badge>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
             </div>
 
-            {/* No Department Selected */}
-            {!selectedDepartmentId && (
-              <div className="px-4 py-8 text-center">
-                <FolderOpen className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
-                <p className="text-sm text-muted-foreground">
-                  Select a department above to see available actions
-                </p>
-              </div>
-            )}
-
-            {/* No Actions Available */}
-            {selectedDepartmentId && departmentNavItems.length === 0 && (
-              <div className="px-4 py-8 text-center">
-                <AlertCircle className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
-                <p className="text-sm text-muted-foreground">
-                  No actions available for this department
-                </p>
-              </div>
-            )}
-
             {/* Department Actions */}
-            {selectedDepartmentId && departmentNavItems.length > 0 && (
-              <nav className="space-y-1 px-2 pb-4">
-                {departmentNavItems.map((item) => (
-                  <NavLink
-                    key={item.path}
-                    label={item.label}
-                    path={item.path}
-                    icon={item.icon}
-                    onClick={() => setSidebarOpen(false)}
-                  />
-                ))}
-              </nav>
-            )}
-          </div>
+            <div className="flex-1 overflow-y-auto border-b">
+              <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Department Actions
+              </div>
+
+              {!selectedDepartmentId && (
+                <div className="px-4 py-8 text-center">
+                  <FolderOpen className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
+                  <p className="text-sm text-muted-foreground">
+                    Select a department above to see available actions
+                  </p>
+                </div>
+              )}
+
+              {selectedDepartmentId && departmentNavItems.length === 0 && (
+                <div className="px-4 py-8 text-center">
+                  <AlertCircle className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
+                  <p className="text-sm text-muted-foreground">
+                    No actions available for this department
+                  </p>
+                </div>
+              )}
+
+              {selectedDepartmentId && departmentNavItems.length > 0 && (
+                <nav className="space-y-1 px-2 pb-4">
+                  {departmentNavItems.map((item) => (
+                    <NavLink
+                      key={item.path}
+                      label={item.label}
+                      path={item.path}
+                      icon={item.icon}
+                      onClick={() => setSidebarOpen(false)}
+                    />
+                  ))}
+                </nav>
+              )}
+            </div>
+          </>
         )}
 
         {/* Settings Footer */}

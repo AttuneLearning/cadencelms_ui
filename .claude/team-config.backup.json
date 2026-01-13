@@ -1,0 +1,385 @@
+{
+  "team": {
+    "name": "Test Suite Resolution Team",
+    "version": "2.0.0",
+    "description": "Specialized team for resolving 649 test failures across the test suite",
+    "activeProject": "Test Suite Stabilization - 6 Phase Approach",
+    "implementationPlan": "/home/adam/github/lms_ui/1_lms_ui_v2/docs/TEST_SUITE_RESOLUTION_PLAN.md",
+    "currentPhase": "Phase 1: MSW Mock Handler Setup",
+    "testReport": "649 failures | 3,185 passing (3,835 total tests)"
+  },
+  "workflow": {
+    "developmentApproach": "Test-Driven Stabilization - Fix failures systematically by category",
+    "phaseStructure": "6 sequential phases targeting failure categories",
+    "phases": [
+      "Phase 1: MSW Mock Handler Setup (223 failures - 34.4%)",
+      "Phase 2: Form Validation Edge Cases (80 failures - 12.3%)",
+      "Phase 3: Component Rendering Issues (150 failures - 23.1%)",
+      "Phase 4: Hook Integration Tests (80 failures - 12.3%)",
+      "Phase 5: Auto-Save & Timing Tests (50 failures - 7.7%)",
+      "Phase 6: Complex Integration Tests (66 failures - 10.2%)"
+    ],
+    "commitStrategy": "Commit after each phase completion with passing tests",
+    "testCoverage": "Maintain 80%+ coverage while fixing failures",
+    "successMetric": "0 test failures, all 3,835 tests passing"
+  },
+  "agents": [
+    {
+      "id": "msw-handler-builder",
+      "role": "MSW Mock Handler Specialist",
+      "phase": "Phase 1",
+      "priority": "critical",
+      "description": "Creates missing MSW mock handlers for API endpoints causing 223 test failures",
+      "responsibilities": [
+        "Audit src/test/mocks/handlers.ts for missing handlers",
+        "Create RESTful handlers for failing API tests",
+        "Implement handlers for: class, content, enrollment, progress, exam APIs",
+        "Use fixtures for realistic mock data",
+        "Group handlers by entity for organization",
+        "Verify all handlers are registered in MSW server",
+        "Test handlers return correct status codes",
+        "Ensure handlers match API contracts"
+      ],
+      "deliverables": [
+        "Updated src/test/mocks/handlers.ts - Add missing handlers",
+        "src/test/fixtures/ - Create missing fixture files",
+        "223 API test failures resolved",
+        "All API tests green and passing"
+      ],
+      "testingRequirements": {
+        "verification": "Run all API test files to verify handlers work",
+        "statusCodes": "200 for success, 404/400/500 for errors",
+        "dataFormat": "Match API contract response shapes",
+        "consistency": "Use consistent fixture data across tests"
+      },
+      "targetFiles": [
+        "entities/class/api/__tests__/classApi.test.ts (38 failures)",
+        "entities/content/api/__tests__/contentApi.test.ts (26 failures)",
+        "entities/course-segment/api/__tests__/courseSegmentApi.test.ts (20 failures)",
+        "entities/content-attempt/api/__tests__/contentAttemptApi.test.ts (19 failures)",
+        "entities/learning-event/api/__tests__/learningEventApi.test.ts (18 failures)",
+        "entities/enrollment/api/__tests__/enrollmentApi.test.ts (17 failures)",
+        "entities/question/api/__tests__/questionApi.test.ts (15 failures)",
+        "entities/exam-attempt/api/__tests__/examAttemptApi.test.ts (14 failures)",
+        "entities/template/api/__tests__/templateApi.test.ts (13 failures)",
+        "entities/exercise/api/__tests__/exerciseApi.test.ts (12 failures)"
+      ],
+      "canRunParallel": false,
+      "dependencies": [],
+      "blocksPhases": [2, 3, 4]
+    },
+    {
+      "id": "form-validation-fixer",
+      "role": "Form Validation & Edge Case Specialist",
+      "phase": "Phase 2",
+      "priority": "high",
+      "description": "Fixes 80 form validation test failures - max length, error display, validation rules",
+      "responsibilities": [
+        "Add max length validation to all forms (question, segment, grading)",
+        "Fix error message display in forms",
+        "Update form schemas (Zod) with proper constraints",
+        "Add character counter UI components",
+        "Fix validation error styling (red borders, error text)",
+        "Ensure error messages are user-friendly",
+        "Test boundary conditions (exactly at limit, 1 over)",
+        "Verify form submission prevented when invalid"
+      ],
+      "deliverables": [
+        "Updated entities/question/ui/QuestionForm.tsx - Add 2000 char limit",
+        "Updated entities/course-segment/ui/CourseSegmentForm.tsx - Add limits",
+        "Updated features/grading/ui/GradingForm.tsx - Fix validation",
+        "Updated form validation schemas with .max() constraints",
+        "src/shared/ui/CharacterCounter.tsx - Reusable counter component",
+        "80 form validation test failures resolved"
+      ],
+      "testingRequirements": {
+        "maxLength": "Test at limit, 1 over limit, way over limit",
+        "errorDisplay": "Verify error messages appear and are clear",
+        "errorStyling": "Check red borders and error text styling",
+        "submission": "Verify invalid forms cannot be submitted"
+      },
+      "targetFiles": [
+        "entities/question/ui/__tests__/QuestionForm.test.tsx (32 failures)",
+        "entities/course-segment/ui/__tests__/CourseSegmentForm.test.tsx (15 failures)",
+        "features/grading/ui/__tests__/GradingForm.test.tsx (10 failures)"
+      ],
+      "canRunParallel": false,
+      "dependencies": ["msw-handler-builder"],
+      "blocksPhases": [5]
+    },
+    {
+      "id": "component-renderer",
+      "role": "Component Rendering & Context Specialist",
+      "phase": "Phase 3",
+      "priority": "high",
+      "description": "Fixes 150 component rendering failures due to missing context, mocks, and data",
+      "responsibilities": [
+        "Create comprehensive test wrapper utility",
+        "Fix useAuthStore mocks to return complete state",
+        "Fix useDepartmentContext mocks",
+        "Fix useNavigation mocks",
+        "Ensure all page components have proper providers",
+        "Add QueryClientProvider to test wrappers",
+        "Test loading, empty, and error states",
+        "Fix Header component test failures (15 failures)",
+        "Fix Report page test failures (31+17 failures)",
+        "Fix Admin audit log page failures (20+16 failures)"
+      ],
+      "deliverables": [
+        "src/test/utils/testWrapper.tsx - Comprehensive wrapper",
+        "Updated test files with proper wrappers",
+        "Fixed mock implementations for all hooks/stores",
+        "src/test/utils/mockFactories.ts - Mock data factories",
+        "150 component rendering test failures resolved"
+      ],
+      "testingRequirements": {
+        "wrappers": "All components wrapped with necessary providers",
+        "mocks": "All hooks return complete, valid data",
+        "states": "Test loading, success, error, empty states",
+        "integration": "Verify context flows correctly"
+      },
+      "targetFiles": [
+        "pages/admin/reports/__tests__/ReportViewerPage.test.tsx (31 failures)",
+        "pages/learner/catalog/__tests__/CourseCatalogPage.test.tsx (21 failures)",
+        "pages/admin/audit-logs/__tests__/AuditLogDetailPage.test.tsx (20 failures)",
+        "pages/staff/classes/__tests__/ClassDetailsPage.test.tsx (18 failures)",
+        "pages/admin/reports/__tests__/ReportTemplatesPage.test.tsx (17 failures)",
+        "widgets/header/__tests__/Header.test.tsx (15 failures)"
+      ],
+      "canRunParallel": false,
+      "dependencies": ["msw-handler-builder"],
+      "blocksPhases": []
+    },
+    {
+      "id": "hook-integrator",
+      "role": "React Query Hook Integration Specialist",
+      "phase": "Phase 4",
+      "priority": "medium",
+      "description": "Fixes 80 hook integration test failures - Query client, async updates, cache",
+      "responsibilities": [
+        "Fix Query client setup in tests",
+        "Ensure query client cleared between tests",
+        "Wrap hooks in proper QueryClientProvider",
+        "Fix async update timing with waitFor",
+        "Test loading, success, error states",
+        "Test refetch behavior",
+        "Test cache invalidation",
+        "Verify hooks handle errors gracefully"
+      ],
+      "deliverables": [
+        "Updated hook test files with proper QueryClientProvider",
+        "src/test/utils/hookTestWrapper.tsx - Hook-specific wrapper",
+        "Fixed async timing in all hook tests",
+        "80 hook integration test failures resolved"
+      ],
+      "testingRequirements": {
+        "queryClient": "Ensure clean query client per test",
+        "asyncUpdates": "Use waitFor for all async state changes",
+        "states": "Test isLoading, isError, isSuccess",
+        "refetch": "Test refetch and invalidation"
+      },
+      "targetFiles": [
+        "entities/enrollment/hooks/__tests__/useEnrollments.test.tsx (12 failures)",
+        "Various hook test files (68 failures total)"
+      ],
+      "canRunParallel": true,
+      "dependencies": ["msw-handler-builder"],
+      "blocksPhases": []
+    },
+    {
+      "id": "timer-specialist",
+      "role": "Auto-Save & Timing Test Specialist",
+      "phase": "Phase 5",
+      "priority": "low",
+      "description": "Fixes 50 auto-save and timing test failures - Vitest 4.x timers, debounce",
+      "responsibilities": [
+        "Fix Vitest 4.x fake timer usage",
+        "Update vi.advanceTimersByTime() calls",
+        "Add vi.runOnlyPendingTimers() where needed",
+        "Make debounce timing configurable for tests",
+        "Test auto-save triggers correctly",
+        "Test debounce prevents excessive saves",
+        "Verify saving indicator displays",
+        "Test error recovery in auto-save"
+      ],
+      "deliverables": [
+        "Updated auto-save test files with correct timer API",
+        "Updated useAutoSave hook with configurable debounce",
+        "src/test/utils/timerHelpers.ts - Timer test utilities",
+        "50 timing test failures resolved"
+      ],
+      "testingRequirements": {
+        "timers": "Use vi.useFakeTimers() and cleanup properly",
+        "advance": "Use correct timer advance methods",
+        "debounce": "Test debounce prevents rapid calls",
+        "triggers": "Test all auto-save trigger conditions"
+      },
+      "targetFiles": [
+        "features/grading/ui/__tests__/GradingForm.test.tsx",
+        "Various form components with auto-save"
+      ],
+      "canRunParallel": true,
+      "dependencies": ["form-validation-fixer"],
+      "blocksPhases": []
+    },
+    {
+      "id": "integration-finalizer",
+      "role": "Complex Integration Test Specialist",
+      "phase": "Phase 6",
+      "priority": "low",
+      "description": "Fixes remaining 66 complex integration test failures",
+      "responsibilities": [
+        "Address remaining test failures after Phases 1-5",
+        "Fix multi-step workflow tests",
+        "Fix tests with complex state changes",
+        "Fix tests with multiple async operations",
+        "Ensure all tests pass consistently",
+        "Verify no flaky tests",
+        "Document any remaining issues",
+        "Achieve 0 test failures"
+      ],
+      "deliverables": [
+        "All remaining test failures resolved",
+        "Test suite documentation updated",
+        "Known issues documented (if any)",
+        "66 integration test failures resolved",
+        "FINAL: 0 failures, 3,835 tests passing"
+      ],
+      "testingRequirements": {
+        "consistency": "Tests pass consistently (no flakes)",
+        "integration": "Multi-step flows work correctly",
+        "async": "All async operations handled properly",
+        "cleanup": "No test pollution or side effects"
+      },
+      "targetFiles": [
+        "Remaining failing test files from all categories"
+      ],
+      "canRunParallel": false,
+      "dependencies": [
+        "msw-handler-builder",
+        "form-validation-fixer",
+        "component-renderer",
+        "hook-integrator",
+        "timer-specialist"
+      ],
+      "blocksPhases": []
+    }
+  ],
+  "parallelizationConfig": {
+    "maxConcurrentAgents": 2,
+    "parallelStrategy": {
+      "phase1": "msw-handler-builder works solo (blocks phases 2-4)",
+      "phase2": "form-validation-fixer works solo",
+      "phase3": "component-renderer works solo",
+      "phase4-5": "hook-integrator + timer-specialist can work in parallel",
+      "phase6": "integration-finalizer works solo (after all dependencies)"
+    },
+    "executionOrder": [
+      "Phase 1: msw-handler-builder (sequential, critical foundation)",
+      "Phase 2: form-validation-fixer (sequential)",
+      "Phase 3: component-renderer (sequential)",
+      "Phase 4-5: hook-integrator + timer-specialist (parallel)",
+      "Phase 6: integration-finalizer (sequential, cleanup)"
+    ]
+  },
+  "sharedContext": {
+    "testInfrastructure": {
+      "vitest": "v4.0.17 - Unit testing framework",
+      "reactTestingLibrary": "Component testing",
+      "msw": "v2.12.7 - API mocking",
+      "mswHandlers": "src/test/mocks/handlers.ts",
+      "testFixtures": "src/test/fixtures/",
+      "testUtils": "src/test/utils/"
+    },
+    "currentStatus": {
+      "totalTests": 3835,
+      "passing": 3185,
+      "failing": 649,
+      "skipped": 1,
+      "passRate": "83.1%",
+      "targetPassRate": "100%"
+    },
+    "failureCategories": {
+      "apiMocks": {
+        "count": 223,
+        "percentage": "34.4%",
+        "issue": "Missing MSW mock handlers",
+        "files": "API test files across entities/"
+      },
+      "formValidation": {
+        "count": 80,
+        "percentage": "12.3%",
+        "issue": "Max length validation not enforced",
+        "files": "Form test files in entities/*/ui/"
+      },
+      "componentRendering": {
+        "count": 150,
+        "percentage": "23.1%",
+        "issue": "Missing context providers and mocks",
+        "files": "Page test files in pages/*/"
+      },
+      "hookIntegration": {
+        "count": 80,
+        "percentage": "12.3%",
+        "issue": "React Query setup and async handling",
+        "files": "Hook test files in entities/*/hooks/"
+      },
+      "timing": {
+        "count": 50,
+        "percentage": "7.7%",
+        "issue": "Vitest 4.x timer API changes",
+        "files": "Auto-save and debounced tests"
+      },
+      "integration": {
+        "count": 66,
+        "percentage": "10.2%",
+        "issue": "Complex multi-step workflows",
+        "files": "Integration test files"
+      }
+    },
+    "commonPatterns": {
+      "apiMockHandler": {
+        "pattern": "http.get('/api/endpoint', () => HttpResponse.json(mockData))",
+        "location": "src/test/mocks/handlers.ts"
+      },
+      "testWrapper": {
+        "pattern": "render(<Component />, { wrapper: createTestWrapper() })",
+        "location": "src/test/utils/testWrapper.tsx"
+      },
+      "fakeTimers": {
+        "pattern": "vi.useFakeTimers() → vi.advanceTimersByTime() → vi.useRealTimers()",
+        "vitest4": "Use vi.runOnlyPendingTimers() for debounced functions"
+      },
+      "asyncWait": {
+        "pattern": "await waitFor(() => expect(...).toBe(...))",
+        "timeout": "Use { timeout: 5000 } for slow operations"
+      }
+    }
+  },
+  "workflowRules": {
+    "phaseCommits": "Commit after each phase with all tests passing",
+    "commitFormat": "fix(tests): <phase description> - <count> failures resolved",
+    "testFirst": "Fix tests to match expected behavior",
+    "verification": "Run full test suite after each phase",
+    "regressionCheck": "Ensure no new failures introduced",
+    "phaseValidation": "All phase tests must pass before next phase"
+  },
+  "tooling": {
+    "testing": {
+      "runner": "vitest v4.0.17",
+      "rtl": "@testing-library/react",
+      "msw": "msw v2.12.7",
+      "commands": {
+        "all": "npm test",
+        "single": "npm test -- <filename>",
+        "watch": "npm test -- --watch",
+        "coverage": "npm test -- --coverage"
+      }
+    },
+    "debugging": {
+      "verbose": "npm test -- --reporter=verbose",
+      "grep": "npm test -- --grep='pattern'",
+      "bail": "npm test -- --bail"
+    }
+  }
+}

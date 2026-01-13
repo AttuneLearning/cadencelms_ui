@@ -8,7 +8,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { BrowserRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { Sidebar } from '../Sidebar';
 import * as useAuthStoreModule from '@/features/auth/model/authStore';
 import * as useNavigationStoreModule from '@/shared/stores/navigationStore';
@@ -22,19 +22,40 @@ vi.mock('@/features/auth/model/authStore');
 vi.mock('@/shared/stores/navigationStore');
 vi.mock('@/shared/hooks/useDepartmentContext');
 vi.mock('../config/navItems', () => ({
-  GLOBAL_NAV_ITEMS: [
+  BASE_NAV_ITEMS: [
     {
       label: 'Dashboard',
       path: '/dashboard',
       icon: 'Home',
-      userTypes: ['staff', 'learner', 'global-admin'],
       requiredPermission: null,
     },
+    {
+      label: 'My Profile',
+      path: '/profile',
+      icon: 'User',
+      requiredPermission: null,
+    },
+  ],
+  LEARNER_CONTEXT_NAV: [
+    {
+      label: 'My Classes',
+      path: '/learner/classes',
+      icon: 'Calendar',
+    },
+  ],
+  STAFF_CONTEXT_NAV: [
+    {
+      label: 'Analytics',
+      path: '/staff/analytics',
+      icon: 'Chart',
+      requiredPermission: 'dashboard:view-department-overview',
+    },
+  ],
+  ADMIN_CONTEXT_NAV: [
     {
       label: 'Admin Panel',
       path: '/admin',
       icon: 'Settings',
-      userTypes: ['global-admin'],
       requiredPermission: 'system:admin:access',
     },
   ],
@@ -45,6 +66,7 @@ vi.mock('../config/navItems', () => ({
       icon: 'Book',
       userTypes: ['staff', 'learner'],
       requiredPermission: 'content:courses:read',
+      departmentScoped: true,
     },
     {
       label: 'Manage Content',
@@ -52,8 +74,10 @@ vi.mock('../config/navItems', () => ({
       icon: 'Edit',
       userTypes: ['staff'],
       requiredPermission: 'content:courses:manage',
+      departmentScoped: true,
     },
   ],
+  getPrimaryDashboardPath: (userType: string) => `/${userType}/dashboard`,
 }));
 vi.mock('../ui/NavLink', () => ({
   NavLink: ({ label, path }: any) => (
@@ -67,11 +91,11 @@ vi.mock('../ui/NavLink', () => ({
 // Test Utilities
 // ============================================================================
 
-const renderSidebar = () => {
+const renderSidebar = (initialRoute = '/') => {
   return render(
-    <BrowserRouter>
+    <MemoryRouter initialEntries={[initialRoute]}>
       <Sidebar />
-    </BrowserRouter>
+    </MemoryRouter>
   );
 };
 
@@ -516,7 +540,7 @@ describe('Sidebar Component', () => {
         hasPermission: vi.fn(() => true),
       } as any);
 
-      renderSidebar();
+      renderSidebar('/admin'); // Render on admin route to show ADMIN_CONTEXT_NAV
 
       expect(screen.getByTestId('nav-link-Admin Panel')).toBeInTheDocument();
     });
