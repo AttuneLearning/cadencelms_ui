@@ -3,6 +3,7 @@
 exports[`ClassCard > Snapshot Tests > should match snapshot for active class 1`] = `
 <a
   class="block"
+  data-discover="true"
   href="/classes/class-1"
 >
   <div
@@ -292,6 +293,7 @@ exports[`ClassCard > Snapshot Tests > should match snapshot for active class 1`]
 exports[`ClassCard > Snapshot Tests > should match snapshot for cancelled class 1`] = `
 <a
   class="block"
+  data-discover="true"
   href="/classes/class-5"
 >
   <div
@@ -551,6 +553,7 @@ exports[`ClassCard > Snapshot Tests > should match snapshot for cancelled class 
 exports[`ClassCard > Snapshot Tests > should match snapshot for full class 1`] = `
 <a
   class="block"
+  data-discover="true"
   href="/classes/class-6"
 >
   <div
@@ -840,6 +843,7 @@ exports[`ClassCard > Snapshot Tests > should match snapshot for full class 1`] =
 exports[`ClassCard > Snapshot Tests > should match snapshot for upcoming class 1`] = `
 <a
   class="block"
+  data-discover="true"
   href="/classes/class-3"
 >
   <div

@@ -487,6 +487,7 @@ exports[`ClassList > Snapshot Tests > should match snapshot with all filters 1`]
   >
     <a
       class="block"
+      data-discover="true"
       href="/classes/class-1"
     >
       <div
@@ -773,6 +774,7 @@ exports[`ClassList > Snapshot Tests > should match snapshot with all filters 1`]
     </a>
     <a
       class="block"
+      data-discover="true"
       href="/classes/class-2"
     >
       <div
@@ -1059,6 +1061,7 @@ exports[`ClassList > Snapshot Tests > should match snapshot with all filters 1`]
     </a>
     <a
       class="block"
+      data-discover="true"
       href="/classes/class-3"
     >
       <div
@@ -1345,6 +1348,7 @@ exports[`ClassList > Snapshot Tests > should match snapshot with all filters 1`]
     </a>
     <a
       class="block"
+      data-discover="true"
       href="/classes/class-4"
     >
       <div
@@ -1631,6 +1635,7 @@ exports[`ClassList > Snapshot Tests > should match snapshot with all filters 1`]
     </a>
     <a
       class="block"
+      data-discover="true"
       href="/classes/class-5"
     >
       <div
@@ -1887,6 +1892,7 @@ exports[`ClassList > Snapshot Tests > should match snapshot with all filters 1`]
     </a>
     <a
       class="block"
+      data-discover="true"
       href="/classes/class-6"
     >
       <div
@@ -2365,6 +2371,7 @@ exports[`ClassList > Snapshot Tests > should match snapshot with classes 1`] = `
   >
     <a
       class="block"
+      data-discover="true"
       href="/classes/class-1"
     >
       <div
@@ -2651,6 +2658,7 @@ exports[`ClassList > Snapshot Tests > should match snapshot with classes 1`] = `
     </a>
     <a
       class="block"
+      data-discover="true"
       href="/classes/class-2"
     >
       <div
@@ -2937,6 +2945,7 @@ exports[`ClassList > Snapshot Tests > should match snapshot with classes 1`] = `
     </a>
     <a
       class="block"
+      data-discover="true"
       href="/classes/class-3"
     >
       <div
@@ -3223,6 +3232,7 @@ exports[`ClassList > Snapshot Tests > should match snapshot with classes 1`] = `
     </a>
     <a
       class="block"
+      data-discover="true"
       href="/classes/class-4"
     >
       <div
@@ -3509,6 +3519,7 @@ exports[`ClassList > Snapshot Tests > should match snapshot with classes 1`] = `
     </a>
     <a
       class="block"
+      data-discover="true"
       href="/classes/class-5"
     >
       <div
@@ -3765,6 +3776,7 @@ exports[`ClassList > Snapshot Tests > should match snapshot with classes 1`] = `
     </a>
     <a
       class="block"
+      data-discover="true"
       href="/classes/class-6"
     >
       <div

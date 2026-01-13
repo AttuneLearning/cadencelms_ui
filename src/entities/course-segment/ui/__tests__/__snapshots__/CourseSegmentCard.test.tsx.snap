@@ -3,6 +3,7 @@
 exports[`CourseSegmentCard > Snapshot Tests > should match snapshot with all fields 1`] = `
 <a
   class="block"
+  data-discover="true"
   href="/courses/course-1/modules/segment-1"
 >
   <div
@@ -179,6 +180,7 @@ exports[`CourseSegmentCard > Snapshot Tests > should match snapshot with all fie
 exports[`CourseSegmentCard > Snapshot Tests > should match snapshot without optional display flags 1`] = `
 <a
   class="block"
+  data-discover="true"
   href="/courses/course-1/modules/segment-1"
 >
   <div

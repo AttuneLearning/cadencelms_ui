@@ -9,15 +9,19 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ScormPlayer } from '../ScormPlayer';
 
 // Mock the SCORM API
-vi.mock('@/shared/lib/scorm/scormApi', () => ({
-  ScormAPI: vi.fn().mockImplementation(() => ({
-    initialize: vi.fn(),
-    destroy: vi.fn(),
-    updateSessionTime: vi.fn(),
-    getAllData: vi.fn(() => ({})),
-    isInitialized: vi.fn(() => true),
-  })),
-}));
+vi.mock('@/shared/lib/scorm/scormApi', () => {
+  return {
+    ScormAPI: vi.fn(function (version, options) {
+      return {
+        initialize: vi.fn(),
+        destroy: vi.fn(),
+        updateSessionTime: vi.fn(),
+        getAllData: vi.fn(() => ({})),
+        isInitialized: vi.fn(() => true),
+      };
+    }),
+  };
+});
 
 // Mock hooks
 const mockUpdateAttempt = vi.fn();
@@ -130,7 +134,7 @@ describe('ScormPlayer', () => {
     let terminateCallback: ((data: Record<string, string>) => void) | undefined;
 
     const { ScormAPI } = await import('@/shared/lib/scorm/scormApi');
-    (ScormAPI as any).mockImplementation((version: string, options: any) => {
+    (ScormAPI as any).mockImplementation(function (version: string, options: any) {
       terminateCallback = options.onTerminate;
       return {
         initialize: vi.fn(),
@@ -164,7 +168,7 @@ describe('ScormPlayer', () => {
     let commitCallback: ((data: Record<string, string>) => void) | undefined;
 
     const { ScormAPI } = await import('@/shared/lib/scorm/scormApi');
-    (ScormAPI as any).mockImplementation((version: string, options: any) => {
+    (ScormAPI as any).mockImplementation(function (version: string, options: any) {
       commitCallback = options.onCommit;
       return {
         initialize: vi.fn(),
@@ -206,7 +210,7 @@ describe('ScormPlayer', () => {
     let errorCallback: ((error: any) => void) | undefined;
 
     const { ScormAPI } = await import('@/shared/lib/scorm/scormApi');
-    (ScormAPI as any).mockImplementation((version: string, options: any) => {
+    (ScormAPI as any).mockImplementation(function (version: string, options: any) {
       errorCallback = options.onError;
       return {
         initialize: vi.fn(),
@@ -256,7 +260,7 @@ describe('ScormPlayer', () => {
     let destroyFn: any;
 
     const { ScormAPI } = await import('@/shared/lib/scorm/scormApi');
-    (ScormAPI as any).mockImplementation(() => {
+    (ScormAPI as any).mockImplementation(function () {
       destroyFn = vi.fn();
       return {
         initialize: vi.fn(),
@@ -301,7 +305,7 @@ describe('ScormPlayer', () => {
     let commitCallback: ((data: Record<string, string>) => void) | undefined;
 
     const { ScormAPI } = await import('@/shared/lib/scorm/scormApi');
-    (ScormAPI as any).mockImplementation((version: string, options: any) => {
+    (ScormAPI as any).mockImplementation(function (version: string, options: any) {
       commitCallback = options.onCommit;
       return {
         initialize: vi.fn(),

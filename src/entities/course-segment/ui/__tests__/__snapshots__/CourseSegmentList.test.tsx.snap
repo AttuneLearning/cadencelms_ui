@@ -69,6 +69,7 @@ exports[`CourseSegmentList > Snapshot Tests > should match snapshot in reorder m
       </div>
       <a
         class="block"
+        data-discover="true"
         href="/courses/course-1/modules/segment-1"
       >
         <div
@@ -293,6 +294,7 @@ exports[`CourseSegmentList > Snapshot Tests > should match snapshot in reorder m
       </div>
       <a
         class="block"
+        data-discover="true"
         href="/courses/course-1/modules/segment-2"
       >
         <div
@@ -517,6 +519,7 @@ exports[`CourseSegmentList > Snapshot Tests > should match snapshot in reorder m
       </div>
       <a
         class="block"
+        data-discover="true"
         href="/courses/course-1/modules/segment-3"
       >
         <div
@@ -746,6 +749,7 @@ exports[`CourseSegmentList > Snapshot Tests > should match snapshot in reorder m
       </div>
       <a
         class="block"
+        data-discover="true"
         href="/courses/course-1/modules/segment-4"
       >
         <div
@@ -884,6 +888,7 @@ exports[`CourseSegmentList > Snapshot Tests > should match snapshot in reorder m
       </div>
       <a
         class="block"
+        data-discover="true"
         href="/courses/course-1/modules/segment-5"
       >
         <div
@@ -1087,6 +1092,7 @@ exports[`CourseSegmentList > Snapshot Tests > should match snapshot with segment
     >
       <a
         class="block"
+        data-discover="true"
         href="/courses/course-1/modules/segment-1"
       >
         <div
@@ -1264,6 +1270,7 @@ exports[`CourseSegmentList > Snapshot Tests > should match snapshot with segment
     >
       <a
         class="block"
+        data-discover="true"
         href="/courses/course-1/modules/segment-2"
       >
         <div
@@ -1441,6 +1448,7 @@ exports[`CourseSegmentList > Snapshot Tests > should match snapshot with segment
     >
       <a
         class="block"
+        data-discover="true"
         href="/courses/course-1/modules/segment-3"
       >
         <div
@@ -1623,6 +1631,7 @@ exports[`CourseSegmentList > Snapshot Tests > should match snapshot with segment
     >
       <a
         class="block"
+        data-discover="true"
         href="/courses/course-1/modules/segment-4"
       >
         <div
@@ -1714,6 +1723,7 @@ exports[`CourseSegmentList > Snapshot Tests > should match snapshot with segment
     >
       <a
         class="block"
+        data-discover="true"
         href="/courses/course-1/modules/segment-5"
       >
         <div

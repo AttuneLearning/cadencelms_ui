@@ -18,6 +18,7 @@ exports[`ExerciseList > Snapshot Tests > should match snapshot for grid layout 1
 >
   <a
     class="block"
+    data-discover="true"
     href="/exercises/ex-1"
   >
     <div
@@ -265,6 +266,7 @@ exports[`ExerciseList > Snapshot Tests > should match snapshot for grid layout 1
   </a>
   <a
     class="block"
+    data-discover="true"
     href="/exercises/ex-2"
   >
     <div
@@ -481,6 +483,7 @@ exports[`ExerciseList > Snapshot Tests > should match snapshot for grid layout 1
   </a>
   <a
     class="block"
+    data-discover="true"
     href="/exercises/ex-3"
   >
     <div
@@ -723,6 +726,7 @@ exports[`ExerciseList > Snapshot Tests > should match snapshot for grid layout 1
   </a>
   <a
     class="block"
+    data-discover="true"
     href="/exercises/ex-4"
   >
     <div
@@ -970,6 +974,7 @@ exports[`ExerciseList > Snapshot Tests > should match snapshot for grid layout 1
   </a>
   <a
     class="block"
+    data-discover="true"
     href="/exercises/ex-5"
   >
     <div
@@ -1212,6 +1217,7 @@ exports[`ExerciseList > Snapshot Tests > should match snapshot for grid layout 1
   </a>
   <a
     class="block"
+    data-discover="true"
     href="/exercises/ex-6"
   >
     <div
@@ -1466,6 +1472,7 @@ exports[`ExerciseList > Snapshot Tests > should match snapshot for list layout 1
 >
   <a
     class="block"
+    data-discover="true"
     href="/exercises/ex-1"
   >
     <div
@@ -1713,6 +1720,7 @@ exports[`ExerciseList > Snapshot Tests > should match snapshot for list layout 1
   </a>
   <a
     class="block"
+    data-discover="true"
     href="/exercises/ex-2"
   >
     <div
@@ -1929,6 +1937,7 @@ exports[`ExerciseList > Snapshot Tests > should match snapshot for list layout 1
   </a>
   <a
     class="block"
+    data-discover="true"
     href="/exercises/ex-3"
   >
     <div
@@ -2171,6 +2180,7 @@ exports[`ExerciseList > Snapshot Tests > should match snapshot for list layout 1
   </a>
   <a
     class="block"
+    data-discover="true"
     href="/exercises/ex-4"
   >
     <div
@@ -2418,6 +2428,7 @@ exports[`ExerciseList > Snapshot Tests > should match snapshot for list layout 1
   </a>
   <a
     class="block"
+    data-discover="true"
     href="/exercises/ex-5"
   >
     <div
@@ -2660,6 +2671,7 @@ exports[`ExerciseList > Snapshot Tests > should match snapshot for list layout 1
   </a>
   <a
     class="block"
+    data-discover="true"
     href="/exercises/ex-6"
   >
     <div

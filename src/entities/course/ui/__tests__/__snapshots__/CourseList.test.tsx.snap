@@ -18,6 +18,7 @@ exports[`CourseList > Snapshot Tests > should match snapshot with grid layout 1`
 >
   <a
     class="block"
+    data-discover="true"
     href="/courses/course-1"
   >
     <div
@@ -249,6 +250,7 @@ exports[`CourseList > Snapshot Tests > should match snapshot with grid layout 1`
   </a>
   <a
     class="block"
+    data-discover="true"
     href="/courses/course-2"
   >
     <div
@@ -469,6 +471,7 @@ exports[`CourseList > Snapshot Tests > should match snapshot with grid layout 1`
   </a>
   <a
     class="block"
+    data-discover="true"
     href="/courses/course-3"
   >
     <div
@@ -695,6 +698,7 @@ exports[`CourseList > Snapshot Tests > should match snapshot with grid layout 1`
   </a>
   <a
     class="block"
+    data-discover="true"
     href="/courses/course-4"
   >
     <div
@@ -905,6 +909,7 @@ exports[`CourseList > Snapshot Tests > should match snapshot with list layout 1`
 >
   <a
     class="block"
+    data-discover="true"
     href="/courses/course-1"
   >
     <div
@@ -1136,6 +1141,7 @@ exports[`CourseList > Snapshot Tests > should match snapshot with list layout 1`
   </a>
   <a
     class="block"
+    data-discover="true"
     href="/courses/course-2"
   >
     <div
@@ -1356,6 +1362,7 @@ exports[`CourseList > Snapshot Tests > should match snapshot with list layout 1`
   </a>
   <a
     class="block"
+    data-discover="true"
     href="/courses/course-3"
   >
     <div
@@ -1582,6 +1589,7 @@ exports[`CourseList > Snapshot Tests > should match snapshot with list layout 1`
   </a>
   <a
     class="block"
+    data-discover="true"
     href="/courses/course-4"
   >
     <div

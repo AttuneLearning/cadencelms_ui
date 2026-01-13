@@ -3,6 +3,7 @@
 exports[`CourseCard > Snapshot Tests > should match snapshot for archived course 1`] = `
 <a
   class="block"
+  data-discover="true"
   href="/courses/course-4"
 >
   <div
@@ -209,6 +210,7 @@ exports[`CourseCard > Snapshot Tests > should match snapshot for archived course
 exports[`CourseCard > Snapshot Tests > should match snapshot for draft course 1`] = `
 <a
   class="block"
+  data-discover="true"
   href="/courses/course-3"
 >
   <div
@@ -438,6 +440,7 @@ exports[`CourseCard > Snapshot Tests > should match snapshot for draft course 1`
 exports[`CourseCard > Snapshot Tests > should match snapshot for published course 1`] = `
 <a
   class="block"
+  data-discover="true"
   href="/courses/course-1"
 >
   <div
