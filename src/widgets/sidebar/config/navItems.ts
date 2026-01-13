@@ -102,14 +102,15 @@ export const BASE_NAV_ITEMS: BaseNavItem[] = [
     showDisabled: true,
     requiredPermission: 'dashboard:view-my-progress',
   },
-  {
-    label: 'Certificates',
-    path: '/learner/certificates',
-    icon: Award,
-    userTypes: ['learner'],
-    showDisabled: true,
-    requiredPermission: 'certificate:view-own-department',
-  },
+  // TEMPORARILY DISABLED FOR ISS-008 DEBUG
+  // {
+  //   label: 'Certificates',
+  //   path: '/learner/certificates',
+  //   icon: Award,
+  //   userTypes: ['learner'],
+  //   showDisabled: true,
+  //   requiredPermission: 'certificate:view-own-department',
+  // },
 ];
 
 // ============================================================================
