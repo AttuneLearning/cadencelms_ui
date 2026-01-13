@@ -27,6 +27,17 @@ interface AuthInitializerProps {
  * </AuthInitializer>
  */
 export const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
+  const mountId = React.useRef(Math.random().toString(36).substr(2, 9));
+  console.log(`[AuthInitializer] Component ${mountId.current} rendering`);
+
+  // Track mount/unmount
+  React.useEffect(() => {
+    console.log(`[AuthInitializer] Component ${mountId.current} MOUNTED`);
+    return () => {
+      console.log(`[AuthInitializer] Component ${mountId.current} UNMOUNTING!`);
+    };
+  }, []);
+
   const { initializeAuth, isLoading } = useAuthStore();
   const [isInitializing, setIsInitializing] = React.useState(true);
 
@@ -37,7 +48,7 @@ export const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) =>
 
   // If we've initialized more than 5 times in 2 seconds, we're in a loop - STOP
   if (timeSince < 2000 && count > 5) {
-    console.error('[AuthInitializer] EMERGENCY: Initialization loop detected! Breaking circuit.');
+    console.error(`[AuthInitializer ${mountId.current}] EMERGENCY: Initialization loop detected! Breaking circuit.`);
     sessionStorage.clear();
     localStorage.clear();
 
