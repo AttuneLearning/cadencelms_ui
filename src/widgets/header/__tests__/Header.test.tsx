@@ -3,74 +3,86 @@
  * Tests integration with useDepartmentContext hook
  * Version: 2.1.0 (Contract Alignment - Phase 2)
  * Date: 2026-01-11
+ * Updated: 2026-01-13 (Phase 3 - Fixed mocking)
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { BrowserRouter } from 'react-router-dom';
 import { Header } from '../Header';
-import * as useAuthModule from '@/features/auth/model/useAuth';
-import * as useNavigationModule from '@/shared/lib/navigation';
-import * as useDepartmentContextModule from '@/shared/hooks/useDepartmentContext';
+import {
+  renderWithProviders,
+  createMockAuthStore,
+  createMockNavigation,
+  createMockDepartmentContext,
+  createMockStaffUser,
+  createMockStaffRoleHierarchy,
+} from '@/test/utils';
 
 // ============================================================================
 // Mock Setup
 // ============================================================================
 
-vi.mock('@/features/auth/model/useAuth');
-vi.mock('@/shared/lib/navigation');
-vi.mock('@/shared/hooks/useDepartmentContext');
+// Mock the actual hooks used by Header component
+vi.mock('@/features/auth/model/authStore', () => ({
+  useAuthStore: vi.fn(),
+}));
+
+vi.mock('@/shared/lib/navigation', () => ({
+  useNavigation: vi.fn(),
+}));
+
+vi.mock('@/shared/hooks', () => ({
+  useDepartmentContext: vi.fn(),
+}));
+
 vi.mock('@/features/theme/ui/ThemeToggle', () => ({
   ThemeToggle: () => <div data-testid="theme-toggle">Theme Toggle</div>,
 }));
+
+// Import mocked modules
+import { useAuthStore } from '@/features/auth/model/authStore';
+import { useNavigation } from '@/shared/lib/navigation';
+import { useDepartmentContext } from '@/shared/hooks';
 
 // ============================================================================
 // Test Utilities
 // ============================================================================
 
 const renderHeader = () => {
-  return render(
-    <BrowserRouter>
-      <Header />
-    </BrowserRouter>
-  );
+  return renderWithProviders(<Header />);
 };
 
-const mockAuthData = {
+// Create base mock data
+const mockUser = createMockStaffUser({
+  _id: 'user-123',
+  email: 'test@example.com',
+  firstName: 'Test',
+  lastName: 'User',
+});
+
+const mockRoleHierarchy = createMockStaffRoleHierarchy({
+  primaryUserType: 'staff',
+  allUserTypes: ['staff'],
+  allPermissions: ['content:courses:read', 'content:courses:edit'],
+});
+
+const mockAuthData = createMockAuthStore({
   isAuthenticated: true,
-  user: {
-    _id: 'user-123',
-    email: 'test@example.com',
-    firstName: 'Test',
-    lastName: 'User',
-  },
-  roleHierarchy: {
-    primaryUserType: 'staff' as const,
-    allPermissions: ['content:courses:read', 'content:courses:edit'],
-  },
-  logout: vi.fn(),
-};
+  user: mockUser,
+  roleHierarchy: mockRoleHierarchy,
+});
 
-const mockNavigationData = {
-  toggleSidebar: vi.fn(),
-  setSidebarOpen: vi.fn(),
+const mockNavigationData = createMockNavigation({
   isSidebarOpen: false,
-};
+});
 
-const mockDepartmentContext = {
+const mockDepartmentContext = createMockDepartmentContext({
   currentDepartmentId: 'dept-123',
   currentDepartmentName: 'Engineering Department',
   currentDepartmentRoles: ['instructor', 'course-creator'],
   currentDepartmentAccessRights: ['content:courses:read', 'content:courses:edit'],
-  hasPermission: vi.fn(() => true),
-  hasAnyPermission: vi.fn(() => true),
-  hasAllPermissions: vi.fn(() => true),
-  hasRole: vi.fn(() => true),
-  switchDepartment: vi.fn(),
-  isSwitching: false,
-  switchError: null,
-};
+});
 
 // ============================================================================
 // Test Suites
@@ -79,11 +91,9 @@ const mockDepartmentContext = {
 describe('Header Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(useAuthModule.useAuth).mockReturnValue(mockAuthData as any);
-    vi.mocked(useNavigationModule.useNavigation).mockReturnValue(mockNavigationData as any);
-    vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue(
-      mockDepartmentContext
-    );
+    vi.mocked(useAuthStore).mockReturnValue(mockAuthData as any);
+    vi.mocked(useNavigation).mockReturnValue(mockNavigationData as any);
+    vi.mocked(useDepartmentContext).mockReturnValue(mockDepartmentContext);
   });
 
   describe('Basic Rendering', () => {
@@ -98,7 +108,7 @@ describe('Header Component', () => {
     });
 
     it('should not render desktop navigation items when not authenticated', () => {
-      vi.mocked(useAuthModule.useAuth).mockReturnValue({
+      vi.mocked(useAuthStore).mockReturnValue({
         ...mockAuthData,
         isAuthenticated: false,
       } as any);
@@ -147,13 +157,14 @@ describe('Header Component', () => {
       await user.click(avatarButton);
 
       await waitFor(() => {
-        expect(screen.getByText('staff')).toBeInTheDocument();
+        // Component uses displayAs from userTypeDisplayMap, so "staff" becomes "Staff"
+        expect(screen.getByText('Staff')).toBeInTheDocument();
       });
     });
 
     it('should not display department info when no department selected', async () => {
       const user = userEvent.setup();
-      vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
+      vi.mocked(useDepartmentContext).mockReturnValue({
         ...mockDepartmentContext,
         currentDepartmentId: null,
         currentDepartmentName: null,
@@ -173,7 +184,7 @@ describe('Header Component', () => {
 
     it('should limit role badges to 3 with overflow indicator', async () => {
       const user = userEvent.setup();
-      vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
+      vi.mocked(useDepartmentContext).mockReturnValue({
         ...mockDepartmentContext,
         currentDepartmentRoles: ['role1', 'role2', 'role3', 'role4', 'role5'],
       });
@@ -208,7 +219,7 @@ describe('Header Component', () => {
     it('should call logout and navigate on logout click', async () => {
       const user = userEvent.setup();
       const mockLogout = vi.fn().mockResolvedValue(undefined);
-      vi.mocked(useAuthModule.useAuth).mockReturnValue({
+      vi.mocked(useAuthStore).mockReturnValue({
         ...mockAuthData,
         logout: mockLogout,
       } as any);
@@ -252,9 +263,14 @@ describe('Header Component', () => {
     });
 
     it('should show admin link for global-admin user type', () => {
-      vi.mocked(useAuthModule.useAuth).mockReturnValue({
+      vi.mocked(useAuthStore).mockReturnValue({
         ...mockAuthData,
+        user: {
+          ...mockUser,
+          userTypes: ['global-admin'],
+        },
         roleHierarchy: {
+          ...mockRoleHierarchy,
           primaryUserType: 'global-admin',
           allPermissions: ['system:*'],
         },
@@ -276,7 +292,7 @@ describe('Header Component', () => {
   describe('Edge Cases', () => {
     it('should handle missing user data gracefully', async () => {
       const user = userEvent.setup();
-      vi.mocked(useAuthModule.useAuth).mockReturnValue({
+      vi.mocked(useAuthStore).mockReturnValue({
         ...mockAuthData,
         user: null,
       } as any);
@@ -293,7 +309,7 @@ describe('Header Component', () => {
     });
 
     it('should handle missing roleHierarchy gracefully', () => {
-      vi.mocked(useAuthModule.useAuth).mockReturnValue({
+      vi.mocked(useAuthStore).mockReturnValue({
         ...mockAuthData,
         roleHierarchy: null,
       } as any);
@@ -316,13 +332,11 @@ describe('Header Component', () => {
 
     it('should default to "U" when no email available', async () => {
       const user = userEvent.setup();
-      vi.mocked(useAuthModule.useAuth).mockReturnValue({
+      vi.mocked(useAuthStore).mockReturnValue({
         ...mockAuthData,
         user: {
-          _id: 'user-123',
+          ...mockUser,
           email: '',
-          firstName: 'Test',
-          lastName: 'User',
         },
       } as any);
 
@@ -339,7 +353,7 @@ describe('Header Component', () => {
     it('should call useDepartmentContext hook', () => {
       renderHeader();
 
-      expect(useDepartmentContextModule.useDepartmentContext).toHaveBeenCalled();
+      expect(useDepartmentContext).toHaveBeenCalled();
     });
 
     it('should use department context for display', async () => {
@@ -360,7 +374,7 @@ describe('Header Component', () => {
 
     it('should not render department section when currentDepartmentId is null', async () => {
       const user = userEvent.setup();
-      vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
+      vi.mocked(useDepartmentContext).mockReturnValue({
         ...mockDepartmentContext,
         currentDepartmentId: null,
         currentDepartmentName: null,
@@ -382,7 +396,7 @@ describe('Header Component', () => {
 
   describe('Unauthenticated State', () => {
     it('should show sign in button when not authenticated', () => {
-      vi.mocked(useAuthModule.useAuth).mockReturnValue({
+      vi.mocked(useAuthStore).mockReturnValue({
         ...mockAuthData,
         isAuthenticated: false,
       } as any);
@@ -393,7 +407,7 @@ describe('Header Component', () => {
     });
 
     it('should not show user dropdown when not authenticated', () => {
-      vi.mocked(useAuthModule.useAuth).mockReturnValue({
+      vi.mocked(useAuthStore).mockReturnValue({
         ...mockAuthData,
         isAuthenticated: false,
       } as any);
@@ -404,7 +418,7 @@ describe('Header Component', () => {
     });
 
     it('should not show mobile menu button when not authenticated', () => {
-      vi.mocked(useAuthModule.useAuth).mockReturnValue({
+      vi.mocked(useAuthStore).mockReturnValue({
         ...mockAuthData,
         isAuthenticated: false,
       } as any);

@@ -149,8 +149,13 @@ export function QuestionForm({
       newErrors.questionText = 'Question text must be 2000 characters or less';
     }
 
+    // Explanation validation
+    if (formData.explanation.length > 1000) {
+      newErrors.explanation = 'Explanation must be 1000 characters or less';
+    }
+
     // Points validation
-    if (formData.points < 0.1) {
+    if (isNaN(formData.points) || formData.points < 0.1) {
       newErrors.points = 'Points must be at least 0.1';
     }
 
@@ -404,7 +409,11 @@ export function QuestionForm({
           placeholder="Explanation shown after answering (optional)"
           rows={3}
           maxLength={1000}
+          className={errors.explanation ? 'border-destructive' : ''}
         />
+        {errors.explanation && (
+          <p className="text-sm text-destructive">{errors.explanation}</p>
+        )}
         <p className="text-xs text-muted-foreground">
           {formData.explanation.length}/1000 characters
         </p>

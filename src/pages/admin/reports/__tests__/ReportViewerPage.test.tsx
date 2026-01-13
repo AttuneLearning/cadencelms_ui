@@ -56,6 +56,7 @@ const createWrapper = (initialRoute: string) => {
 };
 
 describe('ReportViewerPage', () => {
+  // apiBaseUrl already includes /api/v2, so we just need /reports
   const baseUrl = env.apiBaseUrl;
 
   beforeEach(() => {
@@ -70,8 +71,8 @@ describe('ReportViewerPage', () => {
   describe('Page Rendering - Ready Report', () => {
     it('should render report metadata for ready report', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-1`, () => {
-          return HttpResponse.json(mockReadyReport);
+        http.get(`${baseUrl}/reports/report-1`, () => {
+          return HttpResponse.json({ success: true, data: mockReadyReport });
         })
       );
 
@@ -87,8 +88,8 @@ describe('ReportViewerPage', () => {
 
     it('should display report description', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-1`, () => {
-          return HttpResponse.json(mockReadyReport);
+        http.get(`${baseUrl}/reports/report-1`, () => {
+          return HttpResponse.json({ success: true, data: mockReadyReport });
         })
       );
 
@@ -104,8 +105,8 @@ describe('ReportViewerPage', () => {
 
     it('should display report type badge', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-1`, () => {
-          return HttpResponse.json(mockReadyReport);
+        http.get(`${baseUrl}/reports/report-1`, () => {
+          return HttpResponse.json({ success: true, data: mockReadyReport });
         })
       );
 
@@ -119,8 +120,8 @@ describe('ReportViewerPage', () => {
 
     it('should display status indicator', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-1`, () => {
-          return HttpResponse.json(mockReadyReport);
+        http.get(`${baseUrl}/reports/report-1`, () => {
+          return HttpResponse.json({ success: true, data: mockReadyReport });
         })
       );
 
@@ -134,8 +135,8 @@ describe('ReportViewerPage', () => {
 
     it('should display created by and date', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-1`, () => {
-          return HttpResponse.json(mockReadyReport);
+        http.get(`${baseUrl}/reports/report-1`, () => {
+          return HttpResponse.json({ success: true, data: mockReadyReport });
         })
       );
 
@@ -150,8 +151,8 @@ describe('ReportViewerPage', () => {
 
     it('should display row count', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-1`, () => {
-          return HttpResponse.json(mockReadyReport);
+        http.get(`${baseUrl}/reports/report-1`, () => {
+          return HttpResponse.json({ success: true, data: mockReadyReport });
         })
       );
 
@@ -165,8 +166,8 @@ describe('ReportViewerPage', () => {
 
     it('should display applied filters summary', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-1`, () => {
-          return HttpResponse.json(mockReadyReport);
+        http.get(`${baseUrl}/reports/report-1`, () => {
+          return HttpResponse.json({ success: true, data: mockReadyReport });
         })
       );
 
@@ -182,8 +183,8 @@ describe('ReportViewerPage', () => {
   describe('Download Actions - Ready Report', () => {
     it('should display download PDF button', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-1`, () => {
-          return HttpResponse.json(mockReadyReport);
+        http.get(`${baseUrl}/reports/report-1`, () => {
+          return HttpResponse.json({ success: true, data: mockReadyReport });
         })
       );
 
@@ -197,8 +198,8 @@ describe('ReportViewerPage', () => {
 
     it('should display download Excel button', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-1`, () => {
-          return HttpResponse.json(mockReadyReport);
+        http.get(`${baseUrl}/reports/report-1`, () => {
+          return HttpResponse.json({ success: true, data: mockReadyReport });
         })
       );
 
@@ -212,8 +213,8 @@ describe('ReportViewerPage', () => {
 
     it('should display download CSV button', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-1`, () => {
-          return HttpResponse.json(mockReadyReport);
+        http.get(`${baseUrl}/reports/report-1`, () => {
+          return HttpResponse.json({ success: true, data: mockReadyReport });
         })
       );
 
@@ -230,10 +231,10 @@ describe('ReportViewerPage', () => {
       let downloadCalled = false;
 
       server.use(
-        http.get(`${baseUrl}/api/reports/report-1`, () => {
-          return HttpResponse.json(mockReadyReport);
+        http.get(`${baseUrl}/reports/report-1`, () => {
+          return HttpResponse.json({ success: true, data: mockReadyReport });
         }),
-        http.get(`${baseUrl}/api/reports/report-1/download`, () => {
+        http.get(`${baseUrl}/reports/report-1/download`, () => {
           downloadCalled = true;
           return HttpResponse.arrayBuffer(new ArrayBuffer(0));
         })
@@ -255,10 +256,10 @@ describe('ReportViewerPage', () => {
       let downloadCalled = false;
 
       server.use(
-        http.get(`${baseUrl}/api/reports/report-1`, () => {
-          return HttpResponse.json(mockReadyReport);
+        http.get(`${baseUrl}/reports/report-1`, () => {
+          return HttpResponse.json({ success: true, data: mockReadyReport });
         }),
-        http.get(`${baseUrl}/api/reports/report-1/download`, () => {
+        http.get(`${baseUrl}/reports/report-1/download`, () => {
           downloadCalled = true;
           return HttpResponse.arrayBuffer(new ArrayBuffer(0));
         })
@@ -280,10 +281,10 @@ describe('ReportViewerPage', () => {
       let downloadCalled = false;
 
       server.use(
-        http.get(`${baseUrl}/api/reports/report-1`, () => {
-          return HttpResponse.json(mockReadyReport);
+        http.get(`${baseUrl}/reports/report-1`, () => {
+          return HttpResponse.json({ success: true, data: mockReadyReport });
         }),
-        http.get(`${baseUrl}/api/reports/report-1/download`, () => {
+        http.get(`${baseUrl}/reports/report-1/download`, () => {
           downloadCalled = true;
           return HttpResponse.arrayBuffer(new ArrayBuffer(0));
         })
@@ -304,8 +305,8 @@ describe('ReportViewerPage', () => {
   describe('Generating Status', () => {
     it('should display generating status indicator', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-2`, () => {
-          return HttpResponse.json(mockGeneratingReport);
+        http.get(`${baseUrl}/reports/report-2`, () => {
+          return HttpResponse.json({ success: true, data: mockGeneratingReport });
         })
       );
 
@@ -319,8 +320,8 @@ describe('ReportViewerPage', () => {
 
     it('should display progress indicator', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-2`, () => {
-          return HttpResponse.json(mockGeneratingReport);
+        http.get(`${baseUrl}/reports/report-2`, () => {
+          return HttpResponse.json({ success: true, data: mockGeneratingReport });
         })
       );
 
@@ -336,9 +337,9 @@ describe('ReportViewerPage', () => {
       let fetchCount = 0;
 
       server.use(
-        http.get(`${baseUrl}/api/reports/report-2`, () => {
+        http.get(`${baseUrl}/reports/report-2`, () => {
           fetchCount++;
-          return HttpResponse.json(mockGeneratingReport);
+          return HttpResponse.json({ success: true, data: mockGeneratingReport });
         })
       );
 
@@ -359,8 +360,8 @@ describe('ReportViewerPage', () => {
 
     it('should not display download buttons when generating', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-2`, () => {
-          return HttpResponse.json(mockGeneratingReport);
+        http.get(`${baseUrl}/reports/report-2`, () => {
+          return HttpResponse.json({ success: true, data: mockGeneratingReport });
         })
       );
 
@@ -378,8 +379,8 @@ describe('ReportViewerPage', () => {
   describe('Failed Status', () => {
     it('should display failed status indicator', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-4`, () => {
-          return HttpResponse.json(mockFailedReport);
+        http.get(`${baseUrl}/reports/report-4`, () => {
+          return HttpResponse.json({ success: true, data: mockFailedReport });
         })
       );
 
@@ -393,8 +394,8 @@ describe('ReportViewerPage', () => {
 
     it('should display error message', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-4`, () => {
-          return HttpResponse.json(mockFailedReport);
+        http.get(`${baseUrl}/reports/report-4`, () => {
+          return HttpResponse.json({ success: true, data: mockFailedReport });
         })
       );
 
@@ -410,8 +411,8 @@ describe('ReportViewerPage', () => {
 
     it('should display retry button', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-4`, () => {
-          return HttpResponse.json(mockFailedReport);
+        http.get(`${baseUrl}/reports/report-4`, () => {
+          return HttpResponse.json({ success: true, data: mockFailedReport });
         })
       );
 
@@ -428,14 +429,17 @@ describe('ReportViewerPage', () => {
       let retryCalled = false;
 
       server.use(
-        http.get(`${baseUrl}/api/reports/report-4`, () => {
-          return HttpResponse.json(mockFailedReport);
+        http.get(`${baseUrl}/reports/report-4`, () => {
+          return HttpResponse.json({ success: true, data: mockFailedReport });
         }),
-        http.post(`${baseUrl}/api/reports/report-4/retry`, () => {
+        http.post(`${baseUrl}/reports/report-4/retry`, () => {
           retryCalled = true;
           return HttpResponse.json({
-            ...mockFailedReport,
-            status: 'generating',
+            success: true,
+            data: {
+              ...mockFailedReport,
+              status: "generating",
+            },
           });
         })
       );
@@ -455,8 +459,8 @@ describe('ReportViewerPage', () => {
   describe('Pending Status', () => {
     it('should display pending status indicator', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-5`, () => {
-          return HttpResponse.json(mockPendingReport);
+        http.get(`${baseUrl}/reports/report-5`, () => {
+          return HttpResponse.json({ success: true, data: mockPendingReport });
         })
       );
 
@@ -470,8 +474,8 @@ describe('ReportViewerPage', () => {
 
     it('should display waiting message', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-5`, () => {
-          return HttpResponse.json(mockPendingReport);
+        http.get(`${baseUrl}/reports/report-5`, () => {
+          return HttpResponse.json({ success: true, data: mockPendingReport });
         })
       );
 
@@ -487,8 +491,8 @@ describe('ReportViewerPage', () => {
   describe('Delete Report', () => {
     it('should display delete button', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-1`, () => {
-          return HttpResponse.json(mockReadyReport);
+        http.get(`${baseUrl}/reports/report-1`, () => {
+          return HttpResponse.json({ success: true, data: mockReadyReport });
         })
       );
 
@@ -504,8 +508,8 @@ describe('ReportViewerPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/api/reports/report-1`, () => {
-          return HttpResponse.json(mockReadyReport);
+        http.get(`${baseUrl}/reports/report-1`, () => {
+          return HttpResponse.json({ success: true, data: mockReadyReport });
         })
       );
 
@@ -526,10 +530,10 @@ describe('ReportViewerPage', () => {
       let deleteCalled = false;
 
       server.use(
-        http.get(`${baseUrl}/api/reports/report-1`, () => {
-          return HttpResponse.json(mockReadyReport);
+        http.get(`${baseUrl}/reports/report-1`, () => {
+          return HttpResponse.json({ success: true, data: mockReadyReport });
         }),
-        http.delete(`${baseUrl}/api/reports/report-1`, () => {
+        http.delete(`${baseUrl}/reports/report-1`, () => {
           deleteCalled = true;
           return HttpResponse.json({}, { status: 204 });
         })
@@ -553,8 +557,8 @@ describe('ReportViewerPage', () => {
   describe('Generate Again (Clone)', () => {
     it('should display generate again button', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-1`, () => {
-          return HttpResponse.json(mockReadyReport);
+        http.get(`${baseUrl}/reports/report-1`, () => {
+          return HttpResponse.json({ success: true, data: mockReadyReport });
         })
       );
 
@@ -571,15 +575,18 @@ describe('ReportViewerPage', () => {
       let generateCalled = false;
 
       server.use(
-        http.get(`${baseUrl}/api/reports/report-1`, () => {
-          return HttpResponse.json(mockReadyReport);
+        http.get(`${baseUrl}/reports/report-1`, () => {
+          return HttpResponse.json({ success: true, data: mockReadyReport });
         }),
-        http.post(`${baseUrl}/api/reports`, () => {
+        http.post(`${baseUrl}/reports`, () => {
           generateCalled = true;
           return HttpResponse.json({
-            ...mockReadyReport,
-            id: 'report-new',
-            status: 'pending',
+            success: true,
+            data: {
+              ...mockReadyReport,
+              id: 'report-new',
+              status: "pending",
+            },
           });
         })
       );
@@ -599,8 +606,8 @@ describe('ReportViewerPage', () => {
   describe('Navigation', () => {
     it('should display back to reports button', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-1`, () => {
-          return HttpResponse.json(mockReadyReport);
+        http.get(`${baseUrl}/reports/report-1`, () => {
+          return HttpResponse.json({ success: true, data: mockReadyReport });
         })
       );
 
@@ -616,7 +623,7 @@ describe('ReportViewerPage', () => {
   describe('Error Handling', () => {
     it('should handle API error when loading report', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-1`, () => {
+        http.get(`${baseUrl}/reports/report-1`, () => {
           return HttpResponse.json(
             { message: 'Report not found' },
             { status: 404 }
@@ -634,7 +641,7 @@ describe('ReportViewerPage', () => {
 
     it('should handle network errors', async () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-1`, () => {
+        http.get(`${baseUrl}/reports/report-1`, () => {
           return HttpResponse.error();
         })
       );
@@ -651,9 +658,9 @@ describe('ReportViewerPage', () => {
   describe('Loading State', () => {
     it('should display loading state initially', () => {
       server.use(
-        http.get(`${baseUrl}/api/reports/report-1`, async () => {
+        http.get(`${baseUrl}/reports/report-1`, async () => {
           await new Promise(resolve => setTimeout(resolve, 100));
-          return HttpResponse.json(mockReadyReport);
+          return HttpResponse.json({ success: true, data: mockReadyReport });
         })
       );
 
