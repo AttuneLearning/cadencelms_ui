@@ -2,21 +2,23 @@
  * PreferencesForm Component Tests
  */
 
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PreferencesForm } from '../PreferencesForm';
 import type { IPerson } from '@/shared/types/person';
+import * as useAutoSaveModule from '../../hooks/useAutoSave';
 
 // Mock the auto-save hook
-jest.mock('../../hooks/useAutoSave', () => ({
-  useAutoSave: jest.fn(() => ({
+vi.mock('../../hooks/useAutoSave', () => ({
+  useAutoSave: vi.fn(() => ({
     status: 'idle',
     error: null,
-    save: jest.fn(),
-    reset: jest.fn(),
+    save: vi.fn(),
+    reset: vi.fn(),
   })),
-  useBlurSave: jest.fn((save) => save),
+  useBlurSave: vi.fn((save) => save),
 }));
 
 const mockPerson: IPerson = {
@@ -62,7 +64,7 @@ const mockPerson: IPerson = {
 
 describe('PreferencesForm', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should render localization preferences', () => {
@@ -151,12 +153,11 @@ describe('PreferencesForm', () => {
   });
 
   it('should display save status', () => {
-    const { useAutoSave } = require('../../hooks/useAutoSave');
-    useAutoSave.mockImplementation(() => ({
+    vi.mocked(useAutoSaveModule.useAutoSave).mockImplementation(() => ({
       status: 'saved',
       error: null,
-      save: jest.fn(),
-      reset: jest.fn(),
+      save: vi.fn(),
+      reset: vi.fn(),
     }));
 
     render(<PreferencesForm person={mockPerson} />);
@@ -165,13 +166,12 @@ describe('PreferencesForm', () => {
   });
 
   it('should show error on save failure', () => {
-    const { useAutoSave } = require('../../hooks/useAutoSave');
     const mockError = new Error('Save failed');
-    useAutoSave.mockImplementation(() => ({
+    vi.mocked(useAutoSaveModule.useAutoSave).mockImplementation(() => ({
       status: 'error',
       error: mockError,
-      save: jest.fn(),
-      reset: jest.fn(),
+      save: vi.fn(),
+      reset: vi.fn(),
     }));
 
     render(<PreferencesForm person={mockPerson} />);

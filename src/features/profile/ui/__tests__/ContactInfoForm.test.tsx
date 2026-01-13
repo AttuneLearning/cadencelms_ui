@@ -2,25 +2,27 @@
  * ContactInfoForm Component Tests
  */
 
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ContactInfoForm } from '../ContactInfoForm';
 import { personApi } from '@/shared/api/personApi';
 import type { IPerson, IEmail, IPhone, IAddress } from '@/shared/types/person';
+import * as useAutoSaveModule from '../../hooks/useAutoSave';
 
 // Mock the personApi
-jest.mock('@/shared/api/personApi');
+vi.mock('@/shared/api/personApi');
 
 // Mock the auto-save hook
-jest.mock('../../hooks/useAutoSave', () => ({
-  useAutoSave: jest.fn(() => ({
+vi.mock('../../hooks/useAutoSave', () => ({
+  useAutoSave: vi.fn(() => ({
     status: 'idle',
     error: null,
-    save: jest.fn(),
-    reset: jest.fn(),
+    save: vi.fn(),
+    reset: vi.fn(),
   })),
-  useBlurSave: jest.fn((save) => save),
+  useBlurSave: vi.fn((save) => save),
 }));
 
 const mockEmail: IEmail = {
@@ -96,7 +98,7 @@ const mockPerson: IPerson = {
 
 describe('ContactInfoForm', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('Email Management', () => {
@@ -352,12 +354,11 @@ describe('ContactInfoForm', () => {
 
   describe('Save Status', () => {
     it('should show saving status', () => {
-      const { useAutoSave } = require('../../hooks/useAutoSave');
-      useAutoSave.mockImplementation(() => ({
+      vi.mocked(useAutoSaveModule.useAutoSave).mockImplementation(() => ({
         status: 'saving',
         error: null,
-        save: jest.fn(),
-        reset: jest.fn(),
+        save: vi.fn(),
+        reset: vi.fn(),
       }));
 
       render(<ContactInfoForm person={mockPerson} />);
@@ -366,13 +367,12 @@ describe('ContactInfoForm', () => {
     });
 
     it('should show error message on save failure', () => {
-      const { useAutoSave } = require('../../hooks/useAutoSave');
       const mockError = new Error('Network error');
-      useAutoSave.mockImplementation(() => ({
+      vi.mocked(useAutoSaveModule.useAutoSave).mockImplementation(() => ({
         status: 'error',
         error: mockError,
-        save: jest.fn(),
-        reset: jest.fn(),
+        save: vi.fn(),
+        reset: vi.fn(),
       }));
 
       render(<ContactInfoForm person={mockPerson} />);

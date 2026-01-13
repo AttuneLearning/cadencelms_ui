@@ -2,21 +2,23 @@
  * ConsentForm Component Tests
  */
 
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ConsentForm } from '../ConsentForm';
 import type { IPerson } from '@/shared/types/person';
+import * as useAutoSaveModule from '../../hooks/useAutoSave';
 
 // Mock the auto-save hook
-jest.mock('../../hooks/useAutoSave', () => ({
-  useAutoSave: jest.fn(() => ({
+vi.mock('../../hooks/useAutoSave', () => ({
+  useAutoSave: vi.fn(() => ({
     status: 'idle',
     error: null,
-    save: jest.fn(),
-    reset: jest.fn(),
+    save: vi.fn(),
+    reset: vi.fn(),
   })),
-  useBlurSave: jest.fn((save) => save),
+  useBlurSave: vi.fn((save) => save),
 }));
 
 const mockPerson: IPerson = {
@@ -62,7 +64,7 @@ const mockPerson: IPerson = {
 
 describe('ConsentForm', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should render all consent items', () => {
@@ -169,12 +171,11 @@ describe('ConsentForm', () => {
   });
 
   it('should show save status badge', () => {
-    const { useAutoSave } = require('../../hooks/useAutoSave');
-    useAutoSave.mockImplementation(() => ({
+    vi.mocked(useAutoSaveModule.useAutoSave).mockImplementation(() => ({
       status: 'saving',
       error: null,
-      save: jest.fn(),
-      reset: jest.fn(),
+      save: vi.fn(),
+      reset: vi.fn(),
     }));
 
     render(<ConsentForm person={mockPerson} />);
@@ -183,13 +184,12 @@ describe('ConsentForm', () => {
   });
 
   it('should show error alert on save failure', () => {
-    const { useAutoSave } = require('../../hooks/useAutoSave');
     const mockError = new Error('Network error');
-    useAutoSave.mockImplementation(() => ({
+    vi.mocked(useAutoSaveModule.useAutoSave).mockImplementation(() => ({
       status: 'error',
       error: mockError,
-      save: jest.fn(),
-      reset: jest.fn(),
+      save: vi.fn(),
+      reset: vi.fn(),
     }));
 
     render(<ConsentForm person={mockPerson} />);
@@ -199,7 +199,7 @@ describe('ConsentForm', () => {
   });
 
   it('should call onSaveSuccess when save succeeds', async () => {
-    const mockSaveSuccess = jest.fn();
+    const mockSaveSuccess = vi.fn();
     render(<ConsentForm person={mockPerson} onSaveSuccess={mockSaveSuccess} />);
 
     // Component renders successfully
