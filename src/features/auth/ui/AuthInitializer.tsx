@@ -29,10 +29,19 @@ interface AuthInitializerProps {
 export const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
   const { initializeAuth, isLoading } = useAuthStore();
   const [isInitializing, setIsInitializing] = React.useState(true);
+  const hasInitialized = React.useRef(false);
 
   React.useEffect(() => {
+    // Prevent multiple initializations
+    if (hasInitialized.current) {
+      console.log('[AuthInitializer] Already initialized, skipping');
+      return;
+    }
+
     const initialize = async () => {
       console.log('[AuthInitializer] Starting auth initialization...');
+      hasInitialized.current = true;
+
       try {
         await initializeAuth();
         console.log('[AuthInitializer] Auth initialization complete');
@@ -45,7 +54,9 @@ export const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) =>
     };
 
     initialize();
-  }, [initializeAuth]);
+    // Empty dependency array - only run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Show loading screen while initializing
   if (isInitializing) {
