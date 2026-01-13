@@ -187,8 +187,11 @@ export const useAuthStore = create<AuthState>()(
           const user: User = {
             _id: data.user.id,
             email: data.user.email,
+            // DEPRECATED (v1.0) - kept for backward compatibility
             firstName: data.user.firstName,
             lastName: data.user.lastName,
+            // NEW (v2.0) - person data from API
+            person: data.person,
             userTypes: userTypeKeys, // Store UserType[] (keys only)
             defaultDashboard: data.defaultDashboard,
             lastSelectedDepartment: data.lastSelectedDepartment,

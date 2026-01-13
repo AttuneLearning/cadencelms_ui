@@ -96,8 +96,13 @@ export interface DepartmentMembership {
 export interface User {
   _id: string;
   email: string;
+
+  // DEPRECATED (v1.0) - kept for backward compatibility during migration
   firstName?: string;
   lastName?: string;
+
+  // NEW (v2.0) - person data from Person API
+  person?: import('@/shared/types/person').IPerson;
 
   /** User types this user has (can have multiple) */
   userTypes: UserType[];
@@ -171,12 +176,16 @@ export interface LoginResponse {
     user: {
       id: string;
       email: string;
+      // DEPRECATED (v1.0) - kept for backward compatibility
       firstName: string;
       lastName: string;
       isActive: boolean;
       lastLogin: string | null;
       createdAt: string;
     };
+
+    // NEW (v2.0) - person data nested in response
+    person?: import('@/shared/types/person').IPerson;
 
     session: {
       accessToken: string;
