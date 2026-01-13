@@ -2,4 +2,4 @@
  * Profile Page - Public API
  */
 
-export { ProfilePage } from './ProfilePage';
+export { ProfilePageV2 as ProfilePage } from './ProfilePageV2';

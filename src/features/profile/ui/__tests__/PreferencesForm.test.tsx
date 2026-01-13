@@ -1,0 +1,181 @@
+/**
+ * PreferencesForm Component Tests
+ */
+
+import React from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { PreferencesForm } from '../PreferencesForm';
+import type { IPerson } from '@/shared/types/person';
+
+// Mock the auto-save hook
+jest.mock('../../hooks/useAutoSave', () => ({
+  useAutoSave: jest.fn(() => ({
+    status: 'idle',
+    error: null,
+    save: jest.fn(),
+    reset: jest.fn(),
+  })),
+  useBlurSave: jest.fn((save) => save),
+}));
+
+const mockPerson: IPerson = {
+  firstName: 'John',
+  middleName: null,
+  lastName: 'Doe',
+  suffix: null,
+  preferredFirstName: null,
+  preferredLastName: null,
+  pronouns: null,
+  avatar: null,
+  bio: null,
+  emails: [],
+  phones: [],
+  addresses: [],
+  dateOfBirth: null,
+  last4SSN: null,
+  timezone: 'America/New_York',
+  languagePreference: 'en',
+  locale: 'en-US',
+  communicationPreferences: {
+    preferredMethod: 'email',
+    allowEmail: true,
+    allowSMS: true,
+    allowPhoneCalls: false,
+    quietHoursStart: '22:00',
+    quietHoursEnd: '08:00',
+    notificationFrequency: 'daily-digest',
+  },
+  legalConsent: {
+    ferpaConsent: null,
+    ferpaConsentDate: null,
+    gdprConsent: null,
+    gdprConsentDate: null,
+    photoConsent: null,
+    photoConsentDate: null,
+    marketingConsent: null,
+    marketingConsentDate: null,
+    thirdPartyDataSharing: null,
+    thirdPartyDataSharingDate: null,
+  },
+};
+
+describe('PreferencesForm', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should render localization preferences', () => {
+    render(<PreferencesForm person={mockPerson} />);
+
+    expect(screen.getByText(/Localization/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Timezone/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Language/i)).toBeInTheDocument();
+  });
+
+  it('should render communication preferences', () => {
+    render(<PreferencesForm person={mockPerson} />);
+
+    expect(screen.getByText(/Communication Preferences/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Preferred Contact Method/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/SMS/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Phone Calls/i)).toBeInTheDocument();
+  });
+
+  it('should render notification preferences', () => {
+    render(<PreferencesForm person={mockPerson} />);
+
+    expect(screen.getByText(/Notifications/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Notification Frequency/i)).toBeInTheDocument();
+  });
+
+  it('should render quiet hours settings', () => {
+    render(<PreferencesForm person={mockPerson} />);
+
+    expect(screen.getByText(/Quiet Hours/i)).toBeInTheDocument();
+    expect(screen.getByDisplayValue('22:00')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('08:00')).toBeInTheDocument();
+  });
+
+  it('should toggle communication switches', async () => {
+    const user = userEvent.setup();
+    render(<PreferencesForm person={mockPerson} />);
+
+    const emailSwitch = screen.getByRole('switch', { name: /Email/i });
+    expect(emailSwitch).toBeChecked();
+
+    await user.click(emailSwitch);
+
+    await waitFor(() => {
+      expect(emailSwitch).not.toBeChecked();
+    });
+  });
+
+  it('should validate quiet hours time format', async () => {
+    const user = userEvent.setup();
+    render(<PreferencesForm person={mockPerson} />);
+
+    const startTimeInput = screen.getByDisplayValue('22:00');
+    await user.clear(startTimeInput);
+    await user.type(startTimeInput, '25:00'); // Invalid time
+
+    await waitFor(() => {
+      expect(screen.getByText(/Invalid time format/i)).toBeInTheDocument();
+    });
+  });
+
+  it('should show quiet hours alert when both times are set', () => {
+    render(<PreferencesForm person={mockPerson} />);
+
+    expect(
+      screen.getByText(/You won't receive notifications between 22:00 and 08:00/i)
+    ).toBeInTheDocument();
+  });
+
+  it('should not show quiet hours alert when times are not set', () => {
+    const personWithoutQuietHours = {
+      ...mockPerson,
+      communicationPreferences: {
+        ...mockPerson.communicationPreferences,
+        quietHoursStart: null,
+        quietHoursEnd: null,
+      },
+    };
+
+    render(<PreferencesForm person={personWithoutQuietHours} />);
+
+    expect(
+      screen.queryByText(/You won't receive notifications between/i)
+    ).not.toBeInTheDocument();
+  });
+
+  it('should display save status', () => {
+    const { useAutoSave } = require('../../hooks/useAutoSave');
+    useAutoSave.mockImplementation(() => ({
+      status: 'saved',
+      error: null,
+      save: jest.fn(),
+      reset: jest.fn(),
+    }));
+
+    render(<PreferencesForm person={mockPerson} />);
+
+    expect(screen.getByText('Saved')).toBeInTheDocument();
+  });
+
+  it('should show error on save failure', () => {
+    const { useAutoSave } = require('../../hooks/useAutoSave');
+    const mockError = new Error('Save failed');
+    useAutoSave.mockImplementation(() => ({
+      status: 'error',
+      error: mockError,
+      save: jest.fn(),
+      reset: jest.fn(),
+    }));
+
+    render(<PreferencesForm person={mockPerson} />);
+
+    expect(screen.getByText(/Failed to save changes/i)).toBeInTheDocument();
+  });
+});
