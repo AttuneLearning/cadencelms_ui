@@ -110,9 +110,18 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       : // User must have ANY of the specified user types
         userTypes.some((type) => roleHierarchy.allUserTypes.includes(type));
 
+    console.log('[ProtectedRoute] UserType check:', {
+      requiredUserTypes: userTypes,
+      userAllTypes: roleHierarchy.allUserTypes,
+      hasRequiredUserType,
+      currentPath: location.pathname,
+      willRedirect: !hasRequiredUserType,
+    });
+
     if (!hasRequiredUserType) {
       if (redirectToDashboard) {
         const defaultDashboard = roleHierarchy.defaultDashboard;
+        console.log('[ProtectedRoute] Redirecting to default dashboard:', `/${defaultDashboard}/dashboard`);
         return <Navigate to={`/${defaultDashboard}/dashboard`} replace />;
       }
       return <Navigate to={redirectTo || '/unauthorized'} replace />;
