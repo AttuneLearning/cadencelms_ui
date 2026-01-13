@@ -613,12 +613,22 @@ export const useAuthStore = create<AuthState>()(
               // Same logic as above - rebuild user and roleHierarchy
               // (For brevity, this would be the same code)
               console.log('[AuthStore] Session restored after token refresh');
+            } else {
+              // Refresh succeeded but user data invalid - clear state
+              throw new Error('Invalid user data after token refresh');
             }
           } catch (refreshError) {
             console.error('[AuthStore] Token refresh also failed:', refreshError);
-            // Both failed - clear everything
+            // Both failed - clear everything and reset auth state
             clearAllTokens();
-            set({ isLoading: false });
+            set({
+              accessToken: null,
+              user: null,
+              roleHierarchy: null,
+              isAuthenticated: false,
+              isLoading: false,
+              error: null,
+            });
           }
         }
       },
