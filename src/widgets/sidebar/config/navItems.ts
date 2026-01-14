@@ -135,7 +135,7 @@ export const BASE_NAV_ITEMS: BaseNavItem[] = [
     icon: User,
   },
   {
-    label: 'test-certificates',
+    label: 'Certificates',
     path: '/learner/certificates',
     icon: Award,
   },
