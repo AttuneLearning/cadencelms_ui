@@ -36,6 +36,7 @@ const contractTypeOptions: { value: ContractType; label: string }[] = [
   { value: 'adjunct', label: 'Adjunct' },
   { value: 'visiting', label: 'Visiting' },
   { value: 'emeritus', label: 'Emeritus' },
+  { value: 'contract', label: 'Contract' },
 ];
 
 export function ProfessionalInfoSection({ data }: ProfessionalInfoSectionProps) {

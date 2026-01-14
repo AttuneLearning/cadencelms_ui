@@ -89,7 +89,7 @@ export type AcademicRank =
   | 'professor'
   | 'distinguished-professor';
 
-export type ContractType = 'full-time' | 'part-time' | 'adjunct' | 'visiting' | 'emeritus';
+export type ContractType = 'full-time' | 'part-time' | 'adjunct' | 'visiting' | 'emeritus' | 'contract';
 
 export type CredentialType = 'degree' | 'certification' | 'license' | 'other';
 
