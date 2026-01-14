@@ -30,7 +30,6 @@ import {
   STAFF_CONTEXT_NAV,
   ADMIN_CONTEXT_NAV,
   DEPARTMENT_NAV_ITEMS,
-  getPrimaryDashboardPath,
   type BaseNavItem,
   type ContextNavItem,
 } from './config/navItems';

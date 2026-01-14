@@ -66,6 +66,37 @@ export interface DepartmentNavItem {
 // ============================================================================
 
 /**
+ * Get current dashboard path based on the current dashboard context
+ * Used for Dashboard nav item to keep user in their current context
+ */
+export const getCurrentDashboardPath = (currentDashboard?: DashboardContext): string => {
+  switch (currentDashboard) {
+    case 'learner':
+      return '/learner/dashboard';
+    case 'staff':
+      return '/staff/dashboard';
+    case 'admin':
+      return '/admin/dashboard';
+    default:
+      return '/staff/dashboard'; // Default fallback
+  }
+};
+
+/**
+ * Get default dashboard path based on user's userTypes
+ * Used for login redirect and initial load
+ * Priority: staff > global-admin (→staff) > learner
+ */
+export const getDefaultDashboardPath = (userTypes: UserType[]): string => {
+  // Priority order: staff > global-admin > learner
+  if (userTypes.includes('staff')) return '/staff/dashboard';
+  if (userTypes.includes('global-admin')) return '/staff/dashboard'; // Admin requires escalation (ISS-013)
+  if (userTypes.includes('learner')) return '/learner/dashboard';
+  return '/staff/dashboard'; // Fallback
+};
+
+/**
+ * @deprecated Use getCurrentDashboardPath or getDefaultDashboardPath instead
  * Get primary dashboard path based on user's primaryUserType
  */
 export const getPrimaryDashboardPath = (
@@ -78,9 +109,9 @@ export const getPrimaryDashboardPath = (
     case 'staff':
       return '/staff/dashboard';
     case 'global-admin':
-      return '/admin/dashboard';
+      return '/staff/dashboard'; // Fixed: Admin requires escalation (ISS-013)
     default:
-      return '/learner/dashboard';
+      return '/staff/dashboard'; // Fixed: Default to staff, not learner
   }
 };
 
@@ -91,7 +122,7 @@ export const getPrimaryDashboardPath = (
 export const BASE_NAV_ITEMS: BaseNavItem[] = [
   {
     label: 'Dashboard',
-    path: getPrimaryDashboardPath,
+    path: (_primaryUserType, currentDashboard) => getCurrentDashboardPath(currentDashboard),
     icon: Home,
   },
   {

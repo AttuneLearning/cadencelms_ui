@@ -10,7 +10,9 @@ export {
   STAFF_CONTEXT_NAV,
   ADMIN_CONTEXT_NAV,
   DEPARTMENT_NAV_ITEMS,
-  getPrimaryDashboardPath,
+  getCurrentDashboardPath,
+  getDefaultDashboardPath,
+  getPrimaryDashboardPath, // @deprecated
 } from './config/navItems';
 export type {
   BaseNavItem,
