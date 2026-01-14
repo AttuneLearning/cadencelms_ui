@@ -65,6 +65,7 @@ import { AuditLogsPage, AuditLogDetailPage } from '@/pages/admin/audit-logs';
 
 // Profile page
 import { ProfilePage } from '@/pages/profile/ProfilePage';
+import { ProfileExtendedDemo } from '@/pages/profile/ProfileExtendedDemo';
 
 // Settings pages
 import { ChangePasswordPage } from '@/pages/settings';
@@ -83,6 +84,7 @@ import { CoursePlayerPage } from '@/pages/learner/player/CoursePlayerPage';
 import { MyCoursesPage } from '@/pages/learner/courses/MyCoursesPage';
 import { MyLearningPage } from '@/pages/learner/learning';
 import { CertificatesPage, CertificateViewPage } from '@/pages/learner/certificates';
+import { LearnerTestPage } from '@/pages/learner/test-page';
 
 // Unauthorized page component
 const UnauthorizedPage = () => (
@@ -158,6 +160,22 @@ export function AppRouter() {
         element={
           <LearnerOnlyRoute>
             <LearnerDashboardPage />
+          </LearnerOnlyRoute>
+        }
+      />
+      <Route
+        path="/learner/profile"
+        element={
+          <LearnerOnlyRoute>
+            <ProfilePage />
+          </LearnerOnlyRoute>
+        }
+      />
+      <Route
+        path="/learner/profile/extended-demo"
+        element={
+          <LearnerOnlyRoute>
+            <ProfileExtendedDemo />
           </LearnerOnlyRoute>
         }
       />
@@ -263,6 +281,14 @@ export function AppRouter() {
           </LearnerOnlyRoute>
         }
       />
+      <Route
+        path="/learner/test-page"
+        element={
+          <LearnerOnlyRoute>
+            <LearnerTestPage />
+          </LearnerOnlyRoute>
+        }
+      />
 
       {/* Staff-only routes */}
       <Route
@@ -270,6 +296,22 @@ export function AppRouter() {
         element={
           <StaffOnlyRoute>
             <StaffDashboardPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/profile"
+        element={
+          <StaffOnlyRoute>
+            <ProfilePage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/profile/extended-demo"
+        element={
+          <StaffOnlyRoute>
+            <ProfileExtendedDemo />
           </StaffOnlyRoute>
         }
       />
