@@ -310,29 +310,26 @@ export const ProfilePage: React.FC = () => {
         </Card>
       </section>
 
-      {/* ISS-010 Extended Profile Demo Link */}
+      {/* ISS-010 Extended Profile Sections */}
       <section>
-        <Card className="border-blue-200 bg-blue-50/50">
+        <Card>
           <CardHeader>
-            <div className="flex items-center gap-2">
-              <FlaskConical className="h-5 w-5 text-blue-600" />
-              <CardTitle className="text-blue-900">Extended Profile Demo (ISS-010)</CardTitle>
-            </div>
-            <CardDescription className="text-blue-700">
-              Test the new extended profile sections and demographics forms
+            <CardTitle>Extended Profile & Demographics</CardTitle>
+            <CardDescription>
+              Additional profile information and demographic data
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-700 mb-4">
-              View working demonstrations of extended profile sections with auto-save, array management, and demographics fields.
-              <strong> 3 of 31 sections implemented.</strong>
+              Access your extended profile information including professional details, education history, and demographic information.
             </p>
-            <Link to={profileContext === 'staff' ? '/staff/profile/extended-demo' : '/learner/profile/extended-demo'}>
-              <Button className="w-full sm:w-auto">
-                <FlaskConical className="mr-2 h-4 w-4" />
-                View Extended Profile Demo
-              </Button>
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link to={profileContext === 'staff' ? '/staff/profile/extended-demo' : '/learner/profile/extended-demo'}>
+                <Button variant="outline" className="w-full sm:w-auto">
+                  View Extended Profile
+                </Button>
+              </Link>
+            </div>
           </CardContent>
         </Card>
       </section>

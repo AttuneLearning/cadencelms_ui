@@ -6,6 +6,12 @@
 import React from 'react';
 import { useStaffExtended } from '@/entities/user-profile/model/useUserProfile';
 import { ProfessionalInfoSection } from './staff/ProfessionalInfoSection';
+import { EmploymentSection } from './staff/EmploymentSection';
+import { CredentialsSection } from './staff/CredentialsSection';
+import { OfficeHoursSection } from './staff/OfficeHoursSection';
+import { ResearchSection } from './staff/ResearchSection';
+import { ProfessionalLinksSection } from './staff/ProfessionalLinksSection';
+import { MembershipsSection } from './staff/MembershipsSection';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { AlertCircle } from 'lucide-react';
@@ -35,7 +41,7 @@ export function StaffProfileExtended() {
 
   return (
     <div className="space-y-6">
-      {/* Demo Section 1.1: Professional Information */}
+      {/* Section 1.1: Professional Information */}
       <ProfessionalInfoSection
         data={{
           professionalTitle: data?.professionalTitle,
@@ -45,28 +51,53 @@ export function StaffProfileExtended() {
         }}
       />
 
-      {/* Additional sections would follow the same pattern:
-        - Section 1.2: Employment Details
-        - Section 1.3: Credentials & Certifications
-        - Section 1.4: Office Hours
-        - Section 1.5: Research & Publications
-        - Section 1.6: Professional Links
-        - Section 1.7: Professional Memberships
-      */}
+      {/* Section 1.2: Employment Details */}
+      <EmploymentSection
+        data={{
+          employeeId: data?.employeeId,
+          hireDate: data?.hireDate,
+          officeLocation: data?.officeLocation,
+        }}
+      />
 
-      <div className="p-4 border rounded-lg bg-blue-50 text-sm text-gray-700">
-        <p className="font-semibold mb-2">🎯 Demo Complete - Pattern Established</p>
-        <p>This demonstrates Section 1.1 (Professional Information).</p>
-        <p className="mt-2">
-          The remaining 6 staff sections (1.2-1.7) follow the same pattern:
-        </p>
-        <ul className="list-disc list-inside mt-2 space-y-1">
-          <li>Import section component</li>
-          <li>Pass relevant data from useStaffExtended() hook</li>
-          <li>Auto-save handles persistence</li>
-          <li>CollapsibleSection provides consistent UI</li>
-        </ul>
-      </div>
+      {/* Section 1.3: Credentials & Certifications */}
+      <CredentialsSection
+        data={{
+          credentials: data?.credentials,
+        }}
+      />
+
+      {/* Section 1.4: Office Hours */}
+      <OfficeHoursSection
+        data={{
+          officeHours: data?.officeHours,
+        }}
+      />
+
+      {/* Section 1.5: Research & Publications */}
+      <ResearchSection
+        data={{
+          researchInterests: data?.researchInterests,
+          publications: data?.publications,
+        }}
+      />
+
+      {/* Section 1.6: Professional Links */}
+      <ProfessionalLinksSection
+        data={{
+          linkedInUrl: data?.linkedInUrl,
+          orcidId: data?.orcidId,
+          googleScholarUrl: data?.googleScholarUrl,
+          websiteUrl: data?.websiteUrl,
+        }}
+      />
+
+      {/* Section 1.7: Professional Memberships */}
+      <MembershipsSection
+        data={{
+          professionalMemberships: data?.professionalMemberships,
+        }}
+      />
     </div>
   );
 }
