@@ -310,23 +310,23 @@ export const ProfilePage: React.FC = () => {
         </Card>
       </section>
 
-      {/* ISS-010 Extended Profile Sections */}
+      {/* ISS-010 Profile Details & Demographics Sections */}
       <section>
         <Card>
           <CardHeader>
-            <CardTitle>Extended Profile & Demographics</CardTitle>
+            <CardTitle>Profile Details & Demographics</CardTitle>
             <CardDescription>
               Additional profile information and demographic data
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-700 mb-4">
-              Access your extended profile information including professional details, education history, and demographic information.
+              Access your detailed profile information including professional details, education history, and demographic information.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <Link to={profileContext === 'staff' ? '/staff/profile/extended-demo' : '/learner/profile/extended-demo'}>
                 <Button variant="outline" className="w-full sm:w-auto">
-                  View Extended Profile
+                  View Profile Details
                 </Button>
               </Link>
             </div>
