@@ -172,7 +172,7 @@ export function AppRouter() {
         }
       />
       <Route
-        path="/learner/profile/extended-demo"
+        path="/learner/profile/profile-details"
         element={
           <LearnerOnlyRoute>
             <ProfileExtendedDemo />
@@ -308,7 +308,7 @@ export function AppRouter() {
         }
       />
       <Route
-        path="/staff/profile/extended-demo"
+        path="/staff/profile/profile-details"
         element={
           <StaffOnlyRoute>
             <ProfileExtendedDemo />

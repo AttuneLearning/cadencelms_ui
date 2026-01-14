@@ -324,7 +324,7 @@ export const ProfilePage: React.FC = () => {
               Access your detailed profile information including professional details, education history, and demographic information.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
-              <Link to={profileContext === 'staff' ? '/staff/profile/extended-demo' : '/learner/profile/extended-demo'}>
+              <Link to={profileContext === 'staff' ? '/staff/profile/profile-details' : '/learner/profile/profile-details'}>
                 <Button variant="outline" className="w-full sm:w-auto">
                   View Profile Details
                 </Button>
