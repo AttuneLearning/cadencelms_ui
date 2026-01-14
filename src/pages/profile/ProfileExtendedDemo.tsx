@@ -3,8 +3,8 @@
  * Testing ISS-010 demo sections before full integration
  */
 
-import React, { useState, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useMemo } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
@@ -16,8 +16,8 @@ import type { UserProfileContext } from '@/entities/user-profile/model/types';
 import { User, FileText } from 'lucide-react';
 
 export const ProfileExtendedDemo: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('extended');
   const location = useLocation();
+  const navigate = useNavigate();
   const { roleHierarchy } = useAuthStore();
 
   const profileContext = useMemo<UserProfileContext | undefined>(() => {
@@ -27,6 +27,22 @@ export const ProfileExtendedDemo: React.FC = () => {
     const fallback = roleHierarchy?.defaultDashboard;
     return fallback === 'staff' || fallback === 'learner' ? fallback : undefined;
   }, [location.pathname, roleHierarchy?.defaultDashboard]);
+
+  // Determine active tab from URL
+  const activeTab = useMemo(() => {
+    if (location.pathname.includes('/demographics')) return 'demographics';
+    return 'extended';
+  }, [location.pathname]);
+
+  // Handle tab change by navigating to appropriate URL
+  const handleTabChange = (value: string) => {
+    const basePath = profileContext === 'staff' ? '/staff/profile' : '/learner/profile';
+    if (value === 'demographics') {
+      navigate(`${basePath}/demographics`);
+    } else {
+      navigate(`${basePath}/details`);
+    }
+  };
 
   if (!profileContext) {
     return (
@@ -73,7 +89,7 @@ export const ProfileExtendedDemo: React.FC = () => {
       </Card>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="extended" className="flex items-center gap-2">
             <User className="h-4 w-4" />

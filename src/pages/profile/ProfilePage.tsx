@@ -19,7 +19,7 @@ import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { Badge } from '@/shared/ui/badge';
 import { useToast } from '@/shared/ui/use-toast';
 import { useNavigation } from '@/shared/lib/navigation/useNavigation';
-import { AlertCircle, Edit, X, Building2, Users, FlaskConical } from 'lucide-react';
+import { AlertCircle, Edit, X, Building2, Users, FlaskConical, User, FileText } from 'lucide-react';
 import type { UserProfileContext } from '@/entities/user-profile/model/types';
 import { useAuthStore } from '@/features/auth/model/authStore';
 
@@ -324,9 +324,16 @@ export const ProfilePage: React.FC = () => {
               Access your detailed profile information including professional details, education history, and demographic information.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
-              <Link to={profileContext === 'staff' ? '/staff/profile/profile-details' : '/learner/profile/profile-details'}>
+              <Link to={profileContext === 'staff' ? '/staff/profile/details' : '/learner/profile/details'}>
                 <Button variant="outline" className="w-full sm:w-auto">
-                  View Profile Details
+                  <User className="mr-2 h-4 w-4" />
+                  {profileContext === 'staff' ? 'Professional Details' : 'Learner Details'}
+                </Button>
+              </Link>
+              <Link to={profileContext === 'staff' ? '/staff/profile/demographics' : '/learner/profile/demographics'}>
+                <Button variant="outline" className="w-full sm:w-auto">
+                  <FileText className="mr-2 h-4 w-4" />
+                  Demographics
                 </Button>
               </Link>
             </div>
