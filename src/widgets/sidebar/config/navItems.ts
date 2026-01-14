@@ -1,12 +1,18 @@
 /**
  * Navigation Items Configuration
- * Three-section navigation structure (ISS-007)
- * Version: 3.0.0
+ * Three-section navigation structure (ISS-007, ISS-014)
+ * Version: 4.0.0
  * Date: 2026-01-13
  *
  * Section 1: BASE_NAV_ITEMS - Always visible for all users
  * Section 2: CONTEXT_NAV_ITEMS - Changes based on current dashboard
  * Section 3: DEPARTMENT_NAV_ITEMS - Department-specific actions
+ *
+ * ISS-014 Updates:
+ * - Added System Analytics and System Reports to Admin dashboard
+ * - Added My Classes (teaching) to Staff dashboard
+ * - Added Course Catalog to Learner dashboard
+ * - Added Calendar view to all three dashboards
  */
 
 import type { LucideIcon } from 'lucide-react';
@@ -16,6 +22,7 @@ import {
   TrendingUp,
   Award,
   Calendar,
+  CalendarDays,
   BarChart,
   FileText,
   Users,
@@ -175,9 +182,32 @@ export const LEARNER_CONTEXT_NAV: ContextNavItem[] = [
     path: '/learner/classes',
     icon: Calendar,
   },
+  {
+    label: 'Calendar',
+    path: '/learner/calendar',
+    icon: CalendarDays,
+  },
+  {
+    label: 'Course Catalog',
+    path: '/learner/catalog',
+    icon: BookOpen,
+    requiredPermission: 'course:view-catalog',
+  },
 ];
 
 export const STAFF_CONTEXT_NAV: ContextNavItem[] = [
+  {
+    label: 'My Classes',
+    path: '/staff/classes',
+    icon: Calendar,
+    requiredPermission: 'class:view-own',
+    departmentScoped: false,
+  },
+  {
+    label: 'Calendar',
+    path: '/staff/calendar',
+    icon: CalendarDays,
+  },
   {
     label: 'Analytics',
     path: '/staff/analytics',
@@ -202,6 +232,25 @@ export const STAFF_CONTEXT_NAV: ContextNavItem[] = [
 ];
 
 export const ADMIN_CONTEXT_NAV: ContextNavItem[] = [
+  {
+    label: 'System Analytics',
+    path: '/admin/analytics',
+    icon: BarChart,
+    requiredPermission: 'dashboard:view-system-overview',
+    departmentScoped: false,
+  },
+  {
+    label: 'System Reports',
+    path: '/admin/reports',
+    icon: FileText,
+    requiredPermission: 'report:view-all',
+    departmentScoped: false,
+  },
+  {
+    label: 'System Calendar',
+    path: '/admin/calendar',
+    icon: CalendarDays,
+  },
   {
     label: 'User Management',
     path: '/admin/users',

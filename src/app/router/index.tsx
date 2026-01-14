@@ -23,6 +23,7 @@ import {
 // Staff pages
 import { StaffDashboardPage } from '@/pages/staff/dashboard';
 import { CourseAnalyticsPage } from '@/pages/staff/analytics';
+import { StaffCalendarPage } from '@/pages/staff/calendar';
 import { StudentProgressPage } from '@/pages/staff/students';
 import { StudentDetailPage } from '@/pages/staff/students/StudentDetailPage';
 import { StaffCoursesPage } from '@/pages/staff/courses/StaffCoursesPage';
@@ -38,6 +39,8 @@ import { StaffReportsPage } from '@/pages/staff/reports';
 
 // Admin pages
 import { AdminDashboardPage } from '@/pages/admin/dashboard/AdminDashboardPage';
+import { AdminAnalyticsPage } from '@/pages/admin/analytics';
+import { AdminCalendarPage } from '@/pages/admin/calendar';
 import { UserManagementPage } from '@/pages/admin/users/UserManagementPage';
 import { ProgramManagementPage } from '@/pages/admin/programs';
 import { CourseManagementPage } from '@/pages/admin/courses';
@@ -75,6 +78,7 @@ import { SelectDepartmentPage } from '@/pages/select-department';
 
 // Learner pages
 import { LearnerDashboardPage } from '@/pages/learner/dashboard';
+import { LearnerCalendarPage } from '@/pages/learner/calendar';
 import { ExerciseTakingPage } from '@/pages/learner/exercises/ExerciseTakingPage';
 import { ExerciseResultsPage } from '@/pages/learner/exercises/ExerciseResultsPage';
 import { ProgressDashboardPage, CourseProgressPage } from '@/pages/learner/progress';
@@ -213,6 +217,15 @@ export function AppRouter() {
           </LearnerOnlyRoute>
         }
       />
+      {/* Calendar Route (ISS-014) */}
+      <Route
+        path="/learner/calendar"
+        element={
+          <LearnerOnlyRoute>
+            <LearnerCalendarPage />
+          </LearnerOnlyRoute>
+        }
+      />
       {/* My Courses Route */}
       <Route
         path="/learner/courses"
@@ -336,6 +349,15 @@ export function AppRouter() {
         element={
           <StaffOnlyRoute>
             <CourseAnalyticsPage />
+          </StaffOnlyRoute>
+        }
+      />
+      {/* Calendar Route (ISS-014) */}
+      <Route
+        path="/staff/calendar"
+        element={
+          <StaffOnlyRoute>
+            <StaffCalendarPage />
           </StaffOnlyRoute>
         }
       />
@@ -482,6 +504,24 @@ export function AppRouter() {
         element={
           <AdminOnlyRoute>
             <AdminDashboardPage />
+          </AdminOnlyRoute>
+        }
+      />
+      {/* Analytics Route (ISS-014) */}
+      <Route
+        path="/admin/analytics"
+        element={
+          <AdminOnlyRoute>
+            <AdminAnalyticsPage />
+          </AdminOnlyRoute>
+        }
+      />
+      {/* Calendar Route (ISS-014) */}
+      <Route
+        path="/admin/calendar"
+        element={
+          <AdminOnlyRoute>
+            <AdminCalendarPage />
           </AdminOnlyRoute>
         }
       />
