@@ -3,7 +3,8 @@
  * Displays and allows editing of the current user's profile
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useLocation, Link } from 'react-router-dom';
 import {
   useUserProfile,
   useUserDepartments,
@@ -18,19 +19,31 @@ import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { Badge } from '@/shared/ui/badge';
 import { useToast } from '@/shared/ui/use-toast';
 import { useNavigation } from '@/shared/lib/navigation/useNavigation';
-import { AlertCircle, Edit, X, Building2, Users } from 'lucide-react';
+import { AlertCircle, Edit, X, Building2, Users, FlaskConical } from 'lucide-react';
+import type { UserProfileContext } from '@/entities/user-profile/model/types';
+import { useAuthStore } from '@/features/auth/model/authStore';
 
 export const ProfilePage: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const { toast } = useToast();
   const { updateBreadcrumbs } = useNavigation();
+  const location = useLocation();
+  const { roleHierarchy } = useAuthStore();
+
+  const profileContext = useMemo<UserProfileContext | undefined>(() => {
+    if (location.pathname.startsWith('/staff')) return 'staff';
+    if (location.pathname.startsWith('/learner')) return 'learner';
+
+    const fallback = roleHierarchy?.defaultDashboard;
+    return fallback === 'staff' || fallback === 'learner' ? fallback : undefined;
+  }, [location.pathname, roleHierarchy?.defaultDashboard]);
 
   // Fetch user profile
   const {
     data: profile,
     isLoading: isLoadingProfile,
     error: profileError,
-  } = useUserProfile();
+  } = useUserProfile(profileContext);
 
   // Fetch departments only if user is staff
   const {
@@ -127,7 +140,7 @@ export const ProfilePage: React.FC = () => {
       {/* Profile Card or Edit Form */}
       {isEditing ? (
         <div className="space-y-4">
-          <UserProfileForm profile={profile} onSuccess={handleUpdateSuccess} />
+          <UserProfileForm profile={profile} onSuccess={handleUpdateSuccess} context={profileContext} />
           <div className="flex justify-end">
             <Button variant="outline" onClick={handleCancelEdit}>
               <X className="mr-2 h-4 w-4" />
@@ -293,6 +306,33 @@ export const ProfilePage: React.FC = () => {
                 </div>
               </div>
             )}
+          </CardContent>
+        </Card>
+      </section>
+
+      {/* ISS-010 Extended Profile Demo Link */}
+      <section>
+        <Card className="border-blue-200 bg-blue-50/50">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <FlaskConical className="h-5 w-5 text-blue-600" />
+              <CardTitle className="text-blue-900">Extended Profile Demo (ISS-010)</CardTitle>
+            </div>
+            <CardDescription className="text-blue-700">
+              Test the new extended profile sections and demographics forms
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-gray-700 mb-4">
+              View working demonstrations of extended profile sections with auto-save, array management, and demographics fields.
+              <strong> 3 of 31 sections implemented.</strong>
+            </p>
+            <Link to={profileContext === 'staff' ? '/staff/profile/extended-demo' : '/learner/profile/extended-demo'}>
+              <Button className="w-full sm:w-auto">
+                <FlaskConical className="mr-2 h-4 w-4" />
+                View Extended Profile Demo
+              </Button>
+            </Link>
           </CardContent>
         </Card>
       </section>
