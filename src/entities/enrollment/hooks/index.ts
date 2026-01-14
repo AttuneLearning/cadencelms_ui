@@ -18,3 +18,7 @@ export {
 } from './useEnrollments';
 
 export { enrollmentKeys } from '../model/enrollmentKeys';
+
+// Grade Override hooks
+export { useGradeHistory, useOverrideGrade } from './useGradeOverride';
+export { gradeOverrideKeys } from '../model/gradeOverrideKeys';

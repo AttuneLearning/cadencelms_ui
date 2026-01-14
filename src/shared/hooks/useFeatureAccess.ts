@@ -170,7 +170,7 @@ export interface FeatureAccessFlags {
   canViewAllClasses: boolean;
 
   // ============================================================
-  // Grading (3 flags)
+  // Grading (4 flags)
   // ============================================================
   /** Can grade own classes (grades:own-classes:manage) */
   canGradeOwnClasses: boolean;
@@ -180,6 +180,9 @@ export interface FeatureAccessFlags {
 
   /** Can manage all grades in department (grades:all:manage) */
   canManageAllGrades: boolean;
+
+  /** Can override student grades with audit logging (academic:grades:override) */
+  canOverrideGrades: boolean;
 
   // ============================================================
   // FERPA-Protected Data (3 flags)
@@ -417,6 +420,11 @@ export function useFeatureAccess(): FeatureAccessFlags {
         hasPermission('grades:all:manage') ||
         hasPermission('grades:*'),
 
+      canOverrideGrades:
+        hasPermission('academic:grades:override') ||
+        hasPermission('academic:*') ||
+        hasPermission('grades:*'),
+
       // ============================================================
       // FERPA-Protected Data
       // ============================================================
@@ -515,6 +523,7 @@ function createEmptyFlags(): FeatureAccessFlags {
     canGradeOwnClasses: false,
     canViewOwnGrades: false,
     canManageAllGrades: false,
+    canOverrideGrades: false,
 
     // FERPA-Protected Data
     canViewTranscripts: false,
