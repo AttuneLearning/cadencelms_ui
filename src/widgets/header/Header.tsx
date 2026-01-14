@@ -34,6 +34,7 @@ import { getUserTypeDisplayLabel, getRoleDisplayLabel } from '@/shared/lib/displ
 import { cn } from '@/shared/lib/utils';
 import type { UserType } from '@/shared/types/auth';
 import { EscalationModal } from '@/features/auth/ui/EscalationModal';
+import { AdminSessionIndicator } from '@/features/auth/ui/AdminSessionIndicator';
 
 // ============================================================================
 // Dashboard Tab Configuration
@@ -247,6 +248,9 @@ export const Header: React.FC = () => {
 
             {isAuthenticated ? (
               <>
+                {/* ISS-013 Phase 2: Admin Session Indicator */}
+                <AdminSessionIndicator />
+
                 {/* User dropdown */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
