@@ -5,7 +5,7 @@
  * Types for staff user management matching backend contract.
  */
 
-export type StaffRole = 'instructor' | 'content-admin' | 'dept-admin';
+export type StaffRole = 'instructor' | 'content-admin' | 'enrollment-admin' | 'dept-admin';
 export type StaffStatus = 'active' | 'inactive' | 'withdrawn';
 export type DefaultDashboard = 'content-admin' | 'instructor' | 'analytics';
 

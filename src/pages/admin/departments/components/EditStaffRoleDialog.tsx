@@ -38,6 +38,7 @@ interface EditStaffRoleDialogProps {
 const roleMapping: Record<string, StaffRole> = {
   'content-admin': 'content-admin',
   instructor: 'instructor',
+  'enrollment-admin': 'enrollment-admin',
   observer: 'instructor', // Observer maps to instructor in staff-management
 };
 
@@ -45,6 +46,7 @@ const roleDescriptions: Record<string, string> = {
   'content-admin':
     'Can create and manage courses, content, and exercises within the department',
   instructor: 'Can teach courses, grade assignments, and interact with learners',
+  'enrollment-admin': 'Can manage learner enrollments and registration',
   observer: 'Can view courses and department content but cannot make changes',
 };
 
@@ -141,6 +143,7 @@ export const EditStaffRoleDialog: React.FC<EditStaffRoleDialogProps> = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="instructor">Instructor</SelectItem>
+                <SelectItem value="enrollment-admin">Enrollment Admin</SelectItem>
                 <SelectItem value="content-admin">Content Admin</SelectItem>
                 <SelectItem value="observer">Observer</SelectItem>
               </SelectContent>

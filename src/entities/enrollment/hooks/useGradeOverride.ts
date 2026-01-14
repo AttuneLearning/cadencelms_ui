@@ -9,7 +9,6 @@ import { gradeOverrideKeys } from '../model/gradeOverrideKeys';
 import { enrollmentKeys } from '../model/enrollmentKeys';
 import type {
   GradeOverridePayload,
-  GradeOverrideResponse,
   GradeHistoryEntry,
   GradeHistoryParams,
 } from '../model/gradeOverrideTypes';
@@ -86,7 +85,7 @@ export function useOverrideGrade() {
       enrollmentId: string;
       payload: GradeOverridePayload;
     }) => overrideGrade(enrollmentId, payload),
-    onSuccess: (data, variables) => {
+    onSuccess: (_data, variables) => {
       // Invalidate the specific enrollment detail
       queryClient.invalidateQueries({
         queryKey: enrollmentKeys.detail(variables.enrollmentId),

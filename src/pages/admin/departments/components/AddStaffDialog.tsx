@@ -44,6 +44,7 @@ const roleDescriptions: Record<StaffRole, string> = {
   'content-admin':
     'Can create and manage courses, content, and exercises within the department',
   instructor: 'Can teach courses, grade assignments, and interact with learners',
+  'enrollment-admin': 'Can manage learner enrollments and registration',
   'dept-admin':
     'Full administrative access to department settings, staff, and programs',
 };
@@ -211,9 +212,10 @@ export const AddStaffDialog: React.FC<AddStaffDialogProps> = ({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="instructor">Instructor</SelectItem>
-                  <SelectItem value="content-admin">Content Admin</SelectItem>
                   <SelectItem value="dept-admin">Department Admin</SelectItem>
+                  <SelectItem value="instructor">Instructor</SelectItem>
+                  <SelectItem value="enrollment-admin">Enrollment Admin</SelectItem>
+                  <SelectItem value="content-admin">Content Admin</SelectItem>
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">{roleDescriptions[selectedRole]}</p>

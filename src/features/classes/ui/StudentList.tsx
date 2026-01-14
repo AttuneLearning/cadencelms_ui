@@ -11,6 +11,12 @@ import { Input } from '@/shared/ui/input';
 import { Badge } from '@/shared/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/shared/ui/dropdown-menu';
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -26,7 +32,12 @@ import {
   TableRow,
 } from '@/shared/ui/table';
 import { Progress } from '@/shared/ui/progress';
-import { Search, Download, Trash2, ArrowUpDown } from 'lucide-react';
+import { Search, Download, Trash2, ArrowUpDown, MoreVertical, Edit } from 'lucide-react';
+import { useFeatureAccess } from '@/shared/hooks/useFeatureAccess';
+import { useEnrollment } from '@/entities/enrollment';
+import { GradeOverrideDialog } from '@/features/grading/ui/GradeOverrideDialog';
+import { Skeleton } from '@/shared/ui/skeleton';
+import type { CurrentGrade } from '@/entities/enrollment';
 
 interface StudentListProps {
   students: RosterItem[];
@@ -54,6 +65,28 @@ export function StudentList({ students, onRemove, onExport }: StudentListProps) 
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [sortField, setSortField] = useState<SortField>('name');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const [overrideDialogOpen, setOverrideDialogOpen] = useState(false);
+  const [selectedEnrollmentId, setSelectedEnrollmentId] = useState<string | null>(null);
+
+  const { canOverrideGrades } = useFeatureAccess();
+
+  // Fetch full enrollment details when override dialog is opened
+  const { data: selectedEnrollment, isLoading: isLoadingEnrollment } = useEnrollment(
+    selectedEnrollmentId || '',
+    {
+      enabled: !!selectedEnrollmentId && overrideDialogOpen,
+    }
+  );
+
+  const handleOverrideGrade = (enrollmentId: string) => {
+    setSelectedEnrollmentId(enrollmentId);
+    setOverrideDialogOpen(true);
+  };
+
+  const handleOverrideSuccess = () => {
+    // Dialog will close automatically, enrollment query will be invalidated by mutation
+    setSelectedEnrollmentId(null);
+  };
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -282,15 +315,29 @@ export function StudentList({ students, onRemove, onExport }: StudentListProps) 
                   )}
                 </TableCell>
                 <TableCell>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onRemove(student.enrollmentId)}
-                    disabled={student.status === 'withdrawn'}
-                    aria-label="Remove"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" aria-label="Actions">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {canOverrideGrades && (
+                        <DropdownMenuItem onClick={() => handleOverrideGrade(student.enrollmentId)}>
+                          <Edit className="mr-2 h-4 w-4" />
+                          Override Grade
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem
+                        onClick={() => onRemove(student.enrollmentId)}
+                        disabled={student.status === 'withdrawn'}
+                        className="text-destructive"
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Remove Student
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </TableCell>
               </TableRow>
             ))}
@@ -304,6 +351,24 @@ export function StudentList({ students, onRemove, onExport }: StudentListProps) 
           Showing {filteredAndSortedStudents.length} of {students.length} students
         </p>
       </div>
+
+      {/* Grade Override Dialog */}
+      {selectedEnrollment && (
+        <GradeOverrideDialog
+          open={overrideDialogOpen}
+          onOpenChange={setOverrideDialogOpen}
+          enrollmentId={selectedEnrollment.id}
+          currentGrade={{
+            letter: selectedEnrollment.grade?.letter || null,
+            percentage: selectedEnrollment.grade?.score || null,
+            points: null, // Not available in current enrollment type
+            gradedAt: selectedEnrollment.grade?.gradedAt || null,
+            gradedBy: selectedEnrollment.grade?.gradedBy || null,
+          }}
+          studentName={`${selectedEnrollment.learner.firstName} ${selectedEnrollment.learner.lastName}`}
+          onSuccess={handleOverrideSuccess}
+        />
+      )}
     </div>
   );
 }
