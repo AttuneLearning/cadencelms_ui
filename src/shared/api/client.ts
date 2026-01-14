@@ -14,7 +14,13 @@ import axios, {
 } from 'axios';
 import { env } from '@/shared/config/env';
 import type { ApiError } from './types';
+import type { AccessToken } from '@/shared/types/auth';
 import { getAdminToken, hasAdminToken } from '@/shared/utils/adminTokenStorage';
+import {
+  clearAllTokens,
+  getAccessTokenValue,
+  setAccessToken as setStoredAccessToken,
+} from '@/shared/utils/tokenStorage';
 
 /**
  * Custom error class for API errors
@@ -32,46 +38,34 @@ export class ApiClientError extends Error {
 }
 
 /**
- * Get access token from storage
+ * Clear authentication data from storage (new + legacy)
  */
-function getAccessToken(): string | null {
-  try {
-    const authStorage = localStorage.getItem('auth-storage');
-    if (authStorage) {
-      const { state } = JSON.parse(authStorage);
-      return state?.accessToken || null;
-    }
-  } catch (error) {
-    console.error('Error getting access token:', error);
-  }
-  return null;
-}
-
-/**
- * Set access token in storage
- */
-function setAccessToken(token: string): void {
-  try {
-    const authStorage = localStorage.getItem('auth-storage');
-    if (authStorage) {
-      const parsed = JSON.parse(authStorage);
-      parsed.state.accessToken = token;
-      localStorage.setItem('auth-storage', JSON.stringify(parsed));
-    }
-  } catch (error) {
-    console.error('Error setting access token:', error);
-  }
-}
-
-/**
- * Clear authentication data from storage
- */
-function clearAuth(): void {
+function clearAuthStorage(): void {
+  clearAllTokens();
   try {
     localStorage.removeItem('auth-storage');
   } catch (error) {
     console.error('Error clearing auth:', error);
   }
+}
+
+/**
+ * Store refreshed access token and return the raw token string
+ */
+function storeAccessToken(token: AccessToken | string): string {
+  if (typeof token === 'string') {
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+    setStoredAccessToken({
+      value: token,
+      type: 'Bearer',
+      expiresAt,
+      scope: [],
+    });
+    return token;
+  }
+
+  setStoredAccessToken(token);
+  return token.value;
 }
 
 /**
@@ -143,7 +137,7 @@ client.interceptors.request.use(
     }
 
     // Priority 2: Fall back to regular access token
-    const token = getAccessToken();
+    const token = getAccessTokenValue();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -189,7 +183,7 @@ client.interceptors.response.use(
         originalRequest.headers?.['X-Skip-Refresh'] === 'true';
 
       if (skipRefresh) {
-        clearAuth();
+        clearAuthStorage();
         return Promise.reject(
           new ApiClientError(
             data?.message || 'Authentication failed',
@@ -217,20 +211,26 @@ client.interceptors.response.use(
             }
           );
 
-          const { accessToken } = response.data;
-          setAccessToken(accessToken);
+          const accessTokenPayload =
+            response.data?.data?.accessToken ?? response.data?.accessToken;
+
+          if (!accessTokenPayload) {
+            throw new ApiClientError('Invalid refresh response', 401, 'TOKEN_REFRESH_INVALID');
+          }
+
+          const accessTokenValue = storeAccessToken(accessTokenPayload);
           isRefreshing = false;
 
           // Notify all waiting requests
-          onTokenRefreshed(accessToken);
+          onTokenRefreshed(accessTokenValue);
 
           // Retry original request with new token
-          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+          originalRequest.headers.Authorization = `Bearer ${accessTokenValue}`;
           return client(originalRequest);
         } catch (refreshError) {
           isRefreshing = false;
           refreshSubscribers = [];
-          clearAuth();
+          clearAuthStorage();
 
           // Redirect to login page (skip in test environment)
           if (typeof window !== 'undefined' && env.environment !== 'test') {

@@ -32,9 +32,11 @@ import type { UserType } from '@/shared/types/auth';
 // Navigation Item Types
 // ============================================================================
 
+export type DashboardContext = 'learner' | 'staff' | 'admin' | '';
+
 export interface BaseNavItem {
   label: string;
-  path: string | ((primaryUserType: UserType) => string);
+  path: string | ((primaryUserType: UserType, currentDashboard?: DashboardContext) => string);
   icon: LucideIcon;
   requiredPermission?: string;
   userTypes?: UserType[]; // If specified, disabled if user doesn't have userType
@@ -66,7 +68,10 @@ export interface DepartmentNavItem {
 /**
  * Get primary dashboard path based on user's primaryUserType
  */
-export const getPrimaryDashboardPath = (primaryUserType: UserType): string => {
+export const getPrimaryDashboardPath = (
+  primaryUserType: UserType,
+  _currentDashboard?: DashboardContext
+): string => {
   switch (primaryUserType) {
     case 'learner':
       return '/learner/dashboard';
@@ -91,8 +96,24 @@ export const BASE_NAV_ITEMS: BaseNavItem[] = [
   },
   {
     label: 'My Profile',
-    path: '/profile',
+    path: (_primaryUserType, currentDashboard) => {
+      if (currentDashboard === 'staff') return '/staff/profile';
+      if (currentDashboard === 'learner') return '/learner/profile';
+      return '/profile';
+    },
     icon: User,
+  },
+  {
+    label: 'test-certificates',
+    path: '/learner/certificates',
+    icon: Award,
+  },
+  {
+    label: 'Test Page',
+    path: '/learner/test-page',
+    icon: Search,
+    userTypes: ['learner'],
+    showDisabled: true,
   },
   {
     label: 'My Progress',

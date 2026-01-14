@@ -7,14 +7,21 @@ import { http, HttpResponse } from 'msw';
 import { server } from '@/test/mocks/server';
 import { client, ApiClientError } from './client';
 import { env } from '@/shared/config/env';
+import {
+  clearAllTokens,
+  getAccessToken,
+  setAccessToken,
+} from '@/shared/utils/tokenStorage';
 
 describe('API Client', () => {
   const testEndpoint = '/test';
   const testUrl = `${env.apiBaseUrl}${testEndpoint}`;
 
   beforeEach(() => {
-    // Clear localStorage before each test
+    // Clear storage before each test
     localStorage.clear();
+    sessionStorage.clear();
+    clearAllTokens();
     vi.clearAllMocks();
   });
 
@@ -23,15 +30,15 @@ describe('API Client', () => {
   });
 
   describe('Request Interceptor', () => {
-    it('should inject authorization token from localStorage', async () => {
+    it('should inject authorization token from storage', async () => {
       // Set up auth token in storage
       const mockToken = 'test-token-123';
-      localStorage.setItem(
-        'auth-storage',
-        JSON.stringify({
-          state: { accessToken: mockToken },
-        })
-      );
+      setAccessToken({
+        value: mockToken,
+        type: 'Bearer',
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+        scope: [],
+      });
 
       let capturedAuthHeader: string | undefined;
 
@@ -63,12 +70,12 @@ describe('API Client', () => {
     });
 
     it('should skip auth injection when X-Skip-Auth header is set', async () => {
-      localStorage.setItem(
-        'auth-storage',
-        JSON.stringify({
-          state: { accessToken: 'test-token' },
-        })
-      );
+      setAccessToken({
+        value: 'test-token',
+        type: 'Bearer',
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+        scope: [],
+      });
 
       let capturedAuthHeader: string | null = null;
 
@@ -202,14 +209,20 @@ describe('API Client', () => {
       const oldToken = 'old-token';
       const newToken = 'new-token';
 
-      localStorage.setItem(
-        'auth-storage',
-        JSON.stringify({
-          state: { accessToken: oldToken },
-        })
-      );
+      setAccessToken({
+        value: oldToken,
+        type: 'Bearer',
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+        scope: [],
+      });
 
       let requestCount = 0;
+      const refreshedAccessToken = {
+        value: newToken,
+        type: 'Bearer',
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+        scope: [],
+      };
 
       // First request fails with 401
       // After token refresh, retry succeeds
@@ -232,7 +245,12 @@ describe('API Client', () => {
           return HttpResponse.json({ message: 'Invalid token' }, { status: 401 });
         }),
         http.post(`${env.apiBaseUrl}/auth/refresh`, () => {
-          return HttpResponse.json({ accessToken: newToken });
+          return HttpResponse.json({
+            success: true,
+            data: {
+              accessToken: refreshedAccessToken,
+            },
+          });
         })
       );
 
@@ -242,13 +260,20 @@ describe('API Client', () => {
       expect(requestCount).toBe(2); // Original request + retry
 
       // Verify token was updated in storage
-      const storage = JSON.parse(localStorage.getItem('auth-storage') || '{}');
-      expect(storage.state.accessToken).toBe(newToken);
+      const storedToken = getAccessToken();
+      expect(storedToken?.value).toBe(newToken);
     });
 
     it('should not retry token refresh for auth endpoints', async () => {
       const authEndpoint = '/auth/login';
       const authUrl = `${env.apiBaseUrl}${authEndpoint}`;
+
+      setAccessToken({
+        value: 'test-token',
+        type: 'Bearer',
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+        scope: [],
+      });
 
       server.use(
         http.post(authUrl, () => {
@@ -265,18 +290,17 @@ describe('API Client', () => {
         status: 401,
       });
 
-      // Verify no token in storage (cleared on auth failure)
-      const storage = localStorage.getItem('auth-storage');
-      expect(storage).toBeNull();
+      // Verify token was cleared
+      expect(getAccessToken()).toBeNull();
     });
 
     it('should clear auth and reject if token refresh fails', async () => {
-      localStorage.setItem(
-        'auth-storage',
-        JSON.stringify({
-          state: { accessToken: 'expired-token' },
-        })
-      );
+      setAccessToken({
+        value: 'expired-token',
+        type: 'Bearer',
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+        scope: [],
+      });
 
       server.use(
         http.get(testUrl, () => {
@@ -298,17 +322,16 @@ describe('API Client', () => {
       });
 
       // Verify auth was cleared
-      const storage = localStorage.getItem('auth-storage');
-      expect(storage).toBeNull();
+      expect(getAccessToken()).toBeNull();
     });
 
     it('should skip token refresh when X-Skip-Refresh header is set', async () => {
-      localStorage.setItem(
-        'auth-storage',
-        JSON.stringify({
-          state: { accessToken: 'test-token' },
-        })
-      );
+      setAccessToken({
+        value: 'test-token',
+        type: 'Bearer',
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+        scope: [],
+      });
 
       server.use(
         http.get(testUrl, () => {
@@ -323,8 +346,7 @@ describe('API Client', () => {
       ).rejects.toThrow(ApiClientError);
 
       // Verify auth was cleared
-      const storage = localStorage.getItem('auth-storage');
-      expect(storage).toBeNull();
+      expect(getAccessToken()).toBeNull();
     });
   });
 

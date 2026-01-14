@@ -15,8 +15,12 @@ interface UserProfileCardProps {
 }
 
 export function UserProfileCard({ profile, showDetails = true }: UserProfileCardProps) {
-  const initials = `${profile.firstName[0]}${profile.lastName[0]}`.toUpperCase();
-  const fullName = `${profile.firstName} ${profile.lastName}`;
+  const firstName = profile.firstName?.trim() || '';
+  const lastName = profile.lastName?.trim() || '';
+  const fullName = [firstName, lastName].filter(Boolean).join(' ') || profile.email || 'User';
+  const initials =
+    `${firstName[0] || ''}${lastName[0] || ''}`.toUpperCase() ||
+    (fullName[0] ? fullName[0].toUpperCase() : 'U');
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
@@ -54,7 +58,7 @@ export function UserProfileCard({ profile, showDetails = true }: UserProfileCard
           </Avatar>
           <div className="flex-1">
             <CardTitle className="flex items-center gap-2">
-              {fullName}
+              Welcome, {firstName || fullName}
               <Badge variant="outline" className={getRoleBadgeColor(profile.role)}>
                 {profile.role === 'global-admin' ? 'Admin' : profile.role}
               </Badge>

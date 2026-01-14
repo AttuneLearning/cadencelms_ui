@@ -119,7 +119,10 @@ export const Sidebar: React.FC = () => {
   const baseNavItems: ProcessedBaseNavItem[] = useMemo(() => {
     return BASE_NAV_ITEMS.map((item) => {
       // Resolve path if it's a function
-      const path = typeof item.path === 'function' ? item.path(primaryUserType) : item.path;
+      const path =
+        typeof item.path === 'function'
+          ? item.path(primaryUserType, currentDashboard)
+          : item.path;
 
       // Determine if link should be disabled
       let disabled = false;
@@ -147,7 +150,7 @@ export const Sidebar: React.FC = () => {
         disabled,
       };
     });
-  }, [primaryUserType, allUserTypes, hasDeptPermission, hasGlobalPermission]);
+  }, [primaryUserType, allUserTypes, hasDeptPermission, hasGlobalPermission, currentDashboard]);
 
   // ================================================================
   // SECTION 2: Get Context-Specific Navigation Items

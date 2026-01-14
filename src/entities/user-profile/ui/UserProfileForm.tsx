@@ -11,39 +11,108 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Loader2, Save } from 'lucide-react';
 import { useUpdateUserProfile } from '../model/useUserProfile';
-import type { UserProfile, UpdateProfilePayload } from '../model/types';
+import type { UserProfile, UpdateProfilePayload, UserProfileContext } from '../model/types';
 
 interface UserProfileFormProps {
   profile: UserProfile;
   onSuccess?: () => void;
+  context?: UserProfileContext;
 }
 
-export function UserProfileForm({ profile, onSuccess }: UserProfileFormProps) {
-  const updateProfile = useUpdateUserProfile();
+const phonePattern = '^\\+1 \\(\\d{3}\\) \\d{3}-\\d{4}$';
 
-  const [formData, setFormData] = useState<UpdateProfilePayload>({
-    firstName: profile.firstName,
-    lastName: profile.lastName,
-    phone: profile.phone || '',
-    profileImage: profile.profileImage,
+const formatUsPhone = (value: string): string => {
+  const raw = value;
+  const digits = value.replace(/\D/g, '');
+
+  let normalized = digits;
+  if (normalized.startsWith('1')) {
+    normalized = normalized.slice(1);
+  }
+  if (!normalized) {
+    if (raw.startsWith('+1 (')) return '+1 (';
+    if (raw.startsWith('+1')) return '+1';
+    if (raw.startsWith('+')) return '+';
+    return '';
+  }
+  if (normalized.length > 10) {
+    normalized = normalized.slice(0, 10);
+  }
+
+  const area = normalized.slice(0, 3);
+  const mid = normalized.slice(3, 6);
+  const last = normalized.slice(6, 10);
+
+  let formatted = '+1 (';
+  formatted += area;
+  if (area.length === 3) {
+    formatted += ') ';
+  }
+  if (mid.length > 0) {
+    formatted += mid;
+  }
+  if (mid.length === 3 && last.length > 0) {
+    formatted += '-';
+  }
+  if (last.length > 0) {
+    formatted += last;
+  }
+
+  return formatted;
+};
+
+const extractUsPhoneDigits = (value: string): string => {
+  const digits = value.replace(/\D/g, '');
+  return digits.startsWith('1') ? digits.slice(1, 11) : digits.slice(0, 10);
+};
+
+const isCompleteUsPhone = (value: string): boolean => {
+  return extractUsPhoneDigits(value).length === 10;
+};
+
+export function UserProfileForm({ profile, onSuccess, context }: UserProfileFormProps) {
+  const updateProfile = useUpdateUserProfile(context);
+
+  const [formData, setFormData] = useState({
+    firstName: profile.firstName || '',
+    lastName: profile.lastName || '',
+    phone: formatUsPhone(profile.phone || ''),
+    profileImage: profile.profileImage || '',
   });
+  const [phoneTouched, setPhoneTouched] = useState(Boolean(profile.phone));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      await updateProfile.mutateAsync(formData);
+      const phoneDigits = extractUsPhoneDigits(formData.phone);
+      const payload: UpdateProfilePayload = {
+        firstName: formData.firstName.trim() || undefined,
+        lastName: formData.lastName.trim() || undefined,
+        phone: phoneDigits.length === 10 ? `+1${phoneDigits}` : undefined,
+        profileImage: formData.profileImage.trim() || undefined,
+      };
+      await updateProfile.mutateAsync(payload);
       onSuccess?.();
     } catch (error) {
       console.error('Failed to update profile:', error);
     }
   };
 
-  const handleChange = (field: keyof UpdateProfilePayload, value: string) => {
+  const handleChange = (field: keyof typeof formData, value: string) => {
     setFormData((prev) => ({
       ...prev,
-      [field]: value || undefined,
+      [field]: value,
     }));
+  };
+
+  const handlePhoneChange = (value: string) => {
+    setPhoneTouched(true);
+    if (!value) {
+      setFormData((prev) => ({ ...prev, phone: '+' }));
+      return;
+    }
+    setFormData((prev) => ({ ...prev, phone: formatUsPhone(value) }));
   };
 
   const initials = `${formData.firstName?.[0] || ''}${formData.lastName?.[0] || ''}`.toUpperCase();
@@ -68,7 +137,7 @@ export function UserProfileForm({ profile, onSuccess }: UserProfileFormProps) {
               <Input
                 id="profileImage"
                 type="url"
-                value={formData.profileImage || ''}
+                value={formData.profileImage}
                 onChange={(e) => handleChange('profileImage', e.target.value)}
                 placeholder="https://example.com/avatar.jpg"
               />
@@ -83,7 +152,7 @@ export function UserProfileForm({ profile, onSuccess }: UserProfileFormProps) {
             <Input
               id="firstName"
               type="text"
-              value={formData.firstName}
+              value={formData.firstName || ''}
               onChange={(e) => handleChange('firstName', e.target.value)}
               required
               minLength={1}
@@ -100,7 +169,7 @@ export function UserProfileForm({ profile, onSuccess }: UserProfileFormProps) {
             <Input
               id="lastName"
               type="text"
-              value={formData.lastName}
+              value={formData.lastName || ''}
               onChange={(e) => handleChange('lastName', e.target.value)}
               required
               minLength={1}
@@ -116,12 +185,19 @@ export function UserProfileForm({ profile, onSuccess }: UserProfileFormProps) {
               id="phone"
               type="tel"
               value={formData.phone}
-              onChange={(e) => handleChange('phone', e.target.value)}
-              placeholder="+1-555-0123"
-              pattern="^\+?[1-9]\d{1,14}$"
+              onChange={(e) => handlePhoneChange(e.target.value)}
+              onFocus={() => {
+                if (!formData.phone && !phoneTouched) {
+                  setPhoneTouched(true);
+                  setFormData((prev) => ({ ...prev, phone: '+1 (' }));
+                }
+              }}
+              placeholder="+1 (555) 123-4567"
+              pattern={phonePattern}
+              inputMode="numeric"
             />
             <p className="text-sm text-muted-foreground">
-              E.164 format (e.g., +1-555-0123)
+              Format: +1 (555) 123-4567
             </p>
           </div>
 
