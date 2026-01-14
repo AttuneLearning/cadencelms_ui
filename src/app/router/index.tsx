@@ -52,6 +52,7 @@ import { QuestionBankPage } from '@/pages/admin/questions';
 import { StaffManagementPage } from '@/pages/admin/staff/StaffManagementPage';
 import { LearnerManagementPage } from '@/pages/admin/learners/LearnerManagementPage';
 import { DepartmentManagementPage } from '@/pages/admin/departments/DepartmentManagementPage';
+import { DepartmentDetailsPage } from '@/pages/admin/departments/DepartmentDetailsPage';
 import { AcademicYearManagementPage } from '@/pages/admin/academic-years/AcademicYearManagementPage';
 import { CertificateTemplateManagementPage } from '@/pages/admin/certificates/CertificateTemplateManagementPage';
 import { ReportBuilderPage } from '@/pages/admin/reports/ReportBuilderPage';
@@ -594,6 +595,14 @@ export function AppRouter() {
         element={
           <AdminOnlyRoute>
             <DepartmentManagementPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/departments/:departmentId"
+        element={
+          <AdminOnlyRoute>
+            <DepartmentDetailsPage />
           </AdminOnlyRoute>
         }
       />

@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { DataTable } from '@/shared/ui/data-table';
@@ -18,12 +19,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from '@/shared/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -40,6 +35,7 @@ import {
   Plus,
   Trash,
   Edit,
+  Eye,
   Loader2,
   Filter,
   X,
@@ -71,6 +67,7 @@ export const DepartmentManagementPage: React.FC = () => {
   const [showFilters, setShowFilters] = React.useState(false);
 
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Fetch departments with filters
   const { data: departmentsData, isLoading, error } = useDepartments(filters);
@@ -302,6 +299,10 @@ export const DepartmentManagementPage: React.FC = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => navigate(`/admin/departments/${dept.id}`)}>
+                <Eye className="mr-2 h-4 w-4" />
+                View Details
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setDepartmentToEdit(dept)}>
                 <Edit className="mr-2 h-4 w-4" />
                 Edit Department
