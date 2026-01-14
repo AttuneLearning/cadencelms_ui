@@ -434,7 +434,10 @@ export interface IDemographics {
   maritalStatus?: MaritalStatus;
   numberOfDependents?: number;
   householdIncomeRange?: HouseholdIncomeRange;
-  // pellEligible and lowIncomeStatus deferred to ISS-012
+
+  // Financial Aid Fields (ISS-012 - READONLY, calculated by Financial Aid office)
+  pellEligible?: boolean | null; // Readonly - null if not set by Financial Aid
+  lowIncomeStatus?: boolean | null; // Readonly - null if not set by Financial Aid
 
   // Religious Accommodations (Learner only)
   religiousAffiliation?: string;
