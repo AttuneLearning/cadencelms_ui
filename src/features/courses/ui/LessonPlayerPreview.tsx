@@ -27,10 +27,10 @@ import {
   Eye,
 } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
-import type { CourseSegment, CourseSegmentListItem } from '@/entities/course-segment/model/types';
+import type { CourseModule, CourseModuleListItem } from '@/entities/course-module/model/types';
 
 interface LessonPlayerPreviewProps {
-  module: CourseSegment | CourseSegmentListItem;
+  module: CourseModule | CourseModuleListItem;
   onPrevious?: () => void;
   onNext?: () => void;
   hasPrevious?: boolean;

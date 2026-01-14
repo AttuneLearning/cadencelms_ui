@@ -3,16 +3,16 @@
  */
 
 import type {
-  CourseSegment,
-  CourseSegmentListItem,
-  CreateCourseSegmentPayload,
-  UpdateCourseSegmentPayload,
-  CourseSegmentSettings,
-  CourseSegmentType,
-} from '@/entities/course-segment/model/types';
+  CourseModule,
+  CourseModuleListItem,
+  CreateCourseModulePayload,
+  UpdateCourseModulePayload,
+  CourseModuleSettings,
+  CourseModuleType,
+} from '@/entities/course-module/model/types';
 
 // Default settings
-const defaultSettings: CourseSegmentSettings = {
+const defaultSettings: CourseModuleSettings = {
   allowMultipleAttempts: true,
   maxAttempts: null,
   timeLimit: null,
@@ -21,7 +21,7 @@ const defaultSettings: CourseSegmentSettings = {
 };
 
 // Mock course segments list items
-export const mockCourseSegmentsList: CourseSegmentListItem[] = [
+export const mockCourseModulesList: CourseModuleListItem[] = [
   {
     id: 'segment-1',
     title: 'Introduction to TypeScript',
@@ -107,7 +107,7 @@ export const mockCourseSegmentsList: CourseSegmentListItem[] = [
 ];
 
 // Mock full course segment with additional details
-export const mockFullCourseSegment: CourseSegment = {
+export const mockFullCourseModule: CourseModule = {
   id: 'segment-1',
   courseId: 'course-1',
   courseTitle: 'Advanced Web Development',
@@ -138,7 +138,7 @@ export const mockFullCourseSegment: CourseSegment = {
 };
 
 // Mock SCORM segment with complex settings
-export const mockScormSegment: CourseSegment = {
+export const mockScormSegment: CourseModule = {
   id: 'segment-scorm',
   courseId: 'course-1',
   courseTitle: 'Advanced Web Development',
@@ -170,7 +170,7 @@ export const mockScormSegment: CourseSegment = {
 };
 
 // Mock exercise segment
-export const mockExerciseSegment: CourseSegmentListItem = {
+export const mockExerciseSegment: CourseModuleListItem = {
   id: 'segment-exercise',
   title: 'JavaScript Coding Challenge',
   description: 'Test your JavaScript skills with these exercises',
@@ -192,7 +192,7 @@ export const mockExerciseSegment: CourseSegmentListItem = {
 };
 
 // Mock create payload
-export const mockCreateCourseSegmentPayload: CreateCourseSegmentPayload = {
+export const mockCreateCourseModulePayload: CreateCourseModulePayload = {
   title: 'New Module',
   description: 'A new learning module',
   order: 6,
@@ -211,7 +211,7 @@ export const mockCreateCourseSegmentPayload: CreateCourseSegmentPayload = {
 };
 
 // Mock update payload
-export const mockUpdateCourseSegmentPayload: UpdateCourseSegmentPayload = {
+export const mockUpdateCourseModulePayload: UpdateCourseModulePayload = {
   title: 'Updated Module Title',
   description: 'Updated module description',
   isPublished: true,
@@ -224,9 +224,9 @@ export const mockUpdateCourseSegmentPayload: UpdateCourseSegmentPayload = {
 };
 
 // Factory function to create mock course segment
-export const createMockCourseSegment = (
-  overrides?: Partial<CourseSegment>
-): CourseSegment => ({
+export const createMockCourseModule = (
+  overrides?: Partial<CourseModule>
+): CourseModule => ({
   id: `segment-${Math.random().toString(36).substr(2, 9)}`,
   courseId: 'course-1',
   courseTitle: 'Test Course',
@@ -253,9 +253,9 @@ export const createMockCourseSegment = (
 });
 
 // Factory function to create mock course segment list item
-export const createMockCourseSegmentListItem = (
-  overrides?: Partial<CourseSegmentListItem>
-): CourseSegmentListItem => ({
+export const createMockCourseModuleListItem = (
+  overrides?: Partial<CourseModuleListItem>
+): CourseModuleListItem => ({
   id: `segment-${Math.random().toString(36).substr(2, 9)}`,
   title: 'Test Module',
   description: 'Test module description',
@@ -272,7 +272,7 @@ export const createMockCourseSegmentListItem = (
 });
 
 // Mock segments with different types
-export const mockSegmentsByType: Record<CourseSegmentType, CourseSegmentListItem> = {
+export const mockSegmentsByType: Record<CourseModuleType, CourseModuleListItem> = {
   scorm: {
     id: 'seg-scorm',
     title: 'SCORM Module',

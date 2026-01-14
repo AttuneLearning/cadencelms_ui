@@ -1,56 +1,56 @@
 /**
- * React Query hooks for Course Segments
+ * React Query hooks for Course Modules
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  listCourseSegments,
-  getCourseSegment,
-  createCourseSegment,
-  updateCourseSegment,
-  deleteCourseSegment,
-  reorderCourseSegments,
+  listCourseModules,
+  getCourseModule,
+  createCourseModule,
+  updateCourseModule,
+  deleteCourseModule,
+  reorderCourseModules,
   linkContentToModule,
   type LinkContentToModulePayload,
-} from '../api/courseSegmentApi';
-import { courseSegmentKeys } from '../model/courseSegmentKeys';
+} from '../api/courseModuleApi';
+import { courseModuleKeys } from '../model/courseModuleKeys';
 import type {
-  CourseSegmentFilters,
-  CreateCourseSegmentPayload,
-  UpdateCourseSegmentPayload,
-  ReorderCourseSegmentsPayload,
+  CourseModuleFilters,
+  CreateCourseModulePayload,
+  UpdateCourseModulePayload,
+  ReorderCourseModulesPayload,
 } from '../model/types';
 
 /**
- * Hook to fetch all course segments for a course
+ * Hook to fetch all course modules for a course
  */
-export function useCourseSegments(
+export function useCourseModules(
   courseId: string,
-  filters?: CourseSegmentFilters,
+  filters?: CourseModuleFilters,
   options?: { enabled?: boolean }
 ) {
   return useQuery({
-    queryKey: courseSegmentKeys.list(courseId, filters),
-    queryFn: () => listCourseSegments(courseId, filters),
+    queryKey: courseModuleKeys.list(courseId, filters),
+    queryFn: () => listCourseModules(courseId, filters),
     enabled: options?.enabled !== undefined ? options.enabled : !!courseId,
   });
 }
 
 /**
- * Hook to fetch a single course segment
+ * Hook to fetch a single course module
  */
-export function useCourseSegment(courseId: string, moduleId: string) {
+export function useCourseModule(courseId: string, moduleId: string) {
   return useQuery({
-    queryKey: courseSegmentKeys.detail(courseId, moduleId),
-    queryFn: () => getCourseSegment(courseId, moduleId),
+    queryKey: courseModuleKeys.detail(courseId, moduleId),
+    queryFn: () => getCourseModule(courseId, moduleId),
     enabled: !!courseId && !!moduleId,
   });
 }
 
 /**
- * Hook to create a new course segment
+ * Hook to create a new course module
  */
-export function useCreateCourseSegment() {
+export function useCreateCourseModule() {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -59,23 +59,23 @@ export function useCreateCourseSegment() {
       payload,
     }: {
       courseId: string;
-      payload: CreateCourseSegmentPayload;
-    }) => createCourseSegment(courseId, payload),
+      payload: CreateCourseModulePayload;
+    }) => createCourseModule(courseId, payload),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: courseSegmentKeys.lists(),
+        queryKey: courseModuleKeys.lists(),
       });
       queryClient.invalidateQueries({
-        queryKey: courseSegmentKeys.list(variables.courseId),
+        queryKey: courseModuleKeys.list(variables.courseId),
       });
     },
   });
 }
 
 /**
- * Hook to update a course segment
+ * Hook to update a course module
  */
-export function useUpdateCourseSegment() {
+export function useUpdateCourseModule() {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -86,23 +86,23 @@ export function useUpdateCourseSegment() {
     }: {
       courseId: string;
       moduleId: string;
-      payload: UpdateCourseSegmentPayload;
-    }) => updateCourseSegment(courseId, moduleId, payload),
+      payload: UpdateCourseModulePayload;
+    }) => updateCourseModule(courseId, moduleId, payload),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: courseSegmentKeys.detail(variables.courseId, variables.moduleId),
+        queryKey: courseModuleKeys.detail(variables.courseId, variables.moduleId),
       });
       queryClient.invalidateQueries({
-        queryKey: courseSegmentKeys.list(variables.courseId),
+        queryKey: courseModuleKeys.list(variables.courseId),
       });
     },
   });
 }
 
 /**
- * Hook to delete a course segment
+ * Hook to delete a course module
  */
-export function useDeleteCourseSegment() {
+export function useDeleteCourseModule() {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -114,22 +114,22 @@ export function useDeleteCourseSegment() {
       courseId: string;
       moduleId: string;
       force?: boolean;
-    }) => deleteCourseSegment(courseId, moduleId, force),
+    }) => deleteCourseModule(courseId, moduleId, force),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: courseSegmentKeys.list(variables.courseId),
+        queryKey: courseModuleKeys.list(variables.courseId),
       });
       queryClient.invalidateQueries({
-        queryKey: courseSegmentKeys.lists(),
+        queryKey: courseModuleKeys.lists(),
       });
     },
   });
 }
 
 /**
- * Hook to reorder course segments
+ * Hook to reorder course modules
  */
-export function useReorderCourseSegments() {
+export function useReorderCourseModules() {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -138,14 +138,14 @@ export function useReorderCourseSegments() {
       payload,
     }: {
       courseId: string;
-      payload: ReorderCourseSegmentsPayload;
-    }) => reorderCourseSegments(courseId, payload),
+      payload: ReorderCourseModulesPayload;
+    }) => reorderCourseModules(courseId, payload),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: courseSegmentKeys.list(variables.courseId),
+        queryKey: courseModuleKeys.list(variables.courseId),
       });
       queryClient.invalidateQueries({
-        queryKey: courseSegmentKeys.lists(),
+        queryKey: courseModuleKeys.lists(),
       });
     },
   });
@@ -169,10 +169,10 @@ export function useLinkContentToModule() {
     }) => linkContentToModule(courseId, moduleId, payload),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: courseSegmentKeys.detail(variables.courseId, variables.moduleId),
+        queryKey: courseModuleKeys.detail(variables.courseId, variables.moduleId),
       });
       queryClient.invalidateQueries({
-        queryKey: courseSegmentKeys.list(variables.courseId),
+        queryKey: courseModuleKeys.list(variables.courseId),
       });
     },
   });

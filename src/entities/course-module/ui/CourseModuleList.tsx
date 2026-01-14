@@ -1,17 +1,17 @@
 /**
- * CourseSegmentList Component
+ * CourseModuleList Component
  * Displays a list of course segments with ordering support
  */
 
 import React from 'react';
-import { CourseSegmentCard } from './CourseSegmentCard';
-import type { CourseSegmentListItem } from '../model/types';
+import { CourseModuleCard } from './CourseModuleCard';
+import type { CourseModuleListItem } from '../model/types';
 import { cn } from '@/shared/lib/utils';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { GripVertical } from 'lucide-react';
 
-interface CourseSegmentListProps {
-  segments: CourseSegmentListItem[];
+interface CourseModuleListProps {
+  segments: CourseModuleListItem[];
   courseId: string;
   className?: string;
   showOrder?: boolean;
@@ -20,7 +20,7 @@ interface CourseSegmentListProps {
   emptyMessage?: string;
 }
 
-export const CourseSegmentList: React.FC<CourseSegmentListProps> = ({
+export const CourseModuleList: React.FC<CourseModuleListProps> = ({
   segments,
   courseId,
   className,
@@ -64,7 +64,7 @@ export const CourseSegmentList: React.FC<CourseSegmentListProps> = ({
                 <GripVertical className="h-5 w-5 text-muted-foreground" />
               </div>
             )}
-            <CourseSegmentCard
+            <CourseModuleCard
               segment={segment}
               courseId={courseId}
               showOrder={showOrder}

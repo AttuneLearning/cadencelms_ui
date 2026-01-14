@@ -1,5 +1,5 @@
 /**
- * CourseSegmentCard Component
+ * CourseModuleCard Component
  * Displays a course segment (module) as a card with order, title, and metadata
  */
 
@@ -14,18 +14,18 @@ import {
 } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
 import { Clock, FileText, Hash } from 'lucide-react';
-import type { CourseSegmentListItem } from '../model/types';
+import type { CourseModuleListItem } from '../model/types';
 import { cn } from '@/shared/lib/utils';
 
-interface CourseSegmentCardProps {
-  segment: CourseSegmentListItem;
+interface CourseModuleCardProps {
+  segment: CourseModuleListItem;
   courseId: string;
   className?: string;
   showOrder?: boolean;
   showType?: boolean;
 }
 
-export const CourseSegmentCard: React.FC<CourseSegmentCardProps> = ({
+export const CourseModuleCard: React.FC<CourseModuleCardProps> = ({
   segment,
   courseId,
   className,

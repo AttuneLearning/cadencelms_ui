@@ -1,5 +1,5 @@
 /**
- * CourseSegmentForm Component
+ * CourseModuleForm Component
  * Form for creating and editing course segments
  */
 
@@ -19,15 +19,15 @@ import {
 import { Switch } from '@/shared/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import type {
-  CreateCourseSegmentPayload,
-  UpdateCourseSegmentPayload,
-  CourseSegmentType,
+  CreateCourseModulePayload,
+  UpdateCourseModulePayload,
+  CourseModuleType,
 } from '../model/types';
 
-interface CourseSegmentFormProps {
+interface CourseModuleFormProps {
   mode: 'create' | 'edit';
-  defaultValues?: UpdateCourseSegmentPayload & { order?: number };
-  onSubmit: (data: CreateCourseSegmentPayload | UpdateCourseSegmentPayload) => void;
+  defaultValues?: UpdateCourseModulePayload & { order?: number };
+  onSubmit: (data: CreateCourseModulePayload | UpdateCourseModulePayload) => void;
   onCancel?: () => void;
   isLoading?: boolean;
 }
@@ -36,7 +36,7 @@ interface FormData {
   title: string;
   description?: string;
   order?: number;
-  type?: CourseSegmentType;
+  type?: CourseModuleType;
   contentId?: string;
   isPublished?: boolean;
   passingScore?: number;
@@ -48,7 +48,7 @@ interface FormData {
   shuffleQuestions?: boolean;
 }
 
-export const CourseSegmentForm: React.FC<CourseSegmentFormProps> = ({
+export const CourseModuleForm: React.FC<CourseModuleFormProps> = ({
   mode,
   defaultValues,
   onSubmit,
@@ -83,7 +83,7 @@ export const CourseSegmentForm: React.FC<CourseSegmentFormProps> = ({
   const selectedType = watch('type');
 
   const handleFormSubmit = (data: FormData) => {
-    const payload: CreateCourseSegmentPayload | UpdateCourseSegmentPayload = {
+    const payload: CreateCourseModulePayload | UpdateCourseModulePayload = {
       title: data.title,
       description: data.description || undefined,
       ...(mode === 'create' && { order: data.order || 1 }),
@@ -170,7 +170,7 @@ export const CourseSegmentForm: React.FC<CourseSegmentFormProps> = ({
               <Label htmlFor="type">Type {mode === 'create' && '*'}</Label>
               <Select
                 value={selectedType}
-                onValueChange={(value) => setValue('type', value as CourseSegmentType)}
+                onValueChange={(value) => setValue('type', value as CourseModuleType)}
                 disabled={mode === 'edit'}
               >
                 <SelectTrigger id="type">

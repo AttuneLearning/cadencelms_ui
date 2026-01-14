@@ -19,7 +19,7 @@ import {
   useStartContentAttempt,
   useContentAttempt,
 } from '@/entities/content-attempt';
-import { useCourseSegments } from '@/entities/course-segment';
+import { useCourseModules } from '@/entities/course-module';
 import { useEnrollments } from '@/entities/enrollment';
 import { Loader2, AlertCircle } from 'lucide-react';
 
@@ -39,7 +39,7 @@ export function CoursePlayerPage() {
   const enrollment = enrollmentsData?.enrollments?.[0];
 
   // Fetch course structure
-  const { data: segmentsData, isLoading: segmentsLoading } = useCourseSegments(
+  const { data: segmentsData, isLoading: segmentsLoading } = useCourseModules(
     courseId || '',
     {},
     { enabled: !!courseId }

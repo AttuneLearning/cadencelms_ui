@@ -22,10 +22,10 @@ import {
   Video,
   ClipboardList,
 } from 'lucide-react';
-import type { CourseSegment, CourseSegmentListItem } from '@/entities/course-segment/model/types';
+import type { CourseModule, CourseModuleListItem } from '@/entities/course-module/model/types';
 
 interface CourseNavigationProps {
-  modules: (CourseSegment | CourseSegmentListItem)[];
+  modules: (CourseModule | CourseModuleListItem)[];
   currentModuleId?: string;
   onModuleClick: (moduleId: string) => void;
   className?: string;

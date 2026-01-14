@@ -30,7 +30,7 @@ export const endpoints = {
     progress: (id: string) => `/courses/${id}/progress`,
   },
 
-  courseSegments: {
+  courseModules: {
     list: (courseId: string) => `/courses/${courseId}/modules`,
     byId: (courseId: string, moduleId: string) => `/courses/${courseId}/modules/${moduleId}`,
     create: (courseId: string) => `/courses/${courseId}/modules`,

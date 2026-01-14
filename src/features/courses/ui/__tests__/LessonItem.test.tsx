@@ -5,7 +5,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { LessonItem } from '../LessonItem';
-import type { LessonListItem } from '@/entities/course-segment/model/lessonTypes';
+import type { LessonListItem } from '@/entities/course-module/model/lessonTypes';
 
 // Mock @dnd-kit/sortable
 vi.mock('@dnd-kit/sortable', () => ({

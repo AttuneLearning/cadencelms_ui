@@ -3,7 +3,7 @@
  * Example lesson data for testing and demonstration
  */
 
-import type { LessonListItem } from '@/entities/course-segment/model/lessonTypes';
+import type { LessonListItem } from '@/entities/course-module/model/lessonTypes';
 
 /**
  * Example lesson data for a typical course module

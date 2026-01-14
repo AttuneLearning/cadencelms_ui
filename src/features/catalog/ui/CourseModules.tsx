@@ -7,10 +7,10 @@ import React, { useState } from 'react';
 import { ChevronDown, ChevronRight, BookOpen } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
-import type { CourseSegmentListItem } from '@/entities/course-segment';
+import type { CourseModuleListItem } from '@/entities/course-module';
 
 interface CourseModulesProps {
-  modules: CourseSegmentListItem[];
+  modules: CourseModuleListItem[];
 }
 
 export const CourseModules: React.FC<CourseModulesProps> = ({ modules }) => {

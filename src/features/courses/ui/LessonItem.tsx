@@ -29,7 +29,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
-import type { LessonListItem } from '@/entities/course-segment/model/lessonTypes';
+import type { LessonListItem } from '@/entities/course-module/model/lessonTypes';
 
 interface LessonItemProps {
   lesson: LessonListItem;

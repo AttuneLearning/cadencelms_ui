@@ -39,7 +39,7 @@ import {
   type ContentListItem,
 } from '@/entities/content';
 import { useDepartments } from '@/entities/department';
-import { useLinkContentToModule } from '@/entities/course-segment';
+import { useLinkContentToModule } from '@/entities/course-module';
 
 type TabValue = 'scorm' | 'media' | 'document' | 'library';
 

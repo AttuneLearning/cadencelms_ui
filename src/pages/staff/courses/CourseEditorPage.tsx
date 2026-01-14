@@ -29,15 +29,15 @@ import {
   type CourseStatus,
 } from '@/entities/course';
 import {
-  useCourseSegments,
-  useCreateCourseSegment,
-  useUpdateCourseSegment,
-  useDeleteCourseSegment,
-  useReorderCourseSegments,
-  type CourseSegmentListItem,
-  type CreateCourseSegmentPayload,
-  type UpdateCourseSegmentPayload,
-} from '@/entities/course-segment';
+  useCourseModules,
+  useCreateCourseModule,
+  useUpdateCourseModule,
+  useDeleteCourseModule,
+  useReorderCourseModules,
+  type CourseModuleListItem,
+  type CreateCourseModulePayload,
+  type UpdateCourseModulePayload,
+} from '@/entities/course-module';
 import { ModuleList } from '@/features/courses/ui/ModuleList';
 import { ModuleDialog } from '@/features/courses/ui/ModuleDialog';
 import {
@@ -71,13 +71,13 @@ type CourseFormData = z.infer<typeof courseFormSchema>;
 type ModuleDialogState = {
   open: boolean;
   mode: 'create' | 'edit';
-  module?: CourseSegmentListItem;
+  module?: CourseModuleListItem;
 };
 
 type ConfirmDialogState = {
   open: boolean;
   type: 'delete-module' | 'publish' | 'unpublish' | null;
-  module?: CourseSegmentListItem;
+  module?: CourseModuleListItem;
 };
 
 export const CourseEditorPage: React.FC = () => {
@@ -104,7 +104,7 @@ export const CourseEditorPage: React.FC = () => {
   );
 
   // Fetch course segments
-  const { data: segmentsData, isLoading: isLoadingSegments } = useCourseSegments(
+  const { data: segmentsData, isLoading: isLoadingSegments } = useCourseModules(
     courseId || '',
     undefined,
     { enabled: !isNewCourse }
@@ -116,10 +116,10 @@ export const CourseEditorPage: React.FC = () => {
   const publishMutation = usePublishCourse();
   const unpublishMutation = useUnpublishCourse();
 
-  const createSegmentMutation = useCreateCourseSegment();
-  const updateSegmentMutation = useUpdateCourseSegment();
-  const deleteSegmentMutation = useDeleteCourseSegment();
-  const reorderSegmentsMutation = useReorderCourseSegments();
+  const createSegmentMutation = useCreateCourseModule();
+  const updateSegmentMutation = useUpdateCourseModule();
+  const deleteSegmentMutation = useDeleteCourseModule();
+  const reorderSegmentsMutation = useReorderCourseModules();
 
   // Form
   const {
@@ -264,7 +264,7 @@ export const CourseEditorPage: React.FC = () => {
     });
   };
 
-  const handleEditModule = (module: CourseSegmentListItem) => {
+  const handleEditModule = (module: CourseModuleListItem) => {
     setModuleDialog({
       open: true,
       mode: 'edit',
@@ -272,7 +272,7 @@ export const CourseEditorPage: React.FC = () => {
     });
   };
 
-  const handleDeleteModule = (module: CourseSegmentListItem) => {
+  const handleDeleteModule = (module: CourseModuleListItem) => {
     setConfirmDialog({
       open: true,
       type: 'delete-module',
@@ -303,7 +303,7 @@ export const CourseEditorPage: React.FC = () => {
   };
 
   const handleModuleSubmit = async (
-    data: CreateCourseSegmentPayload | UpdateCourseSegmentPayload
+    data: CreateCourseModulePayload | UpdateCourseModulePayload
   ) => {
     if (!courseId || isNewCourse) return;
 
@@ -311,7 +311,7 @@ export const CourseEditorPage: React.FC = () => {
       if (moduleDialog.mode === 'create') {
         await createSegmentMutation.mutateAsync({
           courseId,
-          payload: data as CreateCourseSegmentPayload,
+          payload: data as CreateCourseModulePayload,
         });
         toast({
           title: 'Module added',
@@ -321,7 +321,7 @@ export const CourseEditorPage: React.FC = () => {
         await updateSegmentMutation.mutateAsync({
           courseId,
           moduleId: moduleDialog.module.id,
-          payload: data as UpdateCourseSegmentPayload,
+          payload: data as UpdateCourseModulePayload,
         });
         toast({
           title: 'Module updated',
@@ -338,7 +338,7 @@ export const CourseEditorPage: React.FC = () => {
     }
   };
 
-  const handleReorderModules = async (reorderedModules: CourseSegmentListItem[]) => {
+  const handleReorderModules = async (reorderedModules: CourseModuleListItem[]) => {
     if (!courseId || isNewCourse) return;
 
     try {

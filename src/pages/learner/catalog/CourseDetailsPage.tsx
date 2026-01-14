@@ -6,7 +6,7 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useCourse } from '@/entities/course';
-import { useCourseSegments } from '@/entities/course-segment';
+import { useCourseModules } from '@/entities/course-module';
 import { useEnrollmentStatus } from '@/entities/enrollment';
 import { CourseHeader } from '@/features/catalog/ui/CourseHeader';
 import { CourseModules } from '@/features/catalog/ui/CourseModules';
@@ -21,7 +21,7 @@ export const CourseDetailsPage: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
 
   const { data: course, isLoading: isCourseLoading, error: courseError } = useCourse(courseId!);
-  const { data: segmentsData, isLoading: isSegmentsLoading } = useCourseSegments(courseId!);
+  const { data: segmentsData, isLoading: isSegmentsLoading } = useCourseModules(courseId!);
   const { data: enrollment, isLoading: isEnrollmentLoading } = useEnrollmentStatus(courseId!);
 
   const isLoading = isCourseLoading || isSegmentsLoading || isEnrollmentLoading;

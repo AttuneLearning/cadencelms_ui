@@ -1,11 +1,11 @@
 /**
- * Course Segment Entity Types
+ * Course Module Entity Types
  * Represents modules/units within a course
  */
 
-export type CourseSegmentType = 'scorm' | 'custom' | 'exercise' | 'video' | 'document';
+export type CourseModuleType = 'scorm' | 'custom' | 'exercise' | 'video' | 'document';
 
-export interface CourseSegmentSettings {
+export interface CourseModuleSettings {
   allowMultipleAttempts: boolean;
   maxAttempts: number | null;
   timeLimit: number | null;
@@ -13,17 +13,17 @@ export interface CourseSegmentSettings {
   shuffleQuestions: boolean;
 }
 
-export interface CourseSegment {
+export interface CourseModule {
   id: string;
   courseId: string;
   courseTitle: string;
   title: string;
   description: string | null;
   order: number;
-  type: CourseSegmentType;
+  type: CourseModuleType;
   contentId: string | null;
   content?: any;
-  settings: CourseSegmentSettings;
+  settings: CourseModuleSettings;
   isPublished: boolean;
   passingScore: number | null;
   duration: number | null;
@@ -39,14 +39,14 @@ export interface CourseSegment {
   };
 }
 
-export interface CourseSegmentListItem {
+export interface CourseModuleListItem {
   id: string;
   title: string;
   description: string | null;
   order: number;
-  type: CourseSegmentType;
+  type: CourseModuleType;
   contentId: string | null;
-  settings: CourseSegmentSettings;
+  settings: CourseModuleSettings;
   isPublished: boolean;
   passingScore: number | null;
   duration: number | null;
@@ -54,46 +54,46 @@ export interface CourseSegmentListItem {
   updatedAt: string;
 }
 
-export interface CreateCourseSegmentPayload {
+export interface CreateCourseModulePayload {
   title: string;
   description?: string;
   order: number;
-  type: CourseSegmentType;
+  type: CourseModuleType;
   contentId?: string;
-  settings?: Partial<CourseSegmentSettings>;
+  settings?: Partial<CourseModuleSettings>;
   isPublished?: boolean;
   passingScore?: number;
   duration?: number;
 }
 
-export interface UpdateCourseSegmentPayload {
+export interface UpdateCourseModulePayload {
   title?: string;
   description?: string;
-  type?: CourseSegmentType;
+  type?: CourseModuleType;
   contentId?: string;
-  settings?: Partial<CourseSegmentSettings>;
+  settings?: Partial<CourseModuleSettings>;
   isPublished?: boolean;
   passingScore?: number;
   duration?: number;
 }
 
-export interface CourseSegmentFilters {
+export interface CourseModuleFilters {
   includeUnpublished?: boolean;
   sort?: 'order' | 'title' | 'createdAt';
 }
 
-export interface CourseSegmentsListResponse {
+export interface CourseModulesListResponse {
   courseId: string;
   courseTitle: string;
-  modules: CourseSegmentListItem[];
+  modules: CourseModuleListItem[];
   totalModules: number;
 }
 
-export interface ReorderCourseSegmentsPayload {
+export interface ReorderCourseModulesPayload {
   moduleIds: string[];
 }
 
-export interface ReorderCourseSegmentsResponse {
+export interface ReorderCourseModulesResponse {
   courseId: string;
   modules: Array<{
     id: string;
@@ -104,7 +104,7 @@ export interface ReorderCourseSegmentsResponse {
   totalReordered: number;
 }
 
-export interface DeleteCourseSegmentResponse {
+export interface DeleteCourseModuleResponse {
   id: string;
   title: string;
   deletedAt: string;

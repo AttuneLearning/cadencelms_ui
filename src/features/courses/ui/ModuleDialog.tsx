@@ -11,20 +11,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/ui/dialog';
-import { CourseSegmentForm } from '@/entities/course-segment/ui/CourseSegmentForm';
+import { CourseModuleForm } from '@/entities/course-module/ui/CourseModuleForm';
 import type {
-  CourseSegmentListItem,
-  CreateCourseSegmentPayload,
-  UpdateCourseSegmentPayload,
-} from '@/entities/course-segment';
+  CourseModuleListItem,
+  CreateCourseModulePayload,
+  UpdateCourseModulePayload,
+} from '@/entities/course-module';
 
 interface ModuleDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: 'create' | 'edit';
-  module?: CourseSegmentListItem;
+  module?: CourseModuleListItem;
   nextOrder?: number;
-  onSubmit: (data: CreateCourseSegmentPayload | UpdateCourseSegmentPayload) => Promise<void>;
+  onSubmit: (data: CreateCourseModulePayload | UpdateCourseModulePayload) => Promise<void>;
   isLoading?: boolean;
 }
 
@@ -37,7 +37,7 @@ export const ModuleDialog: React.FC<ModuleDialogProps> = ({
   onSubmit,
   isLoading = false,
 }) => {
-  const handleSubmit = async (data: CreateCourseSegmentPayload | UpdateCourseSegmentPayload) => {
+  const handleSubmit = async (data: CreateCourseModulePayload | UpdateCourseModulePayload) => {
     await onSubmit(data);
     onOpenChange(false);
   };
@@ -56,7 +56,7 @@ export const ModuleDialog: React.FC<ModuleDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <CourseSegmentForm
+        <CourseModuleForm
           mode={mode}
           defaultValues={
             module

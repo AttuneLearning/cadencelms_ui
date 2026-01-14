@@ -34,7 +34,7 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
 import { Alert } from '@/shared/ui/alert';
-import type { CourseSegmentListItem } from '@/entities/course-segment';
+import type { CourseModuleListItem } from '@/entities/course-module';
 import {
   GripVertical,
   MoreVertical,
@@ -52,10 +52,10 @@ import {
 } from 'lucide-react';
 
 interface ModuleListProps {
-  modules: CourseSegmentListItem[];
-  onReorder: (reorderedModules: CourseSegmentListItem[]) => void;
-  onEdit: (module: CourseSegmentListItem) => void;
-  onDelete: (module: CourseSegmentListItem) => void;
+  modules: CourseModuleListItem[];
+  onReorder: (reorderedModules: CourseModuleListItem[]) => void;
+  onEdit: (module: CourseModuleListItem) => void;
+  onDelete: (module: CourseModuleListItem) => void;
   onAdd: () => void;
   isLoading?: boolean;
 }
@@ -190,9 +190,9 @@ export const ModuleList: React.FC<ModuleListProps> = ({
 
 // Sortable Module Card Wrapper
 interface SortableModuleCardProps {
-  module: CourseSegmentListItem;
-  onEdit: (module: CourseSegmentListItem) => void;
-  onDelete: (module: CourseSegmentListItem) => void;
+  module: CourseModuleListItem;
+  onEdit: (module: CourseModuleListItem) => void;
+  onDelete: (module: CourseModuleListItem) => void;
   isActive?: boolean;
 }
 
@@ -231,9 +231,9 @@ const SortableModuleCard: React.FC<SortableModuleCardProps> = ({
 
 // Module Card Component
 interface ModuleCardProps {
-  module: CourseSegmentListItem;
-  onEdit?: (module: CourseSegmentListItem) => void;
-  onDelete?: (module: CourseSegmentListItem) => void;
+  module: CourseModuleListItem;
+  onEdit?: (module: CourseModuleListItem) => void;
+  onDelete?: (module: CourseModuleListItem) => void;
   dragHandleProps?: any;
   isDragging?: boolean;
 }

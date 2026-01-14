@@ -37,10 +37,10 @@ import {
 } from './data/content';
 
 import {
-  mockCourseSegmentsList,
-  mockFullCourseSegment,
-  createMockCourseSegment,
-} from './data/courseSegments';
+  mockCourseModulesList,
+  mockFullCourseModule,
+  createMockCourseModule,
+} from './data/courseModules';
 
 import {
   mockPersonResponse,
@@ -589,7 +589,7 @@ export const handlers = [
     const url = new URL(request.url);
     const includeUnpublished = url.searchParams.get('includeUnpublished') === 'true';
 
-    let modules = [...mockCourseSegmentsList];
+    let modules = [...mockCourseModulesList];
 
     if (!includeUnpublished) {
       modules = modules.filter((m) => m.isPublished);
@@ -611,7 +611,7 @@ export const handlers = [
 
     return HttpResponse.json({
       data: {
-        ...mockFullCourseSegment,
+        ...mockFullCourseModule,
         id: moduleId as string,
         courseId: courseId as string,
       },
@@ -623,7 +623,7 @@ export const handlers = [
     const { courseId } = params;
     const body = await request.json();
 
-    const newSegment = createMockCourseSegment({
+    const newSegment = createMockCourseModule({
       courseId: courseId as string,
       title: (body as any).title,
       type: (body as any).type,
@@ -646,7 +646,7 @@ export const handlers = [
       const body = await request.json();
 
       const updatedSegment = {
-        ...mockFullCourseSegment,
+        ...mockFullCourseModule,
         id: moduleId as string,
         courseId: courseId as string,
         ...body,

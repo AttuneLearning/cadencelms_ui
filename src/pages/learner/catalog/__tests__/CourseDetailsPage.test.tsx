@@ -14,8 +14,8 @@ vi.mock('@/entities/course', () => ({
   useCourse: vi.fn(),
 }));
 
-vi.mock('@/entities/course-segment', () => ({
-  useCourseSegments: vi.fn(),
+vi.mock('@/entities/course-module', () => ({
+  useCourseModules: vi.fn(),
 }));
 
 vi.mock('@/entities/enrollment', () => ({
@@ -50,11 +50,11 @@ describe('CourseDetailsPage', () => {
   describe('Loading State', () => {
     it('should show loading state', () => {
       const { useCourse } = require('@/entities/course');
-      const { useCourseSegments } = require('@/entities/course-segment');
+      const { useCourseModules } = require('@/entities/course-module');
       const { useEnrollmentStatus } = require('@/entities/enrollment');
 
       useCourse.mockReturnValue({ data: null, isLoading: true, error: null });
-      useCourseSegments.mockReturnValue({ data: null, isLoading: true, error: null });
+      useCourseModules.mockReturnValue({ data: null, isLoading: true, error: null });
       useEnrollmentStatus.mockReturnValue({ data: null, isLoading: true, error: null });
 
       window.history.pushState({}, '', '/learner/catalog/course-1');
@@ -67,7 +67,7 @@ describe('CourseDetailsPage', () => {
   describe('Course Display', () => {
     it('should render course title and code', () => {
       const { useCourse } = require('@/entities/course');
-      const { useCourseSegments } = require('@/entities/course-segment');
+      const { useCourseModules } = require('@/entities/course-module');
       const { useEnrollmentStatus } = require('@/entities/enrollment');
 
       const mockCourse = {
@@ -83,7 +83,7 @@ describe('CourseDetailsPage', () => {
       };
 
       useCourse.mockReturnValue({ data: mockCourse, isLoading: false, error: null });
-      useCourseSegments.mockReturnValue({ data: { segments: [] }, isLoading: false, error: null });
+      useCourseModules.mockReturnValue({ data: { segments: [] }, isLoading: false, error: null });
       useEnrollmentStatus.mockReturnValue({ data: { enrolled: false }, isLoading: false, error: null });
 
       window.history.pushState({}, '', '/learner/catalog/course-1');
@@ -95,7 +95,7 @@ describe('CourseDetailsPage', () => {
 
     it('should display course description', () => {
       const { useCourse } = require('@/entities/course');
-      const { useCourseSegments } = require('@/entities/course-segment');
+      const { useCourseModules } = require('@/entities/course-module');
       const { useEnrollmentStatus } = require('@/entities/enrollment');
 
       const mockCourse = {
@@ -107,7 +107,7 @@ describe('CourseDetailsPage', () => {
       };
 
       useCourse.mockReturnValue({ data: mockCourse, isLoading: false, error: null });
-      useCourseSegments.mockReturnValue({ data: { segments: [] }, isLoading: false, error: null });
+      useCourseModules.mockReturnValue({ data: { segments: [] }, isLoading: false, error: null });
       useEnrollmentStatus.mockReturnValue({ data: { enrolled: false }, isLoading: false, error: null });
 
       window.history.pushState({}, '', '/learner/catalog/course-1');
@@ -118,7 +118,7 @@ describe('CourseDetailsPage', () => {
 
     it('should display course metadata', () => {
       const { useCourse } = require('@/entities/course');
-      const { useCourseSegments } = require('@/entities/course-segment');
+      const { useCourseModules } = require('@/entities/course-module');
       const { useEnrollmentStatus } = require('@/entities/enrollment');
 
       const mockCourse = {
@@ -134,7 +134,7 @@ describe('CourseDetailsPage', () => {
       };
 
       useCourse.mockReturnValue({ data: mockCourse, isLoading: false, error: null });
-      useCourseSegments.mockReturnValue({ data: { segments: [] }, isLoading: false, error: null });
+      useCourseModules.mockReturnValue({ data: { segments: [] }, isLoading: false, error: null });
       useEnrollmentStatus.mockReturnValue({ data: { enrolled: false }, isLoading: false, error: null });
 
       window.history.pushState({}, '', '/learner/catalog/course-1');
@@ -149,7 +149,7 @@ describe('CourseDetailsPage', () => {
   describe('Module List', () => {
     it('should display course modules', () => {
       const { useCourse } = require('@/entities/course');
-      const { useCourseSegments } = require('@/entities/course-segment');
+      const { useCourseModules } = require('@/entities/course-module');
       const { useEnrollmentStatus } = require('@/entities/enrollment');
 
       const mockCourse = {
@@ -167,7 +167,7 @@ describe('CourseDetailsPage', () => {
       };
 
       useCourse.mockReturnValue({ data: mockCourse, isLoading: false, error: null });
-      useCourseSegments.mockReturnValue({ data: mockSegments, isLoading: false, error: null });
+      useCourseModules.mockReturnValue({ data: mockSegments, isLoading: false, error: null });
       useEnrollmentStatus.mockReturnValue({ data: { enrolled: false }, isLoading: false, error: null });
 
       window.history.pushState({}, '', '/learner/catalog/course-1');
@@ -181,7 +181,7 @@ describe('CourseDetailsPage', () => {
   describe('Enrollment Section', () => {
     it('should show enroll button when not enrolled', () => {
       const { useCourse } = require('@/entities/course');
-      const { useCourseSegments } = require('@/entities/course-segment');
+      const { useCourseModules } = require('@/entities/course-module');
       const { useEnrollmentStatus } = require('@/entities/enrollment');
 
       const mockCourse = {
@@ -192,7 +192,7 @@ describe('CourseDetailsPage', () => {
       };
 
       useCourse.mockReturnValue({ data: mockCourse, isLoading: false, error: null });
-      useCourseSegments.mockReturnValue({ data: { segments: [] }, isLoading: false, error: null });
+      useCourseModules.mockReturnValue({ data: { segments: [] }, isLoading: false, error: null });
       useEnrollmentStatus.mockReturnValue({ data: { enrolled: false }, isLoading: false, error: null });
 
       window.history.pushState({}, '', '/learner/catalog/course-1');
@@ -203,7 +203,7 @@ describe('CourseDetailsPage', () => {
 
     it('should show continue learning button when enrolled', () => {
       const { useCourse } = require('@/entities/course');
-      const { useCourseSegments } = require('@/entities/course-segment');
+      const { useCourseModules } = require('@/entities/course-module');
       const { useEnrollmentStatus } = require('@/entities/enrollment');
 
       const mockCourse = {
@@ -214,7 +214,7 @@ describe('CourseDetailsPage', () => {
       };
 
       useCourse.mockReturnValue({ data: mockCourse, isLoading: false, error: null });
-      useCourseSegments.mockReturnValue({ data: { segments: [] }, isLoading: false, error: null });
+      useCourseModules.mockReturnValue({ data: { segments: [] }, isLoading: false, error: null });
       useEnrollmentStatus.mockReturnValue({ data: { enrolled: true }, isLoading: false, error: null });
 
       window.history.pushState({}, '', '/learner/catalog/course-1');
@@ -225,7 +225,7 @@ describe('CourseDetailsPage', () => {
 
     it('should not show enroll button for unpublished courses', () => {
       const { useCourse } = require('@/entities/course');
-      const { useCourseSegments } = require('@/entities/course-segment');
+      const { useCourseModules } = require('@/entities/course-module');
       const { useEnrollmentStatus } = require('@/entities/enrollment');
 
       const mockCourse = {
@@ -236,7 +236,7 @@ describe('CourseDetailsPage', () => {
       };
 
       useCourse.mockReturnValue({ data: mockCourse, isLoading: false, error: null });
-      useCourseSegments.mockReturnValue({ data: { segments: [] }, isLoading: false, error: null });
+      useCourseModules.mockReturnValue({ data: { segments: [] }, isLoading: false, error: null });
       useEnrollmentStatus.mockReturnValue({ data: { enrolled: false }, isLoading: false, error: null });
 
       window.history.pushState({}, '', '/learner/catalog/course-1');
@@ -250,7 +250,7 @@ describe('CourseDetailsPage', () => {
   describe('Error Handling', () => {
     it('should display error message when course fetch fails', () => {
       const { useCourse } = require('@/entities/course');
-      const { useCourseSegments } = require('@/entities/course-segment');
+      const { useCourseModules } = require('@/entities/course-module');
       const { useEnrollmentStatus } = require('@/entities/enrollment');
 
       useCourse.mockReturnValue({
@@ -258,7 +258,7 @@ describe('CourseDetailsPage', () => {
         isLoading: false,
         error: new Error('Course not found'),
       });
-      useCourseSegments.mockReturnValue({ data: null, isLoading: false, error: null });
+      useCourseModules.mockReturnValue({ data: null, isLoading: false, error: null });
       useEnrollmentStatus.mockReturnValue({ data: null, isLoading: false, error: null });
 
       window.history.pushState({}, '', '/learner/catalog/course-1');
@@ -271,7 +271,7 @@ describe('CourseDetailsPage', () => {
   describe('Back Navigation', () => {
     it('should have back to catalog button', () => {
       const { useCourse } = require('@/entities/course');
-      const { useCourseSegments } = require('@/entities/course-segment');
+      const { useCourseModules } = require('@/entities/course-module');
       const { useEnrollmentStatus } = require('@/entities/enrollment');
 
       const mockCourse = {
@@ -282,7 +282,7 @@ describe('CourseDetailsPage', () => {
       };
 
       useCourse.mockReturnValue({ data: mockCourse, isLoading: false, error: null });
-      useCourseSegments.mockReturnValue({ data: { segments: [] }, isLoading: false, error: null });
+      useCourseModules.mockReturnValue({ data: { segments: [] }, isLoading: false, error: null });
       useEnrollmentStatus.mockReturnValue({ data: { enrolled: false }, isLoading: false, error: null });
 
       window.history.pushState({}, '', '/learner/catalog/course-1');

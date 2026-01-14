@@ -197,6 +197,13 @@ export const LEARNER_CONTEXT_NAV: ContextNavItem[] = [
 
 export const STAFF_CONTEXT_NAV: ContextNavItem[] = [
   {
+    label: 'My Courses',
+    path: '/staff/courses',
+    icon: BookOpen,
+    requiredPermission: 'content:courses:read',
+    departmentScoped: false,
+  },
+  {
     label: 'My Classes',
     path: '/staff/classes',
     icon: Calendar,

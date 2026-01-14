@@ -31,7 +31,7 @@ import type {
   LessonListItem,
   LessonSettingsFormData,
   CompletionCriteriaType,
-} from '@/entities/course-segment/model/lessonTypes';
+} from '@/entities/course-module/model/lessonTypes';
 
 interface LessonSettingsDialogProps {
   open: boolean;

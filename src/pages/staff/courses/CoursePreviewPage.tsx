@@ -12,7 +12,7 @@
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCourse } from '@/entities/course/model/useCourse';
-import { useCourseSegments } from '@/entities/course-segment/hooks/useCourseSegments';
+import { useCourseModules } from '@/entities/course-module/hooks/useCourseModules';
 import { CourseNavigation } from '@/features/courses/ui/CourseNavigation';
 import { LessonPlayerPreview } from '@/features/courses/ui/LessonPlayerPreview';
 import { Button } from '@/shared/ui/button';
@@ -49,7 +49,7 @@ export function CoursePreviewPage() {
     data: segmentsData,
     isLoading: segmentsLoading,
     error: segmentsError,
-  } = useCourseSegments(courseId || '');
+  } = useCourseModules(courseId || '');
 
   // State for simulated progress
   type SimulatedProgressType = {

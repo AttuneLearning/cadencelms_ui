@@ -31,15 +31,15 @@ import { useToast } from '@/shared/ui/use-toast';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
 import {
-  useCourseSegment,
-  useUpdateCourseSegment,
-} from '@/entities/course-segment/hooks/useCourseSegments';
+  useCourseModule,
+  useUpdateCourseModule,
+} from '@/entities/course-module/hooks/useCourseModules';
 import { LessonItem } from '@/features/courses/ui/LessonItem';
 import { LessonSettingsDialog } from '@/features/courses/ui/LessonSettingsDialog';
 import type {
   LessonListItem,
   LessonSettingsFormData,
-} from '@/entities/course-segment/model/lessonTypes';
+} from '@/entities/course-module/model/lessonTypes';
 
 interface ModuleEditorPageParams {
   courseId: string;
@@ -64,9 +64,9 @@ export const ModuleEditorPage: React.FC = () => {
     data: module,
     isLoading,
     error,
-  } = useCourseSegment(courseId!, moduleId!);
+  } = useCourseModule(courseId!, moduleId!);
 
-  const updateModuleMutation = useUpdateCourseSegment();
+  const updateModuleMutation = useUpdateCourseModule();
 
   // Local state for lessons
   const [lessons, setLessons] = useState<LessonListItem[]>([]);
