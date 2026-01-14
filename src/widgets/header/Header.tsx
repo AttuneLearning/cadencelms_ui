@@ -10,7 +10,7 @@
  * - Shows pronouns (optional, subtle)
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { GraduationCap, Menu, LogOut, Settings, BookOpen, Building2 } from 'lucide-react';
 import { ThemeToggle } from '@/features/theme/ui/ThemeToggle';
@@ -33,6 +33,7 @@ import {
 import { getUserTypeDisplayLabel, getRoleDisplayLabel } from '@/shared/lib/displayUtils';
 import { cn } from '@/shared/lib/utils';
 import type { UserType } from '@/shared/types/auth';
+import { EscalationModal } from '@/features/auth/ui/EscalationModal';
 
 // ============================================================================
 // Dashboard Tab Configuration
@@ -78,7 +79,7 @@ const getBasePath = (userType: UserType): string => {
 };
 
 export const Header: React.FC = () => {
-  const { isAuthenticated, user, roleHierarchy, logout } = useAuthStore();
+  const { isAuthenticated, user, roleHierarchy, logout, isAdminSessionActive } = useAuthStore();
   const displayName = useDisplayName();
   const { person, primaryEmail } = useCurrentUser();
   const { toggleSidebar } = useNavigation();
@@ -89,9 +90,26 @@ export const Header: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // ISS-013: Escalation modal state
+  const [showEscalationModal, setShowEscalationModal] = useState(false);
+  const [pendingAdminPath, setPendingAdminPath] = useState('/admin/dashboard');
+
   const handleLogout = async () => {
     await logout();
     navigate('/login');
+  };
+
+  // ISS-013: Handle admin tab click with escalation modal
+  const handleAdminTabClick = (e: React.MouseEvent, targetPath: string) => {
+    // If already in admin session, navigate normally
+    if (isAdminSessionActive) {
+      return; // Let the Link handle navigation
+    }
+
+    // Otherwise, prevent navigation and show escalation modal
+    e.preventDefault();
+    setPendingAdminPath(targetPath);
+    setShowEscalationModal(true);
   };
 
   // Detect current dashboard context from route
@@ -199,10 +217,13 @@ export const Header: React.FC = () => {
               <nav className="hidden md:flex items-center gap-1">
                 {dashboardTabs.map((tab) => {
                   const isActive = location.pathname.startsWith(tab.basePath);
+                  const isAdminTab = tab.userType === 'global-admin';
+
                   return (
                     <Link
                       key={tab.userType}
                       to={tab.path}
+                      onClick={isAdminTab ? (e) => handleAdminTabClick(e, tab.path) : undefined}
                       className={cn(
                         "px-3 py-1.5 text-sm rounded-t transition-all",
                         isActive
@@ -319,6 +340,13 @@ export const Header: React.FC = () => {
           </nav>
         </div>
       </div>
+
+      {/* ISS-013: Escalation Modal */}
+      <EscalationModal
+        open={showEscalationModal}
+        onOpenChange={setShowEscalationModal}
+        redirectPath={pendingAdminPath}
+      />
     </header>
   );
 };

@@ -32,6 +32,7 @@ import {
   refreshAccessToken as apiRefresh,
   logout as apiLogout,
   getCurrentUser as apiGetCurrentUser,
+  escalateToAdmin as apiEscalateToAdmin,
 } from '@/entities/auth/api/authApi';
 import {
   setAccessToken,
@@ -357,36 +358,33 @@ export const useAuthStore = create<AuthState>()(
        * SECURITY: Admin token is stored in MEMORY ONLY and never persisted.
        * Token will be lost on page refresh, requiring re-escalation.
        *
-       * @param _password - User's password for verification (will be used when API is implemented)
+       * @param password - User's escalation password for verification
        * @throws Error if escalation fails
        */
-      escalateToAdmin: async (_password: string) => {
+      escalateToAdmin: async (password: string) => {
         const { user } = get();
 
         if (!user) {
           throw new Error('User must be logged in to escalate to admin');
         }
 
+        if (!password || !password.trim()) {
+          throw new Error('Escalation password is required');
+        }
+
         console.log('[AuthStore] Starting admin escalation...');
 
         try {
           // Call API to verify password and get admin token
-          // TODO: Replace with actual API endpoint when available
-          // const response = await apiEscalateToAdmin({ password: _password });
+          const response = await apiEscalateToAdmin({ escalationPassword: password });
 
-          // For now, simulate the API response structure
-          // In production, this would be an actual API call
-          const mockResponse = {
-            success: true,
-            data: {
-              adminToken: 'admin_token_' + Date.now(), // Mock token
-              expiresIn: 900, // 15 minutes
-            },
-          };
+          if (!response.success || !response.data) {
+            throw new Error('Invalid escalation response format');
+          }
 
-          const { adminToken, expiresIn } = mockResponse.data;
+          const { adminToken, expiresIn } = response.data.adminSession;
 
-          // Store admin token in memory only
+          // Store admin token in memory only (never localStorage)
           setAdminToken(adminToken, expiresIn);
 
           // Update state
@@ -398,7 +396,7 @@ export const useAuthStore = create<AuthState>()(
           console.log('[AuthStore] Escalated to admin session');
         } catch (error: any) {
           console.error('[AuthStore] Admin escalation failed:', error);
-          throw new Error(error.message || 'Failed to escalate to admin');
+          throw error; // Re-throw to let modal handle specific error messages
         }
       },
 

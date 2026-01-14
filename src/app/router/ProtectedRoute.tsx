@@ -279,12 +279,28 @@ export const LearnerOnlyRoute: React.FC<{ children: React.ReactNode }> = ({ chil
 
 /**
  * AdminOnlyRoute - Convenience wrapper for global-admin-only routes
+ *
+ * ISS-013: Requires admin session escalation to be active
+ * If user has global-admin userType but hasn't escalated, redirects to staff dashboard
+ * This triggers the escalation modal in the Header component
  */
-export const AdminOnlyRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ProtectedRoute userTypes={['global-admin']} redirectToDashboard>
-    {children}
-  </ProtectedRoute>
-);
+export const AdminOnlyRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAdminSessionActive } = useAuthStore();
+  const location = useLocation();
+
+  // First check if user has global-admin userType
+  return (
+    <ProtectedRoute userTypes={['global-admin']} redirectToDashboard>
+      {/* Second check: Must have active admin session */}
+      {isAdminSessionActive ? (
+        <>{children}</>
+      ) : (
+        // Redirect to staff dashboard, which will trigger Header's escalation modal
+        <Navigate to="/staff/dashboard" state={{ requestedAdminPath: location.pathname }} replace />
+      )}
+    </ProtectedRoute>
+  );
+};
 
 /**
  * DepartmentRoute - Convenience wrapper for department-context routes
