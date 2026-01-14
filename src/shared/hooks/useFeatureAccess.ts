@@ -253,7 +253,7 @@ export function useFeatureAccess(): FeatureAccessFlags {
   // Memoize all feature flags to prevent unnecessary re-renders
   return useMemo(() => {
     // If not authenticated or no role hierarchy, return all false
-    if (!isAuthenticated || !roleHierarchy) {
+    if (!isAuthenticated || !roleHierarchy || !roleHierarchy.allUserTypes) {
       return createEmptyFlags();
     }
 
