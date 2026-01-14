@@ -13,6 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
+import { PasswordInput } from '@/shared/ui/password-input';
 import { Label } from '@/shared/ui/label';
 import { useAuthStore } from '../model';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -92,9 +93,8 @@ export const LoginForm: React.FC = () => {
 
       <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
-        <Input
+        <PasswordInput
           id="password"
-          type="password"
           placeholder="••••••••"
           {...register('password')}
         />

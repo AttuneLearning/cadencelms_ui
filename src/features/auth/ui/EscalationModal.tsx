@@ -21,7 +21,7 @@ import {
   DialogTitle,
 } from '@/shared/ui/dialog';
 import { Button } from '@/shared/ui/button';
-import { Input } from '@/shared/ui/input';
+import { PasswordInput } from '@/shared/ui/password-input';
 import { Label } from '@/shared/ui/label';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { Lock, AlertCircle, Loader2 } from 'lucide-react';
@@ -110,9 +110,8 @@ export const EscalationModal: React.FC<EscalationModalProps> = ({
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="escalation-password">Escalation Password</Label>
-              <Input
+              <PasswordInput
                 id="escalation-password"
-                type="password"
                 placeholder="Enter escalation password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
