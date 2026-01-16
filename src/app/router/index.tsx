@@ -56,7 +56,17 @@ import { DepartmentDetailsPage } from '@/pages/admin/departments/DepartmentDetai
 import { AcademicYearManagementPage } from '@/pages/admin/academic-years/AcademicYearManagementPage';
 import { CertificateTemplateManagementPage } from '@/pages/admin/certificates/CertificateTemplateManagementPage';
 import { ReportBuilderPage } from '@/pages/admin/reports/ReportBuilderPage';
-import { ReportTemplatesPage, ReportViewerPage } from '@/pages/admin/reports';
+import {
+  ReportJobsPage,
+  ReportJobDetailPage,
+  ReportTemplatesPageNew,
+  ReportTemplateDetailPage,
+  ReportSchedulesPage,
+  ReportScheduleDetailPage,
+  CustomReportBuilderPage,
+  ReportTemplatesPage,
+  ReportViewerPage,
+} from '@/pages/admin/reports';
 import {
   SettingsDashboardPage,
   GeneralSettingsPage,
@@ -91,6 +101,9 @@ import { MyLearningPage } from '@/pages/learner/learning';
 import { CertificatesPage, CertificateViewPage } from '@/pages/learner/certificates';
 import { LearnerTestPage } from '@/pages/learner/test-page';
 
+// Auth error page (replaces direct login redirects for better debugging)
+import { AuthErrorPage } from '@/pages/auth-error';
+
 // Unauthorized page component
 const UnauthorizedPage = () => (
   <div className="flex min-h-screen items-center justify-center">
@@ -113,6 +126,7 @@ export function AppRouter() {
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
+      <Route path="/auth-error" element={<AuthErrorPage />} />
       <Route path="/select-department" element={<SelectDepartmentPage />} />
       <Route path="/404" element={<NotFoundPage />} />
 
@@ -638,11 +652,20 @@ export function AppRouter() {
           </AdminOnlyRoute>
         }
       />
+      {/* New Report System 2.0 Routes */}
       <Route
         path="/admin/reports"
         element={
           <AdminOnlyRoute>
-            <ReportBuilderPage />
+            <ReportJobsPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/reports/jobs/:id"
+        element={
+          <AdminOnlyRoute>
+            <ReportJobDetailPage />
           </AdminOnlyRoute>
         }
       />
@@ -650,12 +673,61 @@ export function AppRouter() {
         path="/admin/reports/templates"
         element={
           <AdminOnlyRoute>
+            <ReportTemplatesPageNew />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/reports/templates/:id"
+        element={
+          <AdminOnlyRoute>
+            <ReportTemplateDetailPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/reports/schedules"
+        element={
+          <AdminOnlyRoute>
+            <ReportSchedulesPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/reports/schedules/:id"
+        element={
+          <AdminOnlyRoute>
+            <ReportScheduleDetailPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/reports/builder"
+        element={
+          <AdminOnlyRoute>
+            <CustomReportBuilderPage />
+          </AdminOnlyRoute>
+        }
+      />
+      {/* Old report routes - to be replaced in Phase 2 */}
+      <Route
+        path="/admin/reports/old"
+        element={
+          <AdminOnlyRoute>
+            <ReportBuilderPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/reports/old/templates"
+        element={
+          <AdminOnlyRoute>
             <ReportTemplatesPage />
           </AdminOnlyRoute>
         }
       />
       <Route
-        path="/admin/reports/:reportId"
+        path="/admin/reports/old/:reportId"
         element={
           <AdminOnlyRoute>
             <ReportViewerPage />
