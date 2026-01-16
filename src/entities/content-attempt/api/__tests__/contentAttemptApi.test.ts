@@ -179,7 +179,7 @@ describe('contentAttemptApi', () => {
       const result = await contentAttemptApi.listAttempts({ contentId: 'content-1' });
 
       expect(result.attempts).toHaveLength(1);
-      expect(capturedParams?.get('contentId')).toBe('content-1');
+      expect(capturedParams!.get('contentId')).toBe('content-1');
     });
 
     it('should filter attempts by enrollmentId', async () => {
@@ -209,7 +209,7 @@ describe('contentAttemptApi', () => {
 
       await contentAttemptApi.listAttempts({ enrollmentId: 'enrollment-1' });
 
-      expect(capturedParams?.get('enrollmentId')).toBe('enrollment-1');
+      expect(capturedParams!.get('enrollmentId')).toBe('enrollment-1');
     });
 
     it('should filter attempts by status', async () => {
@@ -239,7 +239,7 @@ describe('contentAttemptApi', () => {
 
       await contentAttemptApi.listAttempts({ status: 'in-progress' });
 
-      expect(capturedParams?.get('status')).toBe('in-progress');
+      expect(capturedParams!.get('status')).toBe('in-progress');
     });
 
     it('should handle pagination params', async () => {
@@ -269,8 +269,8 @@ describe('contentAttemptApi', () => {
 
       await contentAttemptApi.listAttempts({ page: 2, limit: 10 });
 
-      expect(capturedParams?.get('page')).toBe('2');
-      expect(capturedParams?.get('limit')).toBe('10');
+      expect(capturedParams!.get('page')).toBe('2');
+      expect(capturedParams!.get('limit')).toBe('10');
     });
 
     it('should handle error response', async () => {
@@ -326,7 +326,7 @@ describe('contentAttemptApi', () => {
 
       await contentAttemptApi.getAttemptById('attempt-1', true);
 
-      expect(capturedParams?.get('includeCmi')).toBe('true');
+      expect(capturedParams!.get('includeCmi')).toBe('true');
     });
 
     it('should handle not found error', async () => {
@@ -888,7 +888,7 @@ describe('contentAttemptApi', () => {
 
       await contentAttemptApi.deleteAttempt('attempt-1', true);
 
-      expect(capturedParams?.get('permanent')).toBe('true');
+      expect(capturedParams!.get('permanent')).toBe('true');
     });
 
     it('should handle forbidden error', async () => {

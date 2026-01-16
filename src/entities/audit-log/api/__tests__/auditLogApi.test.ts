@@ -16,6 +16,8 @@ import type {
   AuditLog,
   AuditLogsListResponse,
   ExportAuditLogsResponse,
+  ActionType,
+  SeverityLevel,
 } from '../../model/types';
 
 describe('auditLogApi', () => {
@@ -595,8 +597,8 @@ describe('auditLogApi', () => {
       const payload = {
         format: 'json' as const,
         filters: {
-          severity: ['error', 'critical'] as const,
-          action: ['delete'] as const,
+          severity: ['error', 'critical'] as SeverityLevel[],
+          action: ['delete'] as ActionType[],
         },
       };
 

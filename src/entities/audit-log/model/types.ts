@@ -69,6 +69,7 @@ export interface AuditLogFilters {
   userId?: string;
   action?: ActionType[];
   entityType?: EntityType;
+  entityId?: string;
   severity?: SeverityLevel[];
   ipAddress?: string;
   search?: string;

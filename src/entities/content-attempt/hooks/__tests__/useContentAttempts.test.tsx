@@ -150,8 +150,8 @@ describe('useContentAttempts hooks', () => {
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-      expect(capturedParams?.get('enrollmentId')).toBe('enrollment-1');
-      expect(capturedParams?.get('contentId')).toBe('content-1');
+      expect(capturedParams!.get('enrollmentId')).toBe('enrollment-1');
+      expect(capturedParams!.get('contentId')).toBe('content-1');
     });
   });
 
