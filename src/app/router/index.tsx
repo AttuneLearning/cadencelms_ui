@@ -55,6 +55,7 @@ import { DepartmentManagementPage } from '@/pages/admin/departments/DepartmentMa
 import { DepartmentDetailsPage } from '@/pages/admin/departments/DepartmentDetailsPage';
 import { AcademicYearManagementPage } from '@/pages/admin/academic-years/AcademicYearManagementPage';
 import { CertificateTemplateManagementPage } from '@/pages/admin/certificates/CertificateTemplateManagementPage';
+import { CertificateTemplateEditorPage } from '@/pages/admin/certificates/CertificateTemplateEditorPage';
 import { ReportBuilderPage } from '@/pages/admin/reports/ReportBuilderPage';
 import {
   ReportJobsPage,
@@ -104,6 +105,9 @@ import { LearnerTestPage } from '@/pages/learner/test-page';
 // Auth error page (replaces direct login redirects for better debugging)
 import { AuthErrorPage } from '@/pages/auth-error';
 
+// Public pages
+import { CertificateVerificationPage } from '@/pages/public/CertificateVerificationPage';
+
 // Unauthorized page component
 const UnauthorizedPage = () => (
   <div className="flex min-h-screen items-center justify-center">
@@ -128,6 +132,8 @@ export function AppRouter() {
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
       <Route path="/auth-error" element={<AuthErrorPage />} />
       <Route path="/select-department" element={<SelectDepartmentPage />} />
+      <Route path="/verify/:certificateId" element={<CertificateVerificationPage />} />
+      <Route path="/verify" element={<CertificateVerificationPage />} />
       <Route path="/404" element={<NotFoundPage />} />
 
       {/* Protected routes */}
@@ -649,6 +655,22 @@ export function AppRouter() {
         element={
           <AdminOnlyRoute>
             <CertificateTemplateManagementPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/certificates/new"
+        element={
+          <AdminOnlyRoute>
+            <CertificateTemplateEditorPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/certificates/:templateId"
+        element={
+          <AdminOnlyRoute>
+            <CertificateTemplateEditorPage />
           </AdminOnlyRoute>
         }
       />
