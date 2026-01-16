@@ -35,9 +35,15 @@ import {
   Loader2,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { useAuthStore } from '@/features/auth/model/authStore';
 
 export const StaffCoursesPage: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuthStore();
+
+  // Check if user is billing-admin (read-only access)
+  const isBillingAdmin = user?.roles?.includes('billing-admin');
+  const isReadOnly = isBillingAdmin && !user?.roles?.includes('content-admin');
 
   // State
   const [showFilters, setShowFilters] = React.useState(false);
@@ -86,13 +92,22 @@ export const StaffCoursesPage: React.FC = () => {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">My Courses</h1>
           <p className="text-muted-foreground">
-            Create and manage your course content
+            {isReadOnly ? 'View course content (read-only access)' : 'Create and manage your course content'}
           </p>
         </div>
-        <Button onClick={handleCreateCourse} size="lg">
-          <Plus className="mr-2 h-5 w-5" />
-          Create Course
-        </Button>
+        <div className="flex items-center gap-3">
+          {isReadOnly && (
+            <Badge variant="outline" className="border-amber-600 text-amber-600 bg-amber-50">
+              View Only
+            </Badge>
+          )}
+          {!isReadOnly && (
+            <Button onClick={handleCreateCourse} size="lg">
+              <Plus className="mr-2 h-5 w-5" />
+              Create Course
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Search and Filters */}
@@ -194,6 +209,7 @@ export const StaffCoursesPage: React.FC = () => {
                   key={course.id}
                   course={course}
                   onEdit={() => handleEditCourse(course.id)}
+                  isReadOnly={isReadOnly}
                 />
               ))}
             </div>
@@ -249,9 +265,10 @@ export const StaffCoursesPage: React.FC = () => {
 interface CourseCardProps {
   course: CourseListItem;
   onEdit: () => void;
+  isReadOnly?: boolean;
 }
 
-const CourseCard: React.FC<CourseCardProps> = ({ course, onEdit }) => {
+const CourseCard: React.FC<CourseCardProps> = ({ course, onEdit, isReadOnly = false }) => {
   return (
     <Card className="group transition-shadow hover:shadow-lg">
       <CardHeader>
@@ -309,9 +326,9 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onEdit }) => {
       </CardContent>
 
       <CardFooter className="flex gap-2">
-        <Button onClick={onEdit} className="flex-1">
+        <Button onClick={onEdit} className="flex-1" disabled={isReadOnly}>
           <Settings className="mr-2 h-4 w-4" />
-          Edit Course
+          {isReadOnly ? 'View Course' : 'Edit Course'}
         </Button>
       </CardFooter>
     </Card>

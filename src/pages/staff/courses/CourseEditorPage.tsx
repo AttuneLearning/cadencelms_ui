@@ -47,7 +47,10 @@ import {
   EyeOff,
   Loader2,
   AlertCircle,
+  Lock,
 } from 'lucide-react';
+import { useAuthStore } from '@/features/auth/model/authStore';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 
 // Form validation schema
 const courseFormSchema = z.object({
@@ -84,7 +87,12 @@ export const CourseEditorPage: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuthStore();
   const isNewCourse = courseId === 'new';
+
+  // Check if user is billing-admin (read-only access)
+  const isBillingAdmin = user?.roles?.includes('billing-admin');
+  const isReadOnly = isBillingAdmin && !user?.roles?.includes('content-admin');
 
   // State
   const [moduleDialog, setModuleDialog] = React.useState<ModuleDialogState>({
@@ -425,7 +433,7 @@ export const CourseEditorPage: React.FC = () => {
             <Button
               variant={courseStatus === 'published' ? 'outline' : 'default'}
               onClick={handlePublishToggle}
-              disabled={publishMutation.isPending || unpublishMutation.isPending}
+              disabled={isReadOnly || publishMutation.isPending || unpublishMutation.isPending}
             >
               {courseStatus === 'published' ? (
                 <>
@@ -444,7 +452,7 @@ export const CourseEditorPage: React.FC = () => {
           <Button
             onClick={handleSubmit(handleSaveCourse)}
             disabled={
-              createCourseMutation.isPending || updateCourseMutation.isPending
+              isReadOnly || createCourseMutation.isPending || updateCourseMutation.isPending
             }
           >
             {(createCourseMutation.isPending || updateCourseMutation.isPending) && (
@@ -455,6 +463,17 @@ export const CourseEditorPage: React.FC = () => {
           </Button>
         </div>
       </div>
+
+      {/* Read-only Alert */}
+      {isReadOnly && (
+        <Alert variant="default" className="border-amber-600 bg-amber-50">
+          <Lock className="h-4 w-4 text-amber-600" />
+          <AlertTitle className="text-amber-900">Read-Only Access</AlertTitle>
+          <AlertDescription className="text-amber-800">
+            You have view-only access to courses. Contact your administrator if you need edit permissions.
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Two-column layout */}
       <div className="grid gap-6 lg:grid-cols-2">
@@ -476,6 +495,7 @@ export const CourseEditorPage: React.FC = () => {
                   id="title"
                   {...register('title')}
                   placeholder="e.g., Introduction to Web Development"
+                  disabled={isReadOnly}
                 />
                 {errors.title && (
                   <p className="text-sm text-destructive">{errors.title.message}</p>
@@ -491,7 +511,7 @@ export const CourseEditorPage: React.FC = () => {
                   {...register('code')}
                   placeholder="e.g., WEB101"
                   className="font-mono uppercase"
-                  disabled={!isNewCourse}
+                  disabled={isReadOnly || !isNewCourse}
                 />
                 {errors.code && (
                   <p className="text-sm text-destructive">{errors.code.message}</p>
@@ -508,6 +528,7 @@ export const CourseEditorPage: React.FC = () => {
                   {...register('description')}
                   placeholder="Describe what students will learn"
                   rows={4}
+                  disabled={isReadOnly}
                 />
                 {errors.description && (
                   <p className="text-sm text-destructive">{errors.description.message}</p>
@@ -523,6 +544,7 @@ export const CourseEditorPage: React.FC = () => {
                     {...register('credits', { valueAsNumber: true })}
                     min={0}
                     max={10}
+                    disabled={isReadOnly}
                   />
                 </div>
 
@@ -533,6 +555,7 @@ export const CourseEditorPage: React.FC = () => {
                     type="number"
                     {...register('duration', { valueAsNumber: true })}
                     min={0}
+                    disabled={isReadOnly}
                   />
                 </div>
               </div>
@@ -545,6 +568,7 @@ export const CourseEditorPage: React.FC = () => {
                   id="department"
                   {...register('department')}
                   placeholder="Department ID"
+                  disabled={isReadOnly}
                 />
                 {errors.department && (
                   <p className="text-sm text-destructive">{errors.department.message}</p>
@@ -556,6 +580,7 @@ export const CourseEditorPage: React.FC = () => {
                 <Input
                   id="program"
                   {...register('program')}
+                  disabled={isReadOnly}
                   placeholder="Program ID (optional)"
                 />
               </div>
@@ -585,6 +610,7 @@ export const CourseEditorPage: React.FC = () => {
                       shouldDirty: true,
                     })
                   }
+                  disabled={isReadOnly}
                 />
               </div>
 
@@ -598,6 +624,7 @@ export const CourseEditorPage: React.FC = () => {
                   {...register('settings.passingScore', { valueAsNumber: true })}
                   min={0}
                   max={100}
+                  disabled={isReadOnly}
                 />
               </div>
 
@@ -608,6 +635,7 @@ export const CourseEditorPage: React.FC = () => {
                   type="number"
                   {...register('settings.maxAttempts', { valueAsNumber: true })}
                   min={1}
+                  disabled={isReadOnly}
                 />
               </div>
 
@@ -628,6 +656,7 @@ export const CourseEditorPage: React.FC = () => {
                       shouldDirty: true,
                     })
                   }
+                  disabled={isReadOnly}
                 />
               </div>
             </CardContent>
@@ -653,6 +682,7 @@ export const CourseEditorPage: React.FC = () => {
               onEdit={handleEditModule}
               onDelete={handleDeleteModule}
               onAdd={handleAddModule}
+              disabled={isReadOnly}
               isLoading={
                 createSegmentMutation.isPending ||
                 updateSegmentMutation.isPending ||

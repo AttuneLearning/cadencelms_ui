@@ -58,6 +58,7 @@ interface ModuleListProps {
   onDelete: (module: CourseModuleListItem) => void;
   onAdd: () => void;
   isLoading?: boolean;
+  disabled?: boolean;
 }
 
 export const ModuleList: React.FC<ModuleListProps> = ({
@@ -67,6 +68,7 @@ export const ModuleList: React.FC<ModuleListProps> = ({
   onDelete,
   onAdd,
   isLoading = false,
+  disabled = false,
 }) => {
   const [activeId, setActiveId] = React.useState<string | null>(null);
   const [items, setItems] = React.useState(modules);
@@ -125,7 +127,7 @@ export const ModuleList: React.FC<ModuleListProps> = ({
           <p className="mb-4 text-center text-muted-foreground">
             Start building your course by adding modules
           </p>
-          <Button onClick={onAdd} disabled={isLoading}>
+          <Button onClick={onAdd} disabled={disabled || isLoading}>
             <Plus className="mr-2 h-4 w-4" />
             Add First Module
           </Button>
@@ -140,10 +142,10 @@ export const ModuleList: React.FC<ModuleListProps> = ({
         <div>
           <h3 className="text-lg font-semibold">Course Modules</h3>
           <p className="text-sm text-muted-foreground">
-            Drag to reorder, click to edit
+            {disabled ? 'View course modules' : 'Drag to reorder, click to edit'}
           </p>
         </div>
-        <Button onClick={onAdd} disabled={isLoading}>
+        <Button onClick={onAdd} disabled={disabled || isLoading}>
           <Plus className="mr-2 h-4 w-4" />
           Add Module
         </Button>
@@ -165,6 +167,7 @@ export const ModuleList: React.FC<ModuleListProps> = ({
                 onEdit={onEdit}
                 onDelete={onDelete}
                 isActive={activeId === module.id}
+                disabled={disabled}
               />
             ))}
           </div>
@@ -194,12 +197,14 @@ interface SortableModuleCardProps {
   onEdit: (module: CourseModuleListItem) => void;
   onDelete: (module: CourseModuleListItem) => void;
   isActive?: boolean;
+  disabled?: boolean;
 }
 
 const SortableModuleCard: React.FC<SortableModuleCardProps> = ({
   module,
   onEdit,
   onDelete,
+  disabled = false,
 }) => {
   const {
     attributes,
@@ -208,7 +213,7 @@ const SortableModuleCard: React.FC<SortableModuleCardProps> = ({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: module.id });
+  } = useSortable({ id: module.id, disabled });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -222,8 +227,9 @@ const SortableModuleCard: React.FC<SortableModuleCardProps> = ({
         module={module}
         onEdit={onEdit}
         onDelete={onDelete}
-        dragHandleProps={{ ...attributes, ...listeners }}
+        dragHandleProps={disabled ? undefined : { ...attributes, ...listeners }}
         isDragging={isDragging}
+        disabled={disabled}
       />
     </div>
   );
@@ -236,6 +242,7 @@ interface ModuleCardProps {
   onDelete?: (module: CourseModuleListItem) => void;
   dragHandleProps?: any;
   isDragging?: boolean;
+  disabled?: boolean;
 }
 
 const ModuleCard: React.FC<ModuleCardProps> = ({
@@ -244,6 +251,7 @@ const ModuleCard: React.FC<ModuleCardProps> = ({
   onDelete,
   dragHandleProps,
   isDragging = false,
+  disabled = false,
 }) => {
   return (
     <Card
@@ -302,7 +310,7 @@ const ModuleCard: React.FC<ModuleCardProps> = ({
               </div>
 
               {/* Actions Menu */}
-              {onEdit && onDelete && (
+              {onEdit && onDelete && !disabled && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
