@@ -23,6 +23,7 @@ import {
   ReportJobsTable,
   CreateReportJobDialog,
 } from '@/features/report-jobs';
+import { ShareReportDialog } from '@/features/report-sharing';
 
 export const ReportJobsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ export const ReportJobsPage: React.FC = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false);
   const [jobToDelete, setJobToDelete] = React.useState<string | null>(null);
   const [jobsToDelete, setJobsToDelete] = React.useState<string[]>([]);
+  const [jobToShare, setJobToShare] = React.useState<string | null>(null);
 
   // Filters
   const [filters, setFilters] = React.useState<ListReportJobsParams>({
@@ -155,6 +157,10 @@ export const ReportJobsPage: React.FC = () => {
     navigate(`/admin/reports/jobs/${jobId}`);
   };
 
+  const handleShare = (jobId: string) => {
+    setJobToShare(jobId);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -229,6 +235,7 @@ export const ReportJobsPage: React.FC = () => {
             onRetry={handleRetry}
             onDelete={(id) => setJobToDelete(id)}
             onViewDetails={handleViewDetails}
+            onShare={handleShare}
             onBulkDelete={handleBulkDelete}
             isLoading={isLoading}
           />
@@ -240,6 +247,22 @@ export const ReportJobsPage: React.FC = () => {
         open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
       />
+
+      {/* Share Dialog */}
+      {jobToShare && (
+        <ShareReportDialog
+          open={!!jobToShare}
+          onOpenChange={(open) => !open && setJobToShare(null)}
+          reportId={jobToShare}
+          reportName={
+            jobsData?.jobs.find((j) => j._id === jobToShare)?.name || 'Report'
+          }
+          currentVisibility={
+            jobsData?.jobs.find((j) => j._id === jobToShare)?.visibility || 'private'
+          }
+          sharedWith={[]}
+        />
+      )}
 
       {/* Delete Confirmation */}
       <ConfirmDialog

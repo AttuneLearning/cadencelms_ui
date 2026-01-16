@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
 import { Button } from '@/shared/ui/button';
-import { MoreHorizontal, Download, Ban, RefreshCw, Trash2, Eye } from 'lucide-react';
+import { MoreHorizontal, Download, Ban, RefreshCw, Trash2, Eye, Share2 } from 'lucide-react';
 import type { ReportJob } from '@/entities/report-job';
 
 interface JobActionsMenuProps {
@@ -23,6 +23,7 @@ interface JobActionsMenuProps {
   onRetry?: (jobId: string) => void;
   onDelete?: (jobId: string) => void;
   onViewDetails?: (jobId: string) => void;
+  onShare?: (jobId: string) => void;
 }
 
 export const JobActionsMenu: React.FC<JobActionsMenuProps> = ({
@@ -32,6 +33,7 @@ export const JobActionsMenu: React.FC<JobActionsMenuProps> = ({
   onRetry,
   onDelete,
   onViewDetails,
+  onShare,
 }) => {
   const canDownload = job.state === 'ready' || job.state === 'downloaded';
   const canCancel = ['pending', 'queued', 'processing', 'rendering', 'uploading'].includes(
@@ -63,6 +65,13 @@ export const JobActionsMenu: React.FC<JobActionsMenuProps> = ({
           <DropdownMenuItem onClick={() => onDownload(job._id)}>
             <Download className="mr-2 h-4 w-4" />
             Download Report
+          </DropdownMenuItem>
+        )}
+
+        {onShare && (
+          <DropdownMenuItem onClick={() => onShare(job._id)}>
+            <Share2 className="mr-2 h-4 w-4" />
+            Share Report
           </DropdownMenuItem>
         )}
 

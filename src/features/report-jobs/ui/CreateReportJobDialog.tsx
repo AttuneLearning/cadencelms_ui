@@ -27,6 +27,7 @@ import { useToast } from '@/shared/ui/use-toast';
 import { Loader2 } from 'lucide-react';
 import { useCreateReportJob, type CreateReportJobRequest } from '@/entities/report-job';
 import type { ReportType, ReportOutputFormat } from '@/shared/types/report-builder';
+import { EmailNotificationForm } from '@/features/report-notifications';
 
 interface CreateReportJobDialogProps {
   open: boolean;
@@ -60,6 +61,8 @@ export const CreateReportJobDialog: React.FC<CreateReportJobDialogProps> = ({
   const [outputFormat, setOutputFormat] = React.useState<ReportOutputFormat>('pdf');
   const [startDate, setStartDate] = React.useState('');
   const [endDate, setEndDate] = React.useState('');
+  const [notificationEmail, setNotificationEmail] = React.useState('');
+  const [notifyMe, setNotifyMe] = React.useState(false);
 
   const { toast } = useToast();
   const createMutation = useCreateReportJob();
@@ -123,6 +126,8 @@ export const CreateReportJobDialog: React.FC<CreateReportJobDialogProps> = ({
     setOutputFormat('pdf');
     setStartDate('');
     setEndDate('');
+    setNotificationEmail('');
+    setNotifyMe(false);
     onOpenChange(false);
   };
 
@@ -220,6 +225,15 @@ export const CreateReportJobDialog: React.FC<CreateReportJobDialogProps> = ({
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Email Notifications */}
+          <div className="pt-4 border-t">
+            <EmailNotificationForm
+              defaultEmail={notificationEmail}
+              onEmailChange={setNotificationEmail}
+              onNotifyChange={setNotifyMe}
+            />
           </div>
 
           <DialogFooter>

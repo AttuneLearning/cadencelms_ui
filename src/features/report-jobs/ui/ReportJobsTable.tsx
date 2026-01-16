@@ -21,6 +21,7 @@ interface ReportJobsTableProps {
   onRetry?: (jobId: string) => void;
   onDelete?: (jobId: string) => void;
   onViewDetails?: (jobId: string) => void;
+  onShare?: (jobId: string) => void;
   onBulkDelete?: (jobIds: string[]) => void;
   isLoading?: boolean;
 }
@@ -32,6 +33,7 @@ export const ReportJobsTable: React.FC<ReportJobsTableProps> = ({
   onRetry,
   onDelete,
   onViewDetails,
+  onShare,
   onBulkDelete,
   isLoading,
 }) => {
@@ -137,6 +139,7 @@ export const ReportJobsTable: React.FC<ReportJobsTableProps> = ({
           onRetry={onRetry}
           onDelete={onDelete}
           onViewDetails={onViewDetails}
+          onShare={onShare}
         />
       ),
     },

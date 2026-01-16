@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Badge } from '@/shared/ui/badge';
 import { useToast } from '@/shared/ui/use-toast';
 import { ConfirmDialog } from '@/shared/ui/confirm-dialog';
-import { ArrowLeft, Download, Ban, RefreshCw, Trash2, Loader2 } from 'lucide-react';
+import { ArrowLeft, Download, Ban, RefreshCw, Trash2, Loader2, Share2 } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   useReportJob,
@@ -20,6 +20,8 @@ import {
   useDeleteReportJob,
 } from '@/entities/report-job';
 import { JobStatusBadge, JobProgressBar } from '@/features/report-jobs';
+import { useReportNotifications } from '@/features/report-notifications';
+import { ShareReportDialog } from '@/features/report-sharing';
 
 export const ReportJobDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -27,10 +29,17 @@ export const ReportJobDetailPage: React.FC = () => {
   const { toast } = useToast();
 
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
+  const [showShareDialog, setShowShareDialog] = React.useState(false);
+  const [previousState, setPreviousState] = React.useState<string | undefined>();
 
   // Data fetching
   const { data: job, isLoading } = useReportJob(id || '', {
     enabled: !!id,
+  });
+
+  // Notifications
+  const { notifyJobStateChange } = useReportNotifications({
+    jobId: id,
   });
 
   // Poll status for active jobs
@@ -42,6 +51,14 @@ export const ReportJobDetailPage: React.FC = () => {
   const cancelMutation = useCancelReportJob();
   const retryMutation = useRetryReportJob();
   const deleteMutation = useDeleteReportJob();
+
+  // Monitor job state changes for notifications
+  React.useEffect(() => {
+    if (job && job.state !== previousState) {
+      notifyJobStateChange(job, previousState);
+      setPreviousState(job.state);
+    }
+  }, [job, previousState, notifyJobStateChange]);
 
   if (isLoading) {
     return (
@@ -167,6 +184,10 @@ export const ReportJobDetailPage: React.FC = () => {
               Download
             </Button>
           )}
+          <Button variant="outline" onClick={() => setShowShareDialog(true)}>
+            <Share2 className="h-4 w-4 mr-2" />
+            Share
+          </Button>
           {canCancel && (
             <Button variant="outline" onClick={handleCancel}>
               <Ban className="h-4 w-4 mr-2" />
@@ -336,6 +357,16 @@ export const ReportJobDetailPage: React.FC = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* Share Dialog */}
+      <ShareReportDialog
+        open={showShareDialog}
+        onOpenChange={setShowShareDialog}
+        reportId={job._id}
+        reportName={job.name}
+        currentVisibility={job.visibility}
+        sharedWith={[]}
+      />
 
       {/* Delete Confirmation */}
       <ConfirmDialog
