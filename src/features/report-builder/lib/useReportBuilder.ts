@@ -5,16 +5,22 @@
 
 import { useState, useCallback } from 'react';
 import type {
-  CustomReportDefinition,
-  ReportDimension,
-  ReportMeasure,
-  ReportSlicer,
+  ReportDefinition,
+  DimensionConfig,
+  MeasureConfig,
+  SlicerConfig,
+  GroupConfig,
   ReportFilter,
+  ReportOutputFormat,
 } from '@/shared/types/report-builder';
-import type { ReportOutputFormat } from '@/shared/types/report-builder';
+
+// Extended report definition for builder that includes filters
+interface BuilderReportDefinition extends ReportDefinition {
+  filters?: ReportFilter[];
+}
 
 export interface ReportBuilderState {
-  definition: CustomReportDefinition;
+  definition: BuilderReportDefinition;
   outputFormat: ReportOutputFormat;
   templateName: string;
   templateDescription: string;
@@ -23,16 +29,16 @@ export interface ReportBuilderState {
 }
 
 export interface ReportBuilderActions {
-  addDimension: (dimension: ReportDimension) => void;
+  addDimension: (dimension: DimensionConfig) => void;
   removeDimension: (index: number) => void;
-  updateDimension: (index: number, dimension: ReportDimension) => void;
-  addMeasure: (measure: ReportMeasure) => void;
+  updateDimension: (index: number, dimension: DimensionConfig) => void;
+  addMeasure: (measure: MeasureConfig) => void;
   removeMeasure: (index: number) => void;
-  updateMeasure: (index: number, measure: ReportMeasure) => void;
-  addSlicer: (slicer: ReportSlicer) => void;
+  updateMeasure: (index: number, measure: MeasureConfig) => void;
+  addSlicer: (slicer: SlicerConfig) => void;
   removeSlicer: (index: number) => void;
-  updateSlicer: (index: number, slicer: ReportSlicer) => void;
-  addGroup: (group: string) => void;
+  updateSlicer: (index: number, slicer: SlicerConfig) => void;
+  addGroup: (group: GroupConfig) => void;
   removeGroup: (index: number) => void;
   addFilter: (filter: ReportFilter) => void;
   removeFilter: (index: number) => void;
@@ -41,7 +47,7 @@ export interface ReportBuilderActions {
   setTemplateName: (name: string) => void;
   setTemplateDescription: (description: string) => void;
   reset: () => void;
-  loadDefinition: (definition: CustomReportDefinition) => void;
+  loadDefinition: (definition: BuilderReportDefinition) => void;
   validate: () => boolean;
 }
 
@@ -78,21 +84,21 @@ export function useReportBuilder(): ReportBuilderState & ReportBuilderActions {
     }
 
     // Validate dimension types
-    definition.dimensions.forEach((dim, index) => {
+    definition.dimensions.forEach((dim: DimensionConfig, index: number) => {
       if (!dim.type) {
         errors.push(`Dimension ${index + 1} is missing a type`);
       }
     });
 
     // Validate measure types
-    definition.measures.forEach((measure, index) => {
+    definition.measures.forEach((measure: MeasureConfig, index: number) => {
       if (!measure.type) {
         errors.push(`Measure ${index + 1} is missing a type`);
       }
     });
 
     // Validate filters
-    definition.filters?.forEach((filter, index) => {
+    definition.filters?.forEach((filter: ReportFilter, index: number) => {
       if (!filter.field) {
         errors.push(`Filter ${index + 1} is missing a field`);
       }
@@ -115,7 +121,7 @@ export function useReportBuilder(): ReportBuilderState & ReportBuilderActions {
     return isValid;
   }, [state]);
 
-  const addDimension = useCallback((dimension: ReportDimension) => {
+  const addDimension = useCallback((dimension: DimensionConfig) => {
     setState((prev) => ({
       ...prev,
       definition: {
@@ -130,22 +136,22 @@ export function useReportBuilder(): ReportBuilderState & ReportBuilderActions {
       ...prev,
       definition: {
         ...prev.definition,
-        dimensions: prev.definition.dimensions.filter((_, i) => i !== index),
+        dimensions: prev.definition.dimensions.filter((_: DimensionConfig, i: number) => i !== index),
       },
     }));
   }, []);
 
-  const updateDimension = useCallback((index: number, dimension: ReportDimension) => {
+  const updateDimension = useCallback((index: number, dimension: DimensionConfig) => {
     setState((prev) => ({
       ...prev,
       definition: {
         ...prev.definition,
-        dimensions: prev.definition.dimensions.map((d, i) => (i === index ? dimension : d)),
+        dimensions: prev.definition.dimensions.map((d: DimensionConfig, i: number) => (i === index ? dimension : d)),
       },
     }));
   }, []);
 
-  const addMeasure = useCallback((measure: ReportMeasure) => {
+  const addMeasure = useCallback((measure: MeasureConfig) => {
     setState((prev) => ({
       ...prev,
       definition: {
@@ -160,22 +166,22 @@ export function useReportBuilder(): ReportBuilderState & ReportBuilderActions {
       ...prev,
       definition: {
         ...prev.definition,
-        measures: prev.definition.measures.filter((_, i) => i !== index),
+        measures: prev.definition.measures.filter((_: MeasureConfig, i: number) => i !== index),
       },
     }));
   }, []);
 
-  const updateMeasure = useCallback((index: number, measure: ReportMeasure) => {
+  const updateMeasure = useCallback((index: number, measure: MeasureConfig) => {
     setState((prev) => ({
       ...prev,
       definition: {
         ...prev.definition,
-        measures: prev.definition.measures.map((m, i) => (i === index ? measure : m)),
+        measures: prev.definition.measures.map((m: MeasureConfig, i: number) => (i === index ? measure : m)),
       },
     }));
   }, []);
 
-  const addSlicer = useCallback((slicer: ReportSlicer) => {
+  const addSlicer = useCallback((slicer: SlicerConfig) => {
     setState((prev) => ({
       ...prev,
       definition: {
@@ -190,22 +196,22 @@ export function useReportBuilder(): ReportBuilderState & ReportBuilderActions {
       ...prev,
       definition: {
         ...prev.definition,
-        slicers: (prev.definition.slicers || []).filter((_, i) => i !== index),
+        slicers: (prev.definition.slicers || []).filter((_: SlicerConfig, i: number) => i !== index),
       },
     }));
   }, []);
 
-  const updateSlicer = useCallback((index: number, slicer: ReportSlicer) => {
+  const updateSlicer = useCallback((index: number, slicer: SlicerConfig) => {
     setState((prev) => ({
       ...prev,
       definition: {
         ...prev.definition,
-        slicers: (prev.definition.slicers || []).map((s, i) => (i === index ? slicer : s)),
+        slicers: (prev.definition.slicers || []).map((s: SlicerConfig, i: number) => (i === index ? slicer : s)),
       },
     }));
   }, []);
 
-  const addGroup = useCallback((group: string) => {
+  const addGroup = useCallback((group: GroupConfig) => {
     setState((prev) => ({
       ...prev,
       definition: {
@@ -220,7 +226,7 @@ export function useReportBuilder(): ReportBuilderState & ReportBuilderActions {
       ...prev,
       definition: {
         ...prev.definition,
-        groups: (prev.definition.groups || []).filter((_, i) => i !== index),
+        groups: (prev.definition.groups || []).filter((_: GroupConfig, i: number) => i !== index),
       },
     }));
   }, []);
@@ -240,7 +246,7 @@ export function useReportBuilder(): ReportBuilderState & ReportBuilderActions {
       ...prev,
       definition: {
         ...prev.definition,
-        filters: (prev.definition.filters || []).filter((_, i) => i !== index),
+        filters: (prev.definition.filters || []).filter((_: ReportFilter, i: number) => i !== index),
       },
     }));
   }, []);
@@ -250,7 +256,7 @@ export function useReportBuilder(): ReportBuilderState & ReportBuilderActions {
       ...prev,
       definition: {
         ...prev.definition,
-        filters: (prev.definition.filters || []).map((f, i) => (i === index ? filter : f)),
+        filters: (prev.definition.filters || []).map((f: ReportFilter, i: number) => (i === index ? filter : f)),
       },
     }));
   }, []);
@@ -280,7 +286,7 @@ export function useReportBuilder(): ReportBuilderState & ReportBuilderActions {
     setState(initialState);
   }, []);
 
-  const loadDefinition = useCallback((definition: CustomReportDefinition) => {
+  const loadDefinition = useCallback((definition: BuilderReportDefinition) => {
     setState((prev) => ({
       ...prev,
       definition,
