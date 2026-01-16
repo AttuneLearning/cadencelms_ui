@@ -15,12 +15,20 @@ import {
   updateProgress,
   getProgressSummary,
   getDetailedProgressReport,
+  startLesson,
+  updateLessonProgress,
+  completeLesson,
 } from '../api/progressApi';
 import type {
   UpdateProgressRequest,
   ProgressSummaryFilters,
   DetailedProgressReportFilters,
 } from '../model/types';
+import type {
+  StartLessonRequest,
+  UpdateLessonProgressRequest,
+  CompleteLessonRequest,
+} from '../api/progressApi';
 
 // =====================
 // QUERY KEYS
@@ -40,6 +48,8 @@ export const PROGRESS_KEYS = {
   summary: (filters?: ProgressSummaryFilters) => [...PROGRESS_KEYS.all, 'summary', filters] as const,
   detailedReport: (filters?: DetailedProgressReportFilters) =>
     [...PROGRESS_KEYS.all, 'detailed-report', filters] as const,
+  lesson: (courseId: string, lessonId: string) =>
+    [...PROGRESS_KEYS.all, 'lesson', courseId, lessonId] as const,
 };
 
 // =====================
@@ -178,4 +188,65 @@ export function useUpdateProgress() {
       return Promise.resolve();
     },
   };
+}
+
+// =====================
+// LESSON PROGRESS MUTATIONS
+// =====================
+
+/**
+ * Hook to start lesson progress tracking
+ */
+export function useStartLesson() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (request: StartLessonRequest) => startLesson(request),
+    onSuccess: (_, variables) => {
+      // Invalidate course and lesson progress
+      queryClient.invalidateQueries({
+        queryKey: PROGRESS_KEYS.course(variables.courseId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: PROGRESS_KEYS.lesson(variables.courseId, variables.lessonId),
+      });
+    },
+  });
+}
+
+/**
+ * Hook to update lesson progress
+ */
+export function useUpdateLessonProgress() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (request: UpdateLessonProgressRequest) => updateLessonProgress(request),
+    onSuccess: (_, variables) => {
+      // Invalidate course and lesson progress
+      queryClient.invalidateQueries({
+        queryKey: PROGRESS_KEYS.course(variables.courseId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: PROGRESS_KEYS.lesson(variables.courseId, variables.lessonId),
+      });
+    },
+  });
+}
+
+/**
+ * Hook to complete lesson
+ */
+export function useCompleteLesson() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (request: CompleteLessonRequest) => completeLesson(request),
+    onSuccess: () => {
+      // Invalidate all progress queries as completion may affect multiple areas
+      queryClient.invalidateQueries({
+        queryKey: PROGRESS_KEYS.all,
+      });
+    },
+  });
 }

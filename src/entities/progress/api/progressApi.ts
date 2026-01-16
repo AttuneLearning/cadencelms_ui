@@ -154,6 +154,102 @@ export async function getDetailedProgressReport(
   return response.data.data;
 }
 
+// =====================
+// LESSON PROGRESS
+// =====================
+
+export interface StartLessonRequest {
+  courseId: string;
+  lessonId: string;
+  enrollmentId?: string;
+}
+
+export interface StartLessonResponse {
+  lessonProgressId: string;
+  startedAt: string;
+  resumeData?: Record<string, unknown>;
+}
+
+export interface UpdateLessonProgressRequest {
+  courseId: string;
+  lessonId: string;
+  progressData: {
+    completionPercent?: number;
+    lastPosition?: string;
+    timeSpent?: number;
+    interactionsCompleted?: string[];
+    suspendData?: Record<string, unknown>;
+  };
+  enrollmentId?: string;
+}
+
+export interface UpdateLessonProgressResponse {
+  lessonProgressId: string;
+  updatedAt: string;
+  progressData: {
+    completionPercent: number;
+    timeSpent: number;
+  };
+}
+
+export interface CompleteLessonRequest {
+  courseId: string;
+  lessonId: string;
+  completionData: {
+    score?: number;
+    timeSpent: number;
+    completedAt?: string;
+    finalData?: Record<string, unknown>;
+  };
+  enrollmentId?: string;
+}
+
+export interface CompleteLessonResponse {
+  lessonProgressId: string;
+  completedAt: string;
+  score?: number;
+  creditAwarded: boolean;
+}
+
+/**
+ * POST /progress/lesson/start - Start tracking lesson progress
+ */
+export async function startLesson(
+  request: StartLessonRequest
+): Promise<StartLessonResponse> {
+  const response = await client.post<ApiResponse<StartLessonResponse>>(
+    '/progress/lesson/start',
+    request
+  );
+  return response.data.data;
+}
+
+/**
+ * PATCH /progress/lesson/update - Update lesson progress
+ */
+export async function updateLessonProgress(
+  request: UpdateLessonProgressRequest
+): Promise<UpdateLessonProgressResponse> {
+  const response = await client.patch<ApiResponse<UpdateLessonProgressResponse>>(
+    '/progress/lesson/update',
+    request
+  );
+  return response.data.data;
+}
+
+/**
+ * POST /progress/lesson/complete - Mark lesson as complete
+ */
+export async function completeLesson(
+  request: CompleteLessonRequest
+): Promise<CompleteLessonResponse> {
+  const response = await client.post<ApiResponse<CompleteLessonResponse>>(
+    '/progress/lesson/complete',
+    request
+  );
+  return response.data.data;
+}
+
 /**
  * Progress API object for backward compatibility
  * Groups all progress API functions for easier consumption
@@ -166,14 +262,7 @@ export const progressApi = {
   updateProgress,
   getProgressSummary,
   getDetailedProgressReport,
-  // Stub methods for features not yet implemented
-  startLesson: async (_courseId: string, _lessonId: string) => {
-    console.warn('progressApi.startLesson not yet implemented');
-  },
-  updateLessonProgress: async (_courseId: string, _lessonId: string, _data: any) => {
-    console.warn('progressApi.updateLessonProgress not yet implemented');
-  },
-  completeLesson: async (_courseId: string, _lessonId: string, _data: any) => {
-    console.warn('progressApi.completeLesson not yet implemented');
-  },
+  startLesson,
+  updateLessonProgress,
+  completeLesson,
 };
