@@ -232,9 +232,10 @@ client.interceptors.response.use(
           refreshSubscribers = [];
           clearAuthStorage();
 
-          // Redirect to login page (skip in test environment)
+          // Redirect to auth-error page for debugging (skip in test environment)
+          // Previously redirected to /login which made debugging auth issues difficult
           if (typeof window !== 'undefined' && env.environment !== 'test') {
-            window.location.href = '/login';
+            window.location.href = '/auth-error?reason=token-refresh-failed';
           }
 
           return Promise.reject(

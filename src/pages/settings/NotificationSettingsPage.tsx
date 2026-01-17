@@ -28,6 +28,7 @@ import {
 } from '@/shared/ui/card';
 import { useToast } from '@/shared/ui/use-toast';
 import { Loader2, Save, ArrowLeft, Bell, Clock, Mail, Phone, MessageSquare } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 import { usePersonData } from '@/features/auth/hooks/usePersonData';
 import type { ICommunicationPreferences, NotificationFrequency, PreferredContactMethod } from '@/shared/types/person';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
@@ -116,19 +117,16 @@ export const NotificationSettingsPage: React.FC = () => {
 
   return (
     <div className="container mx-auto py-8 space-y-8 max-w-4xl">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" onClick={() => navigate('/profile')}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Notification Settings</h1>
-          <p className="text-muted-foreground">
-            Manage how and when you receive notifications
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="Notification Settings"
+        description="Manage how and when you receive notifications"
+        backButton={
+          <Button variant="ghost" size="sm" onClick={() => navigate('/profile')}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
+          </Button>
+        }
+      />
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Preferred Contact Method */}

@@ -26,6 +26,7 @@ import {
 import { Badge } from '@/shared/ui/badge';
 import { useToast } from '@/shared/ui/use-toast';
 import { ArrowLeft, Package, FileVideo, FileText, Library, Upload, Loader2, CheckCircle2 } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 import {
   FileUploader,
   type FileConfig,
@@ -425,23 +426,20 @@ export const ContentUploaderPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6 max-w-6xl space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate(-1)}
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Content Uploader</h1>
-          <p className="text-muted-foreground">
-            Upload SCORM packages, videos, documents, or select from library
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="Content Uploader"
+        description="Upload SCORM packages, videos, documents, or select from library"
+        backButton={
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
+          </Button>
+        }
+      />
 
       {/* Context Info */}
       {(courseId || moduleId) && (

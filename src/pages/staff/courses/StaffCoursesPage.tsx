@@ -34,6 +34,7 @@ import {
   X,
   Loader2,
 } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuthStore } from '@/features/auth/model/authStore';
 
@@ -87,28 +88,22 @@ export const StaffCoursesPage: React.FC = () => {
 
   return (
     <div className="space-y-8 p-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">My Courses</h1>
-          <p className="text-muted-foreground">
-            {isReadOnly ? 'View course content (read-only access)' : 'Create and manage your course content'}
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          {isReadOnly && (
-            <Badge variant="outline" className="border-amber-600 text-amber-600 bg-amber-50">
-              View Only
-            </Badge>
-          )}
-          {!isReadOnly && (
-            <Button onClick={handleCreateCourse} size="lg">
-              <Plus className="mr-2 h-5 w-5" />
-              Create Course
-            </Button>
-          )}
-        </div>
-      </div>
+      <PageHeader
+        title="My Courses"
+        description={isReadOnly ? 'View course content (read-only access)' : 'Create and manage your course content'}
+      >
+        {isReadOnly && (
+          <Badge variant="outline" className="border-amber-600 text-amber-600 bg-amber-50">
+            View Only
+          </Badge>
+        )}
+        {!isReadOnly && (
+          <Button onClick={handleCreateCourse} size="lg">
+            <Plus className="mr-2 h-5 w-5" />
+            Create Course
+          </Button>
+        )}
+      </PageHeader>
 
       {/* Search and Filters */}
       <div className="space-y-4">

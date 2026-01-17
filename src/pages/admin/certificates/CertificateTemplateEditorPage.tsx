@@ -33,6 +33,7 @@ import {
   AlertCircle,
   CheckCircle,
 } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 
 // Form validation schema
 const templateFormSchema = z.object({
@@ -182,59 +183,54 @@ export const CertificateTemplateEditorPage: React.FC = () => {
 
   return (
     <div className="space-y-6 p-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <PageHeader
+        title={isNewTemplate ? 'Create Certificate Template' : 'Edit Certificate Template'}
+        description={
+          hasUnsavedChanges ? (
+            <div className="flex items-center gap-2 mt-1">
+              <Badge variant="secondary" className="text-xs">
+                <AlertCircle className="mr-1 h-3 w-3" />
+                Unsaved changes
+              </Badge>
+            </div>
+          ) : undefined
+        }
+        backButton={
           <Button variant="ghost" size="icon" onClick={handleBack}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              {isNewTemplate ? 'Create Certificate Template' : 'Edit Certificate Template'}
-            </h1>
-            {hasUnsavedChanges && (
-              <div className="flex items-center gap-2 mt-1">
-                <Badge variant="secondary" className="text-xs">
-                  <AlertCircle className="mr-1 h-3 w-3" />
-                  Unsaved changes
-                </Badge>
-              </div>
-            )}
-          </div>
-        </div>
+        }
+      >
+        <Button
+          variant="outline"
+          onClick={() => setShowPreview(!showPreview)}
+        >
+          {showPreview ? (
+            <>
+              <Code className="mr-2 h-4 w-4" />
+              Edit Mode
+            </>
+          ) : (
+            <>
+              <Eye className="mr-2 h-4 w-4" />
+              Preview
+            </>
+          )}
+        </Button>
 
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            onClick={() => setShowPreview(!showPreview)}
-          >
-            {showPreview ? (
-              <>
-                <Code className="mr-2 h-4 w-4" />
-                Edit Mode
-              </>
-            ) : (
-              <>
-                <Eye className="mr-2 h-4 w-4" />
-                Preview
-              </>
-            )}
-          </Button>
-
-          <Button
-            onClick={handleSubmit(handleSave)}
-            disabled={
-              createTemplateMutation.isPending || updateTemplateMutation.isPending
-            }
-          >
-            {(createTemplateMutation.isPending || updateTemplateMutation.isPending) && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            <Save className="mr-2 h-4 w-4" />
-            {isNewTemplate ? 'Create Template' : 'Save Changes'}
-          </Button>
-        </div>
-      </div>
+        <Button
+          onClick={handleSubmit(handleSave)}
+          disabled={
+            createTemplateMutation.isPending || updateTemplateMutation.isPending
+          }
+        >
+          {(createTemplateMutation.isPending || updateTemplateMutation.isPending) && (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          )}
+          <Save className="mr-2 h-4 w-4" />
+          {isNewTemplate ? 'Create Template' : 'Save Changes'}
+        </Button>
+      </PageHeader>
 
       {/* Content */}
       <div className="grid gap-6 lg:grid-cols-3">

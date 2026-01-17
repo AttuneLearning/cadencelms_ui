@@ -19,6 +19,7 @@ import {
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { Search, Grid3x3, List, AlertCircle } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 import { ClassCard } from '@/features/classes/ui/ClassCard';
 
 export function ClassManagementPage() {
@@ -76,15 +77,10 @@ export function ClassManagementPage() {
 
   return (
     <div className="container mx-auto py-8 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Class Management</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage your classes and student enrollments
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="Class Management"
+        description="Manage your classes and student enrollments"
+      />
 
       {/* Filters and View Toggle */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

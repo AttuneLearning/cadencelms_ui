@@ -49,6 +49,7 @@ import {
   AlertCircle,
   Lock,
 } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 import { useAuthStore } from '@/features/auth/model/authStore';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 
@@ -398,71 +399,66 @@ export const CourseEditorPage: React.FC = () => {
 
   return (
     <div className="space-y-6 p-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <PageHeader
+        title={isNewCourse ? 'Create Course' : 'Edit Course'}
+        description={
+          course ? (
+            <div className="flex items-center gap-2 mt-1">
+              <Badge variant={getStatusVariant(course.status)}>
+                {formatStatus(course.status)}
+              </Badge>
+              <span className="text-sm text-muted-foreground">
+                {course.code}
+              </span>
+            </div>
+          ) : undefined
+        }
+        backButton={
           <Button variant="ghost" size="icon" onClick={handleBack}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              {isNewCourse ? 'Create Course' : 'Edit Course'}
-            </h1>
-            {course && (
-              <div className="flex items-center gap-2 mt-1">
-                <Badge variant={getStatusVariant(course.status)}>
-                  {formatStatus(course.status)}
-                </Badge>
-                <span className="text-sm text-muted-foreground">
-                  {course.code}
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
+        }
+      >
+        {hasUnsavedChanges && (
+          <Badge variant="secondary" className="mr-2">
+            <AlertCircle className="mr-1 h-3 w-3" />
+            Unsaved changes
+          </Badge>
+        )}
 
-        <div className="flex items-center gap-2">
-          {hasUnsavedChanges && (
-            <Badge variant="secondary" className="mr-2">
-              <AlertCircle className="mr-1 h-3 w-3" />
-              Unsaved changes
-            </Badge>
-          )}
-
-          {!isNewCourse && course && (
-            <Button
-              variant={courseStatus === 'published' ? 'outline' : 'default'}
-              onClick={handlePublishToggle}
-              disabled={isReadOnly || publishMutation.isPending || unpublishMutation.isPending}
-            >
-              {courseStatus === 'published' ? (
-                <>
-                  <EyeOff className="mr-2 h-4 w-4" />
-                  Unpublish
-                </>
-              ) : (
-                <>
-                  <Eye className="mr-2 h-4 w-4" />
-                  Publish
-                </>
-              )}
-            </Button>
-          )}
-
+        {!isNewCourse && course && (
           <Button
-            onClick={handleSubmit(handleSaveCourse)}
-            disabled={
-              isReadOnly || createCourseMutation.isPending || updateCourseMutation.isPending
-            }
+            variant={courseStatus === 'published' ? 'outline' : 'default'}
+            onClick={handlePublishToggle}
+            disabled={isReadOnly || publishMutation.isPending || unpublishMutation.isPending}
           >
-            {(createCourseMutation.isPending || updateCourseMutation.isPending) && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            {courseStatus === 'published' ? (
+              <>
+                <EyeOff className="mr-2 h-4 w-4" />
+                Unpublish
+              </>
+            ) : (
+              <>
+                <Eye className="mr-2 h-4 w-4" />
+                Publish
+              </>
             )}
-            <Save className="mr-2 h-4 w-4" />
-            {isNewCourse ? 'Create Course' : 'Save Changes'}
           </Button>
-        </div>
-      </div>
+        )}
+
+        <Button
+          onClick={handleSubmit(handleSaveCourse)}
+          disabled={
+            isReadOnly || createCourseMutation.isPending || updateCourseMutation.isPending
+          }
+        >
+          {(createCourseMutation.isPending || updateCourseMutation.isPending) && (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          )}
+          <Save className="mr-2 h-4 w-4" />
+          {isNewCourse ? 'Create Course' : 'Save Changes'}
+        </Button>
+      </PageHeader>
 
       {/* Read-only Alert */}
       {isReadOnly && (

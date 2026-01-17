@@ -20,6 +20,7 @@ import {
   BarChart3,
   Loader2,
 } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 import { exportAnalyticsReport, type AnalyticsExportData } from '@/shared/utils/exportUtils';
 
 // Mock data - Replace with actual API calls
@@ -124,53 +125,47 @@ export const CourseAnalyticsPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Course Analytics</h1>
-          <p className="text-muted-foreground">
-            Detailed insights and performance metrics
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={() => handleExportReport('pdf')}
-            disabled={isExporting}
-          >
-            {isExporting ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Download className="mr-2 h-4 w-4" />
-            )}
-            Export PDF
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => handleExportReport('csv')}
-            disabled={isExporting}
-          >
-            {isExporting ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Download className="mr-2 h-4 w-4" />
-            )}
-            Export CSV
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => handleExportReport('excel')}
-            disabled={isExporting}
-          >
-            {isExporting ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Download className="mr-2 h-4 w-4" />
-            )}
-            Export Excel
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Course Analytics"
+        description="Detailed insights and performance metrics"
+      >
+        <Button
+          variant="outline"
+          onClick={() => handleExportReport('pdf')}
+          disabled={isExporting}
+        >
+          {isExporting ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Download className="mr-2 h-4 w-4" />
+          )}
+          Export PDF
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => handleExportReport('csv')}
+          disabled={isExporting}
+        >
+          {isExporting ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Download className="mr-2 h-4 w-4" />
+          )}
+          Export CSV
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => handleExportReport('excel')}
+          disabled={isExporting}
+        >
+          {isExporting ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Download className="mr-2 h-4 w-4" />
+          )}
+          Export Excel
+        </Button>
+      </PageHeader>
 
       {/* Filters */}
       <Card>

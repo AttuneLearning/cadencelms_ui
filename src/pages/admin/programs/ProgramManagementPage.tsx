@@ -34,6 +34,7 @@ import {
 } from '@/shared/ui/dialog';
 import { useToast } from '@/shared/ui/use-toast';
 import { ConfirmDialog } from '@/shared/ui/confirm-dialog';
+import { PageHeader } from '@/shared/ui/page-header';
 import { ProgramForm } from '@/entities/program';
 import {
   usePrograms,
@@ -439,35 +440,30 @@ export const ProgramManagementPage: React.FC = () => {
   return (
     <div className="space-y-8 p-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Program Management</h1>
-          <p className="text-muted-foreground">
-            Manage academic programs, levels, and courses
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {selectedPrograms.length > 0 && (
-            <Button variant="destructive" onClick={handleBulkDelete}>
-              <Trash className="mr-2 h-4 w-4" />
-              Delete Selected ({selectedPrograms.length})
-            </Button>
+      <PageHeader
+        title="Program Management"
+        description="Manage academic programs, levels, and courses"
+      >
+        {selectedPrograms.length > 0 && (
+          <Button variant="destructive" onClick={handleBulkDelete}>
+            <Trash className="mr-2 h-4 w-4" />
+            Delete Selected ({selectedPrograms.length})
+          </Button>
+        )}
+        <Button variant="outline" onClick={() => setShowFilters(!showFilters)}>
+          <Filter className="mr-2 h-4 w-4" />
+          Filters
+          {hasActiveFilters && (
+            <Badge variant="secondary" className="ml-2">
+              {Object.keys(filters).filter((k) => k !== 'page' && k !== 'limit' && filters[k as keyof ProgramFilters]).length}
+            </Badge>
           )}
-          <Button variant="outline" onClick={() => setShowFilters(!showFilters)}>
-            <Filter className="mr-2 h-4 w-4" />
-            Filters
-            {hasActiveFilters && (
-              <Badge variant="secondary" className="ml-2">
-                {Object.keys(filters).filter((k) => k !== 'page' && k !== 'limit' && filters[k as keyof ProgramFilters]).length}
-              </Badge>
-            )}
-          </Button>
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Program
-          </Button>
-        </div>
-      </div>
+        </Button>
+        <Button onClick={() => setIsCreateDialogOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />
+          Add Program
+        </Button>
+      </PageHeader>
 
       {/* Filters */}
       {showFilters && (

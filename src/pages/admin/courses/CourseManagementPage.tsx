@@ -37,6 +37,7 @@ import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { useToast } from '@/shared/ui/use-toast';
 import { ConfirmDialog } from '@/shared/ui/confirm-dialog';
+import { PageHeader } from '@/shared/ui/page-header';
 import {
   CourseForm,
   useCourses,
@@ -517,45 +518,42 @@ export const CourseManagementPage: React.FC = () => {
   return (
     <div className="space-y-8 p-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Course Management</h1>
-          <p className="text-muted-foreground">Manage courses, modules, and content</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            onClick={() => setShowFilters(!showFilters)}
-            className={hasActiveFilters ? 'border-primary' : ''}
-          >
-            <Filter className="mr-2 h-4 w-4" />
-            Filters
-            {hasActiveFilters && (
-              <Badge variant="secondary" className="ml-2">
-                Active
-              </Badge>
-            )}
-          </Button>
-          {selectedCourses.length > 0 && (
-            <Button
-              variant="destructive"
-              onClick={() => {
-                toast({
-                  title: 'Bulk operations',
-                  description: 'Bulk delete not yet implemented',
-                });
-              }}
-            >
-              <Trash className="mr-2 h-4 w-4" />
-              Delete Selected ({selectedCourses.length})
-            </Button>
+      <PageHeader
+        title="Course Management"
+        description="Manage courses, modules, and content"
+      >
+        <Button
+          variant="outline"
+          onClick={() => setShowFilters(!showFilters)}
+          className={hasActiveFilters ? 'border-primary' : ''}
+        >
+          <Filter className="mr-2 h-4 w-4" />
+          Filters
+          {hasActiveFilters && (
+            <Badge variant="secondary" className="ml-2">
+              Active
+            </Badge>
           )}
-          <Button onClick={() => handleOpenDialog('create')}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Course
+        </Button>
+        {selectedCourses.length > 0 && (
+          <Button
+            variant="destructive"
+            onClick={() => {
+              toast({
+                title: 'Bulk operations',
+                description: 'Bulk delete not yet implemented',
+              });
+            }}
+          >
+            <Trash className="mr-2 h-4 w-4" />
+            Delete Selected ({selectedCourses.length})
           </Button>
-        </div>
-      </div>
+        )}
+        <Button onClick={() => handleOpenDialog('create')}>
+          <Plus className="mr-2 h-4 w-4" />
+          Add Course
+        </Button>
+      </PageHeader>
 
       {/* Filters */}
       {showFilters && (

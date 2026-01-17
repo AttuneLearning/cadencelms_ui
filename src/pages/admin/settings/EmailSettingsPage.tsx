@@ -13,6 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Badge } from '@/shared/ui/badge';
 import { useToast } from '@/shared/ui/use-toast';
 import { Loader2, Save, ArrowLeft, Mail, CheckCircle, XCircle, Send } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 import {
   useSettingsByCategory,
   useUpdateSettings,
@@ -166,13 +167,15 @@ export const EmailSettingsPage: React.FC = () => {
   if (error) {
     return (
       <div className="space-y-8 p-8">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={() => navigate('/admin/settings')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
-          <h1 className="text-3xl font-bold tracking-tight">Email Settings</h1>
-        </div>
+        <PageHeader
+          title="Email Settings"
+          backButton={
+            <Button variant="ghost" size="sm" onClick={() => navigate('/admin/settings')}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+          }
+        />
         <Card className="border-destructive">
           <CardContent className="pt-6">
             <div className="text-destructive">
@@ -187,19 +190,16 @@ export const EmailSettingsPage: React.FC = () => {
 
   return (
     <div className="space-y-8 p-8">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" onClick={() => navigate('/admin/settings')}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Email Settings</h1>
-          <p className="text-muted-foreground">
-            Configure SMTP and email notification settings
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="Email Settings"
+        description="Configure SMTP and email notification settings"
+        backButton={
+          <Button variant="ghost" size="sm" onClick={() => navigate('/admin/settings')}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
+          </Button>
+        }
+      />
 
       {/* Connection Status */}
       <Card>

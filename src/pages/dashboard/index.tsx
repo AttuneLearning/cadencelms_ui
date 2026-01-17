@@ -13,9 +13,18 @@ import { useAuthStore } from '@/features/auth/model';
 export const DashboardPage = () => {
   const { isAuthenticated, roleHierarchy } = useAuthStore();
 
-  // If not authenticated, redirect to login
+  // If not authenticated, redirect to auth-error page for debugging
   if (!isAuthenticated || !roleHierarchy) {
-    return <Navigate to="/login" replace />;
+    return (
+      <Navigate
+        to="/auth-error"
+        state={{
+          reason: !isAuthenticated ? 'no-auth' : 'no-role-hierarchy',
+          from: '/dashboard',
+        }}
+        replace
+      />
+    );
   }
 
   // Use V2 defaultDashboard to determine redirect

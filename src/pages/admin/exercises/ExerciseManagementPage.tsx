@@ -34,6 +34,7 @@ import {
 } from '@/shared/ui/dialog';
 import { useToast } from '@/shared/ui/use-toast';
 import { ConfirmDialog } from '@/shared/ui/confirm-dialog';
+import { PageHeader } from '@/shared/ui/page-header';
 import { ExerciseForm, QuestionSelector } from '@/entities/exercise';
 import {
   useExercises,
@@ -561,39 +562,34 @@ export const ExerciseManagementPage: React.FC = () => {
   return (
     <div className="space-y-8 p-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Exercise Management</h1>
-          <p className="text-muted-foreground">
-            Manage exercises, quizzes, exams, and assessments
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {selectedExercises.length > 0 && (
-            <Button variant="destructive" onClick={handleBulkDelete}>
-              <Trash className="mr-2 h-4 w-4" />
-              Delete Selected ({selectedExercises.length})
-            </Button>
+      <PageHeader
+        title="Exercise Management"
+        description="Manage exercises, quizzes, exams, and assessments"
+      >
+        {selectedExercises.length > 0 && (
+          <Button variant="destructive" onClick={handleBulkDelete}>
+            <Trash className="mr-2 h-4 w-4" />
+            Delete Selected ({selectedExercises.length})
+          </Button>
+        )}
+        <Button variant="outline" onClick={() => setShowFilters(!showFilters)}>
+          <Filter className="mr-2 h-4 w-4" />
+          Filters
+          {hasActiveFilters && (
+            <Badge variant="secondary" className="ml-2">
+              {
+                Object.keys(filters).filter(
+                  (k) => k !== 'page' && k !== 'limit' && filters[k as keyof ExerciseFilters]
+                ).length
+              }
+            </Badge>
           )}
-          <Button variant="outline" onClick={() => setShowFilters(!showFilters)}>
-            <Filter className="mr-2 h-4 w-4" />
-            Filters
-            {hasActiveFilters && (
-              <Badge variant="secondary" className="ml-2">
-                {
-                  Object.keys(filters).filter(
-                    (k) => k !== 'page' && k !== 'limit' && filters[k as keyof ExerciseFilters]
-                  ).length
-                }
-              </Badge>
-            )}
-          </Button>
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Exercise
-          </Button>
-        </div>
-      </div>
+        </Button>
+        <Button onClick={() => setIsCreateDialogOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />
+          Add Exercise
+        </Button>
+      </PageHeader>
 
       {/* Filters */}
       {showFilters && (

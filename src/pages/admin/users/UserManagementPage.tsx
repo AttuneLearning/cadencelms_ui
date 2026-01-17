@@ -20,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/ui/dropdown-menu';
 import { useToast } from '@/shared/ui/use-toast';
+import { PageHeader } from '@/shared/ui/page-header';
 import { UserAvatar } from '@/entities/user';
 import { userApi, type UserListItem, type Role, type UserStatus } from '@/entities/user';
 import { MoreHorizontal, Plus, Trash, Edit, UserCheck, UserX } from 'lucide-react';
@@ -238,24 +239,21 @@ export const UserManagementPage: React.FC = () => {
   return (
     <div className="space-y-8 p-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
-          <p className="text-muted-foreground">Manage user accounts and permissions</p>
-        </div>
-        <div className="flex items-center gap-2">
-          {selectedUsers.length > 0 && (
-            <Button variant="destructive" onClick={handleBulkDelete}>
-              <Trash className="mr-2 h-4 w-4" />
-              Delete Selected ({selectedUsers.length})
-            </Button>
-          )}
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add User
+      <PageHeader
+        title="User Management"
+        description="Manage user accounts and permissions"
+      >
+        {selectedUsers.length > 0 && (
+          <Button variant="destructive" onClick={handleBulkDelete}>
+            <Trash className="mr-2 h-4 w-4" />
+            Delete Selected ({selectedUsers.length})
           </Button>
-        </div>
-      </div>
+        )}
+        <Button onClick={() => setIsCreateDialogOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />
+          Add User
+        </Button>
+      </PageHeader>
 
       {/* Data Table */}
       <DataTable

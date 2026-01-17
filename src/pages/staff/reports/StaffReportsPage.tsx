@@ -220,13 +220,10 @@ export function StaffReportsPage() {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Reports</h1>
-        <p className="text-muted-foreground mt-2">
-          Generate and manage reports for your classes and students
-        </p>
-      </div>
+      <PageHeader
+        title="Reports"
+        description="Generate and manage reports for your classes and students"
+      />
 
       {/* Quick Report Generation */}
       <Card>

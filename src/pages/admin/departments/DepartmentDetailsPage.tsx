@@ -9,6 +9,7 @@ import { Button } from '@/shared/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { Card, CardContent } from '@/shared/ui/card';
 import { ArrowLeft, Edit, Loader2 } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 import {
   useDepartment,
   useDepartmentStats,
@@ -70,27 +71,21 @@ export const DepartmentDetailsPage: React.FC = () => {
 
   return (
     <div className="space-y-8 p-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <Button variant="ghost" size="sm" onClick={() => navigate('/admin/departments')}>
-              <ArrowLeft className="h-4 w-4 mr-1" />
-              Back
-            </Button>
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight">{department.name}</h1>
-          <p className="text-muted-foreground mt-1">
-            Department Code: <span className="font-mono font-medium">{department.code}</span>
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={handleEdit}>
-            <Edit className="mr-2 h-4 w-4" />
-            Edit Department
+      <PageHeader
+        title={department.name}
+        description={`Department Code: ${department.code}`}
+        backButton={
+          <Button variant="ghost" size="sm" onClick={() => navigate('/admin/departments')}>
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            Back
           </Button>
-        </div>
-      </div>
+        }
+      >
+        <Button variant="outline" onClick={handleEdit}>
+          <Edit className="mr-2 h-4 w-4" />
+          Edit Department
+        </Button>
+      </PageHeader>
 
       {/* Department Overview Card */}
       <DepartmentOverviewCard department={department} />

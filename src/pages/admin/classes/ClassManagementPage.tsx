@@ -37,6 +37,7 @@ import { Label } from '@/shared/ui/label';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { useToast } from '@/shared/ui/use-toast';
 import { ConfirmDialog } from '@/shared/ui/confirm-dialog';
+import { PageHeader } from '@/shared/ui/page-header';
 import {
   type ClassListItem,
   type ClassStatus,
@@ -493,24 +494,21 @@ export const ClassManagementPage: React.FC = () => {
   return (
     <div className="space-y-8 p-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Class Management</h1>
-          <p className="text-muted-foreground">Manage class schedules and enrollments</p>
-        </div>
-        <div className="flex items-center gap-2">
-          {selectedClasses.length > 0 && (
-            <Button variant="destructive" onClick={handleBulkDelete}>
-              <Trash className="mr-2 h-4 w-4" />
-              Delete Selected ({selectedClasses.length})
-            </Button>
-          )}
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Class
+      <PageHeader
+        title="Class Management"
+        description="Manage class schedules and enrollments"
+      >
+        {selectedClasses.length > 0 && (
+          <Button variant="destructive" onClick={handleBulkDelete}>
+            <Trash className="mr-2 h-4 w-4" />
+            Delete Selected ({selectedClasses.length})
           </Button>
-        </div>
-      </div>
+        )}
+        <Button onClick={() => setIsCreateDialogOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />
+          Add Class
+        </Button>
+      </PageHeader>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-4">

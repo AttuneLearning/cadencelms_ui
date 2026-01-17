@@ -31,6 +31,7 @@ import {
 } from '@/shared/ui/dialog';
 import { useToast } from '@/shared/ui/use-toast';
 import { ConfirmDialog } from '@/shared/ui/confirm-dialog';
+import { PageHeader } from '@/shared/ui/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import {
   MoreHorizontal,
@@ -378,21 +379,15 @@ export const CertificateTemplateManagementPage: React.FC = () => {
 
   return (
     <div className="space-y-8 p-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Certificate Template Management
-          </h1>
-          <p className="text-muted-foreground">
-            Manage certificate templates for course completions
-          </p>
-        </div>
+      <PageHeader
+        title="Certificate Template Management"
+        description="Manage certificate templates for course completions"
+      >
         <Button onClick={handleCreate}>
           <Plus className="mr-2 h-4 w-4" />
           Create Template
         </Button>
-      </div>
+      </PageHeader>
 
       {/* Error State */}
       {error && (

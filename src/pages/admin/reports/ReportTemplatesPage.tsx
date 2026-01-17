@@ -39,6 +39,7 @@ import {
 } from '@/shared/ui/select';
 import { useToast } from '@/shared/ui/use-toast';
 import { ConfirmDialog } from '@/shared/ui/confirm-dialog';
+import { PageHeader } from '@/shared/ui/page-header';
 import {
   MoreHorizontal,
   Plus,
@@ -286,17 +287,15 @@ export const ReportTemplatesPage: React.FC = () => {
 
   return (
     <div className="space-y-8 p-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Report Templates</h1>
-          <p className="text-muted-foreground">Manage report templates and defaults</p>
-        </div>
+      <PageHeader
+        title="Report Templates"
+        description="Manage report templates and defaults"
+      >
         <Button onClick={() => setIsCreateDialogOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
           Create Template
         </Button>
-      </div>
+      </PageHeader>
 
       {/* Filters */}
       <Card>

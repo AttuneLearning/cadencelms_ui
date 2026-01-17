@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { useToast } from '@/shared/ui/use-toast';
 import { ConfirmDialog } from '@/shared/ui/confirm-dialog';
 import { Plus, RefreshCw } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 import {
   useReportJobs,
   useCancelReportJob,
@@ -163,25 +164,19 @@ export const ReportJobsPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Report Jobs</h1>
-          <p className="text-muted-foreground">
-            Manage and monitor your report generation jobs
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => refetch()}>
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh
-          </Button>
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            New Report
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Report Jobs"
+        description="Manage and monitor your report generation jobs"
+      >
+        <Button variant="outline" size="sm" onClick={() => refetch()}>
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Refresh
+        </Button>
+        <Button onClick={() => setIsCreateDialogOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          New Report
+        </Button>
+      </PageHeader>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

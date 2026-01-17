@@ -5,17 +5,16 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
+import { PageHeader } from '@/shared/ui/page-header';
 import { CalendarDays } from 'lucide-react';
 
 export const AdminCalendarPage: React.FC = () => {
   return (
     <div className="space-y-8 p-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">System Calendar</h1>
-        <p className="text-muted-foreground">
-          System-wide calendar of events, classes, and activities
-        </p>
-      </div>
+      <PageHeader
+        title="System Calendar"
+        description="System-wide calendar of events, classes, and activities"
+      />
 
       <Card>
         <CardHeader>

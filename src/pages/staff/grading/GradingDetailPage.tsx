@@ -12,6 +12,7 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import { SubmissionViewer } from '@/features/grading/ui/SubmissionViewer';
 import { GradingForm } from '@/features/grading/ui/GradingForm';
 import { ArrowLeft, AlertCircle, CheckCircle } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 import { useToast } from '@/shared/ui/use-toast';
 
 export function GradingDetailPage() {
@@ -105,21 +106,16 @@ export function GradingDetailPage() {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <PageHeader
+        title="Grade Submission"
+        description={`Review and grade ${attempt.learnerName}'s submission`}
+        backButton={
           <Button variant="ghost" onClick={handleBack}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Grade Submission</h1>
-            <p className="text-muted-foreground mt-1">
-              Review and grade {attempt.learnerName}'s submission
-            </p>
-          </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* Already Graded Warning */}
       {isAlreadyGraded && (

@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Skeleton } from '@/shared/ui/skeleton';
+import { PageHeader } from '@/shared/ui/page-header';
 import { Users, BookOpen, TrendingUp, Activity } from 'lucide-react';
 import { client } from '@/shared/api/client';
 import { endpoints } from '@/shared/api/endpoints';
@@ -35,12 +36,10 @@ export const AdminDashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-8 p-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
-        <p className="text-muted-foreground">
-          Overview of your learning management system
-        </p>
-      </div>
+      <PageHeader
+        title="Admin Dashboard"
+        description="Overview of your learning management system"
+      />
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard

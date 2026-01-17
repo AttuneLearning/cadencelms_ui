@@ -136,7 +136,18 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   // 1. Check Authentication
   // ================================================================
   if (!isAuthenticated || !roleHierarchy) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    // Redirect to auth-error page with debug info instead of login
+    // This provides visibility into auth state for debugging
+    return (
+      <Navigate
+        to="/auth-error"
+        state={{
+          reason: !isAuthenticated ? 'no-auth' : 'no-role-hierarchy',
+          from: location.pathname,
+        }}
+        replace
+      />
+    );
   }
 
   // ================================================================

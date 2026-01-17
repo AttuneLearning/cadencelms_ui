@@ -25,6 +25,7 @@ import {
   AlertCircle,
   UserPlus,
 } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 import { StudentList } from '@/features/classes/ui/StudentList';
 import { EnrollStudentsDialog } from '@/features/classes/ui/EnrollStudentsDialog';
 import { SendAnnouncementDialog } from '@/features/classes/ui/SendAnnouncementDialog';
@@ -152,46 +153,40 @@ export function ClassDetailsPage() {
 
   return (
     <div className="container mx-auto py-8 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4">
-        <Button variant="ghost" className="w-fit" onClick={handleBack}>
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Classes
+      <PageHeader
+        title={classData.name}
+        description={
+          <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
+            <span className="flex items-center gap-1">
+              <BookOpen className="h-4 w-4" />
+              {classData.course.code} - {classData.course.title}
+            </span>
+            <span className="flex items-center gap-1">
+              <GraduationCap className="h-4 w-4" />
+              {classData.program.name}
+              {classData.programLevel && ` - ${classData.programLevel.name}`}
+            </span>
+          </div>
+        }
+        backButton={
+          <Button variant="ghost" className="w-fit" onClick={handleBack}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Classes
+          </Button>
+        }
+      >
+        <Badge variant={statusVariants[classData.status]}>
+          {statusLabels[classData.status]}
+        </Badge>
+        <Button variant="outline" onClick={() => setAnnouncementDialogOpen(true)}>
+          <Mail className="mr-2 h-4 w-4" />
+          Send Announcement
         </Button>
-
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="space-y-2">
-            <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-3xl font-bold tracking-tight">{classData.name}</h1>
-              <Badge variant={statusVariants[classData.status]}>
-                {statusLabels[classData.status]}
-              </Badge>
-            </div>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
-              <span className="flex items-center gap-1">
-                <BookOpen className="h-4 w-4" />
-                {classData.course.code} - {classData.course.title}
-              </span>
-              <span className="flex items-center gap-1">
-                <GraduationCap className="h-4 w-4" />
-                {classData.program.name}
-                {classData.programLevel && ` - ${classData.programLevel.name}`}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setAnnouncementDialogOpen(true)}>
-              <Mail className="mr-2 h-4 w-4" />
-              Send Announcement
-            </Button>
-            <Button onClick={() => setEnrollDialogOpen(true)}>
-              <UserPlus className="mr-2 h-4 w-4" />
-              Enroll Students
-            </Button>
-          </div>
-        </div>
-      </div>
+        <Button onClick={() => setEnrollDialogOpen(true)}>
+          <UserPlus className="mr-2 h-4 w-4" />
+          Enroll Students
+        </Button>
+      </PageHeader>
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">

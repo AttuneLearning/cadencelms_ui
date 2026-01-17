@@ -11,6 +11,7 @@ import { Badge } from '@/shared/ui/badge';
 import { useToast } from '@/shared/ui/use-toast';
 import { ConfirmDialog } from '@/shared/ui/confirm-dialog';
 import { ArrowLeft, Download, Ban, RefreshCw, Trash2, Loader2, Share2 } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 import { format } from 'date-fns';
 import {
   useReportJob,
@@ -165,47 +166,43 @@ export const ReportJobDetailPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
+      <PageHeader
+        title={job.name}
+        description={job.description}
+        backButton={
           <Button variant="ghost" onClick={() => navigate('/admin/reports')}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Reports
           </Button>
-          <h1 className="text-3xl font-bold tracking-tight">{job.name}</h1>
-          {job.description && (
-            <p className="text-muted-foreground">{job.description}</p>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          {canDownload && (
-            <Button onClick={handleDownload}>
-              <Download className="h-4 w-4 mr-2" />
-              Download
-            </Button>
-          )}
-          <Button variant="outline" onClick={() => setShowShareDialog(true)}>
-            <Share2 className="h-4 w-4 mr-2" />
-            Share
+        }
+      >
+        {canDownload && (
+          <Button onClick={handleDownload}>
+            <Download className="h-4 w-4 mr-2" />
+            Download
           </Button>
-          {canCancel && (
-            <Button variant="outline" onClick={handleCancel}>
-              <Ban className="h-4 w-4 mr-2" />
-              Cancel
-            </Button>
-          )}
-          {canRetry && (
-            <Button variant="outline" onClick={handleRetry}>
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Retry
-            </Button>
-          )}
-          <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)}>
-            <Trash2 className="h-4 w-4 mr-2" />
-            Delete
+        )}
+        <Button variant="outline" onClick={() => setShowShareDialog(true)}>
+          <Share2 className="h-4 w-4 mr-2" />
+          Share
+        </Button>
+        {canCancel && (
+          <Button variant="outline" onClick={handleCancel}>
+            <Ban className="h-4 w-4 mr-2" />
+            Cancel
           </Button>
-        </div>
-      </div>
+        )}
+        {canRetry && (
+          <Button variant="outline" onClick={handleRetry}>
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Retry
+          </Button>
+        )}
+        <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)}>
+          <Trash2 className="h-4 w-4 mr-2" />
+          Delete
+        </Button>
+      </PageHeader>
 
       {/* Status & Progress */}
       <Card>

@@ -10,6 +10,7 @@ import { AppLayout } from '@/widgets/layout';
 import { Button } from '@/shared/ui/button';
 import { useToast } from '@/shared/ui/use-toast';
 import { ArrowLeft } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 import {
   StudentDetailView,
   StudentProgressChart,
@@ -196,18 +197,15 @@ export const StudentDetailPage: React.FC = () => {
   return (
     <AppLayout>
       <div className="container mx-auto p-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={handleBack}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Student Details</h1>
-            <p className="text-muted-foreground">
-              Comprehensive progress and performance overview
-            </p>
-          </div>
-        </div>
+        <PageHeader
+          title="Student Details"
+          description="Comprehensive progress and performance overview"
+          backButton={
+            <Button variant="ghost" size="icon" onClick={handleBack}>
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          }
+        />
 
         {error && (
           <div className="bg-destructive/10 text-destructive px-4 py-3 rounded-md">

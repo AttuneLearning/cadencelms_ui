@@ -7,6 +7,7 @@ import React, { useState, useMemo } from 'react';
 import { Button } from '@/shared/ui/button';
 import { StatCard } from '@/widgets/analytics';
 import { Users, TrendingUp, Award, Clock } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 import { useProgressSummary } from '@/entities/progress/hooks';
 import { useActivityStats } from '@/entities/learning-event/hooks';
 import { useExamAttempts } from '@/entities/exam-attempt/hooks';
@@ -82,18 +83,14 @@ export const AnalyticsDashboardPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
-          <p className="text-muted-foreground">
-            Real-time insights into course performance and student engagement
-          </p>
-        </div>
+      <PageHeader
+        title="Analytics Dashboard"
+        description="Real-time insights into course performance and student engagement"
+      >
         <Button onClick={() => setShowExportDialog(true)}>
           Export Report
         </Button>
-      </div>
+      </PageHeader>
 
       {/* Filters */}
       <AnalyticsFilters filters={filters} onFiltersChange={setFilters} />

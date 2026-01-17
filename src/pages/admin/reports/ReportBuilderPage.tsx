@@ -36,6 +36,7 @@ import {
 } from '@/shared/ui/select';
 import { useToast } from '@/shared/ui/use-toast';
 import { ConfirmDialog } from '@/shared/ui/confirm-dialog';
+import { PageHeader } from '@/shared/ui/page-header';
 import { DateRangePicker } from '@/shared/ui/date-range-picker';
 import {
   useReports,
@@ -289,13 +290,10 @@ export const ReportBuilderPage: React.FC = () => {
 
   return (
     <div className="space-y-8 p-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Report Builder</h1>
-        <p className="text-muted-foreground">
-          Build and generate reports for enrollment, performance, and attendance
-        </p>
-      </div>
+      <PageHeader
+        title="Report Builder"
+        description="Build and generate reports for enrollment, performance, and attendance"
+      />
 
       {/* Report Type Selection */}
       <Card>

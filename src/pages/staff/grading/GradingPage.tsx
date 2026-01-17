@@ -22,6 +22,7 @@ import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { SubmissionList } from '@/features/grading/ui/SubmissionList';
 import { BulkGradingDialog } from '@/features/grading/ui/BulkGradingDialog';
 import { Search, Filter, AlertCircle } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 import type { AttemptStatus } from '@/entities/exam-attempt/model/types';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 
@@ -96,13 +97,10 @@ export function GradingPage() {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Grading Dashboard</h1>
-        <p className="text-muted-foreground mt-2">
-          Review and grade student submissions
-        </p>
-      </div>
+      <PageHeader
+        title="Grading Dashboard"
+        description="Review and grade student submissions"
+      />
 
       {/* Filters */}
       <Card>

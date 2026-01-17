@@ -17,6 +17,7 @@ import {
   FileText,
   BarChart3,
 } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 
 // Mock data - Replace with actual API calls
 const mockStats = {
@@ -87,29 +88,23 @@ const mockRecentEnrollments = [
 export const StaffDashboardPage: React.FC = () => {
   return (
     <div className="container mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Staff Dashboard</h1>
-          <p className="text-muted-foreground">
-            Monitor student progress and course performance
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" asChild>
-            <Link to="/staff/analytics">
-              <BarChart3 className="mr-2 h-4 w-4" />
-              View Analytics
-            </Link>
-          </Button>
-          <Button variant="outline" asChild>
-            <Link to="/staff/students">
-              <Users className="mr-2 h-4 w-4" />
-              View Students
-            </Link>
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Staff Dashboard"
+        description="Monitor student progress and course performance"
+      >
+        <Button variant="outline" asChild>
+          <Link to="/staff/analytics">
+            <BarChart3 className="mr-2 h-4 w-4" />
+            View Analytics
+          </Link>
+        </Button>
+        <Button variant="outline" asChild>
+          <Link to="/staff/students">
+            <Users className="mr-2 h-4 w-4" />
+            View Students
+          </Link>
+        </Button>
+      </PageHeader>
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

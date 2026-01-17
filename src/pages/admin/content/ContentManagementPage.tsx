@@ -40,6 +40,7 @@ import {
 } from '@/shared/ui/dialog';
 import { useToast } from '@/shared/ui/use-toast';
 import { ConfirmDialog } from '@/shared/ui/confirm-dialog';
+import { PageHeader } from '@/shared/ui/page-header';
 import { Card } from '@/shared/ui/card';
 import { Label } from '@/shared/ui/label';
 import {
@@ -638,14 +639,10 @@ export const ContentManagementPage: React.FC = () => {
   return (
     <div className="space-y-8 p-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Content Management</h1>
-          <p className="text-muted-foreground">
-            Manage SCORM packages and media library
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="Content Management"
+        description="Manage SCORM packages and media library"
+      />
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as TabValue)}>

@@ -5,17 +5,16 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
+import { PageHeader } from '@/shared/ui/page-header';
 import { BarChart, TrendingUp, Users, BookOpen } from 'lucide-react';
 
 export const AdminAnalyticsPage: React.FC = () => {
   return (
     <div className="space-y-8 p-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">System Analytics</h1>
-        <p className="text-muted-foreground">
-          System-wide analytics and performance metrics
-        </p>
-      </div>
+      <PageHeader
+        title="System Analytics"
+        description="System-wide analytics and performance metrics"
+      />
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>

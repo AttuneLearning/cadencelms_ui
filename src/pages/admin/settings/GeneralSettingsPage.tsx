@@ -20,6 +20,7 @@ import { Badge } from '@/shared/ui/badge';
 import { useToast } from '@/shared/ui/use-toast';
 import { ConfirmDialog } from '@/shared/ui/confirm-dialog';
 import { Loader2, Save, RotateCcw, ArrowLeft } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 import {
   useSettingsByCategory,
   useUpdateSettings,
@@ -192,15 +193,15 @@ export const GeneralSettingsPage: React.FC = () => {
   if (error) {
     return (
       <div className="space-y-8 p-8">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={() => navigate('/admin/settings')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">General Settings</h1>
-          </div>
-        </div>
+        <PageHeader
+          title="General Settings"
+          backButton={
+            <Button variant="ghost" size="sm" onClick={() => navigate('/admin/settings')}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+          }
+        />
         <Card className="border-destructive">
           <CardContent className="pt-6">
             <div className="text-destructive">
@@ -215,19 +216,16 @@ export const GeneralSettingsPage: React.FC = () => {
 
   return (
     <div className="space-y-8 p-8">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" onClick={() => navigate('/admin/settings')}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">General Settings</h1>
-          <p className="text-muted-foreground">
-            Configure system-wide general settings
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="General Settings"
+        description="Configure system-wide general settings"
+        backButton={
+          <Button variant="ghost" size="sm" onClick={() => navigate('/admin/settings')}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
+          </Button>
+        }
+      />
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Information */}

@@ -27,6 +27,7 @@ import {
 } from '@/shared/ui/dialog';
 import { useToast } from '@/shared/ui/use-toast';
 import { ConfirmDialog } from '@/shared/ui/confirm-dialog';
+import { PageHeader } from '@/shared/ui/page-header';
 import { Card } from '@/shared/ui/card';
 import {
   MoreHorizontal,
@@ -245,26 +246,21 @@ export const AcademicYearManagementPage: React.FC = () => {
   return (
     <div className="space-y-8 p-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Academic Year Management</h1>
-          <p className="text-muted-foreground">
-            Manage academic years and terms
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {selectedYears.length > 0 && (
-            <Button variant="destructive" onClick={handleBulkDelete}>
-              <Trash className="mr-2 h-4 w-4" />
-              Delete Selected ({selectedYears.length})
-            </Button>
-          )}
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Academic Year
+      <PageHeader
+        title="Academic Year Management"
+        description="Manage academic years and terms"
+      >
+        {selectedYears.length > 0 && (
+          <Button variant="destructive" onClick={handleBulkDelete}>
+            <Trash className="mr-2 h-4 w-4" />
+            Delete Selected ({selectedYears.length})
           </Button>
-        </div>
-      </div>
+        )}
+        <Button onClick={() => setIsCreateDialogOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />
+          Add Academic Year
+        </Button>
+      </PageHeader>
 
       {/* Info Card */}
       <Card className="p-6 bg-blue-50 border-blue-200">

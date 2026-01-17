@@ -34,6 +34,7 @@ import {
 } from '@/shared/ui/dialog';
 import { useToast } from '@/shared/ui/use-toast';
 import { ConfirmDialog } from '@/shared/ui/confirm-dialog';
+import { PageHeader } from '@/shared/ui/page-header';
 import { Label } from '@/shared/ui/label';
 import { Card } from '@/shared/ui/card';
 import {
@@ -322,38 +323,33 @@ export const StaffManagementPage: React.FC = () => {
   return (
     <div className="space-y-8 p-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Staff Management</h1>
-          <p className="text-muted-foreground">
-            Manage staff accounts and roles
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {selectedStaff.length > 0 && (
-            <Button variant="destructive" onClick={handleBulkDelete}>
-              <Trash className="mr-2 h-4 w-4" />
-              Delete Selected ({selectedStaff.length})
-            </Button>
+      <PageHeader
+        title="Staff Management"
+        description="Manage staff accounts and roles"
+      >
+        {selectedStaff.length > 0 && (
+          <Button variant="destructive" onClick={handleBulkDelete}>
+            <Trash className="mr-2 h-4 w-4" />
+            Delete Selected ({selectedStaff.length})
+          </Button>
+        )}
+        <Button variant="outline" onClick={() => setShowFilters(!showFilters)}>
+          <Filter className="mr-2 h-4 w-4" />
+          Filters
+          {hasActiveFilters && (
+            <Badge variant="secondary" className="ml-2">
+              {Object.keys(filters).filter(
+                (k) =>
+                  k !== 'page' && k !== 'limit' && filters[k as keyof StaffFilters]
+              ).length}
+            </Badge>
           )}
-          <Button variant="outline" onClick={() => setShowFilters(!showFilters)}>
-            <Filter className="mr-2 h-4 w-4" />
-            Filters
-            {hasActiveFilters && (
-              <Badge variant="secondary" className="ml-2">
-                {Object.keys(filters).filter(
-                  (k) =>
-                    k !== 'page' && k !== 'limit' && filters[k as keyof StaffFilters]
-                ).length}
-              </Badge>
-            )}
-          </Button>
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Staff
-          </Button>
-        </div>
-      </div>
+        </Button>
+        <Button onClick={() => setIsCreateDialogOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />
+          Add Staff
+        </Button>
+      </PageHeader>
 
       {/* Filters */}
       {showFilters && (

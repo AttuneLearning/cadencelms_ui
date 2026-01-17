@@ -20,6 +20,7 @@ import {
   DialogTitle,
 } from '@/shared/ui/dialog';
 import { Search, Filter, Download, User, BookOpen, TrendingUp, Clock, Loader2 } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 import { useExportStudentProgress } from '@/entities/student';
 
 // Mock data - Replace with actual API calls
@@ -229,14 +230,10 @@ export const StudentProgressPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Student Progress</h1>
-          <p className="text-muted-foreground">
-            Monitor and manage individual student progress
-          </p>
-        </div>
+      <PageHeader
+        title="Student Progress"
+        description="Monitor and manage individual student progress"
+      >
         <Button onClick={handleExportData} disabled={isExporting}>
           {isExporting ? (
             <>
@@ -250,7 +247,7 @@ export const StudentProgressPage: React.FC = () => {
             </>
           )}
         </Button>
-      </div>
+      </PageHeader>
 
       {/* Summary Stats */}
       <div className="grid gap-4 md:grid-cols-4">

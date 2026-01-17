@@ -6,16 +6,15 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { CalendarDays } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 
 export const StaffCalendarPage: React.FC = () => {
   return (
     <div className="space-y-8 p-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">My Calendar</h1>
-        <p className="text-muted-foreground">
-          Your teaching schedule, meetings, and important dates
-        </p>
-      </div>
+      <PageHeader
+        title="My Calendar"
+        description="Your teaching schedule, meetings, and important dates"
+      />
 
       <Card>
         <CardHeader>

@@ -9,6 +9,7 @@ import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { Plus } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 import {
   useReportTemplates,
   useMyTemplates,
@@ -56,19 +57,15 @@ export const ReportTemplatesPageNew: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Report Templates</h1>
-          <p className="text-muted-foreground">
-            Browse and create reusable report templates
-          </p>
-        </div>
+      <PageHeader
+        title="Report Templates"
+        description="Browse and create reusable report templates"
+      >
         <Button onClick={() => setIsCreateDialogOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
           New Template
         </Button>
-      </div>
+      </PageHeader>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

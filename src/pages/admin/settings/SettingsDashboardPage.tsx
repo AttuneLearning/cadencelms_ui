@@ -11,6 +11,7 @@ import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Loader2, Settings, Mail, Bell, Shield, Palette, ChevronRight, AlertCircle, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useSettingsDashboard } from '@/entities/settings';
+import { PageHeader } from '@/shared/ui/page-header';
 
 const settingsCategories = [
   {
@@ -65,12 +66,10 @@ export const SettingsDashboardPage: React.FC = () => {
   if (error) {
     return (
       <div className="space-y-8 p-8">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">System Settings</h1>
-          <p className="text-muted-foreground">
-            Manage system configuration and preferences
-          </p>
-        </div>
+        <PageHeader
+          title="System Settings"
+          description="Manage system configuration and preferences"
+        />
         <Card className="border-destructive">
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 text-destructive">
@@ -114,13 +113,10 @@ export const SettingsDashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-8 p-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">System Settings</h1>
-        <p className="text-muted-foreground">
-          Manage system configuration and preferences
-        </p>
-      </div>
+      <PageHeader
+        title="System Settings"
+        description="Manage system configuration and preferences"
+      />
 
       {/* System Health */}
       <Card>
