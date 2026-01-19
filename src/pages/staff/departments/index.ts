@@ -7,6 +7,6 @@
 
 export { DepartmentCoursesPage } from './DepartmentCoursesPage';
 export { DepartmentClassesPage } from './DepartmentClassesPage';
-// export { DepartmentStudentsPage } from './DepartmentStudentsPage';  // Phase 2
-// export { DepartmentReportsPage } from './DepartmentReportsPage';  // Phase 2
-// export { DepartmentSettingsPage } from './DepartmentSettingsPage';  // Phase 2
+export { DepartmentStudentsPage } from './DepartmentStudentsPage';
+export { DepartmentReportsPage } from './DepartmentReportsPage';
+export { DepartmentSettingsPage } from './DepartmentSettingsPage';
