@@ -99,6 +99,7 @@ export const Sidebar: React.FC = () => {
 
   const [isDepartmentSectionExpanded, setIsDepartmentSectionExpanded] = React.useState(isSwitching);
   const [isContextSectionExpanded, setIsContextSectionExpanded] = React.useState(true);
+  const [isBaseSectionExpanded, setIsBaseSectionExpanded] = React.useState(true);
 
   // Auto-expand when switching
   React.useEffect(() => {
@@ -374,21 +375,31 @@ export const Sidebar: React.FC = () => {
 
         {/* SECTION 1: Base Navigation */}
         <div className="flex-shrink-0 border-b">
-          <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          <button
+            onClick={() => setIsBaseSectionExpanded(!isBaseSectionExpanded)}
+            className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:bg-accent/50 transition-colors"
+          >
+            {isBaseSectionExpanded ? (
+              <ChevronDown className="h-4 w-4" />
+            ) : (
+              <ChevronRight className="h-4 w-4" />
+            )}
             Navigation
-          </div>
-          <nav className="space-y-1 px-2 pb-4">
-            {baseNavItems.map((item) => (
-              <NavLink
-                key={item.path}
-                label={item.label}
-                path={item.path}
-                icon={item.icon}
-                disabled={item.disabled}
-                onClick={() => setSidebarOpen(false)}
-              />
-            ))}
-          </nav>
+          </button>
+          {isBaseSectionExpanded && (
+            <nav className="space-y-1 px-2 pb-4">
+              {baseNavItems.map((item) => (
+                <NavLink
+                  key={item.path}
+                  label={item.label}
+                  path={item.path}
+                  icon={item.icon}
+                  disabled={item.disabled}
+                  onClick={() => setSidebarOpen(false)}
+                />
+              ))}
+            </nav>
+          )}
         </div>
 
         {/* SECTION 2: Context-Specific Navigation */}
