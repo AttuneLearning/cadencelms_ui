@@ -5,6 +5,8 @@
 
 interface EnvConfig {
   apiBaseUrl: string;
+  apiPrefix: string;
+  apiFullUrl: string;
   environment: 'development' | 'production' | 'test';
   sentryDsn?: string;
 }
@@ -14,6 +16,7 @@ interface EnvConfig {
  */
 function getEnvConfig(): EnvConfig {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+  const apiPrefix = import.meta.env.VITE_API_PREFIX || '/api/v2';
   const environment = import.meta.env.VITE_ENV || 'development';
 
   if (!apiBaseUrl) {
@@ -24,6 +27,8 @@ function getEnvConfig(): EnvConfig {
 
   return {
     apiBaseUrl,
+    apiPrefix,
+    apiFullUrl: `${apiBaseUrl}${apiPrefix}`,
     environment: environment as EnvConfig['environment'],
     sentryDsn: import.meta.env.VITE_SENTRY_DSN,
   };

@@ -10,7 +10,7 @@ import { setupServer } from 'msw/node';
 import {
   useReportSchedules,
   useReportSchedule,
-  useScheduleHistory,
+  useReportScheduleExecutions,
   useCreateReportSchedule,
   useUpdateReportSchedule,
   useDeleteReportSchedule,
@@ -149,9 +149,9 @@ describe('Report Schedule Hooks', () => {
     });
   });
 
-  describe('useScheduleHistory', () => {
+  describe('useReportScheduleExecutions', () => {
     it('should fetch schedule execution history', async () => {
-      const { result } = renderHook(() => useScheduleHistory('schedule-123'), {
+      const { result } = renderHook(() => useReportScheduleExecutions('schedule-123'), {
         wrapper: createWrapper(),
       });
 

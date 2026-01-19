@@ -24,7 +24,7 @@ export async function createReportSchedule(
   request: CreateReportScheduleRequest
 ): Promise<ReportSchedule> {
   const response = await client.post<ApiResponse<{ schedule: ReportSchedule }>>(
-    '/api/v2/reports/schedules',
+    '/reports/schedules',
     request
   );
   return response.data.data.schedule;
@@ -37,7 +37,7 @@ export async function listReportSchedules(
   params?: ListReportSchedulesParams
 ): Promise<ListReportSchedulesResponse> {
   const response = await client.get<ApiResponse<ListReportSchedulesResponse>>(
-    '/api/v2/reports/schedules',
+    '/reports/schedules',
     { params }
   );
   return response.data.data;
@@ -48,7 +48,7 @@ export async function listReportSchedules(
  */
 export async function getReportSchedule(id: string): Promise<ReportSchedule> {
   const response = await client.get<ApiResponse<{ schedule: ReportSchedule }>>(
-    `/api/v2/reports/schedules/${id}`
+    `/reports/schedules/${id}`
   );
   return response.data.data.schedule;
 }
@@ -61,7 +61,7 @@ export async function updateReportSchedule(
   request: UpdateReportScheduleRequest
 ): Promise<ReportSchedule> {
   const response = await client.put<ApiResponse<{ schedule: ReportSchedule }>>(
-    `/api/v2/reports/schedules/${id}`,
+    `/reports/schedules/${id}`,
     request
   );
   return response.data.data.schedule;
@@ -71,7 +71,7 @@ export async function updateReportSchedule(
  * Delete a report schedule
  */
 export async function deleteReportSchedule(id: string): Promise<void> {
-  await client.delete<ApiResponse<void>>(`/api/v2/reports/schedules/${id}`);
+  await client.delete<ApiResponse<void>>(`/reports/schedules/${id}`);
 }
 
 /**
@@ -79,7 +79,7 @@ export async function deleteReportSchedule(id: string): Promise<void> {
  */
 export async function activateReportSchedule(id: string): Promise<ReportSchedule> {
   const response = await client.post<ApiResponse<{ schedule: ReportSchedule }>>(
-    `/api/v2/reports/schedules/${id}/activate`
+    `/reports/schedules/${id}/activate`
   );
   return response.data.data.schedule;
 }
@@ -89,7 +89,7 @@ export async function activateReportSchedule(id: string): Promise<ReportSchedule
  */
 export async function deactivateReportSchedule(id: string): Promise<ReportSchedule> {
   const response = await client.post<ApiResponse<{ schedule: ReportSchedule }>>(
-    `/api/v2/reports/schedules/${id}/deactivate`
+    `/reports/schedules/${id}/deactivate`
   );
   return response.data.data.schedule;
 }
@@ -99,7 +99,7 @@ export async function deactivateReportSchedule(id: string): Promise<ReportSchedu
  */
 export async function triggerReportSchedule(id: string): Promise<{ jobId: string }> {
   const response = await client.post<ApiResponse<{ jobId: string }>>(
-    `/api/v2/reports/schedules/${id}/trigger`
+    `/reports/schedules/${id}/trigger`
   );
   return response.data.data;
 }
@@ -113,6 +113,6 @@ export async function getScheduleHistory(
 ): Promise<{ jobs: Array<{ jobId: string; triggeredAt: string; status: string }> }> {
   const response = await client.get<
     ApiResponse<{ jobs: Array<{ jobId: string; triggeredAt: string; status: string }> }>
-  >(`/api/v2/reports/schedules/${id}/history`, { params });
+  >(`/reports/schedules/${id}/history`, { params });
   return response.data.data;
 }

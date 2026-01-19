@@ -4,9 +4,8 @@
  */
 
 import { Component, ErrorInfo, ReactNode } from 'react';
-import { AlertTriangle } from 'lucide-react';
-import { Button } from '@/shared/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
+import { env } from '@/shared/config/env';
+import { ErrorPanel } from '@/shared/ui/error-panel';
 
 interface Props {
   children: ReactNode;
@@ -17,6 +16,7 @@ interface Props {
 interface State {
   hasError: boolean;
   error?: Error;
+  errorInfo?: ErrorInfo;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
@@ -36,10 +36,12 @@ export class ErrorBoundary extends Component<Props, State> {
     // Call custom error handler
     this.props.onError?.(error, errorInfo);
 
+    this.setState({ errorInfo });
+
     // Send to error tracking service (e.g., Sentry)
     if (process.env.NODE_ENV === 'production') {
       // Send to error tracking
-      fetch('/api/v2/errors', {
+      fetch(`${env.apiFullUrl}/errors`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -56,7 +58,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   handleReset = () => {
-    this.setState({ hasError: false, error: undefined });
+    this.setState({ hasError: false, error: undefined, errorInfo: undefined });
   };
 
   render() {
@@ -65,40 +67,31 @@ export class ErrorBoundary extends Component<Props, State> {
         return this.props.fallback;
       }
 
+      const componentStack = this.state.errorInfo?.componentStack || '';
+      const componentLine = componentStack
+        .split('\n')
+        .map((line) => line.trim())
+        .find((line) => line.startsWith('in '));
+      const componentName = componentLine ? componentLine.replace(/^in\s+/, '') : undefined;
+      const stack = [this.state.error?.stack, componentStack ? `Component stack:\n${componentStack}` : null]
+        .filter(Boolean)
+        .join('\n\n');
+
       return (
         <div className="flex min-h-screen items-center justify-center p-4">
-          <Card className="w-full max-w-md">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <AlertTriangle className="h-6 w-6 text-destructive" />
-                <CardTitle>Something went wrong</CardTitle>
-              </div>
-              <CardDescription>
-                An unexpected error occurred. Please try refreshing the page.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {process.env.NODE_ENV === 'development' && this.state.error && (
-                <div className="rounded-md bg-muted p-3 text-sm">
-                  <p className="font-medium text-destructive">{this.state.error.message}</p>
-                  <pre className="mt-2 overflow-auto text-xs">
-                    {this.state.error.stack}
-                  </pre>
-                </div>
-              )}
-              <div className="flex gap-2">
-                <Button onClick={this.handleReset} variant="default">
-                  Try Again
-                </Button>
-                <Button
-                  onClick={() => (window.location.href = '/')}
-                  variant="outline"
-                >
-                  Go Home
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="w-full max-w-2xl">
+            <ErrorPanel
+              title="Something went wrong"
+              message="An unexpected error occurred. Please try refreshing the page."
+              error={this.state.error}
+              details={{
+                component: componentName,
+                stack,
+              }}
+              onRetry={this.handleReset}
+              links={[{ label: 'Go Home', to: '/' }]}
+            />
+          </div>
         </div>
       );
     }

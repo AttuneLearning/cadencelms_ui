@@ -3,8 +3,8 @@
  * Implements grade override endpoints for dept-admin users
  *
  * API Endpoints:
- * - PUT /api/v2/enrollments/:enrollmentId/grades/override
- * - GET /api/v2/enrollments/:enrollmentId/grades/history
+ * - PUT /enrollments/:enrollmentId/grades/override
+ * - GET /enrollments/:enrollmentId/grades/history
  *
  * Authorization: academic:grades:override access right required
  * Role Required: dept-admin in the course's department
@@ -29,7 +29,7 @@ interface ApiResponse<T> {
 // =====================
 
 /**
- * PUT /api/v2/enrollments/:enrollmentId/grades/override
+ * PUT /enrollments/:enrollmentId/grades/override
  * Override a student's grade with mandatory audit logging
  *
  * @param enrollmentId - The enrollment ID to override grade for
@@ -52,14 +52,14 @@ export async function overrideGrade(
   payload: GradeOverridePayload
 ): Promise<GradeOverrideResponse> {
   const response = await client.put<ApiResponse<GradeOverrideResponse>>(
-    `/api/v2/enrollments/${enrollmentId}/grades/override`,
+    `/enrollments/${enrollmentId}/grades/override`,
     payload
   );
   return response.data.data;
 }
 
 /**
- * GET /api/v2/enrollments/:enrollmentId/grades/history
+ * GET /enrollments/:enrollmentId/grades/history
  * Get grade change history for an enrollment
  * Returns immutable audit log of all grade overrides
  *
@@ -82,7 +82,7 @@ export async function getGradeHistory(
   params?: GradeHistoryParams
 ): Promise<GradeHistoryEntry[]> {
   const response = await client.get<ApiResponse<GradeHistoryEntry[]>>(
-    `/api/v2/enrollments/${enrollmentId}/grades/history`,
+    `/enrollments/${enrollmentId}/grades/history`,
     { params }
   );
   return response.data.data;

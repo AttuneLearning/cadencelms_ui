@@ -151,7 +151,7 @@ export interface SettingsDashboard {
   };
   recentChanges: SettingsChangeLog[];
   systemHealth: {
-    status: 'healthy' | 'warning' | 'error';
+    status: 'healthy' | 'warning' | 'error' | 'unknown';
     emailConfigured: boolean;
     securityConfigured: boolean;
     issues: string[];

@@ -244,7 +244,7 @@ describe('API Client', () => {
 
           return HttpResponse.json({ message: 'Invalid token' }, { status: 401 });
         }),
-        http.post(`${env.apiBaseUrl}/auth/refresh`, () => {
+        http.post(`${env.apiFullUrl}/auth/refresh`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -306,7 +306,7 @@ describe('API Client', () => {
         http.get(testUrl, () => {
           return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 });
         }),
-        http.post(`${env.apiBaseUrl}/auth/refresh`, () => {
+        http.post(`${env.apiFullUrl}/auth/refresh`, () => {
           return HttpResponse.json(
             { message: 'Refresh token expired' },
             { status: 401 }

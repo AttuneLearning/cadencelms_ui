@@ -5,8 +5,8 @@
  * Handles sensitive demographic data for compliance and reporting.
  *
  * Endpoints:
- * - GET /api/v2/users/me/demographics - Get current user's demographics data
- * - PUT /api/v2/users/me/demographics - Update current user's demographics data
+ * - GET /users/me/demographics - Get current user's demographics data
+ * - PUT /users/me/demographics - Update current user's demographics data
  *
  * IMPORTANT: All demographic data is optional and requires explicit user consent.
  */
@@ -36,7 +36,7 @@ export const demographicsApi = {
    */
   async getMyDemographics(): Promise<DemographicsApiResponse> {
     const response = await client.get<DemographicsApiResponse>(
-      '/api/v2/users/me/demographics'
+      '/users/me/demographics'
     );
     return response.data;
   },
@@ -55,7 +55,7 @@ export const demographicsApi = {
     data: IDemographicsUpdateRequest
   ): Promise<DemographicsApiResponse & { message?: string }> {
     const response = await client.put<DemographicsApiResponse & { message?: string }>(
-      '/api/v2/users/me/demographics',
+      '/users/me/demographics',
       data
     );
     return response.data;

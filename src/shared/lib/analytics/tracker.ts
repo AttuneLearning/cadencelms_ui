@@ -3,6 +3,8 @@
  * Privacy-focused analytics for user behavior and learning patterns
  */
 
+import { env } from '@/shared/config/env';
+
 export interface AnalyticsEvent {
   category: string;
   action: string;
@@ -80,7 +82,7 @@ class AnalyticsTracker {
     this.queue = [];
 
     try {
-      await fetch('/api/v2/analytics/events', {
+      await fetch(`${env.apiFullUrl}/analytics/events`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ events }),

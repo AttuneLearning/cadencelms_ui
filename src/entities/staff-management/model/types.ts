@@ -15,7 +15,8 @@ export type DefaultDashboard = 'content-admin' | 'instructor' | 'analytics';
 export interface StaffDepartmentAssignment {
   departmentId: string;
   departmentName: string;
-  roleInDepartment: string;
+  /** Roles held in this department (can have multiple) */
+  rolesInDepartment: string[];
 }
 
 /**

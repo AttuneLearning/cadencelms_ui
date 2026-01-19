@@ -23,15 +23,51 @@ interface DashboardStats {
   averageProgress: number;
 }
 
+// Map completion report response to dashboard stats
+interface CompletionReportResponse {
+  data?: {
+    summary?: {
+      totalLearners?: number;
+      activeLearners?: number;
+      totalCourses?: number;
+      publishedCourses?: number;
+      totalEnrollments?: number;
+      averageCompletionRate?: number;
+    };
+  };
+}
+
 const fetchDashboardData = async (): Promise<DashboardStats> => {
-  const response = await client.get(endpoints.admin.reports.overview);
-  return response.data;
+  try {
+    const response = await client.get<CompletionReportResponse>(endpoints.reports.completion);
+    const summary = response.data?.data?.summary;
+    return {
+      totalUsers: summary?.totalLearners ?? 0,
+      activeUsers: summary?.activeLearners ?? 0,
+      totalCourses: summary?.totalCourses ?? 0,
+      publishedCourses: summary?.publishedCourses ?? 0,
+      totalEnrollments: summary?.totalEnrollments ?? 0,
+      averageProgress: summary?.averageCompletionRate ?? 0,
+    };
+  } catch {
+    // Return zeros if endpoint fails
+    return {
+      totalUsers: 0,
+      activeUsers: 0,
+      totalCourses: 0,
+      publishedCourses: 0,
+      totalEnrollments: 0,
+      averageProgress: 0,
+    };
+  }
 };
 
 export const AdminDashboardPage: React.FC = () => {
   const { data: stats, isLoading } = useQuery({
-    queryKey: ['admin', 'dashboard'],
+    queryKey: ['admin', 'dashboard', 'completion'],
     queryFn: fetchDashboardData,
+    retry: 1,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   return (

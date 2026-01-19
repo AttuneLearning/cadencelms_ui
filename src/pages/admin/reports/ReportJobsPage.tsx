@@ -11,6 +11,9 @@ import { useToast } from '@/shared/ui/use-toast';
 import { ConfirmDialog } from '@/shared/ui/confirm-dialog';
 import { Plus, RefreshCw } from 'lucide-react';
 import { PageHeader } from '@/shared/ui/page-header';
+import { env } from '@/shared/config/env';
+import { ErrorPanel } from '@/shared/ui/error-panel';
+import { DataShapeWarning } from '@/shared/ui/data-shape-warning';
 import {
   useReportJobs,
   useCancelReportJob,
@@ -43,7 +46,7 @@ export const ReportJobsPage: React.FC = () => {
   });
 
   // Data fetching
-  const { data: jobsData, isLoading, refetch } = useReportJobs(filters, {
+  const { data: jobsData, isLoading, error, refetch } = useReportJobs(filters, {
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
@@ -57,7 +60,7 @@ export const ReportJobsPage: React.FC = () => {
   const handleDownload = async (jobId: string) => {
     try {
       // Use the download hook to get the URL
-      const response = await fetch(`/api/v2/reports/jobs/${jobId}/download`);
+      const response = await fetch(`${env.apiFullUrl}/reports/jobs/${jobId}/download`);
       const data = await response.json();
 
       if (data.success && data.data.downloadUrl) {
@@ -162,6 +165,38 @@ export const ReportJobsPage: React.FC = () => {
     setJobToShare(jobId);
   };
 
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          title="Report Jobs"
+          description="Manage and monitor your report generation jobs"
+        >
+          <Button variant="outline" size="sm" onClick={() => refetch()}>
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Retry
+          </Button>
+        </PageHeader>
+        <ErrorPanel
+          title="Unable to load report jobs"
+          message="Check your access rights or try again."
+          error={error}
+          details={{
+            endpoint: '/reports/jobs',
+            component: 'ReportJobsPage',
+          }}
+          onRetry={() => refetch()}
+          links={[{ label: 'Back to Dashboard', to: '/admin/dashboard' }]}
+        />
+      </div>
+    );
+  }
+
+  const jobs = jobsData?.jobs ?? [];
+  const warningDetails = jobsData?.shapeWarning
+    ? { ...jobsData.shapeWarning, component: 'ReportJobsPage' }
+    : undefined;
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -178,6 +213,14 @@ export const ReportJobsPage: React.FC = () => {
         </Button>
       </PageHeader>
 
+      {warningDetails && (
+        <DataShapeWarning
+          title="Report jobs data is incomplete"
+          message="The report jobs response did not match the expected shape. Some data may be missing."
+          details={warningDetails}
+        />
+      )}
+
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
@@ -190,7 +233,7 @@ export const ReportJobsPage: React.FC = () => {
           <CardHeader className="pb-2">
             <CardDescription>Active</CardDescription>
             <CardTitle className="text-3xl text-primary">
-              {jobsData?.jobs.filter((j) =>
+              {jobs.filter((j) =>
                 ['pending', 'queued', 'processing', 'rendering', 'uploading'].includes(j.state)
               ).length || 0}
             </CardTitle>
@@ -200,7 +243,7 @@ export const ReportJobsPage: React.FC = () => {
           <CardHeader className="pb-2">
             <CardDescription>Ready</CardDescription>
             <CardTitle className="text-3xl text-green-600">
-              {jobsData?.jobs.filter((j) => j.state === 'ready').length || 0}
+              {jobs.filter((j) => j.state === 'ready').length || 0}
             </CardTitle>
           </CardHeader>
         </Card>
@@ -208,7 +251,7 @@ export const ReportJobsPage: React.FC = () => {
           <CardHeader className="pb-2">
             <CardDescription>Failed</CardDescription>
             <CardTitle className="text-3xl text-destructive">
-              {jobsData?.jobs.filter((j) => j.state === 'failed').length || 0}
+              {jobs.filter((j) => j.state === 'failed').length || 0}
             </CardTitle>
           </CardHeader>
         </Card>
@@ -224,7 +267,7 @@ export const ReportJobsPage: React.FC = () => {
         </CardHeader>
         <CardContent>
           <ReportJobsTable
-            jobs={jobsData?.jobs || []}
+            jobs={jobs}
             onDownload={handleDownload}
             onCancel={handleCancel}
             onRetry={handleRetry}
@@ -250,10 +293,10 @@ export const ReportJobsPage: React.FC = () => {
           onOpenChange={(open) => !open && setJobToShare(null)}
           reportId={jobToShare}
           reportName={
-            jobsData?.jobs.find((j) => j._id === jobToShare)?.name || 'Report'
+            jobs.find((j) => j._id === jobToShare)?.name || 'Report'
           }
           currentVisibility={
-            jobsData?.jobs.find((j) => j._id === jobToShare)?.visibility || 'private'
+            jobs.find((j) => j._id === jobToShare)?.visibility || 'private'
           }
           sharedWith={[]}
         />

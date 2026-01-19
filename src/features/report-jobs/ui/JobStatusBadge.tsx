@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 interface JobStatusBadgeProps {
-  state: ReportJobState;
+  state?: ReportJobState | string | null;
   className?: string;
 }
 
@@ -85,7 +85,17 @@ const STATE_CONFIG: Record<
 };
 
 export const JobStatusBadge: React.FC<JobStatusBadgeProps> = ({ state, className }) => {
-  const config = STATE_CONFIG[state];
+  const config = state ? STATE_CONFIG[state as ReportJobState] : undefined;
+
+  if (!config) {
+    return (
+      <Badge variant="secondary" className={className}>
+        <AlertTriangle className="mr-1 h-3 w-3" />
+        Unknown
+      </Badge>
+    );
+  }
+
   const Icon = config.icon;
 
   return (

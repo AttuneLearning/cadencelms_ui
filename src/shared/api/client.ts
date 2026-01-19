@@ -2,9 +2,9 @@
  * Axios HTTP client with interceptors
  * Handles authentication, token refresh, and error handling
  *
- * Authorization Priority:
- * 1. Admin token (if active) - for elevated privileges
- * 2. Access token (fallback) - for normal user operations
+ * Authorization:
+ * - Access token is always used in Authorization header
+ * - Admin token (if active) is sent via X-Admin-Token header
  */
 
 import axios, {
@@ -19,6 +19,7 @@ import { getAdminToken, hasAdminToken } from '@/shared/utils/adminTokenStorage';
 import {
   clearAllTokens,
   getAccessTokenValue,
+  getRefreshToken,
   setAccessToken as setStoredAccessToken,
 } from '@/shared/utils/tokenStorage';
 
@@ -30,7 +31,8 @@ export class ApiClientError extends Error {
     public message: string,
     public status: number,
     public code?: string,
-    public errors?: Record<string, string[]>
+    public errors?: Record<string, string[]>,
+    public requestId?: string
   ) {
     super(message);
     this.name = 'ApiClientError';
@@ -47,6 +49,15 @@ function clearAuthStorage(): void {
   } catch (error) {
     console.error('Error clearing auth:', error);
   }
+}
+
+function getAuthRedirectDelayMs(): number {
+  if (typeof window === 'undefined') return 0;
+  const params = new URLSearchParams(window.location.search);
+  const delayParam = params.get('authRedirectDelayMs');
+  if (!delayParam) return 0;
+  const parsed = Number(delayParam);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
 }
 
 /**
@@ -73,7 +84,7 @@ function storeAccessToken(token: AccessToken | string): string {
  */
 const createAxiosInstance = (): AxiosInstance => {
   const instance = axios.create({
-    baseURL: env.apiBaseUrl,
+    baseURL: env.apiFullUrl,
     timeout: 30000,
     headers: {
       'Content-Type': 'application/json',
@@ -111,11 +122,10 @@ function onTokenRefreshed(token: string): void {
 }
 
 /**
- * Request interceptor - inject access token with admin token priority
+ * Request interceptor - inject access token and optional admin token
  *
- * Priority order:
- * 1. Admin token (if active) - for elevated admin operations
- * 2. Access token (fallback) - for normal user operations
+ * Access token is the only bearer token accepted by auth middleware.
+ * Admin token is provided via X-Admin-Token when escalation is active.
  */
 client.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
@@ -126,20 +136,18 @@ client.interceptors.request.use(
       return config;
     }
 
-    // Priority 1: Use admin token if active
-    if (hasAdminToken()) {
-      const adminToken = getAdminToken();
-      if (adminToken) {
-        config.headers.Authorization = `Bearer ${adminToken}`;
-        console.log('[API Client] Using admin token for request');
-        return config;
-      }
-    }
-
-    // Priority 2: Fall back to regular access token
+    // Always use the normal access token for Authorization
     const token = getAccessTokenValue();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    // Send admin token separately when escalation is active
+    if (hasAdminToken()) {
+      const adminToken = getAdminToken();
+      if (adminToken) {
+        config.headers['X-Admin-Token'] = adminToken;
+      }
     }
 
     return config;
@@ -173,6 +181,12 @@ client.interceptors.response.use(
     }
 
     const { status, data } = error.response;
+    const responseHeaders = error.response.headers as Record<string, string | undefined>;
+    const requestId =
+      responseHeaders?.['x-request-id'] ||
+      responseHeaders?.['X-Request-Id'] ||
+      data?.requestId ||
+      data?.request_id;
 
     // Handle 401 Unauthorized - attempt token refresh
     if (status === 401 && !originalRequest._retry) {
@@ -184,14 +198,16 @@ client.interceptors.response.use(
 
       if (skipRefresh) {
         clearAuthStorage();
-        return Promise.reject(
-          new ApiClientError(
-            data?.message || 'Authentication failed',
-            status,
-            data?.code
-          )
-        );
-      }
+          return Promise.reject(
+            new ApiClientError(
+              data?.message || 'Authentication failed',
+              status,
+              data?.code,
+              data?.errors,
+              requestId
+            )
+          );
+        }
 
       originalRequest._retry = true;
 
@@ -200,9 +216,14 @@ client.interceptors.response.use(
 
         try {
           // Attempt to refresh the token
+          const refreshToken = getRefreshToken();
+          const refreshPayload = refreshToken?.value
+            ? { refreshToken: refreshToken.value }
+            : {};
+
           const response = await axios.post(
-            `${env.apiBaseUrl}/auth/refresh`,
-            {},
+            `${env.apiFullUrl}/auth/refresh`,
+            refreshPayload,
             {
               withCredentials: true,
               headers: {
@@ -235,7 +256,14 @@ client.interceptors.response.use(
           // Redirect to auth-error page for debugging (skip in test environment)
           // Previously redirected to /login which made debugging auth issues difficult
           if (typeof window !== 'undefined' && env.environment !== 'test') {
-            window.location.href = '/auth-error?reason=token-refresh-failed';
+            const delayMs = getAuthRedirectDelayMs();
+            const target = '/auth-error?reason=token-refresh-failed';
+            if (delayMs > 0) {
+              console.warn(`[API Client] Redirecting to ${target} in ${delayMs}ms (debug delay).`);
+            }
+            window.setTimeout(() => {
+              window.location.href = target;
+            }, delayMs);
           }
 
           return Promise.reject(
@@ -258,7 +286,8 @@ client.interceptors.response.use(
       data?.message || 'An error occurred',
       status,
       data?.code,
-      data?.errors
+      data?.errors,
+      requestId
     );
 
     return Promise.reject(apiError);

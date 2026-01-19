@@ -24,7 +24,7 @@ export async function createReportTemplate(
   request: CreateReportTemplateRequest
 ): Promise<ReportTemplate> {
   const response = await client.post<ApiResponse<{ template: ReportTemplate }>>(
-    '/api/v2/reports/templates',
+    '/reports/templates',
     request
   );
   return response.data.data.template;
@@ -37,7 +37,7 @@ export async function listReportTemplates(
   params?: ListReportTemplatesParams
 ): Promise<ListReportTemplatesResponse> {
   const response = await client.get<ApiResponse<ListReportTemplatesResponse>>(
-    '/api/v2/reports/templates',
+    '/reports/templates',
     { params }
   );
   return response.data.data;
@@ -48,7 +48,7 @@ export async function listReportTemplates(
  */
 export async function getMyTemplates(): Promise<ReportTemplate[]> {
   const response = await client.get<ApiResponse<{ templates: ReportTemplate[] }>>(
-    '/api/v2/reports/templates/my'
+    '/reports/templates/my'
   );
   return response.data.data.templates;
 }
@@ -58,7 +58,7 @@ export async function getMyTemplates(): Promise<ReportTemplate[]> {
  */
 export async function getSystemTemplates(): Promise<ReportTemplate[]> {
   const response = await client.get<ApiResponse<{ templates: ReportTemplate[] }>>(
-    '/api/v2/reports/templates/system'
+    '/reports/templates/system'
   );
   return response.data.data.templates;
 }
@@ -68,7 +68,7 @@ export async function getSystemTemplates(): Promise<ReportTemplate[]> {
  */
 export async function getReportTemplate(id: string): Promise<ReportTemplate> {
   const response = await client.get<ApiResponse<{ template: ReportTemplate }>>(
-    `/api/v2/reports/templates/${id}`
+    `/reports/templates/${id}`
   );
   return response.data.data.template;
 }
@@ -78,7 +78,7 @@ export async function getReportTemplate(id: string): Promise<ReportTemplate> {
  */
 export async function getReportTemplateBySlug(slug: string): Promise<ReportTemplate> {
   const response = await client.get<ApiResponse<{ template: ReportTemplate }>>(
-    `/api/v2/reports/templates/slug/${slug}`
+    `/reports/templates/slug/${slug}`
   );
   return response.data.data.template;
 }
@@ -91,7 +91,7 @@ export async function updateReportTemplate(
   request: UpdateReportTemplateRequest
 ): Promise<ReportTemplate> {
   const response = await client.put<ApiResponse<{ template: ReportTemplate }>>(
-    `/api/v2/reports/templates/${id}`,
+    `/reports/templates/${id}`,
     request
   );
   return response.data.data.template;
@@ -101,7 +101,7 @@ export async function updateReportTemplate(
  * Delete a report template
  */
 export async function deleteReportTemplate(id: string): Promise<void> {
-  await client.delete<ApiResponse<void>>(`/api/v2/reports/templates/${id}`);
+  await client.delete<ApiResponse<void>>(`/reports/templates/${id}`);
 }
 
 /**
@@ -112,7 +112,7 @@ export async function duplicateReportTemplate(
   name?: string
 ): Promise<ReportTemplate> {
   const response = await client.post<ApiResponse<{ template: ReportTemplate }>>(
-    `/api/v2/reports/templates/${id}/duplicate`,
+    `/reports/templates/${id}/duplicate`,
     { name }
   );
   return response.data.data.template;
@@ -126,7 +126,7 @@ export async function publishTemplateVersion(
   request: UpdateReportTemplateRequest
 ): Promise<ReportTemplate> {
   const response = await client.post<ApiResponse<{ template: ReportTemplate }>>(
-    `/api/v2/reports/templates/${id}/versions`,
+    `/reports/templates/${id}/versions`,
     request
   );
   return response.data.data.template;
@@ -137,7 +137,7 @@ export async function publishTemplateVersion(
  */
 export async function getTemplateVersions(id: string): Promise<ReportTemplate[]> {
   const response = await client.get<ApiResponse<{ versions: ReportTemplate[] }>>(
-    `/api/v2/reports/templates/${id}/versions`
+    `/reports/templates/${id}/versions`
   );
   return response.data.data.versions;
 }

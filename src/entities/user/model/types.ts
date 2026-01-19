@@ -57,6 +57,14 @@ export interface User {
   jobTitle?: string;
 }
 
+/** Department membership for staff list */
+export interface StaffDepartment {
+  departmentId: string;
+  departmentName: string;
+  /** Roles held in this department (can have multiple) */
+  rolesInDepartment: string[];
+}
+
 export interface UserListItem {
   _id: string;
   email: string;
@@ -71,6 +79,9 @@ export interface UserListItem {
 
   /** Legacy roles field (deprecated) */
   roles?: Role[];
+
+  /** Department memberships with roles */
+  departments?: StaffDepartment[];
 
   status: UserStatus;
   isActive?: boolean;

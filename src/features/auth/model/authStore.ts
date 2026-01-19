@@ -316,6 +316,9 @@ export const useAuthStore = create<AuthState>()(
       // Logout
       // ================================================================
       logout: async () => {
+        if (import.meta.env?.DEV) {
+          console.trace('[AuthStore] Logout trace');
+        }
         console.log('[AuthStore] Starting logout...');
 
         try {

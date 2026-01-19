@@ -203,7 +203,7 @@ export function StaffList({
                                 variant="secondary"
                                 className="text-xs"
                               >
-                                {dept.departmentName} ({dept.roleInDepartment})
+                                {dept.departmentName} ({(dept.rolesInDepartment || []).join(', ')})
                               </Badge>
                             ))}
                           </div>

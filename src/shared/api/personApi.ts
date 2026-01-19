@@ -45,7 +45,7 @@ export const personApi = {
    * @throws ApiClientError on failure
    */
   async getMyPerson(): Promise<PersonApiResponse> {
-    const response = await client.get<PersonApiResponse>('/api/v2/users/me/person');
+    const response = await client.get<PersonApiResponse>('/users/me/person');
     return response.data;
   },
 
@@ -60,7 +60,7 @@ export const personApi = {
     data: IPersonUpdateRequest
   ): Promise<PersonApiResponse & { message?: string }> {
     const response = await client.put<PersonApiResponse & { message?: string }>(
-      '/api/v2/users/me/person',
+      '/users/me/person',
       data
     );
     return response.data;
@@ -76,7 +76,7 @@ export const personApi = {
    */
   async getMyPersonExtended(): Promise<PersonExtendedApiResponse> {
     const response = await client.get<PersonExtendedApiResponse>(
-      '/api/v2/users/me/person/extended'
+      '/users/me/person/extended'
     );
     return response.data;
   },
@@ -94,7 +94,7 @@ export const personApi = {
     data: PersonExtendedUpdateRequest
   ): Promise<PersonExtendedApiResponse & { message?: string }> {
     const response = await client.put<PersonExtendedApiResponse & { message?: string }>(
-      '/api/v2/users/me/person/extended',
+      '/users/me/person/extended',
       data
     );
     return response.data;

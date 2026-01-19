@@ -6,7 +6,7 @@
 import React from 'react';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
-import { DateRange } from 'react-day-picker';
+import type { DateRange } from 'react-day-picker';
 import {
   FileBarChart,
   TrendingUp,

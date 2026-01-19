@@ -21,7 +21,16 @@ import {
   Download,
   ExternalLink,
 } from 'lucide-react';
-import { formatDate } from '@/shared/lib/utils';
+import { format } from 'date-fns';
+
+// Format date string for display
+const formatDate = (dateString: string): string => {
+  try {
+    return format(new Date(dateString), 'MMMM d, yyyy');
+  } catch {
+    return dateString;
+  }
+};
 
 interface CertificateVerificationResult {
   valid: boolean;

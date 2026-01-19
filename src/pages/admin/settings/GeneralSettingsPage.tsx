@@ -19,8 +19,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Badge } from '@/shared/ui/badge';
 import { useToast } from '@/shared/ui/use-toast';
 import { ConfirmDialog } from '@/shared/ui/confirm-dialog';
+import { Switch } from '@/shared/ui/switch';
 import { Loader2, Save, RotateCcw, ArrowLeft } from 'lucide-react';
 import { PageHeader } from '@/shared/ui/page-header';
+import { useErrorDetailsPreference } from '@/shared/hooks/useErrorDetailsPreference';
 import {
   useSettingsByCategory,
   useUpdateSettings,
@@ -93,6 +95,7 @@ export const GeneralSettingsPage: React.FC = () => {
   const [selectedFileTypes, setSelectedFileTypes] = useState<Set<string>>(new Set());
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
+  const [showErrorDetails, setShowErrorDetails] = useErrorDetailsPreference();
 
   useEffect(() => {
     if (settings) {
@@ -416,6 +419,31 @@ export const GeneralSettingsPage: React.FC = () => {
               <p className="text-xs text-muted-foreground">
                 Select file types that users can upload
               </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Diagnostics */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Diagnostics</CardTitle>
+            <CardDescription>
+              Control visibility of technical error details for troubleshooting
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between gap-4">
+              <div className="space-y-1">
+                <Label htmlFor="error-details-toggle">Show error details</Label>
+                <p className="text-xs text-muted-foreground">
+                  Exposes endpoint, status code, request ID, and stack trace in error panels.
+                </p>
+              </div>
+              <Switch
+                id="error-details-toggle"
+                checked={showErrorDetails}
+                onCheckedChange={setShowErrorDetails}
+              />
             </div>
           </CardContent>
         </Card>

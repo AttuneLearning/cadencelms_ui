@@ -48,7 +48,7 @@ import {
   mockDemographicsResponse,
 } from '../fixtures/person.fixtures';
 
-const baseUrl = env.apiBaseUrl;
+const baseUrl = env.apiFullUrl;
 
 /**
  * MSW Request Handlers
@@ -720,13 +720,13 @@ export const handlers = [
 
   // ==================== PERSON API V2.0 HANDLERS ====================
 
-  // GET /api/v2/users/me/person - Get person data
-  http.get(`${baseUrl}/api/v2/users/me/person`, () => {
+  // GET /users/me/person - Get person data
+  http.get(`${baseUrl}/users/me/person`, () => {
     return HttpResponse.json(mockPersonResponse);
   }),
 
-  // PUT /api/v2/users/me/person - Update person data
-  http.put(`${baseUrl}/api/v2/users/me/person`, async ({ request }) => {
+  // PUT /users/me/person - Update person data
+  http.put(`${baseUrl}/users/me/person`, async ({ request }) => {
     const body = await request.json();
     return HttpResponse.json({
       success: true,
@@ -738,13 +738,13 @@ export const handlers = [
     });
   }),
 
-  // GET /api/v2/users/me/person/extended - Get extended person data
-  http.get(`${baseUrl}/api/v2/users/me/person/extended`, () => {
+  // GET /users/me/person/extended - Get extended person data
+  http.get(`${baseUrl}/users/me/person/extended`, () => {
     return HttpResponse.json(mockPersonExtendedLearnerResponse);
   }),
 
-  // PUT /api/v2/users/me/person/extended - Update extended person data
-  http.put(`${baseUrl}/api/v2/users/me/person/extended`, async ({ request }) => {
+  // PUT /users/me/person/extended - Update extended person data
+  http.put(`${baseUrl}/users/me/person/extended`, async ({ request }) => {
     const body = await request.json();
     return HttpResponse.json({
       success: true,
@@ -760,13 +760,13 @@ export const handlers = [
 
   // ==================== DEMOGRAPHICS API V2.0 HANDLERS ====================
 
-  // GET /api/v2/users/me/demographics - Get demographics data
-  http.get(`${baseUrl}/api/v2/users/me/demographics`, () => {
+  // GET /users/me/demographics - Get demographics data
+  http.get(`${baseUrl}/users/me/demographics`, () => {
     return HttpResponse.json(mockDemographicsResponse);
   }),
 
-  // PUT /api/v2/users/me/demographics - Update demographics data
-  http.put(`${baseUrl}/api/v2/users/me/demographics`, async ({ request }) => {
+  // PUT /users/me/demographics - Update demographics data
+  http.put(`${baseUrl}/users/me/demographics`, async ({ request }) => {
     const body = await request.json();
     return HttpResponse.json({
       success: true,
@@ -780,8 +780,8 @@ export const handlers = [
 
   // ==================== PASSWORD CHANGE HANDLERS (PHASE 6) ====================
 
-  // POST /api/v2/users/me/password - Change user password
-  http.post(`${baseUrl}/api/v2/users/me/password`, async ({ request }) => {
+  // POST /users/me/password - Change user password
+  http.post(`${baseUrl}/users/me/password`, async ({ request }) => {
     const body = (await request.json()) as { currentPassword: string; newPassword: string };
 
     // Simulate validation
@@ -812,8 +812,8 @@ export const handlers = [
     });
   }),
 
-  // POST /api/v2/admin/me/password - Change admin password
-  http.post(`${baseUrl}/api/v2/admin/me/password`, async ({ request }) => {
+  // POST /admin/me/password - Change admin password
+  http.post(`${baseUrl}/admin/me/password`, async ({ request }) => {
     const body = (await request.json()) as { currentPassword: string; newPassword: string };
 
     // Simulate validation

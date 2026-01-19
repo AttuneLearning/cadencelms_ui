@@ -12,6 +12,8 @@ import { useToast } from '@/shared/ui/use-toast';
 import { ConfirmDialog } from '@/shared/ui/confirm-dialog';
 import { ArrowLeft, Download, Ban, RefreshCw, Trash2, Loader2, Share2 } from 'lucide-react';
 import { PageHeader } from '@/shared/ui/page-header';
+import { env } from '@/shared/config/env';
+import { ErrorPanel } from '@/shared/ui/error-panel';
 import { format } from 'date-fns';
 import {
   useReportJob,
@@ -34,7 +36,7 @@ export const ReportJobDetailPage: React.FC = () => {
   const [previousState, setPreviousState] = React.useState<string | undefined>();
 
   // Data fetching
-  const { data: job, isLoading } = useReportJob(id || '', {
+  const { data: job, isLoading, error, refetch } = useReportJob(id || '', {
     enabled: !!id,
   });
 
@@ -69,6 +71,28 @@ export const ReportJobDetailPage: React.FC = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <Button variant="ghost" onClick={() => navigate('/admin/reports')}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Reports
+        </Button>
+        <ErrorPanel
+          title="Unable to load report job"
+          message="Check your access rights or try again."
+          error={error}
+          details={{
+            endpoint: `/reports/jobs/${id || ''}`,
+            component: 'ReportJobDetailPage',
+          }}
+          onRetry={() => refetch()}
+          links={[{ label: 'Back to Dashboard', to: '/admin/dashboard' }]}
+        />
+      </div>
+    );
+  }
+
   if (!job) {
     return (
       <div className="space-y-6">
@@ -91,7 +115,7 @@ export const ReportJobDetailPage: React.FC = () => {
 
   const handleDownload = async () => {
     try {
-      const response = await fetch(`/api/v2/reports/jobs/${job._id}/download`);
+      const response = await fetch(`${env.apiFullUrl}/reports/jobs/${job._id}/download`);
       const data = await response.json();
 
       if (data.success && data.data.downloadUrl) {

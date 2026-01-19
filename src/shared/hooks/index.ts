@@ -5,6 +5,7 @@
 export { useOnlineStatus, useIsOnline, useOnlineStatusEffect } from './useOnlineStatus';
 export type { OnlineStatus, UseOnlineStatusOptions } from './useOnlineStatus';
 export { useDebounce } from './useDebounce';
+export { useErrorDetailsPreference } from './useErrorDetailsPreference';
 
 // Permission hooks (Phase 5)
 export {

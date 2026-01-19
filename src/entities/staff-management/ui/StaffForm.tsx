@@ -44,7 +44,7 @@ export function StaffForm({ staff, onSuccess, onCancel }: StaffFormProps) {
     password: '',
     departmentAssignments: staff?.departments?.map(dept => ({
       departmentId: dept.departmentId,
-      role: dept.roleInDepartment as 'instructor' | 'content-admin' | 'dept-admin',
+      role: (dept.rolesInDepartment?.[0] || 'instructor') as 'instructor' | 'content-admin' | 'dept-admin',
     })) || [],
     defaultDashboard: (staff?.defaultDashboard as DefaultDashboard) || 'content-admin',
     isActive: staff?.isActive ?? true,
@@ -62,7 +62,7 @@ export function StaffForm({ staff, onSuccess, onCancel }: StaffFormProps) {
         password: '',
         departmentAssignments: staff.departments?.map(dept => ({
           departmentId: dept.departmentId,
-          role: dept.roleInDepartment as 'instructor' | 'content-admin' | 'dept-admin',
+          role: (dept.rolesInDepartment?.[0] || 'instructor') as 'instructor' | 'content-admin' | 'dept-admin',
         })) || [],
         defaultDashboard: (staff.defaultDashboard as DefaultDashboard) || 'content-admin',
         isActive: staff.isActive,

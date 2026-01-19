@@ -144,7 +144,7 @@ export function ProgramForm({
               required
               minLength={2}
               maxLength={20}
-              pattern="[A-Z0-9-]+"
+              pattern="(?:[A-Z0-9]|-)+"
               disabled={isLoading}
               className="uppercase"
             />

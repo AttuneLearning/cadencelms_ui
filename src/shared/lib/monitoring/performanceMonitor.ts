@@ -3,6 +3,8 @@
  * Track and report performance metrics
  */
 
+import { env } from '@/shared/config/env';
+
 interface PerformanceMetric {
   name: string;
   value: number;
@@ -90,7 +92,7 @@ class PerformanceMonitor {
     this.metrics = [];
 
     try {
-      await fetch('/api/v2/monitoring/performance', {
+      await fetch(`${env.apiFullUrl}/monitoring/performance`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ metrics: metricsToSend }),

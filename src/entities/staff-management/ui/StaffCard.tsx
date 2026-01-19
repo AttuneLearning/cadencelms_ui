@@ -98,9 +98,13 @@ export function StaffCard({ staff, person, showDetails = true, showMetadata = fa
                     className="flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs"
                   >
                     <span className="font-medium">{dept.departmentName}</span>
-                    <Badge variant="secondary" className={getRoleBadgeColor(dept.roleInDepartment)}>
-                      {dept.roleInDepartment}
-                    </Badge>
+                    <div className="flex gap-1">
+                      {(dept.rolesInDepartment || []).map((role, roleIdx) => (
+                        <Badge key={roleIdx} variant="secondary" className={getRoleBadgeColor(role)}>
+                          {role}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
                 ))}
               </div>

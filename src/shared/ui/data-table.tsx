@@ -71,15 +71,19 @@ export function DataTable<TData, TValue>({
     },
   });
 
+  // Store callback in ref to avoid triggering effect on every render
+  const onRowSelectionChangeRef = React.useRef(onRowSelectionChange);
+  onRowSelectionChangeRef.current = onRowSelectionChange;
+
   // Notify parent when selection changes
   React.useEffect(() => {
-    if (onRowSelectionChange) {
+    if (onRowSelectionChangeRef.current) {
       const selectedRows = table
         .getFilteredSelectedRowModel()
         .rows.map((row) => row.original);
-      onRowSelectionChange(selectedRows);
+      onRowSelectionChangeRef.current(selectedRows);
     }
-  }, [rowSelection, table, onRowSelectionChange]);
+  }, [rowSelection, table]);
 
   return (
     <div className="space-y-4">

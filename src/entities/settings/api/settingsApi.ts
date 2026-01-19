@@ -3,7 +3,7 @@
  * API functions for settings management
  */
 
-import { client } from '@/shared/api/client';
+import { client, ApiClientError } from '@/shared/api/client';
 import type {
   SettingCategory,
   CategorySettings,
@@ -20,10 +20,38 @@ const BASE_URL = '/settings';
  * Get settings dashboard summary
  */
 export async function getSettingsDashboard(): Promise<SettingsDashboard> {
-  const response = await client.get<{ success: boolean; data: SettingsDashboard }>(
-    `${BASE_URL}/dashboard`
-  );
-  return response.data.data;
+  try {
+    const response = await client.get<{ success: boolean; data: SettingsDashboard }>(
+      `${BASE_URL}/dashboard`
+    );
+    return response.data.data;
+  } catch (error) {
+    if (error instanceof ApiClientError) {
+      const message = error.message.toLowerCase();
+      const isUnsupported =
+        error.status === 404 || (error.status === 400 && message.includes('invalid key format'));
+
+      if (isUnsupported) {
+        return {
+          lastModified: {
+            general: null,
+            email: null,
+            notification: null,
+            security: null,
+            appearance: null,
+          },
+          recentChanges: [],
+          systemHealth: {
+            status: 'unknown',
+            emailConfigured: false,
+            securityConfigured: false,
+            issues: ['Settings dashboard endpoint is unavailable.'],
+          },
+        };
+      }
+    }
+    throw error;
+  }
 }
 
 /**

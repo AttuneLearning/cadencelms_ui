@@ -5,7 +5,8 @@
  * IMPORTANT: All endpoint paths are RELATIVE to the baseURL
  *
  * Pattern:
- * - baseURL is set in .env: VITE_API_BASE_URL=http://localhost:5000/api/v2
+ * - baseURL is set in .env: VITE_API_BASE_URL=http://localhost:5150
+ * - API prefix is set in .env: VITE_API_PREFIX=/api/v2
  * - All paths here should be RELATIVE (start with / but NO /api/v2 prefix)
  * - Example: '/enrollments' → http://localhost:5000/api/v2/enrollments
  *
@@ -61,32 +62,58 @@ export const endpoints = {
   },
 
   content: {
-    scormPackages: '/content/scorm',
-    uploadScorm: '/content/scorm/upload',
+    // Content library
+    list: '/content',
     byId: (id: string) => `/content/${id}`,
+    // SCORM packages
+    scorm: {
+      list: '/content/scorm',
+      create: '/content/scorm',
+      byId: (id: string) => `/content/scorm/${id}`,
+      update: (id: string) => `/content/scorm/${id}`,
+      delete: (id: string) => `/content/scorm/${id}`,
+      launch: (id: string) => `/content/scorm/${id}/launch`,
+      publish: (id: string) => `/content/scorm/${id}/publish`,
+      unpublish: (id: string) => `/content/scorm/${id}/unpublish`,
+    },
+    // Media library
+    media: {
+      list: '/content/media',
+      create: '/content/media',
+      byId: (id: string) => `/content/media/${id}`,
+      update: (id: string) => `/content/media/${id}`,
+      delete: (id: string) => `/content/media/${id}`,
+    },
+    // Legacy aliases (deprecated - use scorm.list / scorm.create)
+    scormPackages: '/content/scorm',
+    uploadScorm: '/content/scorm',
   },
 
   admin: {
-    users: {
-      list: '/admin/users',
-      byId: (id: string) => `/admin/users/${id}`,
-      create: '/admin/users',
-      update: (id: string) => `/admin/users/${id}`,
-      delete: (id: string) => `/admin/users/${id}`,
-    },
+    // Staff user management endpoints
     staff: {
-      list: '/admin/staff',
-      byId: (id: string) => `/admin/staff/${id}`,
-      create: '/admin/staff',
-      update: (id: string) => `/admin/staff/${id}`,
-      delete: (id: string) => `/admin/staff/${id}`,
+      list: '/users/staff', // GET with ?page=&limit=&search=&department=&role=&status=&sort=
+      byId: (id: string) => `/users/staff/${id}`,
+      create: '/users/staff', // POST (requires escalation)
+      update: (id: string) => `/users/staff/${id}`, // PUT (requires escalation)
+      delete: (id: string) => `/users/staff/${id}`, // DELETE (requires escalation + system-admin)
+      updateDepartments: (id: string) => `/users/staff/${id}/departments`, // PATCH
     },
+    // Learner management endpoints (TODO: confirm with API team)
     learners: {
-      list: '/admin/learners',
-      byId: (id: string) => `/admin/learners/${id}`,
-      create: '/admin/learners',
-      update: (id: string) => `/admin/learners/${id}`,
-      delete: (id: string) => `/admin/learners/${id}`,
+      list: '/users/learners',
+      byId: (id: string) => `/users/learners/${id}`,
+      create: '/users/learners',
+      update: (id: string) => `/users/learners/${id}`,
+      delete: (id: string) => `/users/learners/${id}`,
+    },
+    // Legacy users endpoints (deprecated - use staff or learners)
+    users: {
+      list: '/users/staff', // Redirect to staff
+      byId: (id: string) => `/users/staff/${id}`,
+      create: '/users/staff',
+      update: (id: string) => `/users/staff/${id}`,
+      delete: (id: string) => `/users/staff/${id}`,
     },
     departments: {
       list: '/admin/departments',
@@ -111,20 +138,30 @@ export const endpoints = {
       update: (id: string) => `/admin/courses/${id}`,
       delete: (id: string) => `/admin/courses/${id}`,
     },
-    reports: {
-      overview: '/admin/reports/overview',
-      courseCompletion: '/admin/reports/course-completion',
-      userActivity: '/admin/reports/user-activity',
-    },
   },
 
   analytics: {
     userProgress: '/analytics/user-progress',
     courseStats: (courseId: string) => `/analytics/courses/${courseId}/stats`,
     learningPath: '/analytics/learning-path',
+    // Course Summary Analytics
+    courseSummary: '/analytics/courses/summary',
+    courseSummaryExport: '/analytics/courses/summary/export',
   },
 
   progress: {
+    // By entity
+    program: (programId: string) => `/progress/program/${programId}`,
+    course: (courseId: string) => `/progress/course/${courseId}`,
+    class: (classId: string) => `/progress/class/${classId}`,
+    learner: (learnerId: string) => `/progress/learner/${learnerId}`,
+    learnerProgram: (learnerId: string, programId: string) => `/progress/learner/${learnerId}/program/${programId}`,
+    // Actions
+    update: '/progress/update',
+    // Reports
+    reportsSummary: '/progress/reports/summary',
+    reportsDetailed: '/progress/reports/detailed',
+    // Legacy alias
     stats: '/progress/stats',
   },
 
@@ -176,6 +213,18 @@ export const endpoints = {
   },
 
   reports: {
+    // Core reports
+    completion: '/reports/completion',
+    performance: '/reports/performance',
+    export: '/reports/export',
+    // Transcript
+    transcript: (learnerId: string) => `/reports/transcript/${learnerId}`,
+    generateTranscript: (learnerId: string) => `/reports/transcript/${learnerId}/generate`,
+    // Entity-specific reports
+    course: (courseId: string) => `/reports/course/${courseId}`,
+    program: (programId: string) => `/reports/program/${programId}`,
+    department: (departmentId: string) => `/reports/department/${departmentId}`,
+    // Legacy/generic (may be deprecated)
     list: '/reports',
     byId: (id: string) => `/reports/${id}`,
     create: '/reports',
@@ -183,14 +232,40 @@ export const endpoints = {
     download: (id: string, format: string) => `/reports/${id}/download?format=${format}`,
   },
 
+  reportJobs: {
+    list: '/reports/jobs',
+    create: '/reports/jobs',
+    byId: (id: string) => `/reports/jobs/${id}`,
+    status: (id: string) => `/reports/jobs/${id}/status`,
+    download: (id: string) => `/reports/jobs/${id}/download`,
+    cancel: (id: string) => `/reports/jobs/${id}/cancel`,
+    retry: (id: string) => `/reports/jobs/${id}/retry`,
+    delete: (id: string) => `/reports/jobs/${id}`,
+    bulkDelete: '/reports/jobs/bulk-delete',
+  },
+
+  reportSchedules: {
+    list: '/reports/schedules',
+    create: '/reports/schedules',
+    byId: (id: string) => `/reports/schedules/${id}`,
+    update: (id: string) => `/reports/schedules/${id}`,
+    delete: (id: string) => `/reports/schedules/${id}`,
+    activate: (id: string) => `/reports/schedules/${id}/activate`,
+    deactivate: (id: string) => `/reports/schedules/${id}/deactivate`,
+    trigger: (id: string) => `/reports/schedules/${id}/trigger`,
+    history: (id: string) => `/reports/schedules/${id}/history`,
+  },
+
   reportTemplates: {
-    list: '/report-templates',
-    byId: (id: string) => `/report-templates/${id}`,
-    create: '/report-templates',
-    update: (id: string) => `/report-templates/${id}`,
-    delete: (id: string) => `/report-templates/${id}`,
-    setDefault: (id: string) => `/report-templates/${id}/set-default`,
-    toggleShared: (id: string) => `/report-templates/${id}/toggle-shared`,
+    list: '/reports/templates',
+    create: '/reports/templates',
+    byId: (id: string) => `/reports/templates/${id}`,
+    update: (id: string) => `/reports/templates/${id}`,
+    delete: (id: string) => `/reports/templates/${id}`,
+    clone: (id: string) => `/reports/templates/${id}/clone`,
+    // Legacy aliases (old paths)
+    setDefault: (id: string) => `/reports/templates/${id}/set-default`,
+    toggleShared: (id: string) => `/reports/templates/${id}/toggle-shared`,
   },
 
   settings: {

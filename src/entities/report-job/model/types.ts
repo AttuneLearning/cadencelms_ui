@@ -15,6 +15,7 @@ import type {
   ReportVisibility,
   NotificationConfig,
 } from '@/shared/types/report-builder';
+import type { DataShapeWarningDetails } from '@/shared/types/data-shape-warning';
 
 // ============================================================================
 // Job States
@@ -199,7 +200,12 @@ export interface Pagination {
  */
 export interface ListReportJobsResponse {
   jobs: ReportJob[];
-  pagination: Pagination;
+  pagination?: Pagination;
+  totalCount?: number;
+  page?: number;
+  limit?: number;
+  totalPages?: number;
+  shapeWarning?: DataShapeWarningDetails;
 }
 
 /**

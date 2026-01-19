@@ -19,8 +19,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/ui/select';
-import { Award, Search as SearchIcon, Printer, Download, Calendar, Hash, Share2, ShieldCheck, Eye } from 'lucide-react';
+import { Award, Search as SearchIcon, Printer, Download, Calendar, Hash, Share2, ShieldCheck, Eye, RefreshCw } from 'lucide-react';
 import { useToast } from '@/shared/ui/use-toast';
+import { ErrorPanel } from '@/shared/ui/error-panel';
+import { DataShapeWarning } from '@/shared/ui/data-shape-warning';
 import type { EnrollmentListItem } from '@/entities/enrollment';
 
 // Format date to readable string
@@ -192,7 +194,7 @@ export const CertificatesPage: React.FC = () => {
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
 
-  const { data, isLoading, error } = useMyEnrollments({
+  const { data, isLoading, error, refetch } = useMyEnrollments({
     status: 'completed',
     type: 'course',
     sort: sortBy,
@@ -202,6 +204,9 @@ export const CertificatesPage: React.FC = () => {
 
   const enrollments = data?.enrollments || [];
   const pagination = data?.pagination;
+  const warningDetails = data?.shapeWarning
+    ? { ...data.shapeWarning, component: 'CertificatesPage' }
+    : undefined;
 
   // Client-side filter for search and date range
   const filteredEnrollments = enrollments.filter((enrollment) => {
@@ -337,16 +342,30 @@ export const CertificatesPage: React.FC = () => {
 
       {/* Error State */}
       {error && (
-        <Card className="border-destructive">
-          <CardContent className="pt-6">
-            <div className="text-center text-destructive">
-              <p className="font-semibold">Error loading certificates</p>
-              <p className="text-sm mt-1">
-                {error instanceof Error ? error.message : 'An error occurred'}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <ErrorPanel
+          title="Unable to load certificates"
+          message="There was a problem loading your certificates. Please try again."
+          error={error}
+          details={{
+            endpoint: '/enrollments/my-courses',
+            component: 'CertificatesPage',
+            params: { status: 'completed', type: 'course' },
+          }}
+          onRetry={() => refetch()}
+          links={[
+            { label: 'Back to Dashboard', to: '/learner/dashboard' },
+            { label: 'Browse Courses', to: '/learner/catalog' },
+          ]}
+        />
+      )}
+
+      {/* Data Shape Warning */}
+      {warningDetails && (
+        <DataShapeWarning
+          title="Certificate data may be incomplete"
+          message="The enrollment response did not match the expected shape. Some certificates may not display correctly."
+          details={warningDetails}
+        />
       )}
 
       {/* Loading State */}

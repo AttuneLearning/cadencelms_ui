@@ -77,7 +77,7 @@ export function useReportSchedule(
 /**
  * Hook to fetch schedule execution history
  */
-export function useScheduleHistory(
+export function useReportScheduleExecutions(
   id: string,
   params?: { page?: number; limit?: number },
   options?: Omit<
@@ -178,6 +178,23 @@ export function useDeactivateReportSchedule() {
     onSuccess: (_data, id) => {
       // Invalidate specific schedule and all lists
       queryClient.invalidateQueries({ queryKey: reportScheduleKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: reportScheduleKeys.lists() });
+    },
+  });
+}
+
+/**
+ * Hook to toggle a report schedule active/inactive
+ */
+export function useToggleReportSchedule() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ scheduleId, isActive }: { scheduleId: string; isActive: boolean }) =>
+      isActive ? activateReportSchedule(scheduleId) : deactivateReportSchedule(scheduleId),
+    onSuccess: (_data, { scheduleId }) => {
+      // Invalidate specific schedule and all lists
+      queryClient.invalidateQueries({ queryKey: reportScheduleKeys.detail(scheduleId) });
       queryClient.invalidateQueries({ queryKey: reportScheduleKeys.lists() });
     },
   });

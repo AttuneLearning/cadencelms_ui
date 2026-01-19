@@ -92,6 +92,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   } = useAuthStore();
   const { selectedDepartmentId } = useNavigationStore();
   const location = useLocation();
+  const debugLogsEnabled =
+    import.meta.env?.DEV && sessionStorage.getItem('debugProtectedRoute') === 'true';
 
   // Prevent infinite redirect loops (use sessionStorage to survive React.StrictMode)
   const loopKey = `redirectLoop_${location.pathname}`;
@@ -160,20 +162,29 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       : // User must have ANY of the specified user types
         userTypes.some((type) => roleHierarchy.allUserTypes.includes(type));
 
-    console.log('[ProtectedRoute] UserType check:', {
-      requiredUserTypes: userTypes,
-      userAllTypes: roleHierarchy.allUserTypes,
-      hasRequiredUserType,
-      currentPath: location.pathname,
-      willRedirect: !hasRequiredUserType,
-      defaultDashboard: roleHierarchy.defaultDashboard,
-      redirectTarget: !hasRequiredUserType ? `/${roleHierarchy.defaultDashboard}/dashboard` : 'NONE'
-    });
+    if (debugLogsEnabled) {
+      console.log('[ProtectedRoute] UserType check:', {
+        requiredUserTypes: userTypes,
+        userAllTypes: roleHierarchy.allUserTypes,
+        hasRequiredUserType,
+        currentPath: location.pathname,
+        willRedirect: !hasRequiredUserType,
+        defaultDashboard: roleHierarchy.defaultDashboard,
+        redirectTarget: !hasRequiredUserType
+          ? `/${roleHierarchy.defaultDashboard}/dashboard`
+          : 'NONE',
+      });
+    }
 
     if (!hasRequiredUserType) {
       if (redirectToDashboard) {
         const defaultDashboard = roleHierarchy.defaultDashboard;
-        console.log('[ProtectedRoute] Redirecting to default dashboard:', `/${defaultDashboard}/dashboard`);
+        if (debugLogsEnabled) {
+          console.log(
+            '[ProtectedRoute] Redirecting to default dashboard:',
+            `/${defaultDashboard}/dashboard`
+          );
+        }
         return <Navigate to={`/${defaultDashboard}/dashboard`} replace />;
       }
       return <Navigate to={redirectTo || '/unauthorized'} replace />;

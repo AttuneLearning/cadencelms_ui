@@ -11,12 +11,15 @@ import type {
   ReportJobStatusResponse,
   ReportJobDownloadResponse,
 } from '../model/types';
+import type { DataShapeWarningDetails } from '@/shared/types/data-shape-warning';
 
 interface ApiResponse<T> {
   success: boolean;
   data: T;
   message?: string;
 }
+
+let hasLoggedShapeWarning = false;
 
 /**
  * Create a new report job
@@ -25,7 +28,7 @@ export async function createReportJob(
   request: CreateReportJobRequest
 ): Promise<ReportJob> {
   const response = await client.post<ApiResponse<{ job: ReportJob }>>(
-    '/api/v2/reports/jobs',
+    '/reports/jobs',
     request
   );
   return response.data.data.job;
@@ -37,11 +40,72 @@ export async function createReportJob(
 export async function listReportJobs(
   params?: ListReportJobsParams
 ): Promise<ListReportJobsResponse> {
-  const response = await client.get<ApiResponse<ListReportJobsResponse>>(
-    '/api/v2/reports/jobs',
+  const response = await client.get<ApiResponse<ListReportJobsResponse | ReportJob[]>>(
+    '/reports/jobs',
     { params }
   );
-  return response.data.data;
+  const payload = response.data?.data;
+  let shapeWarning: DataShapeWarningDetails | undefined;
+
+  const isLegacyArray = Array.isArray(payload);
+  const legacyLimit = params?.limit ?? 50;
+  const legacyJobs = isLegacyArray ? payload : [];
+  const jobs = isLegacyArray
+    ? legacyLimit > 0
+      ? legacyJobs.slice(0, legacyLimit)
+      : []
+    : Array.isArray(payload?.jobs)
+      ? payload.jobs
+      : [];
+  const pagination = !isLegacyArray ? payload?.pagination : undefined;
+  const page = !isLegacyArray
+    ? payload?.page ?? pagination?.page ?? params?.page ?? 1
+    : params?.page ?? 1;
+  const limit = !isLegacyArray
+    ? payload?.limit ?? pagination?.limit ?? params?.limit ?? jobs.length
+    : legacyLimit;
+  const totalCount = !isLegacyArray
+    ? payload?.totalCount ?? pagination?.total ?? jobs.length
+    : legacyJobs.length;
+
+  if (!isLegacyArray && !Array.isArray(payload?.jobs)) {
+    if (!hasLoggedShapeWarning) {
+      console.warn('[reportJobApi] Unexpected list response shape', {
+        data: payload,
+      });
+      hasLoggedShapeWarning = true;
+    }
+    shapeWarning = {
+      endpoint: '/reports/jobs',
+      method: 'GET',
+      expected: 'data.jobs: ReportJob[] (or legacy data: ReportJob[])',
+      received: payload,
+    };
+  }
+  const totalPages = !isLegacyArray
+    ? payload?.totalPages ??
+      pagination?.totalPages ??
+      (limit > 0 ? Math.ceil(totalCount / limit) : 1)
+    : limit > 0
+      ? Math.ceil(totalCount / limit)
+      : 1;
+
+  return {
+    jobs,
+    pagination: {
+      page,
+      limit,
+      total: totalCount,
+      totalPages,
+      hasNext: pagination?.hasNext ?? page < totalPages,
+      hasPrev: pagination?.hasPrev ?? page > 1,
+    },
+    totalCount,
+    page,
+    limit,
+    totalPages,
+    shapeWarning,
+  };
 }
 
 /**
@@ -49,7 +113,7 @@ export async function listReportJobs(
  */
 export async function getReportJob(id: string): Promise<ReportJob> {
   const response = await client.get<ApiResponse<{ job: ReportJob }>>(
-    `/api/v2/reports/jobs/${id}`
+    `/reports/jobs/${id}`
   );
   return response.data.data.job;
 }
@@ -61,7 +125,7 @@ export async function getReportJobStatus(
   id: string
 ): Promise<ReportJobStatusResponse> {
   const response = await client.get<ApiResponse<ReportJobStatusResponse>>(
-    `/api/v2/reports/jobs/${id}/status`
+    `/reports/jobs/${id}/status`
   );
   return response.data.data;
 }
@@ -73,7 +137,7 @@ export async function getReportJobDownload(
   id: string
 ): Promise<ReportJobDownloadResponse> {
   const response = await client.get<ApiResponse<ReportJobDownloadResponse>>(
-    `/api/v2/reports/jobs/${id}/download`
+    `/reports/jobs/${id}/download`
   );
   return response.data.data;
 }
@@ -82,7 +146,7 @@ export async function getReportJobDownload(
  * Cancel a pending or processing report job
  */
 export async function cancelReportJob(id: string): Promise<void> {
-  await client.post<ApiResponse<void>>(`/api/v2/reports/jobs/${id}/cancel`);
+  await client.post<ApiResponse<void>>(`/reports/jobs/${id}/cancel`);
 }
 
 /**
@@ -90,7 +154,7 @@ export async function cancelReportJob(id: string): Promise<void> {
  */
 export async function retryReportJob(id: string): Promise<ReportJob> {
   const response = await client.post<ApiResponse<{ job: ReportJob }>>(
-    `/api/v2/reports/jobs/${id}/retry`
+    `/reports/jobs/${id}/retry`
   );
   return response.data.data.job;
 }
@@ -99,14 +163,14 @@ export async function retryReportJob(id: string): Promise<ReportJob> {
  * Delete a report job
  */
 export async function deleteReportJob(id: string): Promise<void> {
-  await client.delete<ApiResponse<void>>(`/api/v2/reports/jobs/${id}`);
+  await client.delete<ApiResponse<void>>(`/reports/jobs/${id}`);
 }
 
 /**
  * Bulk delete report jobs
  */
 export async function bulkDeleteReportJobs(ids: string[]): Promise<void> {
-  await client.post<ApiResponse<void>>('/api/v2/reports/jobs/bulk-delete', {
+  await client.post<ApiResponse<void>>('/reports/jobs/bulk-delete', {
     jobIds: ids,
   });
 }

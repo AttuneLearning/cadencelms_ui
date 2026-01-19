@@ -218,7 +218,7 @@ Successfully completed Phase 1 of the Report System 2.0 implementation, establis
 *Query Hooks:*
 - `useReportSchedules()` - List schedules (staleTime: 5min)
 - `useReportSchedule()` - Get single schedule (staleTime: 5min)
-- `useScheduleHistory()` - Execution history (staleTime: 2min)
+- `useReportScheduleExecutions()` - Execution history (staleTime: 2min)
 
 *Mutation Hooks:*
 - `useCreateReportSchedule()` - Create schedule

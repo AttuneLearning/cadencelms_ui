@@ -12,7 +12,7 @@
 
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { GraduationCap, Menu, LogOut, Settings, BookOpen, Building2 } from 'lucide-react';
+import { GraduationCap, Menu, LogOut, KeyRound, BookOpen, Building2 } from 'lucide-react';
 import { ThemeToggle } from '@/features/theme/ui/ThemeToggle';
 import { useAuthStore } from '@/features/auth/model/authStore';
 import { useDisplayName } from '@/features/auth/hooks/useDisplayName';
@@ -323,9 +323,9 @@ export const Header: React.FC = () => {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to="/settings" className="cursor-pointer">
-                        <Settings className="mr-2 h-4 w-4" />
-                        <span>Settings</span>
+                      <Link to="/settings/change-password" className="cursor-pointer">
+                        <KeyRound className="mr-2 h-4 w-4" />
+                        <span>Change Password</span>
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />

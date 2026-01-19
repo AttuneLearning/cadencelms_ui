@@ -8,7 +8,7 @@ import { type ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/shared/ui/data-table';
 import { Button } from '@/shared/ui/button';
 import { Checkbox } from '@/shared/ui/checkbox';
-import { format } from 'date-fns';
+import { format, isValid } from 'date-fns';
 import type { ReportJob } from '@/entities/report-job';
 import { JobStatusBadge } from './JobStatusBadge';
 import { JobActionsMenu } from './JobActionsMenu';
@@ -77,9 +77,14 @@ export const ReportJobsTable: React.FC<ReportJobsTableProps> = ({
     {
       accessorKey: 'reportType',
       header: 'Type',
-      cell: ({ row }) => (
-        <span className="capitalize">{row.original.reportType.replace(/-/g, ' ')}</span>
-      ),
+      cell: ({ row }) => {
+        const reportType = row.original.reportType;
+        const label =
+          typeof reportType === 'string'
+            ? reportType.replace(/-/g, ' ')
+            : 'Unknown';
+        return <span className="capitalize">{label}</span>;
+      },
     },
     {
       accessorKey: 'state',
@@ -89,18 +94,27 @@ export const ReportJobsTable: React.FC<ReportJobsTableProps> = ({
     {
       accessorKey: 'outputFormat',
       header: 'Format',
-      cell: ({ row }) => (
-        <span className="uppercase text-sm font-mono">{row.original.outputFormat}</span>
-      ),
+      cell: ({ row }) => {
+        const outputFormat = row.original.outputFormat;
+        const label =
+          typeof outputFormat === 'string'
+            ? outputFormat.toUpperCase()
+            : 'N/A';
+        return <span className="uppercase text-sm font-mono">{label}</span>;
+      },
     },
     {
       accessorKey: 'createdAt',
       header: 'Created',
-      cell: ({ row }) => (
-        <span className="text-sm">
-          {format(new Date(row.original.createdAt), 'MMM d, yyyy HH:mm')}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const createdAt = row.original.createdAt;
+        const createdDate = createdAt ? new Date(createdAt) : null;
+        const label =
+          createdDate && isValid(createdDate)
+            ? format(createdDate, 'MMM d, yyyy HH:mm')
+            : 'Unknown';
+        return <span className="text-sm">{label}</span>;
+      },
     },
     {
       accessorKey: 'metrics.progress',
@@ -113,7 +127,8 @@ export const ReportJobsTable: React.FC<ReportJobsTableProps> = ({
 
         if (!isActive) return null;
 
-        const progress = job.metrics?.progress ?? 0;
+        const progress =
+          typeof job.metrics?.progress === 'number' ? job.metrics.progress : 0;
 
         return (
           <div className="flex items-center gap-2">
@@ -168,10 +183,9 @@ export const ReportJobsTable: React.FC<ReportJobsTableProps> = ({
       <DataTable
         columns={columns}
         data={jobs}
-        isLoading={isLoading}
-        onRowSelectionChange={(selection) => {
-          const selected = jobs.filter((_, index) => selection[index]);
-          setSelectedJobs(selected);
+        onRowSelectionChange={(selectedRows) => {
+          // DataTable passes the actual selected row data, not a selection state object
+          setSelectedJobs(selectedRows as ReportJob[]);
         }}
       />
     </div>

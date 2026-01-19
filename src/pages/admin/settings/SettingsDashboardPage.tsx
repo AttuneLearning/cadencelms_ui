@@ -53,6 +53,11 @@ const settingsCategories = [
 
 export const SettingsDashboardPage: React.FC = () => {
   const { data: dashboard, isLoading, error } = useSettingsDashboard();
+  const systemHealth = dashboard?.systemHealth;
+  const healthStatus = systemHealth?.status ?? 'unknown';
+  const healthIssues = systemHealth?.issues ?? [];
+  const emailConfigured = systemHealth?.emailConfigured ?? false;
+  const securityConfigured = systemHealth?.securityConfigured ?? false;
 
   if (isLoading) {
     return (
@@ -86,7 +91,7 @@ export const SettingsDashboardPage: React.FC = () => {
   }
 
   const getHealthIcon = () => {
-    switch (dashboard?.systemHealth.status) {
+    switch (healthStatus) {
       case 'healthy':
         return <CheckCircle className="h-5 w-5 text-green-500" />;
       case 'warning':
@@ -99,7 +104,7 @@ export const SettingsDashboardPage: React.FC = () => {
   };
 
   const getHealthBadgeVariant = () => {
-    switch (dashboard?.systemHealth.status) {
+    switch (healthStatus) {
       case 'healthy':
         return 'default';
       case 'warning':
@@ -124,8 +129,7 @@ export const SettingsDashboardPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <CardTitle>System Health</CardTitle>
             <Badge variant={getHealthBadgeVariant()}>
-              {dashboard?.systemHealth.status.charAt(0).toUpperCase() +
-                dashboard?.systemHealth.status.slice(1)}
+              {healthStatus.charAt(0).toUpperCase() + healthStatus.slice(1)}
             </Badge>
           </div>
         </CardHeader>
@@ -134,11 +138,11 @@ export const SettingsDashboardPage: React.FC = () => {
             <div className="flex items-start gap-3">
               {getHealthIcon()}
               <div className="flex-1">
-                {dashboard?.systemHealth.issues && dashboard.systemHealth.issues.length > 0 ? (
+                {healthIssues.length > 0 ? (
                   <div className="space-y-2">
                     <p className="text-sm font-medium">Issues detected:</p>
                     <ul className="list-disc list-inside space-y-1">
-                      {dashboard.systemHealth.issues.map((issue, index) => (
+                      {healthIssues.map((issue, index) => (
                         <li key={index} className="text-sm text-muted-foreground">
                           {issue}
                         </li>
@@ -156,13 +160,13 @@ export const SettingsDashboardPage: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm">
-                  Email: {dashboard?.systemHealth.emailConfigured ? 'Configured' : 'Not configured'}
+                  Email: {emailConfigured ? 'Configured' : 'Not configured'}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <Shield className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm">
-                  Security: {dashboard?.systemHealth.securityConfigured ? 'Configured' : 'Not configured'}
+                  Security: {securityConfigured ? 'Configured' : 'Not configured'}
                 </span>
               </div>
             </div>
