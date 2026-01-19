@@ -22,7 +22,7 @@ import {
 
 // Staff pages
 import { StaffDashboardPage } from '@/pages/staff/dashboard';
-import { CourseAnalyticsPage } from '@/pages/staff/analytics';
+import { CourseAnalyticsPage, CourseSummaryPage } from '@/pages/staff/analytics';
 import { StaffCalendarPage } from '@/pages/staff/calendar';
 import { StudentProgressPage } from '@/pages/staff/students';
 import { StudentDetailPage } from '@/pages/staff/students/StudentDetailPage';
@@ -36,6 +36,10 @@ import { ClassManagementPage as StaffClassManagementPage } from '@/pages/staff/c
 import { ClassDetailsPage as StaffClassDetailsPage } from '@/pages/staff/classes/ClassDetailsPage';
 import { GradingPage, GradingDetailPage } from '@/pages/staff/grading';
 import { StaffReportsPage } from '@/pages/staff/reports';
+import { StaffSettingsPage } from '@/pages/staff/settings';
+
+// Department-scoped staff pages
+import { DepartmentCoursesPage, DepartmentClassesPage } from '@/pages/staff/departments';
 
 // Admin pages
 import { AdminDashboardPage } from '@/pages/admin/dashboard/AdminDashboardPage';
@@ -99,8 +103,10 @@ import { CourseDetailsPage } from '@/pages/learner/catalog/CourseDetailsPage';
 import { CoursePlayerPage } from '@/pages/learner/player/CoursePlayerPage';
 import { MyCoursesPage } from '@/pages/learner/courses/MyCoursesPage';
 import { MyLearningPage } from '@/pages/learner/learning';
+import { MyClassesPage } from '@/pages/learner/classes';
 import { CertificatesPage, CertificateViewPage } from '@/pages/learner/certificates';
 import { LearnerTestPage } from '@/pages/learner/test-page';
+import { LearnerSettingsPage } from '@/pages/learner/settings';
 
 // Auth error page (replaces direct login redirects for better debugging)
 import { AuthErrorPage } from '@/pages/auth-error';
@@ -197,6 +203,14 @@ export function AppRouter() {
         }
       />
       <Route
+        path="/learner/settings"
+        element={
+          <LearnerOnlyRoute>
+            <LearnerSettingsPage />
+          </LearnerOnlyRoute>
+        }
+      />
+      <Route
         path="/learner/profile/details"
         element={
           <LearnerOnlyRoute>
@@ -244,6 +258,15 @@ export function AppRouter() {
         element={
           <LearnerOnlyRoute>
             <LearnerCalendarPage />
+          </LearnerOnlyRoute>
+        }
+      />
+      {/* My Classes Route */}
+      <Route
+        path="/learner/classes"
+        element={
+          <LearnerOnlyRoute>
+            <MyClassesPage />
           </LearnerOnlyRoute>
         }
       />
@@ -350,6 +373,14 @@ export function AppRouter() {
         }
       />
       <Route
+        path="/staff/settings"
+        element={
+          <StaffOnlyRoute>
+            <StaffSettingsPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
         path="/staff/profile/details"
         element={
           <StaffOnlyRoute>
@@ -362,6 +393,15 @@ export function AppRouter() {
         element={
           <StaffOnlyRoute>
             <ProfileExtendedDemo />
+          </StaffOnlyRoute>
+        }
+      />
+      {/* Course Summary - Aggregated analytics across departments */}
+      <Route
+        path="/staff/analytics/courses"
+        element={
+          <StaffOnlyRoute>
+            <CourseSummaryPage />
           </StaffOnlyRoute>
         }
       />
@@ -507,6 +547,24 @@ export function AppRouter() {
         element={
           <StaffOnlyRoute>
             <StaffReportsPage />
+          </StaffOnlyRoute>
+        }
+      />
+
+      {/* Department-scoped staff routes */}
+      <Route
+        path="/staff/departments/:deptId/courses"
+        element={
+          <StaffOnlyRoute>
+            <DepartmentCoursesPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/departments/:deptId/classes"
+        element={
+          <StaffOnlyRoute>
+            <DepartmentClassesPage />
           </StaffOnlyRoute>
         }
       />
