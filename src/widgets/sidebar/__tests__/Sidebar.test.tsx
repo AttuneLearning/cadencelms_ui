@@ -67,6 +67,7 @@ vi.mock('../config/navItems', () => ({
       userTypes: ['staff', 'learner'],
       requiredPermission: 'content:courses:read',
       departmentScoped: true,
+      group: 'content',
     },
     {
       label: 'Manage Content',
@@ -75,8 +76,14 @@ vi.mock('../config/navItems', () => ({
       userTypes: ['staff'],
       requiredPermission: 'content:courses:manage',
       departmentScoped: true,
+      group: 'content',
     },
   ],
+  DEPARTMENT_ACTION_GROUPS: {
+    content: { label: 'Content Management', icon: 'BookOpen' },
+    people: { label: 'People & Progress', icon: 'Users' },
+    analytics: { label: 'Analytics & Settings', icon: 'FileBarChart' },
+  },
   getPrimaryDashboardPath: (userType: string) => `/${userType}/dashboard`,
 }));
 vi.mock('../ui/NavLink', () => ({

@@ -32,6 +32,7 @@ import {
   BookOpen,
   Search,
   CheckSquare,
+  FileBarChart,
 } from 'lucide-react';
 import type { UserType } from '@/shared/types/auth';
 
@@ -59,6 +60,11 @@ export interface ContextNavItem {
   departmentScoped?: boolean;
 }
 
+/**
+ * Department action groups for collapsible navigation
+ */
+export type DepartmentActionGroup = 'content' | 'people' | 'analytics';
+
 export interface DepartmentNavItem {
   label: string;
   pathTemplate: string; // e.g., '/staff/departments/:deptId/courses'
@@ -66,6 +72,7 @@ export interface DepartmentNavItem {
   requiredPermission: string;
   userTypes: UserType[];
   departmentScoped: true;
+  group: DepartmentActionGroup; // Group for collapsible sections
 }
 
 // ============================================================================
@@ -147,13 +154,6 @@ export const BASE_NAV_ITEMS: BaseNavItem[] = [
     icon: Award,
   },
   {
-    label: 'Test Page',
-    path: '/learner/test-page',
-    icon: Search,
-    userTypes: ['learner'],
-    showDisabled: true,
-  },
-  {
     label: 'My Progress',
     path: '/learner/progress',
     icon: TrendingUp,
@@ -214,6 +214,14 @@ export const STAFF_CONTEXT_NAV: ContextNavItem[] = [
     label: 'Calendar',
     path: '/staff/calendar',
     icon: CalendarDays,
+  },
+  // --- Analytics & Reports Section ---
+  {
+    label: 'Course Summary',
+    path: '/staff/analytics/courses',
+    icon: FileBarChart,
+    requiredPermission: 'dashboard:view-department-overview',
+    departmentScoped: true,
   },
   {
     label: 'Analytics',
@@ -285,80 +293,107 @@ export const ADMIN_CONTEXT_NAV: ContextNavItem[] = [
 // SECTION 3: Department-Scoped Navigation Items
 // ============================================================================
 
+/**
+ * Group labels and icons for department action groups
+ */
+export const DEPARTMENT_ACTION_GROUPS: Record<
+  DepartmentActionGroup,
+  { label: string; icon: LucideIcon }
+> = {
+  content: { label: 'Content Management', icon: BookOpen },
+  people: { label: 'People & Progress', icon: Users },
+  analytics: { label: 'Analytics & Settings', icon: FileBarChart },
+};
+
 export const DEPARTMENT_NAV_ITEMS: DepartmentNavItem[] = [
-  // STAFF Department Actions
-  {
-    label: 'Create Course',
-    pathTemplate: '/staff/departments/:deptId/courses/create',
-    icon: Plus,
-    requiredPermission: 'course:create-department',
-    userTypes: ['staff'],
-    departmentScoped: true,
-  },
+  // STAFF Department Actions - Content Group
   {
     label: 'Manage Courses',
     pathTemplate: '/staff/departments/:deptId/courses',
     icon: BookOpen,
-    requiredPermission: 'course:view-department',
+    requiredPermission: 'content:courses:read',
     userTypes: ['staff'],
     departmentScoped: true,
+    group: 'content',
   },
   {
     label: 'Manage Classes',
     pathTemplate: '/staff/departments/:deptId/classes',
     icon: Calendar,
-    requiredPermission: 'class:view-department',
+    requiredPermission: 'content:classes:read',
     userTypes: ['staff'],
     departmentScoped: true,
+    group: 'content',
   },
+  {
+    label: 'Create Course',
+    pathTemplate: '/staff/departments/:deptId/courses/create',
+    icon: Plus,
+    requiredPermission: 'content:courses:manage',
+    userTypes: ['staff'],
+    departmentScoped: true,
+    group: 'content',
+  },
+
+  // STAFF Department Actions - People Group
   {
     label: 'Student Progress',
     pathTemplate: '/staff/departments/:deptId/students',
     icon: Users,
-    requiredPermission: 'student:view-department',
+    requiredPermission: 'enrollments:read',
     userTypes: ['staff'],
     departmentScoped: true,
+    group: 'people',
   },
+
+  // STAFF Department Actions - Analytics Group
   {
     label: 'Department Reports',
     pathTemplate: '/staff/departments/:deptId/reports',
     icon: FileText,
-    requiredPermission: 'report:view-department-all',
+    requiredPermission: 'reports:department:read',
     userTypes: ['staff'],
     departmentScoped: true,
+    group: 'analytics',
   },
   {
     label: 'Department Settings',
     pathTemplate: '/staff/departments/:deptId/settings',
     icon: Settings,
-    requiredPermission: 'department:edit',
+    requiredPermission: 'department:settings:manage',
     userTypes: ['staff'],
     departmentScoped: true,
+    group: 'analytics',
   },
 
-  // LEARNER Department Actions
+  // LEARNER Department Actions - Content Group
   {
     label: 'Browse Courses',
     pathTemplate: '/learner/departments/:deptId/courses',
     icon: Search,
-    requiredPermission: 'course:view-department',
+    requiredPermission: 'content:courses:read',
     userTypes: ['learner'],
     departmentScoped: true,
+    group: 'content',
   },
+
+  // LEARNER Department Actions - People Group
   {
     label: 'My Enrollments',
     pathTemplate: '/learner/departments/:deptId/enrollments',
     icon: BookOpen,
-    requiredPermission: 'course:enroll-department',
+    requiredPermission: 'enrollments:own:read',
     userTypes: ['learner'],
     departmentScoped: true,
+    group: 'people',
   },
   {
-    label: 'Department Progress',
+    label: 'My Progress',
     pathTemplate: '/learner/departments/:deptId/progress',
     icon: TrendingUp,
-    requiredPermission: 'dashboard:view-my-progress',
+    requiredPermission: 'progress:own:read',
     userTypes: ['learner'],
     departmentScoped: true,
+    group: 'people',
   },
 ];
