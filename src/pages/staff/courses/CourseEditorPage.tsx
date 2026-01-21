@@ -19,6 +19,14 @@ import { Separator } from '@/shared/ui/separator';
 import { useToast } from '@/shared/ui/use-toast';
 import { ConfirmDialog } from '@/shared/ui/confirm-dialog';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/ui/select';
+import { useDepartmentHierarchy } from '@/entities/department';
+import {
   useCourse,
   useCreateCourse,
   useUpdateCourse,
@@ -92,8 +100,50 @@ export const CourseEditorPage: React.FC<CourseEditorPageProps> = ({ defaultDepar
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user } = useAuthStore();
+  const { user, roleHierarchy } = useAuthStore();
   const isNewCourse = !courseId || courseId === 'new';
+
+  // Get user's departments from roleHierarchy
+  const userDepartments = React.useMemo(() => {
+    const departments: Array<{ id: string; name: string; isChild?: boolean }> = [];
+
+    if (roleHierarchy.staffRoles) {
+      for (const deptGroup of roleHierarchy.staffRoles.departmentRoles) {
+        departments.push({
+          id: deptGroup.departmentId,
+          name: deptGroup.departmentName,
+        });
+      }
+    }
+
+    return departments;
+  }, [roleHierarchy]);
+
+  // Fetch child departments for the current/default department
+  const currentDeptId = defaultDepartmentId || userDepartments[0]?.id;
+  const { data: hierarchyData } = useDepartmentHierarchy(currentDeptId || '', {
+    enabled: !!currentDeptId,
+  });
+
+  // Combine user departments with child departments
+  const availableDepartments = React.useMemo(() => {
+    const depts = [...userDepartments];
+
+    // Add child departments from hierarchy if available
+    if (hierarchyData?.children) {
+      for (const child of hierarchyData.children) {
+        if (!depts.some(d => d.id === child.id)) {
+          depts.push({
+            id: child.id,
+            name: child.name,
+            isChild: true,
+          });
+        }
+      }
+    }
+
+    return depts;
+  }, [userDepartments, hierarchyData]);
 
   // Check if user is billing-admin (read-only access)
   const isBillingAdmin = user?.roles?.includes('billing-admin');
@@ -564,12 +614,34 @@ export const CourseEditorPage: React.FC<CourseEditorPageProps> = ({ defaultDepar
                 <Label htmlFor="department">
                   Department <span className="text-destructive">*</span>
                 </Label>
-                <Input
-                  id="department"
-                  {...register('department')}
-                  placeholder="Department ID"
-                  disabled={isReadOnly}
-                />
+                {availableDepartments.length === 1 ? (
+                  <>
+                    <Input
+                      id="department"
+                      value={availableDepartments[0].name}
+                      disabled
+                      className="bg-muted"
+                    />
+                    <input type="hidden" {...register('department')} />
+                  </>
+                ) : (
+                  <Select
+                    value={watch('department')}
+                    onValueChange={(value) => setValue('department', value, { shouldValidate: true })}
+                    disabled={isReadOnly}
+                  >
+                    <SelectTrigger id="department">
+                      <SelectValue placeholder="Select a department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableDepartments.map((dept) => (
+                        <SelectItem key={dept.id} value={dept.id}>
+                          {dept.isChild ? `↳ ${dept.name}` : dept.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
                 {errors.department && (
                   <p className="text-sm text-destructive">{errors.department.message}</p>
                 )}
