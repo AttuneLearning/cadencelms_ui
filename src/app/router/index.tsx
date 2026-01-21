@@ -39,7 +39,7 @@ import { StaffReportsPage } from '@/pages/staff/reports';
 import { StaffSettingsPage } from '@/pages/staff/settings';
 
 // Department-scoped staff pages
-import { DepartmentCoursesPage, DepartmentCreateCoursePage, DepartmentClassesPage, DepartmentStudentsPage, DepartmentReportsPage, DepartmentSettingsPage } from '@/pages/staff/departments';
+import { DepartmentCoursesPage, DepartmentCreateCoursePage, DepartmentClassesPage, DepartmentStudentsPage, DepartmentReportsPage, DepartmentSettingsPage, DepartmentManagementPage } from '@/pages/staff/departments';
 
 // Admin pages
 import { AdminDashboardPage } from '@/pages/admin/dashboard/AdminDashboardPage';
@@ -597,6 +597,14 @@ export function AppRouter() {
         element={
           <StaffOnlyRoute>
             <DepartmentSettingsPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/departments/:deptId/manage"
+        element={
+          <StaffOnlyRoute>
+            <DepartmentManagementPage />
           </StaffOnlyRoute>
         }
       />

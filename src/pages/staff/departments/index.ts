@@ -11,3 +11,4 @@ export { DepartmentClassesPage } from './DepartmentClassesPage';
 export { DepartmentStudentsPage } from './DepartmentStudentsPage';
 export { DepartmentReportsPage } from './DepartmentReportsPage';
 export { DepartmentSettingsPage } from './DepartmentSettingsPage';
+export { DepartmentManagementPage } from './DepartmentManagementPage';
