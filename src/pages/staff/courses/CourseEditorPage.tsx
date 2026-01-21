@@ -84,7 +84,11 @@ type ConfirmDialogState = {
   module?: CourseModuleListItem;
 };
 
-export const CourseEditorPage: React.FC = () => {
+export interface CourseEditorPageProps {
+  defaultDepartmentId?: string;
+}
+
+export const CourseEditorPage: React.FC<CourseEditorPageProps> = ({ defaultDepartmentId }) => {
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -143,7 +147,7 @@ export const CourseEditorPage: React.FC = () => {
       title: '',
       code: '',
       description: '',
-      department: '',
+      department: defaultDepartmentId || '',
       program: '',
       credits: 3,
       duration: 40,
