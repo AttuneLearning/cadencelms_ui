@@ -517,7 +517,7 @@ export const CourseEditorPage: React.FC<CourseEditorPageProps> = ({ defaultDepar
                   <p className="text-sm text-destructive">{errors.code.message}</p>
                 )}
                 <p className="text-xs text-muted-foreground">
-                  Format: 2-4 uppercase letters followed by 3 digits
+                  Up to 35 letters and numbers
                 </p>
               </div>
 

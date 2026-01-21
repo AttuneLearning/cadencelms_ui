@@ -104,16 +104,16 @@ export const CourseForm: React.FC<CourseFormProps> = ({
             <Input
               id="code"
               value={formData.code}
-              onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
+              onChange={(e) => setFormData({ ...formData, code: e.target.value })}
               placeholder="e.g., WEB101"
               required
               disabled={isLoading}
-              pattern="^[A-Z]{2,4}[0-9]{3}$"
-              title="Format: 2-4 letters followed by 3 digits (e.g., WEB101)"
+              maxLength={35}
+              title="Up to 35 letters and numbers"
               className="font-mono"
             />
             <p className="text-xs text-muted-foreground">
-              Format: 2-4 uppercase letters followed by 3 digits
+              Up to 35 letters and numbers
             </p>
           </div>
 

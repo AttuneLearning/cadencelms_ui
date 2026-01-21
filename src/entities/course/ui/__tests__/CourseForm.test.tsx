@@ -162,13 +162,13 @@ describe('CourseForm', () => {
       render(<CourseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
 
       const codeInput = screen.getByLabelText(/Course Code/) as HTMLInputElement;
-      expect(codeInput.pattern).toBe('^[A-Z]{2,4}[0-9]{3}$');
+      expect(codeInput.maxLength).toBe(35);
     });
 
     it('should show course code format hint', () => {
       render(<CourseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
 
-      expect(screen.getByText(/Format: 2-4 uppercase letters followed by 3 digits/)).toBeInTheDocument();
+      expect(screen.getByText(/Up to 35 letters and numbers/)).toBeInTheDocument();
     });
 
     it('should validate title length (max 200)', () => {
@@ -500,7 +500,7 @@ describe('CourseForm', () => {
     it('should show format helper text', () => {
       render(<CourseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
 
-      expect(screen.getByText(/Format: 2-4 uppercase letters followed by 3 digits/)).toBeInTheDocument();
+      expect(screen.getByText(/Up to 35 letters and numbers/)).toBeInTheDocument();
     });
 
     it('should show example in placeholder', () => {
