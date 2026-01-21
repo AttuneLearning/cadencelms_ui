@@ -98,17 +98,16 @@ export const handlers = [
     const paginatedClasses = filteredClasses.slice(start, end);
 
     return HttpResponse.json({
+      success: true,
       data: {
-        data: {
-          classes: paginatedClasses,
-          pagination: {
-            page,
-            limit,
-            total,
-            totalPages,
-            hasNext: page < totalPages,
-            hasPrev: page > 1,
-          },
+        classes: paginatedClasses,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages,
+          hasNext: page < totalPages,
+          hasPrev: page > 1,
         },
       },
     });
@@ -120,7 +119,8 @@ export const handlers = [
 
     if (id === mockFullClass.id) {
       return HttpResponse.json({
-        data: { data: mockFullClass },
+        success: true,
+        data: mockFullClass,
       });
     }
 
@@ -139,10 +139,9 @@ export const handlers = [
 
     return HttpResponse.json(
       {
-        data: {
-          data: newClass,
-          message: 'Class created successfully',
-        },
+        success: true,
+        data: newClass,
+        message: 'Class created successfully',
       },
       { status: 201 }
     );
@@ -160,10 +159,9 @@ export const handlers = [
     };
 
     return HttpResponse.json({
-      data: {
-        data: updatedClass,
-        message: 'Class updated successfully',
-      },
+      success: true,
+      data: updatedClass,
+      message: 'Class updated successfully',
     });
   }),
 
@@ -172,13 +170,12 @@ export const handlers = [
     const { id } = params;
 
     return HttpResponse.json({
+      success: true,
       data: {
-        data: {
-          ...mockDeleteClassResponse,
-          id: id as string,
-        },
-        message: 'Class deleted successfully',
+        ...mockDeleteClassResponse,
+        id: id as string,
       },
+      message: 'Class deleted successfully',
     });
   }),
 
@@ -187,11 +184,10 @@ export const handlers = [
     const { id } = params;
 
     return HttpResponse.json({
+      success: true,
       data: {
-        data: {
-          ...mockClassRoster,
-          classId: id as string,
-        },
+        ...mockClassRoster,
+        classId: id as string,
       },
     });
   }),
@@ -202,13 +198,12 @@ export const handlers = [
     const body = await request.json();
 
     return HttpResponse.json({
+      success: true,
       data: {
-        data: {
-          ...mockEnrollmentResult,
-          classId: id as string,
-        },
-        message: 'Learners enrolled successfully',
+        ...mockEnrollmentResult,
+        classId: id as string,
       },
+      message: 'Learners enrolled successfully',
     });
   }),
 
@@ -219,13 +214,12 @@ export const handlers = [
       const { enrollmentId } = params;
 
       return HttpResponse.json({
+        success: true,
         data: {
-          data: {
-            ...mockDropEnrollmentResponse,
-            enrollmentId: enrollmentId as string,
-          },
-          message: 'Learner removed successfully',
+          ...mockDropEnrollmentResponse,
+          enrollmentId: enrollmentId as string,
         },
+        message: 'Learner removed successfully',
       });
     }
   ),
@@ -235,11 +229,10 @@ export const handlers = [
     const { id } = params;
 
     return HttpResponse.json({
+      success: true,
       data: {
-        data: {
-          ...mockClassProgress,
-          classId: id as string,
-        },
+        ...mockClassProgress,
+        classId: id as string,
       },
     });
   }),
@@ -259,18 +252,17 @@ export const handlers = [
     }
 
     return HttpResponse.json({
+      success: true,
       data: {
-        data: {
-          classId: id as string,
-          enrollments,
-          pagination: {
-            page,
-            limit,
-            total: enrollments.length,
-            totalPages: Math.ceil(enrollments.length / limit),
-            hasNext: false,
-            hasPrev: false,
-          },
+        classId: id as string,
+        enrollments,
+        pagination: {
+          page,
+          limit,
+          total: enrollments.length,
+          totalPages: Math.ceil(enrollments.length / limit),
+          hasNext: false,
+          hasPrev: false,
         },
       },
     });
