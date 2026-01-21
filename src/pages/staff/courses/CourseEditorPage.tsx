@@ -56,7 +56,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 // Form validation schema
 const courseFormSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200, 'Title must be less than 200 characters'),
-  code: z.string().regex(/^[A-Z]{2,4}[0-9]{3}$/, 'Format: 2-4 letters followed by 3 digits (e.g., WEB101)'),
+  code: z.string().min(1, 'Course code is required').max(35, 'Course code must be 35 characters or less').regex(/^[A-Za-z0-9]+$/, 'Course code must contain only letters and numbers'),
   description: z.string().max(2000, 'Description must be less than 2000 characters').optional(),
   department: z.string().min(1, 'Department is required'),
   program: z.string().optional(),
