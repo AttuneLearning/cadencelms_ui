@@ -19,7 +19,7 @@
  * - Track B: navigationStore with department state
  */
 
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { useAuthStore } from '@/features/auth/model/authStore';
 import { useNavigationStore } from '@/shared/stores/navigationStore';
 
@@ -201,6 +201,21 @@ export function useDepartmentContext(): DepartmentContext {
   }, [selectedDepartmentId, currentDepartmentRoles]);
 
   // ============================================================================
+  // Actions (Stabilized)
+  // ============================================================================
+
+  /**
+   * Stable reference to switchDepartment action
+   * Wrapped in useCallback to prevent infinite loops in useEffect dependencies
+   */
+  const switchDepartment = useCallback(
+    (deptId: string) => {
+      return switchDepartmentAction(deptId);
+    },
+    [switchDepartmentAction]
+  );
+
+  // ============================================================================
   // Return Context
   // ============================================================================
 
@@ -218,7 +233,7 @@ export function useDepartmentContext(): DepartmentContext {
     hasRole,
 
     // Actions
-    switchDepartment: switchDepartmentAction,
+    switchDepartment,
 
     // Loading state
     isSwitching: isSwitchingDepartment,

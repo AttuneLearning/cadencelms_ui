@@ -88,10 +88,10 @@ export function DepartmentStudentsPage() {
 
   // Switch to the department from the URL if needed
   useEffect(() => {
-    if (deptId && deptId !== currentDepartmentId) {
+    if (deptId && deptId !== currentDepartmentId && !isSwitching) {
       switchDepartment(deptId);
     }
-  }, [deptId, currentDepartmentId, switchDepartment]);
+  }, [deptId, currentDepartmentId, switchDepartment, isSwitching]);
 
   // Fetch department details
   const { 

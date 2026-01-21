@@ -636,5 +636,32 @@ describe('useDepartmentContext', () => {
         result.current.hasAllPermissions(['course:content:view', 'course:content:edit'])
       ).toBe(true);
     });
+
+    it('should maintain stable switchDepartment reference across renders', () => {
+      const { result, rerender } = renderHook(() => useDepartmentContext());
+
+      // Capture initial switchDepartment reference
+      const firstSwitchDepartment = result.current.switchDepartment;
+
+      // Re-render without changing any dependencies
+      rerender();
+
+      // switchDepartment reference should remain stable
+      expect(result.current.switchDepartment).toBe(firstSwitchDepartment);
+
+      // Change navigation state (but not switchDepartment function itself)
+      act(() => {
+        useNavigationStore.setState({
+          selectedDepartmentId: 'dept-123',
+          currentDepartmentRoles: ['instructor'],
+          currentDepartmentAccessRights: ['course:content:view'],
+        });
+      });
+
+      rerender();
+
+      // switchDepartment reference should STILL be stable
+      expect(result.current.switchDepartment).toBe(firstSwitchDepartment);
+    });
   });
 });
