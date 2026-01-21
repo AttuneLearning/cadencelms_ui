@@ -10,7 +10,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   ChevronDown,
   ChevronRight,
@@ -81,6 +81,7 @@ interface GroupedDepartmentNavItems {
 
 export const Sidebar: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { roleHierarchy, user, hasPermission: hasGlobalPermission } = useAuthStore();
   const {
     selectedDepartmentId,
@@ -285,6 +286,14 @@ export const Sidebar: React.FC = () => {
       await switchDepartment(deptId);
       if (user) {
         rememberDepartment(user._id, deptId);
+      }
+
+      // If currently on a department-scoped page, navigate to the same page type for the new department
+      // This prevents the page from re-syncing back to the old department from the URL
+      const deptPageMatch = location.pathname.match(/^\/(staff|learner)\/departments\/([^/]+)\/(.+)$/);
+      if (deptPageMatch) {
+        const [, userType, , pagePath] = deptPageMatch;
+        navigate(`/${userType}/departments/${deptId}/${pagePath}`);
       }
     } catch (error) {
       console.error('[Sidebar] Failed to switch department:', error);

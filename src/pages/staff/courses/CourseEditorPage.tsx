@@ -93,7 +93,7 @@ export const CourseEditorPage: React.FC<CourseEditorPageProps> = ({ defaultDepar
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuthStore();
-  const isNewCourse = courseId === 'new';
+  const isNewCourse = !courseId || courseId === 'new';
 
   // Check if user is billing-admin (read-only access)
   const isBillingAdmin = user?.roles?.includes('billing-admin');
@@ -166,7 +166,7 @@ export const CourseEditorPage: React.FC<CourseEditorPageProps> = ({ defaultDepar
       setValue('title', course.title);
       setValue('code', course.code);
       setValue('description', course.description || '');
-      setValue('department', course.department.id);
+      setValue('department', course.department?.id || '');
       setValue('program', course.program?.id || '');
       setValue('credits', course.credits || 3);
       setValue('duration', course.duration || 40);
