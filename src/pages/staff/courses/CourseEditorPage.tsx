@@ -56,6 +56,7 @@ import {
   Loader2,
   AlertCircle,
   Lock,
+  Play,
 } from 'lucide-react';
 import { PageHeader } from '@/shared/ui/page-header';
 import { useAuthStore } from '@/features/auth/model/authStore';
@@ -478,6 +479,16 @@ export const CourseEditorPage: React.FC<CourseEditorPageProps> = ({ defaultDepar
             <AlertCircle className="mr-1 h-3 w-3" />
             Unsaved changes
           </Badge>
+        )}
+
+        {!isNewCourse && (
+          <Button
+            variant="outline"
+            onClick={() => navigate(`/staff/courses/${courseId}/preview`)}
+          >
+            <Play className="mr-2 h-4 w-4" />
+            Preview
+          </Button>
         )}
 
         {!isNewCourse && course && (

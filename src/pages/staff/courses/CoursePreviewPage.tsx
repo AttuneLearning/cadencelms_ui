@@ -116,7 +116,7 @@ export function CoursePreviewPage() {
   };
 
   const handleExitPreview = () => {
-    navigate(`/admin/courses/${courseId}`);
+    navigate(`/staff/courses/${courseId}/edit`);
   };
 
   const handleBackToOverview = () => {

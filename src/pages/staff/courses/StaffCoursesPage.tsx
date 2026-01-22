@@ -33,6 +33,7 @@ import {
   Filter,
   X,
   Loader2,
+  Eye,
 } from 'lucide-react';
 import { PageHeader } from '@/shared/ui/page-header';
 import { formatDistanceToNow } from 'date-fns';
@@ -204,6 +205,7 @@ export const StaffCoursesPage: React.FC = () => {
                   key={course.id}
                   course={course}
                   onEdit={() => handleEditCourse(course.id)}
+                  onPreview={() => navigate(`/staff/courses/${course.id}/preview`)}
                   isReadOnly={isReadOnly}
                 />
               ))}
@@ -260,10 +262,11 @@ export const StaffCoursesPage: React.FC = () => {
 interface CourseCardProps {
   course: CourseListItem;
   onEdit: () => void;
+  onPreview: () => void;
   isReadOnly?: boolean;
 }
 
-const CourseCard: React.FC<CourseCardProps> = ({ course, onEdit, isReadOnly = false }) => {
+const CourseCard: React.FC<CourseCardProps> = ({ course, onEdit, onPreview, isReadOnly = false }) => {
   return (
     <Card className="group transition-shadow hover:shadow-lg">
       <CardHeader>
@@ -321,9 +324,13 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onEdit, isReadOnly = fa
       </CardContent>
 
       <CardFooter className="flex gap-2">
+        <Button onClick={onPreview} variant="outline" className="flex-1">
+          <Eye className="mr-2 h-4 w-4" />
+          Preview
+        </Button>
         <Button onClick={onEdit} className="flex-1" disabled={isReadOnly}>
           <Settings className="mr-2 h-4 w-4" />
-          {isReadOnly ? 'View Course' : 'Edit Course'}
+          {isReadOnly ? 'View' : 'Edit'}
         </Button>
       </CardFooter>
     </Card>
