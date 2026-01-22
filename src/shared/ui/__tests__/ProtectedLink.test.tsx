@@ -323,14 +323,12 @@ describe('ProtectedLink Component', () => {
 
       const link = screen.getByRole('link');
       expect(link).toBeInTheDocument();
-      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', {
-        type: 'department',
-        id: 'dept-456',
-      });
+      // UNIFIED AUTHORIZATION: Now passes departmentId directly
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', 'dept-456');
     });
 
     it('should check multiple permissions with specific department ID (AND logic)', () => {
-      mockHasPermission.mockImplementation((perm, scope) => true);
+      mockHasPermission.mockImplementation(() => true);
 
       render(
         <RouterWrapper>
@@ -347,14 +345,9 @@ describe('ProtectedLink Component', () => {
 
       const link = screen.getByRole('link');
       expect(link).toBeInTheDocument();
-      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', {
-        type: 'department',
-        id: 'dept-456',
-      });
-      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:create', {
-        type: 'department',
-        id: 'dept-456',
-      });
+      // UNIFIED AUTHORIZATION: Now passes departmentId directly
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', 'dept-456');
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:create', 'dept-456');
     });
 
     it('should check multiple permissions with specific department ID (OR logic)', () => {
@@ -414,10 +407,8 @@ describe('ProtectedLink Component', () => {
 
       const link = screen.getByRole('link');
       expect(link).toBeInTheDocument();
-      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', {
-        type: 'department',
-        id: 'dept-specific',
-      });
+      // UNIFIED AUTHORIZATION: Now passes departmentId directly
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', 'dept-specific');
       expect(mockHasDeptPermission).not.toHaveBeenCalled();
     });
   });
@@ -555,8 +546,11 @@ describe('ProtectedLink Component', () => {
 
       const link = screen.getByRole('link');
       expect(link).toBeInTheDocument();
-      expect(mockHasAnyPermission).toHaveBeenCalledWith(['content:courses:create']);
-      expect(mockHasPermission).not.toHaveBeenCalled();
+      // When requiredPermissions has only 1 element, it uses hasPermission (optimized path)
+      // requiredPermissions should take priority over requiredPermission
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:create');
+      // Should NOT have checked the requiredPermission value
+      expect(mockHasPermission).not.toHaveBeenCalledWith('content:courses:read');
     });
   });
 

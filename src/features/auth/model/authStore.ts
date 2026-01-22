@@ -1,17 +1,16 @@
 /**
- * Auth Store - Phase 2 Implementation
- * Version: 2.0.0
- * Date: 2026-01-10
+ * Auth Store - Unified Authorization Model
+ * Version: 3.0.0
+ * Date: 2026-01-22
  *
  * Zustand store for authentication and authorization
- * Following V2 API contracts with GNAP token structure
+ * Implements ADR-AUTH-001: Unified Authorization Model
  *
- * Features:
- * - Login/logout with token management
- * - Permission checking with wildcard support
- * - Role checking with department scope
- * - Session restoration from stored tokens
- * - Automatic token refresh
+ * KEY CHANGES:
+ * - Uses globalRights + departmentRights instead of allAccessRights
+ * - Department-scoped permission checks use departmentRights[deptId]
+ * - Hierarchy support via departmentHierarchy
+ * - Cache validation via permissionVersion
  */
 
 import { create } from 'zustand';
@@ -20,7 +19,6 @@ import type {
   User,
   RoleHierarchy,
   AccessToken,
-  PermissionScope,
   LoginCredentials,
   LoginResponse,
   MyRolesResponse,
@@ -68,6 +66,12 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
 
+  // UNIFIED AUTHORIZATION (ADR-AUTH-001)
+  globalRights: string[];
+  departmentRights: Record<string, string[]>;
+  departmentHierarchy: Record<string, string[]>;
+  permissionVersion: number;
+
   // Admin session state
   isAdminSessionActive: boolean;
   adminSessionExpiry: Date | null;
@@ -84,10 +88,11 @@ interface AuthState {
   deEscalateFromAdmin: () => void;
   hasAdminToken: () => boolean;
 
-  // Permission checking
-  hasPermission: (permission: string, scope?: PermissionScope) => boolean;
-  hasAnyPermission: (permissions: string[], scope?: PermissionScope) => boolean;
-  hasAllPermissions: (permissions: string[], scope?: PermissionScope) => boolean;
+  // Permission checking (UNIFIED)
+  hasPermission: (permission: string, departmentId?: string) => boolean;
+  hasAnyPermission: (permissions: string[], departmentId?: string) => boolean;
+  hasAllPermissions: (permissions: string[], departmentId?: string) => boolean;
+  hasDepartmentPermission: (permission: string, departmentId: string) => boolean;
 
   // Role checking
   hasRole: (role: string, departmentId?: string) => boolean;
@@ -147,6 +152,13 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: false,
       error: null,
+
+      // UNIFIED AUTHORIZATION (ADR-AUTH-001)
+      globalRights: [],
+      departmentRights: {},
+      departmentHierarchy: {},
+      permissionVersion: 0,
+
       isAdminSessionActive: false,
       adminSessionExpiry: null,
 
@@ -286,6 +298,12 @@ export const useAuthStore = create<AuthState>()(
             expiresAt: refreshExpiresAt,
           });
 
+          // UNIFIED AUTHORIZATION: Extract new fields from API response
+          const globalRights = data.globalRights || [];
+          const departmentRights = data.departmentRights || {};
+          const departmentHierarchy = data.departmentHierarchy || {};
+          const permissionVersion = data.permissionVersion || 0;
+
           // Update state
           set({
             accessToken,
@@ -294,13 +312,20 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
             isLoading: false,
             error: null,
+            // UNIFIED AUTHORIZATION (ADR-AUTH-001)
+            globalRights,
+            departmentRights,
+            departmentHierarchy,
+            permissionVersion,
           });
 
           console.log('[AuthStore] Login successful:', {
             userId: user._id,
             userTypes: user.userTypes,
             defaultDashboard: user.defaultDashboard,
-            permissions: roleHierarchy.allPermissions.length,
+            globalRights: globalRights.length,
+            departmentRightsKeys: Object.keys(departmentRights),
+            permissionVersion,
           });
         } catch (error: any) {
           console.error('[AuthStore] Login failed:', error);
@@ -343,6 +368,11 @@ export const useAuthStore = create<AuthState>()(
           error: null,
           isAdminSessionActive: false,
           adminSessionExpiry: null,
+          // UNIFIED AUTHORIZATION (ADR-AUTH-001)
+          globalRights: [],
+          departmentRights: {},
+          departmentHierarchy: {},
+          permissionVersion: 0,
         });
 
         // Clear navigation store department state
@@ -592,15 +622,30 @@ export const useAuthStore = create<AuthState>()(
             roleHierarchy.learnerRoles = learnerDepartments;
           }
 
+          // UNIFIED AUTHORIZATION: Extract new fields from API response
+          const globalRights = data.globalRights || [];
+          const departmentRights = data.departmentRights || {};
+          const departmentHierarchy = data.departmentHierarchy || {};
+          const permissionVersion = data.permissionVersion || 0;
+
           set({
             accessToken,
             user,
             roleHierarchy,
             isAuthenticated: true,
             isLoading: false,
+            // UNIFIED AUTHORIZATION (ADR-AUTH-001)
+            globalRights,
+            departmentRights,
+            departmentHierarchy,
+            permissionVersion,
           });
 
-          console.log('[AuthStore] Session restored from token');
+          console.log('[AuthStore] Session restored from token', {
+            globalRights: globalRights.length,
+            departmentRightsKeys: Object.keys(departmentRights),
+            permissionVersion,
+          });
         } catch (error) {
           console.error('[AuthStore] Failed to restore session:', error);
 
@@ -629,96 +674,115 @@ export const useAuthStore = create<AuthState>()(
               isAuthenticated: false,
               isLoading: false,
               error: null,
+              // UNIFIED AUTHORIZATION (ADR-AUTH-001)
+              globalRights: [],
+              departmentRights: {},
+              departmentHierarchy: {},
+              permissionVersion: 0,
             });
           }
         }
       },
 
       // ================================================================
-      // Permission Checking
+      // Permission Checking (UNIFIED AUTHORIZATION - ADR-AUTH-001)
       // ================================================================
 
-      hasPermission: (permission, scope) => {
-        const { roleHierarchy } = get();
-        if (!roleHierarchy) return false;
+      /**
+       * Check if user has a permission
+       *
+       * UNIFIED PATTERN:
+       * 1. Check globalRights first (applies everywhere)
+       * 2. If departmentId provided, check departmentRights[departmentId]
+       * 3. If no departmentId, check if permission exists in ANY department
+       * 4. Support wildcard matching (e.g., "content:*" matches "content:courses:read")
+       * 5. Support hierarchy (parent department grants access to children)
+       *
+       * @param permission - The permission string to check (e.g., "content:courses:read")
+       * @param departmentId - Optional department ID for scoped check
+       */
+      hasPermission: (permission, departmentId) => {
+        const { globalRights, departmentRights, departmentHierarchy } = get();
 
-        // Check for system-wide wildcard permission (global-admin)
-        if (roleHierarchy.allPermissions.includes('system:*')) {
+        // Helper: Check if a rights array includes permission (with wildcard support)
+        const rightsInclude = (rights: string[], perm: string): boolean => {
+          // Direct match
+          if (rights.includes(perm)) return true;
+
+          // Wildcard match: system:* grants everything
+          if (rights.includes('system:*')) return true;
+
+          // Domain wildcard: content:* matches content:courses:read
+          const [domain] = perm.split(':');
+          if (rights.includes(`${domain}:*`)) return true;
+
+          // Two-level wildcard: content:courses:* matches content:courses:read
+          const parts = perm.split(':');
+          if (parts.length === 3) {
+            if (rights.includes(`${parts[0]}:${parts[1]}:*`)) return true;
+          }
+
+          return false;
+        };
+
+        // 1. Check globalRights (applies everywhere)
+        if (rightsInclude(globalRights, permission)) {
           return true;
         }
 
-        // No scope - check if permission exists anywhere
-        if (!scope) {
-          // Direct match
-          if (roleHierarchy.allPermissions.includes(permission)) {
+        // 2. If departmentId provided (even empty string), check that specific department
+        // This handles the case where caller explicitly wants to check a department (not global)
+        if (departmentId !== undefined) {
+          // Direct department rights
+          const deptRights = departmentRights[departmentId];
+          if (deptRights && rightsInclude(deptRights, permission)) {
             return true;
           }
 
-          // Wildcard match (e.g., "content:*" matches "content:courses:read")
-          const [domain] = permission.split(':');
-          if (roleHierarchy.allPermissions.includes(`${domain}:*`)) {
-            return true;
+          // Check parent departments via hierarchy (inherited rights)
+          // departmentHierarchy is parent -> children[], so we need to find parents
+          for (const [parentId, childIds] of Object.entries(departmentHierarchy)) {
+            if (childIds.includes(departmentId)) {
+              const parentRights = departmentRights[parentId];
+              if (parentRights && rightsInclude(parentRights, permission)) {
+                return true;
+              }
+            }
           }
 
           return false;
         }
 
-        // Check department-scoped permissions
-        if (scope.type === 'department' && scope.id) {
-          // Helper function to check permissions with wildcard support
-          const checkPermissionsWithWildcard = (permissions: string[]): boolean => {
-            // Direct match
-            if (permissions.includes(permission)) {
-              return true;
-            }
-
-            // Wildcard match
-            const [domain] = permission.split(':');
-            if (permissions.includes(`${domain}:*`)) {
-              return true;
-            }
-
-            return false;
-          };
-
-          // Check staff roles in this department
-          if (roleHierarchy.staffRoles) {
-            for (const deptGroup of roleHierarchy.staffRoles.departmentRoles) {
-              if (deptGroup.departmentId === scope.id) {
-                // Check if any role in this department has the permission
-                for (const roleAssignment of deptGroup.roles) {
-                  if (checkPermissionsWithWildcard(roleAssignment.permissions)) {
-                    return true;
-                  }
-                }
-              }
-            }
-          }
-
-          // Check learner roles in this department
-          if (roleHierarchy.learnerRoles) {
-            for (const deptGroup of roleHierarchy.learnerRoles.departmentRoles) {
-              if (deptGroup.departmentId === scope.id) {
-                // Check if any role in this department has the permission
-                for (const roleAssignment of deptGroup.roles) {
-                  if (checkPermissionsWithWildcard(roleAssignment.permissions)) {
-                    return true;
-                  }
-                }
-              }
-            }
+        // 3. No departmentId - check if permission exists in ANY department
+        for (const rights of Object.values(departmentRights)) {
+          if (rightsInclude(rights, permission)) {
+            return true;
           }
         }
 
         return false;
       },
 
-      hasAnyPermission: (permissions, scope) => {
-        return permissions.some((perm) => get().hasPermission(perm, scope));
+      /**
+       * Check if user has permission for a specific department
+       * This is a stricter check that requires the departmentId
+       */
+      hasDepartmentPermission: (permission, departmentId) => {
+        return get().hasPermission(permission, departmentId);
       },
 
-      hasAllPermissions: (permissions, scope) => {
-        return permissions.every((perm) => get().hasPermission(perm, scope));
+      /**
+       * Check if user has ANY of the specified permissions
+       */
+      hasAnyPermission: (permissions, departmentId) => {
+        return permissions.some((perm) => get().hasPermission(perm, departmentId));
+      },
+
+      /**
+       * Check if user has ALL of the specified permissions
+       */
+      hasAllPermissions: (permissions, departmentId) => {
+        return permissions.every((perm) => get().hasPermission(perm, departmentId));
       },
 
       // ================================================================

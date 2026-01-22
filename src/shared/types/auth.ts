@@ -1,10 +1,73 @@
 /**
- * Authentication and Authorization Types for Role System V2
- * Version: 2.0.0
- * Date: 2026-01-10
+ * Authentication and Authorization Types for Unified Authorization Model
+ * Version: 3.0.0
+ * Date: 2026-01-22
  *
- * Based on: /contracts/UI_ROLE_SYSTEM_CONTRACTS.md
+ * Based on: /contracts/api/authorization.contract.ts
+ * Architecture Decision: ADR-AUTH-001 (Unified Authorization)
+ *
+ * KEY CHANGES from v2:
+ * - globalRights: Rights that apply everywhere
+ * - departmentRights: Record<deptId, rights[]> for scoped permissions
+ * - departmentHierarchy: Parent-to-children mapping
+ * - permissionVersion: For cache validation
+ * - DEPRECATED: allAccessRights (use globalRights + departmentRights)
  */
+
+// ============================================================================
+// Unified Authorization Types (ADR-AUTH-001)
+// ============================================================================
+
+/**
+ * Permission scope types for authorization checks
+ */
+export type UnifiedPermissionScope =
+  | '*'                    // Global - applies everywhere
+  | `dept:${string}`       // Department-specific
+  | 'own';                 // Own resources only
+
+/**
+ * User's authorization context from API
+ * This is the new unified structure that replaces the old RoleHierarchy for auth checks
+ */
+export interface UnifiedAuthContext {
+  /** User ID */
+  userId: string;
+
+  /** Global rights (scope: '*') - apply everywhere */
+  globalRights: string[];
+
+  /** Department-scoped rights - keyed by department ID */
+  departmentRights: Record<string, string[]>;
+
+  /** Department hierarchy (parent -> children[]) for inheritance */
+  departmentHierarchy: Record<string, string[]>;
+
+  /** Department memberships with roles (for role-based UI, not auth checks) */
+  departmentMemberships: SimpleDepartmentMembership[];
+
+  /** Permission version for cache validation */
+  permissionVersion: number;
+}
+
+/**
+ * Simplified department membership for unified auth
+ */
+export interface SimpleDepartmentMembership {
+  departmentId: string;
+  departmentName?: string;
+  roles: string[];
+}
+
+/**
+ * Resource context for fine-grained authorization checks
+ */
+export interface ResourceContext {
+  type: string;
+  id: string;
+  departmentId?: string;
+  createdBy?: string;
+}
 
 // ============================================================================
 // User Types
@@ -200,6 +263,18 @@ export interface LoginResponse {
     canEscalateToAdmin: boolean;
 
     departmentMemberships: DepartmentMembership[];
+
+    // UNIFIED AUTHORIZATION (ADR-AUTH-001)
+    /** Global rights that apply everywhere */
+    globalRights: string[];
+    /** Department-scoped rights */
+    departmentRights: Record<string, string[]>;
+    /** Department hierarchy for inheritance */
+    departmentHierarchy: Record<string, string[]>;
+    /** Permission version for cache validation */
+    permissionVersion: number;
+
+    /** @deprecated Use globalRights + departmentRights instead */
     allAccessRights: string[];
     lastSelectedDepartment: string | null;
   };
@@ -266,6 +341,18 @@ export interface MyRolesResponse {
     defaultDashboard: DashboardType;
     canEscalateToAdmin: boolean;
     departmentMemberships: DepartmentMembership[];
+
+    // UNIFIED AUTHORIZATION (ADR-AUTH-001)
+    /** Global rights that apply everywhere */
+    globalRights: string[];
+    /** Department-scoped rights */
+    departmentRights: Record<string, string[]>;
+    /** Department hierarchy for inheritance */
+    departmentHierarchy: Record<string, string[]>;
+    /** Permission version for cache validation */
+    permissionVersion: number;
+
+    /** @deprecated Use globalRights + departmentRights instead */
     allAccessRights: string[];
     lastSelectedDepartment: string | null;
     adminRoles: string[] | null;

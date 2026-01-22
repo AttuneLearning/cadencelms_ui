@@ -32,7 +32,8 @@ describe('usePermission Hook', () => {
       const { result } = renderHook(() => usePermission('content:courses:read'));
 
       expect(result.current).toBe(true);
-      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read');
+      // UNIFIED AUTHORIZATION: Now passes (permission, departmentId) where departmentId can be undefined
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', undefined);
     });
 
     it('should return false when user does not have the permission', () => {
@@ -44,10 +45,10 @@ describe('usePermission Hook', () => {
       const { result } = renderHook(() => usePermission('content:courses:create'));
 
       expect(result.current).toBe(false);
-      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:create');
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:create', undefined);
     });
 
-    it('should pass departmentId as scope when provided', () => {
+    it('should pass departmentId directly when provided', () => {
       const mockHasPermission = vi.fn(() => true);
       vi.mocked(useAuthStore).mockReturnValue({
         hasPermission: mockHasPermission,
@@ -59,10 +60,8 @@ describe('usePermission Hook', () => {
       );
 
       expect(result.current).toBe(true);
-      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', {
-        type: 'department',
-        id: deptId,
-      });
+      // UNIFIED AUTHORIZATION: Now passes departmentId directly, not wrapped in scope object
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', deptId);
     });
 
     it('should recompute when permission changes', () => {
@@ -71,19 +70,18 @@ describe('usePermission Hook', () => {
         hasPermission: mockHasPermission,
       } as any);
 
-      const { result, rerender } = renderHook(
+      const { rerender } = renderHook(
         ({ perm }) => usePermission(perm),
         { initialProps: { perm: 'content:courses:read' } }
       );
 
-      expect(result.current).toBe(true);
-      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read');
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', undefined);
 
       // Change permission
       mockHasPermission.mockClear();
       rerender({ perm: 'content:courses:create' });
 
-      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:create');
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:create', undefined);
     });
 
     it('should recompute when departmentId changes', () => {
@@ -92,23 +90,18 @@ describe('usePermission Hook', () => {
         hasPermission: mockHasPermission,
       } as any);
 
-      const { result, rerender } = renderHook(
+      const { rerender } = renderHook(
         ({ deptId }) => usePermission('content:courses:read', deptId),
         { initialProps: { deptId: 'dept-1' } }
       );
 
-      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', {
-        type: 'department',
-        id: 'dept-1',
-      });
+      // UNIFIED AUTHORIZATION: Now passes departmentId directly
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', 'dept-1');
 
       mockHasPermission.mockClear();
       rerender({ deptId: 'dept-2' });
 
-      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', {
-        type: 'department',
-        id: 'dept-2',
-      });
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', 'dept-2');
     });
   });
 
@@ -155,13 +148,11 @@ describe('usePermission Hook', () => {
       const permissions = ['content:courses:read'];
       const deptId = 'dept-123';
       const { result } = renderHook(() =>
-        usePermissions(permissions, { scope: { type: 'department', id: deptId } })
+        usePermissions(permissions, { departmentId: deptId })
       );
 
-      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', {
-        type: 'department',
-        id: deptId,
-      });
+      // UNIFIED AUTHORIZATION: Now passes departmentId directly
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', deptId);
       expect(result.current.hasAny).toBe(true);
       expect(result.current.hasAll).toBe(true);
     });
@@ -239,7 +230,8 @@ describe('usePermission Hook', () => {
       );
 
       expect(result.current).toBe(true);
-      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read');
+      // UNIFIED AUTHORIZATION: Now explicitly passes undefined as second arg
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', undefined);
     });
 
     it('should handle null currentDepartmentId in useScopedPermission', () => {
@@ -257,7 +249,8 @@ describe('usePermission Hook', () => {
       const { result } = renderHook(() => useScopedPermission('content:courses:read'));
 
       expect(result.current).toBe(true);
-      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read');
+      // UNIFIED AUTHORIZATION: null converts to undefined via ?? operator
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', undefined);
     });
 
     it('should handle permission string with special characters', () => {
@@ -270,7 +263,7 @@ describe('usePermission Hook', () => {
       const { result } = renderHook(() => usePermission(complexPermission));
 
       expect(result.current).toBe(true);
-      expect(mockHasPermission).toHaveBeenCalledWith(complexPermission);
+      expect(mockHasPermission).toHaveBeenCalledWith(complexPermission, undefined);
     });
   });
 
