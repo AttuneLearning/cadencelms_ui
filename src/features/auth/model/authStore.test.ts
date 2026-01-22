@@ -1,9 +1,9 @@
 /**
- * Auth Store Tests - Phase 3 (Track F)
- * Version: 2.1.0
- * Date: 2026-01-11
+ * Auth Store Tests - Unified Authorization Model
+ * Version: 3.0.0
+ * Date: 2026-01-22
  *
- * Tests for authStore with UserTypeObject[] and display map building
+ * Tests for authStore with UserTypeObject[] and unified authorization (ADR-AUTH-001)
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
@@ -26,6 +26,11 @@ describe('authStore', () => {
       isAuthenticated: false,
       isLoading: false,
       error: null,
+      // UNIFIED AUTHORIZATION (ADR-AUTH-001)
+      globalRights: [],
+      departmentRights: {},
+      departmentHierarchy: {},
+      permissionVersion: 0,
     });
     vi.clearAllMocks();
   });
@@ -84,6 +89,14 @@ describe('authStore', () => {
               joinedAt: '2026-01-01T00:00:00Z',
             },
           ],
+          // UNIFIED AUTHORIZATION (ADR-AUTH-001)
+          globalRights: [],
+          departmentRights: {
+            dept1: ['dept:cs:course:create', 'dept:cs:content:edit'],
+          },
+          departmentHierarchy: {},
+          permissionVersion: 1,
+          // DEPRECATED
           allAccessRights: ['dept:cs:course:create', 'dept:cs:content:edit'],
           lastSelectedDepartment: 'dept1',
         },
@@ -102,6 +115,12 @@ describe('authStore', () => {
       expect(state.isAuthenticated).toBe(true);
       expect(state.isLoading).toBe(false);
       expect(state.error).toBe(null);
+
+      // Verify unified authorization fields
+      expect(state.departmentRights).toEqual({
+        dept1: ['dept:cs:course:create', 'dept:cs:content:edit'],
+      });
+      expect(state.permissionVersion).toBe(1);
 
       // Verify user object has UserType[] keys (not UserTypeObject[])
       expect(state.user?.userTypes).toEqual(['staff', 'learner']);
@@ -158,6 +177,14 @@ describe('authStore', () => {
               joinedAt: '2026-01-01T00:00:00Z',
             },
           ],
+          // UNIFIED AUTHORIZATION (ADR-AUTH-001)
+          globalRights: [],
+          departmentRights: {
+            dept1: ['dept:cs:course:view'],
+          },
+          departmentHierarchy: {},
+          permissionVersion: 1,
+          // DEPRECATED
           allAccessRights: ['dept:cs:course:view'],
           lastSelectedDepartment: 'dept1',
         },
@@ -220,6 +247,12 @@ describe('authStore', () => {
           defaultDashboard: 'staff' as const,
           canEscalateToAdmin: false,
           departmentMemberships: [],
+          // UNIFIED AUTHORIZATION (ADR-AUTH-001)
+          globalRights: [],
+          departmentRights: {},
+          departmentHierarchy: {},
+          permissionVersion: 1,
+          // DEPRECATED
           allAccessRights: [],
           lastSelectedDepartment: null,
         },
@@ -268,6 +301,14 @@ describe('authStore', () => {
               joinedAt: '2026-01-01T00:00:00Z',
             },
           ],
+          // UNIFIED AUTHORIZATION (ADR-AUTH-001)
+          globalRights: [],
+          departmentRights: {
+            dept1: ['dept:cs:course:create'],
+          },
+          departmentHierarchy: {},
+          permissionVersion: 1,
+          // DEPRECATED
           allAccessRights: ['dept:cs:course:create'],
           lastSelectedDepartment: 'dept1',
           adminRoles: null,
@@ -323,10 +364,15 @@ describe('authStore', () => {
           defaultDashboard: 'staff',
           globalRoles: [],
           allPermissions: [],
-          userTypeDisplayMap: { staff: 'Staff' },
+          userTypeDisplayMap: { staff: 'Staff', learner: 'Learner', 'global-admin': 'Admin' },
           roleDisplayMap: {},
         },
         isAuthenticated: true,
+        // UNIFIED AUTHORIZATION
+        globalRights: [],
+        departmentRights: {},
+        departmentHierarchy: {},
+        permissionVersion: 1,
       });
 
       vi.mocked(authApi.logout).mockResolvedValue();
@@ -357,10 +403,17 @@ describe('authStore', () => {
     });
   });
 
-  describe('Permission Checking', () => {
+  describe('Permission Checking (Unified Authorization)', () => {
     beforeEach(() => {
+      // UNIFIED AUTHORIZATION: Use globalRights and departmentRights
       useAuthStore.setState({
         isAuthenticated: true,
+        globalRights: [],
+        departmentRights: {
+          dept1: ['dept:cs:course:create', 'dept:cs:course:edit'],
+        },
+        departmentHierarchy: {},
+        permissionVersion: 1,
         roleHierarchy: {
           primaryUserType: 'staff',
           allUserTypes: ['staff'],
@@ -390,15 +443,16 @@ describe('authStore', () => {
       });
     });
 
-    it('should check permission without scope', () => {
+    it('should check permission without departmentId (checks any department)', () => {
       const hasPermission = useAuthStore.getState().hasPermission('dept:cs:course:create');
       expect(hasPermission).toBe(true);
     });
 
-    it('should check permission with department scope', () => {
+    it('should check permission with departmentId', () => {
+      // UNIFIED AUTHORIZATION: Pass departmentId directly, not wrapped in scope object
       const hasPermission = useAuthStore.getState().hasPermission(
         'dept:cs:course:create',
-        { type: 'department', id: 'dept1' }
+        'dept1'
       );
       expect(hasPermission).toBe(true);
     });
@@ -424,9 +478,13 @@ describe('authStore', () => {
       expect(hasAll).toBe(true);
     });
 
-    it('should handle wildcard permission', () => {
+    it('should handle wildcard permission in globalRights', () => {
       useAuthStore.setState({
         isAuthenticated: true,
+        globalRights: ['system:*'],
+        departmentRights: {},
+        departmentHierarchy: {},
+        permissionVersion: 1,
         roleHierarchy: {
           primaryUserType: 'global-admin',
           allUserTypes: ['global-admin'],
@@ -551,6 +609,14 @@ describe('authStore', () => {
               joinedAt: '2026-01-01T00:00:00Z',
             },
           ],
+          // UNIFIED AUTHORIZATION (ADR-AUTH-001)
+          globalRights: [],
+          departmentRights: {
+            dept1: [],
+          },
+          departmentHierarchy: {},
+          permissionVersion: 1,
+          // DEPRECATED
           allAccessRights: [],
           lastSelectedDepartment: 'dept1',
         },

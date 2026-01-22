@@ -183,21 +183,22 @@ export const ProtectedLink: React.FC<ProtectedLinkProps> = ({
     }
 
     // Strategy 1: Specific department ID provided (highest priority)
+    // UNIFIED AUTHORIZATION: Pass departmentId directly (not wrapped in scope object)
     if (departmentId) {
       if (permissionsToCheck.length === 1) {
         // Single permission: use hasPermission with departmentId
-        return hasPermission(permissionsToCheck[0], { type: 'department', id: departmentId });
+        return hasPermission(permissionsToCheck[0], departmentId);
       } else {
         // Multiple permissions: use requireAll to determine AND vs OR logic
         if (requireAll) {
           // AND logic: user must have ALL permissions in this department
           return permissionsToCheck.every((perm) =>
-            hasPermission(perm, { type: 'department', id: departmentId })
+            hasPermission(perm, departmentId)
           );
         } else {
           // OR logic: user needs AT LEAST ONE permission in this department
           return permissionsToCheck.some((perm) =>
-            hasPermission(perm, { type: 'department', id: departmentId })
+            hasPermission(perm, departmentId)
           );
         }
       }

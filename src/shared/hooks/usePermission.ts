@@ -9,7 +9,7 @@
 
 import { useMemo } from 'react';
 import { useAuthStore } from '@/features/auth/model';
-import type { PermissionScope, UserType } from '@/shared/types/auth';
+import type { UserType } from '@/shared/types/auth';
 import { useDepartmentContext } from './useDepartmentContext';
 
 // ============================================================================
@@ -48,10 +48,8 @@ export function usePermission(
   const { hasPermission } = useAuthStore();
 
   return useMemo(() => {
-    if (departmentId) {
-      return hasPermission(permission, { type: 'department', id: departmentId });
-    }
-    return hasPermission(permission);
+    // UNIFIED AUTHORIZATION: Pass departmentId directly (not wrapped in scope object)
+    return hasPermission(permission, departmentId);
   }, [hasPermission, permission, departmentId]);
 }
 
@@ -89,7 +87,8 @@ export function usePermission(
 export function usePermissions(
   permissionsList: string[],
   options?: {
-    scope?: PermissionScope;
+    /** Department ID for scoped permission checks */
+    departmentId?: string;
     requireAll?: boolean;
   }
 ) {
@@ -99,25 +98,26 @@ export function usePermissions(
     hasAllPermissions,
   } = useAuthStore();
 
-  const scope = options?.scope;
+  const departmentId = options?.departmentId;
 
   return useMemo(() => {
+    // UNIFIED AUTHORIZATION: Pass departmentId directly
     // Create permission map
     const permissions: Record<string, boolean> = {};
     for (const perm of permissionsList) {
-      permissions[perm] = hasPermission(perm, scope);
+      permissions[perm] = hasPermission(perm, departmentId);
     }
 
     // Check if has all or any
-    const hasAll = hasAllPermissions(permissionsList, scope);
-    const hasAny = hasAnyPermission(permissionsList, scope);
+    const hasAll = hasAllPermissions(permissionsList, departmentId);
+    const hasAny = hasAnyPermission(permissionsList, departmentId);
 
     return {
       permissions,
       hasAll,
       hasAny,
     };
-  }, [hasPermission, hasAnyPermission, hasAllPermissions, permissionsList, scope]);
+  }, [hasPermission, hasAnyPermission, hasAllPermissions, permissionsList, departmentId]);
 }
 
 // ============================================================================
@@ -154,7 +154,7 @@ export function useUserType() {
         isGlobalAdmin: false,
         primaryType: null as UserType | null,
         allTypes: [] as UserType[],
-        hasType: (type: UserType) => false,
+        hasType: (_type: UserType) => false,
       };
     }
 
@@ -230,10 +230,10 @@ export function useRole(role: string, departmentId?: string): boolean {
  * }
  */
 export function useDepartmentPermissions(departmentId: string) {
-  const { roleHierarchy, hasPermission } = useAuthStore();
+  const { roleHierarchy, departmentRights, hasPermission } = useAuthStore();
 
   return useMemo(() => {
-    if (!roleHierarchy || !departmentId) {
+    if (!departmentId) {
       return {
         permissions: [] as string[],
         roles: [] as string[],
@@ -244,55 +244,48 @@ export function useDepartmentPermissions(departmentId: string) {
       };
     }
 
-    const scope = { type: 'department' as const, id: departmentId };
+    // UNIFIED AUTHORIZATION: Get permissions directly from departmentRights
+    const deptPermissions = departmentRights[departmentId] || [];
 
-    // Find department in staffRoles or learnerRoles
-    let departmentPermissions: string[] = [];
+    // Find department roles from roleHierarchy (for display purposes)
     let departmentRoles: string[] = [];
 
     // Check staff roles
-    if (roleHierarchy.staffRoles) {
+    if (roleHierarchy?.staffRoles) {
       const dept = roleHierarchy.staffRoles.departmentRoles.find(
         (d) => d.departmentId === departmentId
       );
       if (dept) {
         departmentRoles = dept.roles.map((r) => r.role);
-        departmentPermissions = Array.from(
-          new Set(dept.roles.flatMap((r) => r.permissions))
-        );
       }
     }
 
     // Check learner roles
-    if (roleHierarchy.learnerRoles) {
+    if (roleHierarchy?.learnerRoles) {
       const dept = roleHierarchy.learnerRoles.departmentRoles.find(
         (d) => d.departmentId === departmentId
       );
       if (dept) {
         const learnerRoles = dept.roles.map((r) => r.role);
-        const learnerPerms = Array.from(
-          new Set(dept.roles.flatMap((r) => r.permissions))
-        );
         departmentRoles = [...departmentRoles, ...learnerRoles];
-        departmentPermissions = [...departmentPermissions, ...learnerPerms];
       }
     }
 
-    // Check common CRUD permissions
-    const canCreate = hasPermission('content:courses:create', scope);
-    const canEdit = hasPermission('content:courses:edit', scope);
-    const canDelete = hasPermission('content:courses:delete', scope);
-    const canView = hasPermission('content:courses:read', scope);
+    // UNIFIED AUTHORIZATION: Check common CRUD permissions using departmentId directly
+    const canCreate = hasPermission('content:courses:create', departmentId);
+    const canEdit = hasPermission('content:courses:edit', departmentId);
+    const canDelete = hasPermission('content:courses:delete', departmentId);
+    const canView = hasPermission('content:courses:read', departmentId);
 
     return {
-      permissions: departmentPermissions,
+      permissions: deptPermissions,
       roles: departmentRoles,
       canCreate,
       canEdit,
       canDelete,
       canView,
     };
-  }, [roleHierarchy, departmentId, hasPermission]);
+  }, [roleHierarchy, departmentRights, departmentId, hasPermission]);
 }
 
 // ============================================================================
@@ -359,10 +352,8 @@ export function useScopedPermission(permission: string): boolean {
   const { currentDepartmentId } = useDepartmentContext();
 
   return useMemo(() => {
-    if (currentDepartmentId) {
-      return hasPermission(permission, { type: 'department', id: currentDepartmentId });
-    }
-    // No department selected - check globally
-    return hasPermission(permission);
+    // UNIFIED AUTHORIZATION: Pass currentDepartmentId directly
+    // If no department selected, pass undefined to check globally
+    return hasPermission(permission, currentDepartmentId ?? undefined);
   }, [hasPermission, permission, currentDepartmentId]);
 }

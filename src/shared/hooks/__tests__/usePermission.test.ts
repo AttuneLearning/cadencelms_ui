@@ -155,13 +155,11 @@ describe('usePermission Hook', () => {
       const permissions = ['content:courses:read'];
       const deptId = 'dept-123';
       const { result } = renderHook(() =>
-        usePermissions(permissions, { scope: { type: 'department', id: deptId } })
+        usePermissions(permissions, { departmentId: deptId })
       );
 
-      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', {
-        type: 'department',
-        id: deptId,
-      });
+      // UNIFIED AUTHORIZATION: Now passes departmentId directly
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', deptId);
       expect(result.current.hasAny).toBe(true);
       expect(result.current.hasAll).toBe(true);
     });

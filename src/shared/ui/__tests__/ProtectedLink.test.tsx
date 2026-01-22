@@ -323,14 +323,12 @@ describe('ProtectedLink Component', () => {
 
       const link = screen.getByRole('link');
       expect(link).toBeInTheDocument();
-      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', {
-        type: 'department',
-        id: 'dept-456',
-      });
+      // UNIFIED AUTHORIZATION: Now passes departmentId directly
+      expect(mockHasPermission).toHaveBeenCalledWith('content:courses:read', 'dept-456');
     });
 
     it('should check multiple permissions with specific department ID (AND logic)', () => {
-      mockHasPermission.mockImplementation((perm, scope) => true);
+      mockHasPermission.mockImplementation(() => true);
 
       render(
         <RouterWrapper>
