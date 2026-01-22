@@ -3,7 +3,7 @@
 
 **Generated:** 2026-01-08
 **Frontend:** `/home/adam/github/lms_ui/1_lms_ui_v2`
-**Backend:** `/home/adam/github/lms_node/1_LMS_Node_V2`
+**Backend:** `/home/adam/github/cadencelms_api`
 
 ---
 

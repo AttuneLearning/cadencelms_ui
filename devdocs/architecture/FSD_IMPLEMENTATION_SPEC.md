@@ -2284,7 +2284,7 @@ VITE_ENV=production
 
 ### B. API Endpoints Reference
 
-See `/home/adam/github/lms_node/1_LMS_Node_V2/devdocs/API_Endpoint_Normalization_Plan.md` for complete API specification.
+See `/home/adam/github/cadencelms_api/devdocs/API_Endpoint_Normalization_Plan.md` for complete API specification.
 
 **Base URL:** `http://localhost:3000/api/v2` (development)
 

@@ -331,7 +331,7 @@ Total: **66 tests, all passing**
 ## Backend Contract
 
 This implementation follows the backend contract defined in:
-`/home/adam/github/lms_node/1_LMS_Node_V2/contracts/api/learning-events.contract.ts`
+`/home/adam/github/cadencelms_api/contracts/api/learning-events.contract.ts`
 
 ### Endpoints
 

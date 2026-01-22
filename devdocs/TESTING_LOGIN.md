@@ -4,7 +4,7 @@
 
 ### 1. Start Backend
 ```bash
-cd /home/adam/github/lms_node/1_LMS_Node_V2
+cd /home/adam/github/cadencelms_api
 npm run dev
 ```
 Expected output: `Server running on port 5000 in development mode`

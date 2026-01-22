@@ -53,6 +53,7 @@ import {
   type ExportFormat,
   type CourseFilters,
 } from '@/entities/course';
+import { usePrograms } from '@/entities/program';
 import {
   MoreHorizontal,
   Plus,
@@ -105,6 +106,12 @@ export const CourseManagementPage: React.FC = () => {
 
   // Fetch courses
   const { data, isLoading, error } = useCourses(filters);
+
+  // Fetch programs for the dropdown (based on department filter if set)
+  const { data: programsData, isLoading: programsLoading } = usePrograms(
+    { department: filters.department, limit: 100 },
+    { enabled: true }
+  );
 
   // Mutations
   const createMutation = useCreateCourse();
@@ -665,6 +672,12 @@ export const CourseManagementPage: React.FC = () => {
             onSubmit={activeDialog === 'create' ? handleCreate : handleUpdate}
             onCancel={handleCloseDialog}
             isLoading={createMutation.isPending || updateMutation.isPending}
+            availablePrograms={programsData?.programs?.map((p) => ({
+              id: p.id,
+              name: p.name,
+              code: p.code,
+            })) || []}
+            programsLoading={programsLoading}
           />
         </DialogContent>
       </Dialog>

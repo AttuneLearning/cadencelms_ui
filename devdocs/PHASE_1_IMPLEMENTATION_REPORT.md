@@ -90,7 +90,7 @@ export interface RoleHierarchy {
 ```
 
 **Backend Contract Alignment:**
-- ✅ Matches `/lms_node/1_LMS_Node_V2/contracts/UI_ROLE_SYSTEM_CONTRACTS.md`
+- ✅ Matches `/cadencelms_api/contracts/UI_ROLE_SYSTEM_CONTRACTS.md`
 - ✅ All field names identical to backend
 - ✅ Enum values match exactly
 - ✅ No `globalRoles` field (removed in V2)
@@ -448,8 +448,8 @@ Comprehensive documentation covering:
 ## Backend Contract Compliance
 
 ### Verified Against
-- ✅ `/lms_node/1_LMS_Node_V2/contracts/UI_ROLE_SYSTEM_CONTRACTS.md`
-- ✅ `/lms_node/1_LMS_Node_V2/devdocs/Role_System_API_Model_Plan_V2.md`
+- ✅ `/cadencelms_api/contracts/UI_ROLE_SYSTEM_CONTRACTS.md`
+- ✅ `/cadencelms_api/devdocs/Role_System_API_Model_Plan_V2.md`
 
 ### Compliance Checklist
 - ✅ UserTypes: `'learner'`, `'staff'`, `'global-admin'` (singular forms)

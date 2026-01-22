@@ -956,7 +956,7 @@ export const reportHandlers = [
 **CRITICAL:** All work MUST occur in `/home/adam/github/cadencelms_ui/`
 
 **Prohibited:**
-- ❌ `/home/adam/github/lms_node/`
+- ❌ `/home/adam/github/cadencelms_api/`
 - ❌ `/home/adam/github/lms_ui/`
 - ❌ Any parent directories
 - ❌ Any sibling projects

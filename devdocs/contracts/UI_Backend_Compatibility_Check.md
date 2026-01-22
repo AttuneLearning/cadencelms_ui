@@ -1,8 +1,8 @@
 # UI <-> Backend Compatibility Verification
 **Date:** 2026-01-10
 **UI Plan:** UI_Implementation_Plan_v2.md
-**Backend Plan:** /home/adam/github/lms_node/1_LMS_Node_V2/devdocs/Role_System_API_Model_Plan_V2.md
-**Backend Contracts:** /home/adam/github/lms_node/1_LMS_Node_V2/contracts/UI_ROLE_SYSTEM_CONTRACTS.md
+**Backend Plan:** /home/adam/github/cadencelms_api/devdocs/Role_System_API_Model_Plan_V2.md
+**Backend Contracts:** /home/adam/github/cadencelms_api/contracts/UI_ROLE_SYSTEM_CONTRACTS.md
 
 ---
 

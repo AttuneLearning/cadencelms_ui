@@ -9,6 +9,13 @@ import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { Textarea } from '@/shared/ui/textarea';
 import { Checkbox } from '@/shared/ui/checkbox';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Alert } from '@/shared/ui/alert';
 import type { Course, CreateCoursePayload, UpdateCoursePayload } from '../model/types';
@@ -20,6 +27,8 @@ interface CourseFormProps {
   onCancel: () => void;
   isLoading?: boolean;
   error?: string;
+  availablePrograms?: { id: string; name: string; code: string }[];
+  programsLoading?: boolean;
 }
 
 export const CourseForm: React.FC<CourseFormProps> = ({
@@ -28,6 +37,8 @@ export const CourseForm: React.FC<CourseFormProps> = ({
   onCancel,
   isLoading = false,
   error,
+  availablePrograms = [],
+  programsLoading = false,
 }) => {
   const [formData, setFormData] = useState({
     title: course?.title || '',
@@ -180,13 +191,25 @@ export const CourseForm: React.FC<CourseFormProps> = ({
 
           <div className="space-y-2">
             <Label htmlFor="program">Program</Label>
-            <Input
-              id="program"
-              value={formData.program}
-              onChange={(e) => setFormData({ ...formData, program: e.target.value })}
-              placeholder="Program ID (optional)"
-              disabled={isLoading}
-            />
+            <Select
+              value={formData.program || 'none'}
+              onValueChange={(value) =>
+                setFormData({ ...formData, program: value === 'none' ? '' : value })
+              }
+              disabled={isLoading || programsLoading}
+            >
+              <SelectTrigger id="program">
+                <SelectValue placeholder={programsLoading ? 'Loading programs...' : 'Select a program (optional)'} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">None (No Program)</SelectItem>
+                {availablePrograms.map((program) => (
+                  <SelectItem key={program.id} value={program.id}>
+                    {program.name} ({program.code})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <p className="text-xs text-muted-foreground">
               Optionally assign this course to a program
             </p>

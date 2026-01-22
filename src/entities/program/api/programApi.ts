@@ -136,3 +136,77 @@ export async function getProgramEnrollments(
   );
   return response.data.data;
 }
+
+// =====================
+// CERTIFICATE CONFIGURATION
+// =====================
+
+/**
+ * Certificate configuration for a program
+ */
+export interface CertificateConfig {
+  enabled: boolean;
+  templateId?: string;
+  title?: string;
+  signatoryName?: string;
+  signatoryTitle?: string;
+  validityPeriod?: number;
+  autoIssue: boolean;
+}
+
+/**
+ * Certificate configuration response
+ */
+export interface CertificateConfigResponse {
+  programId: string;
+  programName: string;
+  certificate: CertificateConfig;
+}
+
+/**
+ * Certificate template
+ */
+export interface CertificateTemplate {
+  id: string;
+  name: string;
+  description?: string;
+  thumbnailUrl?: string;
+  scope: 'system' | 'organization' | 'department';
+  isDefault?: boolean;
+  departmentId?: string;
+  departmentName?: string;
+}
+
+/**
+ * Certificate templates response
+ */
+export interface CertificateTemplatesResponse {
+  templates: CertificateTemplate[];
+}
+
+/**
+ * PUT /programs/:id/certificate - Update certificate configuration
+ */
+export async function updateProgramCertificate(
+  id: string,
+  config: Partial<CertificateConfig>
+): Promise<CertificateConfigResponse> {
+  const response = await client.put<ApiResponse<CertificateConfigResponse>>(
+    `/programs/${id}/certificate`,
+    config
+  );
+  return response.data.data;
+}
+
+/**
+ * GET /certificate-templates - List available certificate templates
+ */
+export async function listCertificateTemplates(
+  params?: { scope?: string; departmentId?: string }
+): Promise<CertificateTemplatesResponse> {
+  const response = await client.get<ApiResponse<CertificateTemplatesResponse>>(
+    '/certificate-templates',
+    { params }
+  );
+  return response.data.data;
+}

@@ -8,10 +8,10 @@
 
 ## ✅ Configuration Status
 
-### Backend Team (`~/github/lms_node/1_LMS_Node_V2`)
+### Backend Team (`~/github/cadencelms_api`)
 - **Team Config:** ✅ `/.claude/team-config.json`
 - **Agents:** 4 (backend-lead, backend-models, backend-services, backend-qa)
-- **Working Dir:** `~/github/lms_node/1_LMS_Node_V2/`
+- **Working Dir:** `~/github/cadencelms_api/`
 
 ### Frontend Team (`~/github/lms_ui/1_lms_ui_v2`)
 - **Team Config:** ✅ `/.claude/team-config.json` (just created)
@@ -47,9 +47,9 @@
 
 **Backend:**
 ```
-~/github/lms_node/1_LMS_Node_V2/src/
-~/github/lms_node/1_LMS_Node_V2/contracts/
-~/github/lms_node/1_LMS_Node_V2/tests/
+~/github/cadencelms_api/src/
+~/github/cadencelms_api/contracts/
+~/github/cadencelms_api/tests/
 ```
 
 **Frontend:**
@@ -64,7 +64,7 @@
 
 **Both teams reference:**
 ```
-~/github/lms_node/1_LMS_Node_V2/contracts/
+~/github/cadencelms_api/contracts/
 ```
 
 - ✅ Backend team **writes** contracts
@@ -75,7 +75,7 @@
 
 **Both teams reference:**
 ```
-~/github/lms_node/1_LMS_Node_V2/devdocs/
+~/github/cadencelms_api/devdocs/
 - Ideal_TypeScript_DataStructures.md
 - Ideal_RestfulAPI_toCurrent_Crosswalk.md
 - Ideal_MongoDB_DataObjects.md
@@ -127,7 +127,7 @@
 
 ### Terminal 1: Backend Team
 ```bash
-cd ~/github/lms_node/1_LMS_Node_V2
+cd ~/github/cadencelms_api
 claude code
 
 # In Claude Code:
@@ -140,7 +140,7 @@ cd ~/github/lms_ui/1_lms_ui_v2
 claude code
 
 # In Claude Code:
-"I'm frontend-lead. Let's build entity modules based on backend contracts in ../lms_node/1_LMS_Node_V2/contracts/"
+"I'm frontend-lead. Let's build entity modules based on backend contracts in ../cadencelms_api/contracts/"
 ```
 
 **Both can run simultaneously without conflicts!**
@@ -174,7 +174,7 @@ claude code
 
 ### Method 1: Contracts Directory ✅
 ```
-~/github/lms_node/1_LMS_Node_V2/contracts/
+~/github/cadencelms_api/contracts/
 ├── api/
 │   ├── courses.json          ← Backend writes, Frontend reads
 │   ├── departments.json
@@ -224,7 +224,7 @@ npm run validate:contracts
 
 ### Backend Progress
 ```bash
-cd ~/github/lms_node/1_LMS_Node_V2
+cd ~/github/cadencelms_api
 
 # Check implemented routes
 grep -r "app.use" src/app.ts
@@ -253,7 +253,7 @@ npm test
 ### Integration Check
 ```bash
 # Backend: Start server
-cd ~/github/lms_node/1_LMS_Node_V2
+cd ~/github/cadencelms_api
 npm run dev
 
 # Frontend: Run against real backend
@@ -318,8 +318,8 @@ npm run test:e2e
 
 **frontend-lead:**
 ```typescript
-// Reads: ../lms_node/1_LMS_Node_V2/contracts/api/courses.json
-// Reads: ../lms_node/1_LMS_Node_V2/devdocs/Ideal_TypeScript_DataStructures.md
+// Reads: ../cadencelms_api/contracts/api/courses.json
+// Reads: ../cadencelms_api/devdocs/Ideal_TypeScript_DataStructures.md
 // Creates design for: src/entities/course/
 ```
 
@@ -384,7 +384,7 @@ export function useCourses(params?: CourseQueryParams) {
 
 ### Backend Starts First
 ```bash
-cd ~/github/lms_node/1_LMS_Node_V2
+cd ~/github/cadencelms_api
 claude code
 # "backend-lead: implement courses API per spec"
 ```

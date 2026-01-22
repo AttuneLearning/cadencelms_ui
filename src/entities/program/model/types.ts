@@ -33,6 +33,7 @@ export interface ProgramListItem {
   department: {
     id: string;
     name: string;
+    level?: number;
   };
   credential: ProgramCredential;
   duration: number;
@@ -108,6 +109,7 @@ export interface ProgramFilters {
   page?: number;
   limit?: number;
   department?: string;
+  includeSubdepartments?: boolean;
   status?: ProgramStatus;
   search?: string;
   sort?: string;

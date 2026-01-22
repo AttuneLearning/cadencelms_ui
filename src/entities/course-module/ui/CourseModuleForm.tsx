@@ -179,11 +179,14 @@ export const CourseModuleForm: React.FC<CourseModuleFormProps> = ({
                 <SelectContent>
                   <SelectItem value="custom">Custom</SelectItem>
                   <SelectItem value="scorm">SCORM</SelectItem>
-                  <SelectItem value="exercise">Exercise</SelectItem>
                   <SelectItem value="video">Video</SelectItem>
                   <SelectItem value="document">Document</SelectItem>
+                  <SelectItem value="exercise">Exercise</SelectItem>
                 </SelectContent>
               </Select>
+              <p className="text-xs text-muted-foreground">
+                For quizzes and exams, use Assessment module type (coming soon)
+              </p>
             </div>
           </div>
         </CardContent>

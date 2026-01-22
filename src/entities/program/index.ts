@@ -43,10 +43,13 @@ export {
   usePublishProgram,
   useUnpublishProgram,
   useDuplicateProgram,
+  // Certificate hooks
+  useCertificateTemplates,
+  useUpdateProgramCertificate,
 } from './hooks';
 
 // Query keys
-export { programKeys } from './model/programKeys';
+export { programKeys, certificateTemplateKeys } from './model/programKeys';
 
 // =====================
 // API EXPORTS (for advanced use)
@@ -58,4 +61,4 @@ export * as programApi from './api/programApi';
 // UI COMPONENT EXPORTS
 // =====================
 
-export { ProgramCard, ProgramList, ProgramForm } from './ui';
+export { ProgramCard, ProgramList, ProgramForm, CertificateConfigForm } from './ui';

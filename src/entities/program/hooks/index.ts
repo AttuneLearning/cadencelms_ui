@@ -14,4 +14,7 @@ export {
   usePublishProgram,
   useUnpublishProgram,
   useDuplicateProgram,
+  // Certificate hooks
+  useCertificateTemplates,
+  useUpdateProgramCertificate,
 } from '../model/useProgram';

@@ -193,7 +193,7 @@ import { EventTimeline, ActivityLog } from '@/entities/learning-event';
 ## Backend Contract Compliance
 
 ✅ Fully compliant with backend contract:
-`/home/adam/github/lms_node/1_LMS_Node_V2/contracts/api/learning-events.contract.ts`
+`/home/adam/github/cadencelms_api/contracts/api/learning-events.contract.ts`
 
 All endpoints, request/response formats, and types match the contract specification.
 

@@ -13,7 +13,7 @@ The backend project contains comprehensive specification documents that should h
 
 ### 📄 Specification Documents Location
 ```
-/home/adam/github/lms_node/1_LMS_Node_V2/devdocs/
+/home/adam/github/cadencelms_api/devdocs/
 ├── Ideal_RestfulAPI_toCurrent_Crosswalk.md (54KB)
 ├── Ideal_TypeScript_DataStructures.md      (38KB)
 ├── Ideal_MongoDB_DataObjects.md            (48KB)

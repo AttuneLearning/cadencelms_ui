@@ -23,4 +23,13 @@ export const programKeys = {
   enrollments: () => [...programKeys.all, 'enrollments'] as const,
   programEnrollments: (id: string, filters?: ProgramEnrollmentFilters) =>
     [...programKeys.enrollments(), id, filters] as const,
+
+  certificates: () => [...programKeys.all, 'certificate'] as const,
+  programCertificate: (id: string) => [...programKeys.certificates(), id] as const,
+};
+
+export const certificateTemplateKeys = {
+  all: ['certificateTemplates'] as const,
+  list: (params?: { scope?: string; departmentId?: string }) =>
+    [...certificateTemplateKeys.all, 'list', params] as const,
 };

@@ -3,6 +3,8 @@
  * Represents modules/units within a course
  */
 
+// API-supported module types
+// Note: 'assessment' type will be added per specs/ASSESSMENT_MODULE_SPEC.md
 export type CourseModuleType = 'scorm' | 'custom' | 'exercise' | 'video' | 'document';
 
 export interface CourseModuleSettings {

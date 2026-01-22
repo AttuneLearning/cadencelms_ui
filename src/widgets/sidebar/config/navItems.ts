@@ -370,10 +370,10 @@ export const DEPARTMENT_NAV_ITEMS: DepartmentNavItem[] = [
     label: 'Department Management',
     pathTemplate: '/staff/departments/:deptId/manage',
     icon: Building2,
-    requiredPermission: 'department:admin',
+    requiredPermission: 'content:programs:manage',
     userTypes: ['staff'],
     departmentScoped: true,
-    group: 'analytics',
+    group: 'content',
   },
 
   // LEARNER Department Actions - Content Group

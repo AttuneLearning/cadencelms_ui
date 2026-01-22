@@ -3,8 +3,8 @@
 
 **Last Updated:** 2026-01-08
 **Strategy:** Implement frontend as backend contracts arrive
-**Backend Contract Plan:** `/home/adam/github/lms_node/1_LMS_Node_V2/contracts/PENDING.md`
-**Backend Implementation Plan:** `/home/adam/github/lms_node/1_LMS_Node_V2/devdocs/CONTRACT_IMPLEMENTATION_PLAN.md`
+**Backend Contract Plan:** `/home/adam/github/cadencelms_api/contracts/PENDING.md`
+**Backend Implementation Plan:** `/home/adam/github/cadencelms_api/devdocs/CONTRACT_IMPLEMENTATION_PLAN.md`
 
 ---
 
@@ -139,7 +139,7 @@ src/entities/{entity-name}/
 ### Step 1: Contract Received
 ```bash
 # Monitor backend contracts directory
-cd ~/github/lms_node/1_LMS_Node_V2/contracts/api
+cd ~/github/cadencelms_api/contracts/api
 ls -lt | head -5
 
 # Read new contract
@@ -325,9 +325,9 @@ When multiple contracts arrive simultaneously, implement in this order:
 
 ## 🔗 Related Documents
 
-- **Backend Contracts:** `~/github/lms_node/1_LMS_Node_V2/contracts/api/`
-- **Backend Status:** `~/github/lms_node/1_LMS_Node_V2/contracts/PENDING.md`
-- **Backend Plan:** `~/github/lms_node/1_LMS_Node_V2/devdocs/CONTRACT_IMPLEMENTATION_PLAN.md`
+- **Backend Contracts:** `~/github/cadencelms_api/contracts/api/`
+- **Backend Status:** `~/github/cadencelms_api/contracts/PENDING.md`
+- **Backend Plan:** `~/github/cadencelms_api/devdocs/CONTRACT_IMPLEMENTATION_PLAN.md`
 - **Coordination Guide:** `~/github/TEAM_COORDINATION_GUIDE.md`
 - **Autonomous Setup:** `~/github/AUTONOMOUS_TEAM_SETUP.md`
 

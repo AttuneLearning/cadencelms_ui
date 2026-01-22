@@ -286,7 +286,7 @@ useEffect(() => {
 ## Backend Seed Script
 
 ### Overview
-**Location:** `/home/adam/github/lms_node/1_LMS_Node_V2/scripts/seed-staff-and-courses.ts`
+**Location:** `/home/adam/github/cadencelms_api/scripts/seed-staff-and-courses.ts`
 **Documentation:** `/scripts/SEED_STAFF_README.md`
 **Command:** `npm run seed:staff`
 
@@ -574,7 +574,7 @@ cd /home/adam/github/lms_ui/1_lms_ui_v2
 npm run dev
 
 # Backend (API)
-cd /home/adam/github/lms_node/1_LMS_Node_V2
+cd /home/adam/github/cadencelms_api
 npm run dev
 ```
 
@@ -582,7 +582,7 @@ npm run dev
 
 ```bash
 # Backend seed script
-cd /home/adam/github/lms_node/1_LMS_Node_V2
+cd /home/adam/github/cadencelms_api
 npm run seed:staff
 ```
 
@@ -726,7 +726,7 @@ The project demonstrates:
 └── docs/
     └── PHASE_9_COMPLETION_REPORT.md  # This document
 
-/home/adam/github/lms_node/1_LMS_Node_V2/
+/home/adam/github/cadencelms_api/
 ├── scripts/
 │   ├── seed-staff-and-courses.ts    # Seed script
 │   └── SEED_STAFF_README.md         # Seed documentation

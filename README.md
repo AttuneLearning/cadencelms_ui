@@ -194,5 +194,5 @@ ISC
 
 ## Related Repositories
 
-- Backend API: [lms_node](https://github.com/petcom/lms_node)
+- Backend API: [cadencelms_api](https://github.com/petcom/cadencelms_api)
 - Legacy UI: [lms_ui](https://github.com/petcom/lms_ui)

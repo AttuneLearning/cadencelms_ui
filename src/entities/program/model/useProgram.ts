@@ -21,8 +21,13 @@ import {
   duplicateProgram,
   getProgramLevels,
   getProgramEnrollments,
+  updateProgramCertificate,
+  listCertificateTemplates,
+  type CertificateConfig,
+  type CertificateConfigResponse,
+  type CertificateTemplatesResponse,
 } from '../api/programApi';
-import { programKeys } from './programKeys';
+import { programKeys, certificateTemplateKeys } from './programKeys';
 import type {
   ProgramsListResponse,
   ProgramFilters,
@@ -245,6 +250,57 @@ export function useDuplicateProgram(
     onSuccess: () => {
       // Invalidate lists to show new program
       queryClient.invalidateQueries({ queryKey: programKeys.lists() });
+    },
+    ...options,
+  });
+}
+
+// =====================
+// CERTIFICATE HOOKS
+// =====================
+
+/**
+ * Hook to fetch certificate templates (GET /api/v2/certificate-templates)
+ */
+export function useCertificateTemplates(
+  params?: { scope?: string; departmentId?: string },
+  options?: Omit<
+    UseQueryOptions<
+      CertificateTemplatesResponse,
+      Error,
+      CertificateTemplatesResponse,
+      ReturnType<typeof certificateTemplateKeys.list>
+    >,
+    'queryKey' | 'queryFn'
+  >
+) {
+  return useQuery({
+    queryKey: certificateTemplateKeys.list(params),
+    queryFn: () => listCertificateTemplates(params),
+    staleTime: 10 * 60 * 1000, // 10 minutes (templates don't change often)
+    ...options,
+  });
+}
+
+/**
+ * Hook to update program certificate configuration (PUT /api/v2/programs/:id/certificate)
+ */
+export function useUpdateProgramCertificate(
+  options?: UseMutationOptions<
+    CertificateConfigResponse,
+    Error,
+    { id: string; config: Partial<CertificateConfig> }
+  >
+) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, config }) => updateProgramCertificate(id, config),
+    onSuccess: (_data, variables) => {
+      // Invalidate the program detail to refetch with updated certificate
+      queryClient.invalidateQueries({ queryKey: programKeys.detail(variables.id) });
+      // Invalidate certificate cache for this program
+      queryClient.invalidateQueries({ queryKey: programKeys.programCertificate(variables.id) });
     },
     ...options,
   });

@@ -10,8 +10,8 @@
 
 | Document | Location | Purpose |
 |----------|----------|---------|
-| API Model Plan V2 | `lms_node/devdocs/Role_System_API_Model_Plan_V2.md` | Complete backend specification |
-| UI Contracts | `lms_node/contracts/UI_ROLE_SYSTEM_CONTRACTS.md` | API contracts for UI team |
+| API Model Plan V2 | `cadencelms_api/devdocs/Role_System_API_Model_Plan_V2.md` | Complete backend specification |
+| UI Contracts | `cadencelms_api/contracts/UI_ROLE_SYSTEM_CONTRACTS.md` | API contracts for UI team |
 | UI Plan (Details) | `lms_ui/devdocs/Role_System_UI_Plan.md` | Component specifications |
 | Architecture Plan | `lms_ui/devdocs/Role_System_Architecture_Plan.md` | System architecture overview |
 
@@ -666,4 +666,4 @@ src/shared/api/interceptors.ts
 
 ## Appendix: Mock Data for Development
 
-See `lms_node/contracts/UI_ROLE_SYSTEM_CONTRACTS.md` Appendix A for example login response to use for mocking during development.
+See `cadencelms_api/contracts/UI_ROLE_SYSTEM_CONTRACTS.md` Appendix A for example login response to use for mocking during development.

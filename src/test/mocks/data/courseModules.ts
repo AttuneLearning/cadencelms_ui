@@ -343,4 +343,6 @@ export const mockSegmentsByType: Record<CourseModuleType, CourseModuleListItem> 
     createdAt: '2026-01-01T10:00:00Z',
     updatedAt: '2026-01-01T10:00:00Z',
   },
+  // Note: quiz and exam mocks will be added when Assessment module type is implemented
+  // See: specs/ASSESSMENT_MODULE_SPEC.md
 };

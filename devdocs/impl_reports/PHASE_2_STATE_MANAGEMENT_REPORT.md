@@ -513,7 +513,7 @@ npx tsc --noEmit --project tsconfig.json
 
 ### Verified Against
 
-✅ `/lms_node/1_LMS_Node_V2/contracts/UI_ROLE_SYSTEM_CONTRACTS.md`
+✅ `/cadencelms_api/contracts/UI_ROLE_SYSTEM_CONTRACTS.md`
 ✅ `/home/adam/github/lms_ui/1_lms_ui_v2/devdocs/UI_Implementation_Plan_v2.md`
 
 ### Compliance Checklist

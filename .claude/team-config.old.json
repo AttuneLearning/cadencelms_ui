@@ -29,8 +29,8 @@
         "src/shared/api/"
       ],
       "contextFiles": [
-        "../lms_node/1_LMS_Node_V2/contracts/UI_ROLE_SYSTEM_CONTRACTS.md",
-        "../lms_node/1_LMS_Node_V2/devdocs/Role_System_API_Model_Plan_V2.md",
+        "../cadencelms_api/contracts/UI_ROLE_SYSTEM_CONTRACTS.md",
+        "../cadencelms_api/devdocs/Role_System_API_Model_Plan_V2.md",
         "devdocs/Role_System_UI_Implementation_Plan.md"
       ],
       "taskFiles": [
@@ -62,7 +62,7 @@
         "src/app/routing/"
       ],
       "contextFiles": [
-        "../lms_node/1_LMS_Node_V2/contracts/UI_ROLE_SYSTEM_CONTRACTS.md",
+        "../cadencelms_api/contracts/UI_ROLE_SYSTEM_CONTRACTS.md",
         "devdocs/Role_System_UI_Implementation_Plan.md",
         "devdocs/Role_System_UI_Plan.md"
       ],
@@ -100,7 +100,7 @@
         "src/shared/ui/"
       ],
       "contextFiles": [
-        "../lms_node/1_LMS_Node_V2/contracts/UI_ROLE_SYSTEM_CONTRACTS.md",
+        "../cadencelms_api/contracts/UI_ROLE_SYSTEM_CONTRACTS.md",
         "devdocs/Role_System_UI_Implementation_Plan.md",
         "devdocs/Role_System_UI_Plan.md"
       ],
@@ -138,8 +138,8 @@
         "src/shared/lib/"
       ],
       "contextFiles": [
-        "../lms_node/1_LMS_Node_V2/contracts/UI_ROLE_SYSTEM_CONTRACTS.md",
-        "../lms_node/1_LMS_Node_V2/devdocs/Role_System_API_Model_Plan_V2.md",
+        "../cadencelms_api/contracts/UI_ROLE_SYSTEM_CONTRACTS.md",
+        "../cadencelms_api/devdocs/Role_System_API_Model_Plan_V2.md",
         "devdocs/Role_System_UI_Implementation_Plan.md"
       ],
       "taskFiles": [
@@ -174,7 +174,7 @@
         "src/**/*.test.tsx"
       ],
       "contextFiles": [
-        "../lms_node/1_LMS_Node_V2/contracts/UI_ROLE_SYSTEM_CONTRACTS.md",
+        "../cadencelms_api/contracts/UI_ROLE_SYSTEM_CONTRACTS.md",
         "devdocs/Role_System_UI_Implementation_Plan.md",
         "vitest.config.ts"
       ],
@@ -263,11 +263,11 @@
       "permissionCheck": "Use hasAccessRight() from shared/lib/accessRights.ts"
     },
     "contractAlignment": [
-      "1. Check lms_node/contracts/UI_ROLE_SYSTEM_CONTRACTS.md for V2 API contracts",
+      "1. Check cadencelms_api/contracts/UI_ROLE_SYSTEM_CONTRACTS.md for V2 API contracts",
       "2. Validate TypeScript types match backend models exactly",
       "3. Use backend field names (userTypes, departmentMemberships, accessRights)",
       "4. Match backend enums and status values precisely",
-      "5. Reference lms_node/devdocs/Role_System_API_Model_Plan_V2.md for backend details"
+      "5. Reference cadencelms_api/devdocs/Role_System_API_Model_Plan_V2.md for backend details"
     ]
   },
   "workflowRules": {
@@ -279,8 +279,8 @@
     "parallelMergeStrategy": "Each track merges independently, then integration branch"
   },
   "crossTeamSync": {
-    "backendContractsPath": "../lms_node/1_LMS_Node_V2/contracts/",
-    "backendDevdocsPath": "../lms_node/1_LMS_Node_V2/devdocs/",
+    "backendContractsPath": "../cadencelms_api/contracts/",
+    "backendDevdocsPath": "../cadencelms_api/devdocs/",
     "primaryContractFile": "UI_ROLE_SYSTEM_CONTRACTS.md",
     "apiPlanFile": "Role_System_API_Model_Plan_V2.md",
     "importContracts": "Read UI_ROLE_SYSTEM_CONTRACTS.md before implementing",
@@ -289,7 +289,7 @@
   },
   "mockingStrategy": {
     "useMSW": true,
-    "mockDataSource": "lms_node/contracts/UI_ROLE_SYSTEM_CONTRACTS.md Appendix A",
+    "mockDataSource": "cadencelms_api/contracts/UI_ROLE_SYSTEM_CONTRACTS.md Appendix A",
     "mockEndpoints": [
       "POST /api/v2/auth/login",
       "POST /api/v2/auth/refresh",

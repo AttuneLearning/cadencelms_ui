@@ -30,6 +30,7 @@ interface DepartmentFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
   availableParents?: { id: string; name: string; code: string }[];
+  defaultParentId?: string;
 }
 
 export function DepartmentForm({
@@ -37,6 +38,7 @@ export function DepartmentForm({
   onSuccess,
   onCancel,
   availableParents = [],
+  defaultParentId,
 }: DepartmentFormProps) {
   const createDepartment = useCreateDepartment();
   const updateDepartment = useUpdateDepartment();
@@ -47,7 +49,7 @@ export function DepartmentForm({
     name: department?.name || '',
     code: department?.code || '',
     description: department?.description || undefined,
-    parentId: department?.parentId || undefined,
+    parentId: department?.parentId || defaultParentId || undefined,
     status: department?.status || 'active',
   });
 
