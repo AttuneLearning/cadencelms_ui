@@ -6,3 +6,4 @@ export * from './model/types';
 export * from './model/moduleAccessKeys';
 export * from './model/useModuleAccess';
 export * from './api/moduleAccessApi';
+export * from './ui';
