@@ -1,0 +1,510 @@
+{
+  "workingDirectory": "/home/adam/github/cadencelms_ui",
+  "CRITICAL_DIRECTIVE": "ONLY DEVELOP IN /home/adam/github/cadencelms_ui - NO OTHER DIRECTORIES",
+  "team": {
+    "name": "UI Team - Learning Unit System Implementation",
+    "version": "1.0.0",
+    "description": "Frontend implementation of Module/LearningUnit hierarchy with Assessments",
+    "created": "2026-01-21",
+    "activeProject": "Learning Unit System - Unified Content Hierarchy"
+  },
+  "reference": {
+    "guidance": "api/agent_coms/dev_guidance/FEATURE_DEVELOPMENT_CHECKLIST.md",
+    "implementationPlan": "api/agent_coms/ui/specs/LEARNING_UNIT_IMPLEMENTATION_PLAN.md",
+    "unifiedSpec": "api/agent_coms/ui/specs/UNIFIED_CONTENT_HIERARCHY_SPEC.md",
+    "assessmentSpec": "api/agent_coms/ui/specs/ASSESSMENT_MODULE_SPEC.md",
+    "apiMessages": [
+      "api/agent_coms/messages/UI-2026-01-21-module-entity-request.md",
+      "api/agent_coms/messages/UI-2026-01-21-entity-modifications-request.md",
+      "api/agent_coms/messages/UI-2026-01-21-assessment-module-spec.md",
+      "api/agent_coms/messages/UI-2026-01-21-module-access-entity-request.md",
+      "api/agent_coms/messages/UI-2026-01-21-question-entity-modification.md"
+    ],
+    "existingPatterns": {
+      "entityStructure": "src/entities/course/",
+      "apiClient": "src/entities/course/api/courseApi.ts",
+      "hooks": "src/entities/course/hooks/",
+      "forms": "src/entities/course/ui/CourseForm.tsx"
+    }
+  },
+  "blockedUntil": {
+    "condition": "API Team completes Phase 1 contracts",
+    "checkFor": "Response messages in api/agent_coms/messages/ from API team",
+    "expectedContracts": [
+      "Module entity contract",
+      "LearningUnit modifications contract",
+      "Assessment entity contract",
+      "ModuleAccess entity contract",
+      "Question entity modifications"
+    ]
+  },
+  "agents": {
+    "qaArchitect": {
+      "id": "agent-qa-architect",
+      "model": "opus-4.5",
+      "role": "QA/Architect/Gate",
+      "description": "Reviews all code, enforces FSD architecture, approves phase gates",
+      "responsibilities": [
+        "Review all implementations before phase completion",
+        "Enforce FSD layer boundaries (entities → features → widgets → pages)",
+        "Validate TypeScript types match API contracts",
+        "Ensure test coverage meets 70% minimum",
+        "Approve phase gate criteria",
+        "Resolve architectural decisions",
+        "Final sign-off on component APIs"
+      ],
+      "gateApproval": {
+        "required": true,
+        "criteria": [
+          "No TypeScript errors (npx tsc --noEmit)",
+          "Tests pass with adequate coverage",
+          "Follows FSD layer conventions",
+          "Types match API contracts exactly",
+          "Components use shadcn/ui + Tailwind patterns"
+        ]
+      }
+    },
+    "developers": [
+      {
+        "id": "agent-types",
+        "model": "sonnet-4.5",
+        "role": "Types & Models Specialist",
+        "description": "Creates TypeScript types and entity models from API contracts",
+        "phaseAssignments": {
+          "phase2": [
+            "2.1 - Create src/entities/module/model/types.ts",
+            "2.2 - Create src/entities/learning-unit/model/types.ts",
+            "2.3 - Create src/entities/assessment/model/types.ts",
+            "2.4 - Create src/entities/module-access/model/types.ts",
+            "2.5 - Create src/entities/module/model/presentationRules.ts",
+            "2.6 - Update src/entities/exercise/model/types.ts",
+            "2.7 - Update ContentAttempt and ExamAttempt types"
+          ]
+        },
+        "workingDirectories": [
+          "src/entities/module/model/",
+          "src/entities/learning-unit/model/",
+          "src/entities/assessment/model/",
+          "src/entities/module-access/model/",
+          "src/entities/exercise/model/"
+        ],
+        "contextFiles": [
+          "src/entities/course/model/types.ts",
+          "src/entities/course-module/model/types.ts",
+          "api/agent_coms/ui/specs/UNIFIED_CONTENT_HIERARCHY_SPEC.md"
+        ],
+        "blockedBy": ["API contracts from Phase 1"]
+      },
+      {
+        "id": "agent-api",
+        "model": "sonnet-4.5",
+        "role": "API Integration Specialist",
+        "description": "Creates API clients and React Query hooks",
+        "phaseAssignments": {
+          "phase3": [
+            "3.1 - Create src/entities/module/api/moduleApi.ts",
+            "3.2 - Create src/entities/module/hooks/ (useModule, useModules, useCreateModule, etc.)",
+            "3.3 - Create src/entities/learning-unit/api/learningUnitApi.ts",
+            "3.4 - Create src/entities/learning-unit/hooks/",
+            "3.5 - Create src/entities/assessment/api/assessmentApi.ts",
+            "3.6 - Create src/entities/assessment/hooks/",
+            "3.7 - Create src/entities/module-access/api/ and hooks/"
+          ]
+        },
+        "workingDirectories": [
+          "src/entities/module/api/",
+          "src/entities/module/hooks/",
+          "src/entities/learning-unit/api/",
+          "src/entities/learning-unit/hooks/",
+          "src/entities/assessment/api/",
+          "src/entities/assessment/hooks/",
+          "src/entities/module-access/"
+        ],
+        "contextFiles": [
+          "src/entities/course/api/courseApi.ts",
+          "src/entities/course/hooks/useCourses.ts",
+          "src/shared/api/apiClient.ts"
+        ],
+        "blockedBy": ["agent-types"]
+      },
+      {
+        "id": "agent-components-module",
+        "model": "sonnet-4.5",
+        "role": "Module Components Specialist",
+        "description": "Creates Module management UI components",
+        "phaseAssignments": {
+          "phase4": [
+            "4.1 - Create src/entities/module/ui/ModuleCard.tsx",
+            "4.2 - Create src/entities/module/ui/ModuleList.tsx",
+            "4.3 - Create src/entities/module/ui/ModuleForm.tsx",
+            "4.4 - Create src/entities/module/ui/PresentationRulesForm.tsx",
+            "4.5 - Update CourseBuilder with module management integration"
+          ]
+        },
+        "workingDirectories": [
+          "src/entities/module/ui/",
+          "src/features/course-builder/",
+          "src/pages/admin/courses/"
+        ],
+        "contextFiles": [
+          "src/entities/course/ui/CourseForm.tsx",
+          "src/entities/course-module/ui/CourseModuleForm.tsx",
+          "src/shared/ui/"
+        ],
+        "blockedBy": ["agent-api"]
+      },
+      {
+        "id": "agent-components-assessment",
+        "model": "sonnet-4.5",
+        "role": "Assessment Components Specialist",
+        "description": "Creates Assessment and LearningUnit UI components",
+        "phaseAssignments": {
+          "phase5": [
+            "5.1 - Create src/entities/assessment/ui/AssessmentBuilder.tsx",
+            "5.2 - Create src/entities/assessment/ui/AssessmentForm.tsx",
+            "5.3 - Create src/entities/assessment/ui/QuestionBankPicker.tsx",
+            "5.4 - Create src/entities/assessment/ui/StylePresetSelector.tsx",
+            "5.5 - Create src/entities/learning-unit/ui/LearningUnitForm.tsx"
+          ]
+        },
+        "workingDirectories": [
+          "src/entities/assessment/ui/",
+          "src/entities/learning-unit/ui/",
+          "src/entities/question/ui/"
+        ],
+        "contextFiles": [
+          "src/entities/question/ui/",
+          "api/agent_coms/ui/specs/ASSESSMENT_MODULE_SPEC.md"
+        ],
+        "blockedBy": ["agent-api"],
+        "canRunParallel": true,
+        "parallelWith": ["agent-components-module"]
+      },
+      {
+        "id": "agent-player",
+        "model": "sonnet-4.5",
+        "role": "Progress & Player Specialist",
+        "description": "Creates learner-facing progress and content delivery components",
+        "phaseAssignments": {
+          "phase6": [
+            "6.1 - Create src/widgets/module-progress/ModuleProgress.tsx",
+            "6.2 - Update CourseProgress to group by module",
+            "6.3 - Create src/features/course-player/CoursePlayer.tsx",
+            "6.4 - Create src/features/presentation-engine/PresentationEngine.tsx",
+            "6.5 - Create src/widgets/mastery-tracker/MasteryTracker.tsx",
+            "6.6 - Create src/widgets/attempt-history/AttemptHistory.tsx",
+            "6.7 - Create InstructorInterventionView"
+          ]
+        },
+        "workingDirectories": [
+          "src/widgets/module-progress/",
+          "src/widgets/mastery-tracker/",
+          "src/widgets/attempt-history/",
+          "src/features/course-player/",
+          "src/features/presentation-engine/",
+          "src/pages/learner/"
+        ],
+        "contextFiles": [
+          "src/pages/learner/",
+          "src/entities/enrollment/"
+        ],
+        "blockedBy": ["agent-components-module", "agent-components-assessment"]
+      }
+    ]
+  },
+  "sharedContext": {
+    "projectStructure": {
+      "entities": "src/entities/ - Domain models, API clients, hooks, basic UI",
+      "features": "src/features/ - Business logic, complex workflows",
+      "widgets": "src/widgets/ - Composite UI blocks",
+      "pages": "src/pages/ - Route-level components",
+      "shared": "src/shared/ - Utilities, primitives, API config"
+    },
+    "terminology": {
+      "Module": "Logical grouping of learning units within a course (formerly Chapter)",
+      "LearningUnit": "Single piece of content/activity within a module (formerly CourseModule)",
+      "Assessment": "Quiz or exam with question bank selection",
+      "ModuleAccess": "Tracks when learner opens a module",
+      "PresentationRules": "How learning units are presented (prescribed/learner_choice/random)"
+    },
+    "conventions": {
+      "naming": {
+        "types": "PascalCase in types.ts (e.g., Module, LearningUnit)",
+        "components": "PascalCase.tsx (e.g., ModuleCard.tsx)",
+        "hooks": "useCamelCase.ts (e.g., useModule.ts)",
+        "api": "camelCaseApi.ts (e.g., moduleApi.ts)",
+        "tests": "*.test.ts or *.test.tsx"
+      },
+      "commits": "feat(learning-unit): <description>",
+      "coAuthor": "Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
+    },
+    "uiPatterns": {
+      "forms": "React Hook Form + Zod validation + shadcn/ui Form components",
+      "lists": "React Query for data + shadcn/ui Table or Card lists",
+      "state": "React Query for server state, Zustand for UI state",
+      "styling": "Tailwind CSS + shadcn/ui + cn() helper"
+    }
+  },
+  "phaseGates": {
+    "phase2": {
+      "name": "Types Complete",
+      "approver": "agent-qa-architect",
+      "isMilestone": false,
+      "criteria": [
+        "All types compile without errors (npx tsc --noEmit)",
+        "Types match API contracts exactly",
+        "Proper exports from entity index.ts files",
+        "No 'any' types"
+      ],
+      "testingRequired": {
+        "command": "npx tsc --noEmit",
+        "requirement": "Zero TypeScript errors"
+      },
+      "gitRequired": {
+        "commit": true,
+        "push": true,
+        "message": "feat(learning-unit): complete Phase 2 - Types"
+      }
+    },
+    "phase3": {
+      "name": "API Integration Complete",
+      "approver": "agent-qa-architect",
+      "isMilestone": true,
+      "criteria": [
+        "All API clients created",
+        "React Query hooks for CRUD operations",
+        "Proper error handling",
+        "Query keys properly structured",
+        "Unit tests for all hooks"
+      ],
+      "testingRequired": {
+        "featureTests": "npm test -- src/entities/module/ src/entities/learning-unit/ src/entities/assessment/ src/entities/module-access/",
+        "fullSuite": "npm run build && npm test",
+        "coverage": "70%+ for all new code",
+        "requirement": "ALL tests must pass"
+      },
+      "gitRequired": {
+        "commit": true,
+        "push": true,
+        "message": "feat(learning-unit): milestone - API Integration complete"
+      }
+    },
+    "phase4": {
+      "name": "Module Components Complete",
+      "approver": "agent-qa-architect",
+      "isMilestone": false,
+      "criteria": [
+        "ModuleCard, ModuleList, ModuleForm working",
+        "PresentationRulesForm functional",
+        "CourseBuilder integration complete",
+        "Component tests written and passing"
+      ],
+      "testingRequired": {
+        "command": "npm test -- src/entities/module/",
+        "coverage": "70%+ coverage",
+        "requirement": "All module component tests pass"
+      },
+      "gitRequired": {
+        "commit": true,
+        "push": true,
+        "message": "feat(learning-unit): complete Phase 4 - Module Components"
+      }
+    },
+    "phase5": {
+      "name": "Assessment Components Complete",
+      "approver": "agent-qa-architect",
+      "isMilestone": true,
+      "criteria": [
+        "AssessmentBuilder and AssessmentForm working",
+        "QuestionBankPicker multi-select functional",
+        "StylePresetSelector for Quiz/Exam",
+        "LearningUnitForm with module selection",
+        "Component tests written and passing"
+      ],
+      "testingRequired": {
+        "featureTests": "npm test -- src/entities/assessment/ src/entities/learning-unit/",
+        "fullSuite": "npm run build && npm test",
+        "coverage": "70%+ for all new code",
+        "requirement": "ALL tests must pass, build must succeed"
+      },
+      "gitRequired": {
+        "commit": true,
+        "push": true,
+        "message": "feat(learning-unit): milestone - All Components complete"
+      }
+    },
+    "phase6": {
+      "name": "Progress & Player Complete",
+      "approver": "agent-qa-architect",
+      "isMilestone": true,
+      "criteria": [
+        "ModuleProgress displays correctly",
+        "CoursePlayer navigates by module",
+        "PresentationEngine respects rules",
+        "MasteryTracker shows progress",
+        "InstructorInterventionView functional",
+        "Integration tests for user flows"
+      ],
+      "testingRequired": {
+        "featureTests": "npm test -- src/widgets/ src/features/course-player/ src/features/presentation-engine/",
+        "fullSuite": "npm run build && npm test",
+        "coverage": "70%+ for all new code",
+        "requirement": "FULL test suite must pass, build must succeed"
+      },
+      "gitRequired": {
+        "commit": true,
+        "push": true,
+        "message": "feat(learning-unit): milestone - Learning Unit System complete"
+      }
+    }
+  },
+  "parallelExecutionPlan": {
+    "wave1": {
+      "description": "Foundation - Types (blocked until API contracts)",
+      "agents": ["agent-types"],
+      "estimatedTasks": 7
+    },
+    "wave2": {
+      "description": "API Integration",
+      "agents": ["agent-api"],
+      "estimatedTasks": 7
+    },
+    "wave3": {
+      "description": "Components - Module & Assessment (parallel)",
+      "agents": ["agent-components-module", "agent-components-assessment"],
+      "estimatedTasks": 10
+    },
+    "wave4": {
+      "description": "Progress & Player",
+      "agents": ["agent-player"],
+      "estimatedTasks": 7
+    }
+  },
+  "workflowRules": {
+    "commitFormat": "feat(learning-unit): <description>",
+    "minTestCoverage": 70,
+    "criticalPathCoverage": 80,
+    "tddRequired": true,
+    "contractsFirst": true,
+    "phaseSequencing": "Sequential phases with parallel agents within phases 4-5",
+    "uncertaintyThreshold": 55,
+    "uncertaintyAction": "Ask user for clarity when <55% confident"
+  },
+  "tddWorkflow": {
+    "description": "Test-Driven Development is MANDATORY for all code",
+    "cycle": [
+      "RED: Write failing test first that defines expected behavior",
+      "GREEN: Write minimal code to make the test pass",
+      "REFACTOR: Clean up code while keeping tests green"
+    ],
+    "perTask": [
+      "Write test(s) for the specific task BEFORE implementation",
+      "Run test to confirm it fails (RED)",
+      "Implement the minimum code to pass (GREEN)",
+      "Refactor if needed, ensure test still passes",
+      "Run related tests: npm test -- --watch src/entities/<entity>/"
+    ],
+    "testTypes": {
+      "types": "Type tests using TypeScript compiler (npx tsc --noEmit)",
+      "hooks": "Unit tests for React Query hooks with MSW mocking",
+      "components": "Component tests with React Testing Library",
+      "integration": "Integration tests for full user flows"
+    }
+  },
+  "testingProtocol": {
+    "perTask": {
+      "when": "After each task within a phase",
+      "command": "npm test -- src/entities/<entity>/",
+      "requirement": "All related tests must pass before moving to next task"
+    },
+    "perPhase": {
+      "when": "Before marking phase complete (gate approval)",
+      "command": "npm test -- src/entities/module/ src/entities/learning-unit/ src/entities/assessment/ src/entities/module-access/",
+      "requirement": "ALL feature tests must pass with 70%+ coverage",
+      "coverageCheck": "npm run test:coverage -- --collectCoverageFrom='src/entities/{module,learning-unit,assessment,module-access}/**/*'"
+    },
+    "perMilestone": {
+      "when": "After completing major milestones (Phase 3, Phase 5, Phase 6)",
+      "command": "npm run build && npm test",
+      "requirement": "FULL test suite must pass, build must succeed",
+      "typeCheck": "npx tsc --noEmit must have zero errors"
+    }
+  },
+  "gitProtocol": {
+    "perTask": {
+      "when": "After each task is complete with passing tests",
+      "action": "Stage and commit related files",
+      "format": "feat(learning-unit): <task description>",
+      "example": "feat(learning-unit): add Module types and interfaces"
+    },
+    "perPhase": {
+      "when": "After phase gate approval from QA/Architect",
+      "action": "Commit any remaining changes, then push to remote",
+      "format": "feat(learning-unit): complete Phase N - <phase name>",
+      "example": "feat(learning-unit): complete Phase 2 - Types",
+      "pushRequired": true
+    },
+    "perMilestone": {
+      "when": "After major milestones (Phase 3, Phase 5, Phase 6)",
+      "action": "Full test suite pass, then commit and push",
+      "format": "feat(learning-unit): milestone - <milestone description>",
+      "example": "feat(learning-unit): milestone - API Integration complete",
+      "tagOptional": "v0.X.0-learning-unit-phaseN"
+    },
+    "coAuthor": "Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>",
+    "commitChecklist": [
+      "1. All related tests pass",
+      "2. npx tsc --noEmit shows no errors",
+      "3. Code follows FSD conventions",
+      "4. Proper commit message format used",
+      "5. Co-Authored-By line included"
+    ]
+  },
+  "agentInstructions": {
+    "startup": [
+      "1. Read api/agent_coms/dev_guidance/FEATURE_DEVELOPMENT_CHECKLIST.md",
+      "2. Read api/agent_coms/ui/specs/LEARNING_UNIT_IMPLEMENTATION_PLAN.md for task details",
+      "3. Check api/agent_coms/messages/ for API team contract responses",
+      "4. Review existing patterns in contextFiles before implementing",
+      "5. Review tddWorkflow, testingProtocol, and gitProtocol sections of this config"
+    ],
+    "beforeCoding": [
+      "Verify API contracts are available from Phase 1",
+      "Check existing entity patterns in the codebase (especially course/)",
+      "Never invent API values - match contracts exactly (P1-P3 from checklist)",
+      "Use shadcn/ui components before creating custom components",
+      "WRITE TEST FIRST (TDD RED phase) before any implementation"
+    ],
+    "duringCoding": [
+      "Follow TDD cycle: RED (failing test) -> GREEN (pass) -> REFACTOR",
+      "Run tests frequently: npm test -- --watch src/entities/<entity>/",
+      "Keep tests passing at all times during refactor phase"
+    ],
+    "afterTask": [
+      "Run npx tsc --noEmit to check TypeScript - MUST have zero errors",
+      "Run npm test for related entity - ALL tests must pass",
+      "Git commit: feat(learning-unit): <task description>",
+      "Include Co-Authored-By line in commit"
+    ],
+    "afterPhase": [
+      "Run ALL feature tests: npm test -- src/entities/module/ src/entities/learning-unit/ src/entities/assessment/ src/entities/module-access/",
+      "Verify 70%+ test coverage for the phase",
+      "Report to QA/Architect for gate approval",
+      "After approval: git commit and PUSH to remote",
+      "Commit message: feat(learning-unit): complete Phase N - <phase name>"
+    ],
+    "afterMilestone": [
+      "Run FULL test suite: npm run build && npm test",
+      "Verify build succeeds with zero errors",
+      "Verify npx tsc --noEmit has zero errors",
+      "Git commit and push: feat(learning-unit): milestone - <description>",
+      "Milestones are: Phase 3 (API Integration), Phase 5 (Components), Phase 6 (Player)"
+    ]
+  },
+  "crossTeamSync": {
+    "apiTeamConfigPath": "api/agent_coms/prompts/api/team-config-learning-unit-system.json",
+    "contractsExpectedFrom": "api/agent_coms/messages/",
+    "responseFormat": "M1 format from FEATURE_DEVELOPMENT_CHECKLIST.md",
+    "pollFrequency": "Check for API team responses before starting each phase"
+  }
+}
