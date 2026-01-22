@@ -1,6 +1,8 @@
 /**
  * CourseModuleForm Component
- * Form for creating and editing course segments
+ * Form for creating and editing course modules (chapters/sections)
+ *
+ * Note: Modules are organizational containers. Content types belong to Learning Units.
  */
 
 import React from 'react';
@@ -9,19 +11,11 @@ import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { Textarea } from '@/shared/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/ui/select';
 import { Switch } from '@/shared/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import type {
   CreateCourseModulePayload,
   UpdateCourseModulePayload,
-  CourseModuleType,
 } from '../model/types';
 
 interface CourseModuleFormProps {
@@ -36,16 +30,9 @@ interface FormData {
   title: string;
   description?: string;
   order?: number;
-  type?: CourseModuleType;
-  contentId?: string;
   isPublished?: boolean;
   passingScore?: number;
   duration?: number;
-  allowMultipleAttempts?: boolean;
-  maxAttempts?: number;
-  timeLimit?: number;
-  showFeedback?: boolean;
-  shuffleQuestions?: boolean;
 }
 
 export const CourseModuleForm: React.FC<CourseModuleFormProps> = ({
@@ -66,40 +53,22 @@ export const CourseModuleForm: React.FC<CourseModuleFormProps> = ({
       title: defaultValues?.title || '',
       description: defaultValues?.description || '',
       order: defaultValues?.order || 1,
-      type: defaultValues?.type || 'custom',
-      contentId: defaultValues?.contentId || '',
       isPublished: defaultValues?.isPublished || false,
       passingScore: defaultValues?.passingScore || undefined,
       duration: defaultValues?.duration || undefined,
-      allowMultipleAttempts: true,
-      maxAttempts: undefined,
-      timeLimit: undefined,
-      showFeedback: true,
-      shuffleQuestions: false,
     },
   });
-
-  const allowMultipleAttempts = watch('allowMultipleAttempts');
-  const selectedType = watch('type');
 
   const handleFormSubmit = (data: FormData) => {
     const payload: CreateCourseModulePayload | UpdateCourseModulePayload = {
       title: data.title,
       description: data.description || undefined,
       ...(mode === 'create' && { order: data.order || 1 }),
-      ...(mode === 'create' && { type: data.type || 'custom' }),
-      ...(mode === 'edit' && data.type && { type: data.type }),
-      contentId: data.contentId || undefined,
+      // Default to 'custom' type for API compatibility - modules don't have meaningful types
+      ...(mode === 'create' && { type: 'custom' as const }),
       isPublished: data.isPublished,
       passingScore: data.passingScore || undefined,
       duration: data.duration || undefined,
-      settings: {
-        allowMultipleAttempts: data.allowMultipleAttempts || false,
-        maxAttempts: data.maxAttempts || null,
-        timeLimit: data.timeLimit || null,
-        showFeedback: data.showFeedback || false,
-        shuffleQuestions: data.shuffleQuestions || false,
-      },
     };
 
     onSubmit(payload);
@@ -110,9 +79,9 @@ export const CourseModuleForm: React.FC<CourseModuleFormProps> = ({
       {/* Basic Information */}
       <Card>
         <CardHeader>
-          <CardTitle>Basic Information</CardTitle>
+          <CardTitle>Module Information</CardTitle>
           <CardDescription>
-            Enter the module's title, description, and order
+            Modules are like chapters or sections within your course. Add learning content (videos, documents, assessments) after creating the module.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -125,7 +94,7 @@ export const CourseModuleForm: React.FC<CourseModuleFormProps> = ({
                 minLength: { value: 1, message: 'Title must be at least 1 character' },
                 maxLength: { value: 200, message: 'Title must be at most 200 characters' },
               })}
-              placeholder="Enter module title"
+              placeholder="e.g., Introduction, Chapter 1, Unit A"
             />
             {errors.title && (
               <p className="text-sm text-destructive">{errors.title.message}</p>
@@ -139,7 +108,7 @@ export const CourseModuleForm: React.FC<CourseModuleFormProps> = ({
               {...register('description', {
                 maxLength: { value: 2000, message: 'Description must be at most 2000 characters' },
               })}
-              placeholder="Enter module description"
+              placeholder="Describe what learners will cover in this module"
               rows={4}
             />
             {errors.description && (
@@ -147,69 +116,38 @@ export const CourseModuleForm: React.FC<CourseModuleFormProps> = ({
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            {mode === 'create' && (
-              <div className="space-y-2">
-                <Label htmlFor="order">Order *</Label>
-                <Input
-                  id="order"
-                  type="number"
-                  {...register('order', {
-                    required: 'Order is required',
-                    min: { value: 1, message: 'Order must be at least 1' },
-                  })}
-                  placeholder="1"
-                />
-                {errors.order && (
-                  <p className="text-sm text-destructive">{errors.order.message}</p>
-                )}
-              </div>
-            )}
-
+          {mode === 'create' && (
             <div className="space-y-2">
-              <Label htmlFor="type">Type {mode === 'create' && '*'}</Label>
-              <Select
-                value={selectedType}
-                onValueChange={(value) => setValue('type', value as CourseModuleType)}
-                disabled={mode === 'edit'}
-              >
-                <SelectTrigger id="type">
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="custom">Custom</SelectItem>
-                  <SelectItem value="scorm">SCORM</SelectItem>
-                  <SelectItem value="video">Video</SelectItem>
-                  <SelectItem value="document">Document</SelectItem>
-                  <SelectItem value="exercise">Exercise</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor="order">Order *</Label>
+              <Input
+                id="order"
+                type="number"
+                {...register('order', {
+                  required: 'Order is required',
+                  min: { value: 1, message: 'Order must be at least 1' },
+                })}
+                placeholder="1"
+              />
+              {errors.order && (
+                <p className="text-sm text-destructive">{errors.order.message}</p>
+              )}
               <p className="text-xs text-muted-foreground">
-                For quizzes and exams, use Assessment module type (coming soon)
+                Position of this module in the course sequence
               </p>
             </div>
-          </div>
+          )}
         </CardContent>
       </Card>
 
-      {/* Content Settings */}
+      {/* Optional Settings */}
       <Card>
         <CardHeader>
-          <CardTitle>Content Settings</CardTitle>
+          <CardTitle>Settings</CardTitle>
           <CardDescription>
-            Configure content reference and scoring
+            Optional configuration for this module
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="contentId">Content ID</Label>
-            <Input
-              id="contentId"
-              {...register('contentId')}
-              placeholder="Reference to content library (optional)"
-            />
-          </div>
-
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="passingScore">Passing Score (%)</Label>
@@ -225,17 +163,20 @@ export const CourseModuleForm: React.FC<CourseModuleFormProps> = ({
               {errors.passingScore && (
                 <p className="text-sm text-destructive">{errors.passingScore.message}</p>
               )}
+              <p className="text-xs text-muted-foreground">
+                Minimum score required to pass this module
+              </p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="duration">Duration (seconds)</Label>
+              <Label htmlFor="duration">Estimated Duration (minutes)</Label>
               <Input
                 id="duration"
                 type="number"
                 {...register('duration', {
                   min: { value: 0, message: 'Must be at least 0' },
                 })}
-                placeholder="3600"
+                placeholder="30"
               />
               {errors.duration && (
                 <p className="text-sm text-destructive">{errors.duration.message}</p>
@@ -245,88 +186,12 @@ export const CourseModuleForm: React.FC<CourseModuleFormProps> = ({
         </CardContent>
       </Card>
 
-      {/* Module Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Module Settings</CardTitle>
-          <CardDescription>
-            Configure attempts, time limits, and feedback
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>Allow Multiple Attempts</Label>
-              <p className="text-sm text-muted-foreground">
-                Allow learners to retry this module
-              </p>
-            </div>
-            <Switch
-              checked={allowMultipleAttempts}
-              onCheckedChange={(checked: boolean) => setValue('allowMultipleAttempts', checked)}
-            />
-          </div>
-
-          {allowMultipleAttempts && (
-            <div className="space-y-2">
-              <Label htmlFor="maxAttempts">Maximum Attempts</Label>
-              <Input
-                id="maxAttempts"
-                type="number"
-                {...register('maxAttempts', {
-                  min: { value: 1, message: 'Must be at least 1' },
-                })}
-                placeholder="Unlimited (leave empty)"
-              />
-            </div>
-          )}
-
-          <div className="space-y-2">
-            <Label htmlFor="timeLimit">Time Limit (seconds)</Label>
-            <Input
-              id="timeLimit"
-              type="number"
-              {...register('timeLimit', {
-                min: { value: 0, message: 'Must be at least 0' },
-              })}
-              placeholder="No limit (leave empty)"
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>Show Feedback</Label>
-              <p className="text-sm text-muted-foreground">
-                Show correct answers and feedback after completion
-              </p>
-            </div>
-            <Switch
-              {...register('showFeedback')}
-              onCheckedChange={(checked: boolean) => setValue('showFeedback', checked)}
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>Shuffle Questions</Label>
-              <p className="text-sm text-muted-foreground">
-                Randomize question order for each attempt
-              </p>
-            </div>
-            <Switch
-              {...register('shuffleQuestions')}
-              onCheckedChange={(checked: boolean) => setValue('shuffleQuestions', checked)}
-            />
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Publishing */}
       <Card>
         <CardHeader>
-          <CardTitle>Publishing</CardTitle>
+          <CardTitle>Visibility</CardTitle>
           <CardDescription>
-            Control module visibility to learners
+            Control when learners can see this module
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -334,11 +199,11 @@ export const CourseModuleForm: React.FC<CourseModuleFormProps> = ({
             <div className="space-y-0.5">
               <Label>Published</Label>
               <p className="text-sm text-muted-foreground">
-                Make this module visible to learners
+                Make this module visible to enrolled learners
               </p>
             </div>
             <Switch
-              {...register('isPublished')}
+              checked={watch('isPublished')}
               onCheckedChange={(checked: boolean) => setValue('isPublished', checked)}
             />
           </div>

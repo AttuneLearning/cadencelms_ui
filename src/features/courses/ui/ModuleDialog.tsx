@@ -63,8 +63,6 @@ export const ModuleDialog: React.FC<ModuleDialogProps> = ({
               ? {
                   title: module.title,
                   description: module.description || undefined,
-                  type: module.type,
-                  contentId: module.contentId || undefined,
                   isPublished: module.isPublished,
                   passingScore: module.passingScore || undefined,
                   duration: module.duration || undefined,

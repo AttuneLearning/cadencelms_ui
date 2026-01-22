@@ -45,10 +45,6 @@ import {
   Clock,
   Eye,
   EyeOff,
-  FileText,
-  Video,
-  FileCode,
-  Dumbbell,
 } from 'lucide-react';
 
 interface ModuleListProps {
@@ -297,9 +293,6 @@ const ModuleCard: React.FC<ModuleCardProps> = ({
                       Draft
                     </Badge>
                   )}
-                  <Badge variant="outline" className="text-xs capitalize">
-                    {module.type}
-                  </Badge>
                 </div>
                 <h4 className="truncate font-semibold">{module.title}</h4>
                 {module.description && (
@@ -362,22 +355,10 @@ const ModuleCard: React.FC<ModuleCardProps> = ({
 };
 
 // Helper Functions
-function getModuleIcon(type: string) {
-  const iconClass = 'h-5 w-5 text-muted-foreground';
-
-  switch (type) {
-    case 'video':
-      return <Video className={iconClass} />;
-    case 'document':
-      return <FileText className={iconClass} />;
-    case 'scorm':
-      return <FileCode className={iconClass} />;
-    case 'exercise':
-      return <Dumbbell className={iconClass} />;
-    case 'custom':
-    default:
-      return <BookOpen className={iconClass} />;
-  }
+function getModuleIcon(_type: string) {
+  // Modules are organizational containers (chapters), so use a generic book icon
+  // Content types are on Learning Units, not modules
+  return <BookOpen className="h-5 w-5 text-muted-foreground" />;
 }
 
 function formatDuration(seconds: number): string {
