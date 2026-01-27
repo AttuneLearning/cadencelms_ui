@@ -156,9 +156,10 @@ export interface ReportJob {
 export interface CreateReportJobRequest {
   name: string;
   description?: string;
-  type: 'predefined' | 'custom';
+  type: 'predefined' | 'custom' | 'from-template';
   predefinedType?: ReportType;
   customDefinition?: ReportDefinition;
+  templateId?: string;
   filters?: ReportFilter[];
   dateRange?: DateRange;
   outputFormat: ReportOutputFormat;
@@ -174,7 +175,7 @@ export interface CreateReportJobRequest {
  */
 export interface ListReportJobsParams {
   status?: ReportJobState[];
-  type?: 'predefined' | 'custom';
+  type?: 'predefined' | 'custom' | 'from-template';
   dateFrom?: string;
   dateTo?: string;
   search?: string;

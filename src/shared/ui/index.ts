@@ -20,6 +20,7 @@ export * from './separator';
 export * from './skeleton';
 export * from './table';
 export * from './tabs';
+export * from './tag-input';
 export * from './toast';
 export * from './toaster';
 export * from './tooltip';

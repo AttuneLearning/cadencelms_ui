@@ -190,7 +190,7 @@ export const ReportTemplateDetailPage: React.FC = () => {
                 <div className="mt-1 space-y-1">
                   {template.definition.groups.map((group, index) => (
                     <Badge key={index} variant="outline">
-                      {group}
+                      {typeof group === 'string' ? group : group.type}
                     </Badge>
                   ))}
                 </div>

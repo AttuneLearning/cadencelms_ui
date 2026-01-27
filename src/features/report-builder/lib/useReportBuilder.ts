@@ -226,7 +226,9 @@ export function useReportBuilder(): ReportBuilderState & ReportBuilderActions {
       ...prev,
       definition: {
         ...prev.definition,
-        groups: (prev.definition.groups || []).filter((_: GroupConfig, i: number) => i !== index),
+        groups: (prev.definition.groups || []).filter(
+          (_: GroupConfig | string, i: number) => i !== index
+        ),
       },
     }));
   }, []);

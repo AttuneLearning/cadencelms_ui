@@ -8,6 +8,7 @@ import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
 import { Label } from '@/shared/ui/label';
+import { TagInput } from '@/shared/ui/tag-input';
 import {
   Select,
   SelectContent,
@@ -15,10 +16,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/ui/select';
-import { Badge } from '@/shared/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Checkbox } from '@/shared/ui/checkbox';
-import { Plus, X, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import type {
   QuestionFormData,
   QuestionType,
@@ -56,7 +56,6 @@ export function QuestionForm({
     explanation: initialData?.explanation || '',
   });
 
-  const [tagInput, setTagInput] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Update options when question type changes
@@ -79,7 +78,13 @@ export function QuestionForm({
 
   const handleChange = (
     field: keyof QuestionFormData,
-    value: string | number | QuestionType | QuestionDifficulty | AnswerOption[]
+    value:
+      | string
+      | number
+      | string[]
+      | QuestionType
+      | QuestionDifficulty
+      | AnswerOption[]
   ) => {
     setFormData((prev) => ({
       ...prev,
@@ -117,24 +122,6 @@ export function QuestionForm({
       options: prev.options.map((option, i) =>
         i === index ? { ...option, [field]: value } : option
       ),
-    }));
-  };
-
-  const handleAddTag = () => {
-    const trimmedTag = tagInput.trim().toLowerCase();
-    if (trimmedTag && !formData.tags.includes(trimmedTag)) {
-      setFormData((prev) => ({
-        ...prev,
-        tags: [...prev.tags, trimmedTag],
-      }));
-      setTagInput('');
-    }
-  };
-
-  const handleRemoveTag = (tagToRemove: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      tags: prev.tags.filter((tag) => tag !== tagToRemove),
     }));
   };
 
@@ -202,7 +189,7 @@ export function QuestionForm({
     formData.questionType === 'fill_in_blank';
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6" noValidate>
       {/* Question Text */}
       <div className="space-y-2">
         <Label htmlFor="questionText">
@@ -241,8 +228,8 @@ export function QuestionForm({
               <SelectItem value="multiple_choice">Multiple Choice</SelectItem>
               <SelectItem value="true_false">True/False</SelectItem>
               <SelectItem value="short_answer">Short Answer</SelectItem>
-              <SelectItem value="essay">Essay</SelectItem>
-              <SelectItem value="fill_blank">Fill in the Blank</SelectItem>
+              <SelectItem value="long_answer">Essay</SelectItem>
+              <SelectItem value="fill_in_blank">Fill in the Blank</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -256,7 +243,7 @@ export function QuestionForm({
             type="number"
             step="0.1"
             min="0.1"
-            value={formData.points}
+            value={Number.isNaN(formData.points) ? '' : formData.points}
             onChange={(e) => handleChange('points', parseFloat(e.target.value))}
             className={errors.points ? 'border-destructive' : ''}
           />
@@ -358,7 +345,7 @@ export function QuestionForm({
           )}
           {formData.questionType === 'long_answer' && (
             <p className="text-xs text-muted-foreground">
-              Long answers are graded manually. This field is optional.
+              Essays are graded manually. This field is optional.
             </p>
           )}
         </div>
@@ -367,35 +354,17 @@ export function QuestionForm({
       {/* Tags */}
       <div className="space-y-2">
         <Label htmlFor="tags">Tags</Label>
-        <div className="flex gap-2">
-          <Input
-            id="tags"
-            value={tagInput}
-            onChange={(e) => setTagInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
-            placeholder="Add tags for categorization"
-            maxLength={50}
-          />
-          <Button type="button" onClick={handleAddTag} variant="outline">
-            Add
-          </Button>
-        </div>
-        {formData.tags.length > 0 && (
-          <div className="flex gap-2 flex-wrap">
-            {formData.tags.map((tag) => (
-              <Badge key={tag} variant="secondary" className="gap-1">
-                {tag}
-                <button
-                  type="button"
-                  onClick={() => handleRemoveTag(tag)}
-                  className="ml-1 hover:text-destructive"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
-            ))}
-          </div>
-        )}
+        <TagInput
+          id="tags"
+          value={formData.tags}
+          onChange={(tags) => handleChange('tags', tags)}
+          placeholder="Add tags for categorization"
+          maxTagLength={50}
+          addButton
+        />
+        <p className="text-xs text-muted-foreground">
+          Press Enter or comma to add a tag
+        </p>
       </div>
 
       {/* Explanation */}

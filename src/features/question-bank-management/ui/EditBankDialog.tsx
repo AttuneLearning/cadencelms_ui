@@ -152,10 +152,12 @@ export function EditBankDialog({
                         value={field.value ?? []}
                         onChange={field.onChange}
                         placeholder="Add tags..."
+                        maxTagLength={50}
                       />
                     </FormControl>
                     <FormDescription>
-                      Add tags to help organize and filter question banks
+                      Add tags to help organize and filter question banks. Press
+                      Enter or comma to add a tag.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

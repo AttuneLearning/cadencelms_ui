@@ -18,6 +18,17 @@ import type {
 // Main Report Template Entity
 // ============================================================================
 
+// Back-compat aliases used by the report-builder UI.
+export type ReportTemplateCategory =
+  | 'enrollment'
+  | 'performance'
+  | 'completion'
+  | 'activity'
+  | 'custom'
+  | (string & {});
+
+export type ReportTemplateVisibility = ReportVisibility;
+
 /**
  * Report Template entity
  * Represents a saved report configuration that can be reused
@@ -30,14 +41,16 @@ export interface ReportTemplate {
   name: string;
   slug: string;
   description?: string;
-  category: string;
+  category: ReportTemplateCategory;
   tags: string[];
 
   // Report Configuration
   reportType: ReportType;
+  predefinedType?: ReportType;
   definition: ReportDefinition;
   defaultFilters?: ReportFilter[];
   defaultDateRange?: DateRangePreset;
+  defaultOutputFormat: ReportOutputFormat;
 
   // Versioning
   version: number;
@@ -82,10 +95,10 @@ export interface CreateReportTemplateRequest {
   defaultFilters?: ReportFilter[];
   defaultDateRange?: DateRangePreset;
   defaultOutputFormat: ReportOutputFormat;
-  visibility?: ReportVisibility;
+  visibility?: ReportTemplateVisibility;
   sharedWith?: string[];
   tags?: string[];
-  category?: string;
+  category?: ReportTemplateCategory;
   icon?: string;
   color?: string;
 }
@@ -138,6 +151,7 @@ export interface Pagination {
 export interface ListReportTemplatesResponse {
   templates: ReportTemplate[];
   pagination: Pagination;
+  totalCount?: number;
 }
 
 /**

@@ -10,6 +10,7 @@ import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { Textarea } from '@/shared/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
+import { TagInput } from '@/shared/ui/tag-input';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/shared/ui/use-toast';
 import { useCreateReportTemplate } from '@/entities/report-template';
@@ -47,7 +48,7 @@ export const SaveTemplateDialog: React.FC<SaveTemplateDialogProps> = ({
   const [description, setDescription] = React.useState('');
   const [category, setCategory] = React.useState<ReportTemplateCategory>('custom');
   const [visibility, setVisibility] = React.useState<ReportTemplateVisibility>('private');
-  const [tags, setTags] = React.useState('');
+  const [tags, setTags] = React.useState<string[]>([]);
 
   const { toast } = useToast();
   const createMutation = useCreateReportTemplate();
@@ -64,10 +65,7 @@ export const SaveTemplateDialog: React.FC<SaveTemplateDialogProps> = ({
       return;
     }
 
-    const tagArray = tags
-      .split(',')
-      .map((tag) => tag.trim())
-      .filter(Boolean);
+    const tagArray = tags;
 
     const request: CreateReportTemplateRequest = {
       name: name.trim(),
@@ -103,7 +101,7 @@ export const SaveTemplateDialog: React.FC<SaveTemplateDialogProps> = ({
     setDescription('');
     setCategory('custom');
     setVisibility('private');
-    setTags('');
+    setTags([]);
     onOpenChange(false);
   };
 
@@ -180,14 +178,15 @@ export const SaveTemplateDialog: React.FC<SaveTemplateDialogProps> = ({
           {/* Tags */}
           <div className="space-y-2">
             <Label htmlFor="tags">Tags (optional)</Label>
-            <Input
+            <TagInput
               id="tags"
               value={tags}
-              onChange={(e) => setTags(e.target.value)}
-              placeholder="monthly, summary, enrollment (comma-separated)"
+              onChange={setTags}
+              placeholder="Add tags..."
+              maxTagLength={50}
             />
             <p className="text-xs text-muted-foreground">
-              Separate multiple tags with commas
+              Press Enter or comma to add a tag
             </p>
           </div>
 

@@ -51,9 +51,16 @@ export type DimensionType =
 export interface DimensionConfig {
   type: DimensionType;
   label?: string;
+  // Legacy single-field selector used by existing report-builder UI.
+  field?: string;
   fields?: string[];
+  // Legacy sort direction used by existing report-builder UI.
+  sortBy?: 'asc' | 'desc';
   sortOrder?: number;
 }
+
+// Back-compat names used across the report-builder feature.
+export type ReportDimension = DimensionConfig;
 
 // ============================================================================
 // Measures (Calculated Values)
@@ -86,10 +93,20 @@ export type MeasureType =
 export interface MeasureConfig {
   type: MeasureType;
   label?: string;
+  // Legacy single-field selector used by existing report-builder UI.
+  field?: string;
+  // Legacy aggregation used by existing report-builder UI.
+  aggregation?: AggregationFunction;
   targetField?: string;
   format?: 'number' | 'percentage' | 'currency' | 'duration';
   decimalPlaces?: number;
 }
+
+// Back-compat names used across the report-builder feature.
+export type ReportMeasure = MeasureConfig;
+
+// Aggregation functions referenced by the existing report-builder UI.
+export type AggregationFunction = 'sum' | 'avg' | 'min' | 'max' | 'count';
 
 // ============================================================================
 // Slicers (Column Breakdown / Filters)
@@ -114,11 +131,17 @@ export type SlicerType =
   | 'role-level';
 
 export interface SlicerConfig {
-  type: SlicerType;
-  operator: 'eq' | 'ne' | 'gt' | 'gte' | 'lt' | 'lte' | 'in' | 'nin' | 'between' | 'contains';
-  value: unknown;
+  type?: SlicerType;
+  operator?: 'eq' | 'ne' | 'gt' | 'gte' | 'lt' | 'lte' | 'in' | 'nin' | 'between' | 'contains';
+  value?: unknown;
+  // Legacy fields-based slicer used by existing report-builder UI.
+  field?: string;
+  values?: Array<string | number | boolean>;
   label?: string;
 }
+
+// Back-compat names used across the report-builder feature.
+export type ReportSlicer = SlicerConfig;
 
 // ============================================================================
 // Groups (Aggregation Buckets)
@@ -181,8 +204,12 @@ export type DateRangePreset =
   | 'custom';
 
 export interface DateRange {
-  startDate: string;
-  endDate: string;
+  // Current API shape.
+  startDate?: string;
+  endDate?: string;
+  // Legacy shape used throughout the UI.
+  start?: string;
+  end?: string;
   preset?: DateRangePreset;
 }
 
@@ -190,10 +217,23 @@ export interface DateRange {
 // Filters
 // ============================================================================
 
+export type FilterOperator =
+  | 'eq'
+  | 'ne'
+  | 'gt'
+  | 'gte'
+  | 'lt'
+  | 'lte'
+  | 'in'
+  | 'notIn'
+  | 'contains'
+  | 'startsWith'
+  | 'endsWith';
+
 export interface ReportFilter {
   field: string;
-  operator: string;
-  value: unknown;
+  operator: FilterOperator;
+  value: string | number | boolean | Array<string | number | boolean>;
 }
 
 // ============================================================================
@@ -208,10 +248,14 @@ export interface ReportDefinition {
   dimensions: DimensionConfig[];
   measures: MeasureConfig[];
   slicers: SlicerConfig[];
-  groups: GroupConfig[];
+  groups: Array<GroupConfig | string>;
+  filters?: ReportFilter[];
   sorting?: SortConfig[];
   pagination?: PaginationConfig;
 }
+
+// Back-compat name used by the report-builder feature UI.
+export type CustomReportDefinition = ReportDefinition;
 
 // ============================================================================
 // Output Formats

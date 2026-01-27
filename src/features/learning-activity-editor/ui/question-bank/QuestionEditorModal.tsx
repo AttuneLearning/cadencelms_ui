@@ -18,6 +18,7 @@ import {
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
+import { TagInput } from '@/shared/ui/tag-input';
 import {
   Select,
   SelectContent,
@@ -296,7 +297,6 @@ export function QuestionEditorModal({
   isGraded = true,
 }: QuestionEditorModalProps) {
   const isEditMode = !!initialData;
-  const [tagsInput, setTagsInput] = useState('');
   const [acceptedAnswersInput, setAcceptedAnswersInput] = useState('');
 
   const form = useForm<QuestionFormData>({
@@ -348,7 +348,6 @@ export function QuestionEditorModal({
           flashcardFront: initialData.flashcard?.front,
           flashcardBack: initialData.flashcard?.back,
         });
-        setTagsInput(initialData.tags.join(', '));
         setAcceptedAnswersInput(initialData.acceptedAnswers?.join(', ') || '');
       } else {
         reset({
@@ -366,7 +365,6 @@ export function QuestionEditorModal({
           flashcardFront: '',
           flashcardBack: '',
         });
-        setTagsInput('');
         setAcceptedAnswersInput('');
       }
     }
@@ -726,18 +724,15 @@ export function QuestionEditorModal({
                 <FormItem>
                   <FormLabel>Tags (optional)</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="geography, history, beginner"
-                      value={tagsInput}
-                      onChange={(event) => {
-                        const value = event.target.value;
-                        setTagsInput(value);
-                        field.onChange(value.split(',').map((item) => item.trim()).filter(Boolean));
-                      }}
+                    <TagInput
+                      placeholder="Add tags..."
+                      value={field.value ?? []}
+                      onChange={field.onChange}
+                      maxTagLength={50}
                     />
                   </FormControl>
                   <FormDescription className="text-xs">
-                    Separate tags with commas
+                    Press Enter or comma to add a tag
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
