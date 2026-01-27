@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from '@/shared/ui/select';
 import { useToast } from '@/shared/ui/use-toast';
+import { PageHeader } from '@/shared/ui/page-header';
 import {
   Download,
   RefreshCw,
@@ -243,12 +244,10 @@ export const AuditLogsPage: React.FC = () => {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Audit Logs</h1>
-        <p className="text-muted-foreground mt-1">
-          View and track system activity and changes
-        </p>
-      </div>
+      <PageHeader
+        title="Audit Logs"
+        description="View and track system activity and changes"
+      />
 
       <Card>
         <CardHeader>

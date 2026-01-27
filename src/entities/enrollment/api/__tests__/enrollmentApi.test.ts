@@ -32,10 +32,7 @@ import {
   mockCourseEnrollment,
   mockClassEnrollment,
   mockLearners,
-  mockDepartments,
   mockCompletedGrade,
-  createMockEnrollment,
-  createMockEnrollmentWithProgress,
 } from '@/test/mocks/data/enrollments';
 
 describe('enrollmentApi', () => {

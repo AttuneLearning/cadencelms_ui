@@ -18,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { AlertCircle, User, Mail, Settings, Shield } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 import { personApi } from '@/shared/api/personApi';
 import type { IPerson } from '@/shared/types/person';
 import { BasicInfoForm } from '@/features/profile/ui/BasicInfoForm';
@@ -97,13 +98,10 @@ export const ProfilePageV2: React.FC = () => {
   return (
     <div className="container mx-auto py-8 space-y-6 max-w-5xl">
       {/* Header */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold">My Profile</h1>
-        <p className="text-muted-foreground">
-          Manage your personal information, contact details, and preferences. Changes are automatically
-          saved.
-        </p>
-      </div>
+      <PageHeader
+        title="My Profile"
+        description="Manage your personal information, contact details, and preferences. Changes are automatically saved."
+      />
 
       {/* Tabbed Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">

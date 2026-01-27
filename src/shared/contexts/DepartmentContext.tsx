@@ -147,10 +147,8 @@ export const DepartmentProvider: React.FC<DepartmentProviderProps> = ({
 
   const hasPermission = (permission: string): boolean => {
     if (!departmentId) return false;
-    return globalHasPermission(permission, {
-      type: 'department',
-      id: departmentId,
-    });
+    // UNIFIED AUTHORIZATION: Pass departmentId directly (not scope object)
+    return globalHasPermission(permission, departmentId);
   };
 
   const hasAnyPermission = (permissions: string[]): boolean => {

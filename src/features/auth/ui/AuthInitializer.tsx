@@ -38,7 +38,7 @@ export const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) =>
     };
   }, []);
 
-  const { initializeAuth, isLoading } = useAuthStore();
+  const { initializeAuth } = useAuthStore();
   const [isInitializing, setIsInitializing] = React.useState(true);
 
   // EMERGENCY CIRCUIT BREAKER: Check if we're in a loop before doing ANYTHING

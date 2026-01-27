@@ -45,7 +45,7 @@ export function useAutoSave<T>({
   // Track if this is the initial mount
   const isInitialMount = useRef(true);
   const lastSavedData = useRef<T>(data);
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Debounced data for auto-save
   const debouncedData = useDebounce(data, debounceMs);

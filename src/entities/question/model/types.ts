@@ -8,13 +8,17 @@
 
 /**
  * Question Types
+ * Updated to array format per API v1.1.0
  */
 export type QuestionType =
   | 'multiple_choice'
+  | 'multiple_select'
   | 'true_false'
   | 'short_answer'
-  | 'essay'
-  | 'fill_blank';
+  | 'long_answer'
+  | 'matching'
+  | 'flashcard'
+  | 'fill_in_blank';
 
 /**
  * Question Difficulty Levels
@@ -31,20 +35,41 @@ export interface AnswerOption {
 }
 
 /**
+ * Question Hierarchy for Adaptive Testing
+ */
+export interface QuestionHierarchy {
+  parentQuestionId?: string;
+  relatedQuestionIds: string[];
+  prerequisiteQuestionIds: string[];
+  conceptTag?: string;
+  difficultyProgression?: number;
+}
+
+/**
  * Base Question
  * Core question information used across all views
+ * Updated for department-scoped API v1.1.0
  */
 export interface Question {
   id: string;
+  departmentId: string;
+  questionBankId: string;
   questionText: string;
-  questionType: QuestionType;
+  questionTypes: string[];  // Array of types
   options: AnswerOption[];
   correctAnswer: string | string[];
   points: number;
   difficulty: QuestionDifficulty;
   tags: string[];
   explanation: string | null;
-  department: string | null;
+  
+  // Adaptive learning fields (optional)
+  knowledgeNodeId?: string;
+  cognitiveDepth?: string;
+  hierarchy?: QuestionHierarchy;
+  
+  // Metadata
+  usageCount?: number;
   createdBy: string;
   createdAt: string;
   updatedAt: string;
@@ -79,6 +104,7 @@ export interface Pagination {
 
 /**
  * Question List Query Parameters
+ * For department-scoped question API
  */
 export interface QuestionListParams {
   page?: number;
@@ -87,7 +113,10 @@ export interface QuestionListParams {
   tag?: string;
   difficulty?: QuestionDifficulty;
   search?: string;
-  department?: string;
+  bankId?: string;
+  knowledgeNodeId?: string;
+  cognitiveDepth?: string;
+  hasKnowledgeNode?: boolean;
   sort?: string;
 }
 
@@ -103,30 +132,40 @@ export interface QuestionListResponse {
  * Create Question Payload
  */
 export interface CreateQuestionPayload {
+  questionBankId: string;
   questionText: string;
-  questionType: QuestionType;
+  questionTypes: string[];
   options?: AnswerOption[];
   correctAnswer?: string | string[];
   points: number;
   difficulty?: QuestionDifficulty;
   tags?: string[];
   explanation?: string;
-  department?: string;
+  
+  // Adaptive learning fields (optional)
+  knowledgeNodeId?: string;
+  cognitiveDepth?: string;
+  hierarchy?: Partial<QuestionHierarchy>;
 }
 
 /**
  * Update Question Payload
  */
 export interface UpdateQuestionPayload {
+  questionBankId?: string;
   questionText?: string;
-  questionType?: QuestionType;
+  questionTypes?: string[];
   options?: AnswerOption[];
   correctAnswer?: string | string[];
   points?: number;
   difficulty?: QuestionDifficulty;
   tags?: string[];
   explanation?: string;
-  department?: string;
+  
+  // Adaptive learning fields (optional)
+  knowledgeNodeId?: string;
+  cognitiveDepth?: string;
+  hierarchy?: Partial<QuestionHierarchy>;
 }
 
 /**

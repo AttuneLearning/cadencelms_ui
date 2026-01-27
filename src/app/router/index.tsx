@@ -29,8 +29,10 @@ import { StudentDetailPage } from '@/pages/staff/students/StudentDetailPage';
 import { StaffCoursesPage } from '@/pages/staff/courses/StaffCoursesPage';
 import { CourseEditorPage } from '@/pages/staff/courses/CourseEditorPage';
 import { ModuleEditorPage } from '@/pages/staff/courses/ModuleEditorPage';
+import { CreateLearningActivityPage } from '@/pages/staff/courses/CreateLearningActivityPage';
 import { ContentUploaderPage } from '@/pages/staff/courses/ContentUploaderPage';
 import { ExerciseBuilderPage } from '@/pages/staff/courses/ExerciseBuilderPage';
+import { ActivityEditorPage } from '@/features/learning-activity-editor';
 import { CoursePreviewPage } from '@/pages/staff/courses/CoursePreviewPage';
 import { ClassManagementPage as StaffClassManagementPage } from '@/pages/staff/classes/ClassManagementPage';
 import { ClassDetailsPage as StaffClassDetailsPage } from '@/pages/staff/classes/ClassDetailsPage';
@@ -443,6 +445,31 @@ export function AppRouter() {
         element={
           <StaffOnlyRoute>
             <ModuleEditorPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/courses/:courseId/modules/:moduleId/learning-activities/new"
+        element={
+          <StaffOnlyRoute>
+            <CreateLearningActivityPage />
+          </StaffOnlyRoute>
+        }
+      />
+      {/* Activity Editor Page - for complex types (exercise, assessment, assignment) */}
+      <Route
+        path="/staff/courses/:courseId/modules/:moduleId/activities/new/:type"
+        element={
+          <StaffOnlyRoute>
+            <ActivityEditorPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/courses/:courseId/modules/:moduleId/activities/:activityId/edit"
+        element={
+          <StaffOnlyRoute>
+            <ActivityEditorPage />
           </StaffOnlyRoute>
         }
       />

@@ -66,10 +66,6 @@ const extractUsPhoneDigits = (value: string): string => {
   return digits.startsWith('1') ? digits.slice(1, 11) : digits.slice(0, 10);
 };
 
-const isCompleteUsPhone = (value: string): boolean => {
-  return extractUsPhoneDigits(value).length === 10;
-};
-
 export function UserProfileForm({ profile, onSuccess, context }: UserProfileFormProps) {
   const updateProfile = useUpdateUserProfile(context);
 

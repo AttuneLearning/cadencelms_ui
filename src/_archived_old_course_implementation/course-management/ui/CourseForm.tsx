@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
-import { Label } from '@/shared/ui/label';
+import { Textarea } from '@/shared/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -17,6 +17,15 @@ import {
   SelectValue,
 } from '@/shared/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/shared/ui/form';
 import { courseFormSchema, type CourseFormValues } from '../model/validation';
 import type { Course } from '@/entities/course/model/types';
 
@@ -27,13 +36,7 @@ interface CourseFormProps {
 }
 
 export const CourseForm: React.FC<CourseFormProps> = ({ course, onSubmit, isLoading }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    watch,
-  } = useForm<CourseFormValues>({
+  const form = useForm<CourseFormValues>({
     resolver: zodResolver(courseFormSchema),
     defaultValues: course
       ? {
@@ -60,149 +63,225 @@ export const CourseForm: React.FC<CourseFormProps> = ({ course, onSubmit, isLoad
         },
   });
 
-  const level = watch('level');
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <Tabs defaultValue="basic" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="basic">Basic Info</TabsTrigger>
-          <TabsTrigger value="details">Details</TabsTrigger>
-          <TabsTrigger value="content">Content</TabsTrigger>
-        </TabsList>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <Tabs defaultValue="basic" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="basic">Basic Info</TabsTrigger>
+            <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="content">Content</TabsTrigger>
+          </TabsList>
 
         {/* Basic Information */}
         <TabsContent value="basic" className="space-y-4">
           {/* Title */}
-          <div className="space-y-2">
-            <Label htmlFor="title">
-              Title <span className="text-destructive">*</span>
-            </Label>
-            <Input id="title" {...register('title')} />
-            {errors.title && <p className="text-sm text-destructive">{errors.title.message}</p>}
-          </div>
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Title <span className="text-destructive">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           {/* Short Description */}
-          <div className="space-y-2">
-            <Label htmlFor="shortDescription">Short Description</Label>
-            <Input id="shortDescription" {...register('shortDescription')} />
-            <p className="text-xs text-muted-foreground">
-              Brief summary displayed in course listings
-            </p>
-            {errors.shortDescription && (
-              <p className="text-sm text-destructive">{errors.shortDescription.message}</p>
+          <FormField
+            control={form.control}
+            name="shortDescription"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Short Description</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormDescription className="text-xs">
+                  Brief summary displayed in course listings
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
             )}
-          </div>
+          />
 
           {/* Description */}
-          <div className="space-y-2">
-            <Label htmlFor="description">
-              Full Description <span className="text-destructive">*</span>
-            </Label>
-            <textarea
-              id="description"
-              {...register('description')}
-              className="min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            />
-            {errors.description && (
-              <p className="text-sm text-destructive">{errors.description.message}</p>
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Full Description <span className="text-destructive">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Textarea {...field} rows={5} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
-          </div>
+          />
 
           {/* Thumbnail */}
-          <div className="space-y-2">
-            <Label htmlFor="thumbnail">Thumbnail URL</Label>
-            <Input id="thumbnail" type="url" {...register('thumbnail')} />
-            {errors.thumbnail && (
-              <p className="text-sm text-destructive">{errors.thumbnail.message}</p>
+          <FormField
+            control={form.control}
+            name="thumbnail"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Thumbnail URL</FormLabel>
+                <FormControl>
+                  <Input type="url" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
-          </div>
+          />
         </TabsContent>
 
         {/* Details */}
         <TabsContent value="details" className="space-y-4">
           {/* Level */}
-          <div className="space-y-2">
-            <Label htmlFor="level">Difficulty Level</Label>
-            <Select
-              value={level}
-              onValueChange={(value) => setValue('level', value as 'beginner' | 'intermediate' | 'advanced')}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select level" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="beginner">Beginner</SelectItem>
-                <SelectItem value="intermediate">Intermediate</SelectItem>
-                <SelectItem value="advanced">Advanced</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <FormField
+            control={form.control}
+            name="level"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Difficulty Level</FormLabel>
+                <Select
+                  value={field.value}
+                  onValueChange={(value) => field.onChange(value as 'beginner' | 'intermediate' | 'advanced')}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select level" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="beginner">Beginner</SelectItem>
+                    <SelectItem value="intermediate">Intermediate</SelectItem>
+                    <SelectItem value="advanced">Advanced</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           {/* Category */}
-          <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
-            <Input id="category" {...register('category')} />
-          </div>
+          <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Category</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           {/* Tags */}
-          <div className="space-y-2">
-            <Label htmlFor="tags">Tags</Label>
-            <Input
-              id="tags"
-              placeholder="Enter tags separated by commas"
-              onChange={(e) => {
-                const tags = e.target.value.split(',').map((tag) => tag.trim()).filter(Boolean);
-                setValue('tags', tags);
-              }}
-              defaultValue={course?.tags?.join(', ')}
-            />
-            <p className="text-xs text-muted-foreground">Separate tags with commas</p>
-          </div>
+          <FormField
+            control={form.control}
+            name="tags"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Tags</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Enter tags separated by commas"
+                    value={field.value?.join(', ') ?? ''}
+                    onChange={(event) => {
+                      const tags = event.target.value.split(',').map((tag) => tag.trim()).filter(Boolean);
+                      field.onChange(tags);
+                    }}
+                  />
+                </FormControl>
+                <FormDescription className="text-xs">
+                  Separate tags with commas
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </TabsContent>
 
         {/* Content */}
         <TabsContent value="content" className="space-y-4">
           {/* Prerequisites */}
-          <div className="space-y-2">
-            <Label htmlFor="prerequisites">Prerequisites</Label>
-            <textarea
-              id="prerequisites"
-              placeholder="Enter each prerequisite on a new line"
-              className="min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              onChange={(e) => {
-                const prerequisites = e.target.value.split('\n').map((item) => item.trim()).filter(Boolean);
-                setValue('prerequisites', prerequisites);
-              }}
-              defaultValue={course?.prerequisites?.join('\n')}
-            />
-            <p className="text-xs text-muted-foreground">One prerequisite per line</p>
-          </div>
+          <FormField
+            control={form.control}
+            name="prerequisites"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Prerequisites</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Enter each prerequisite on a new line"
+                    rows={4}
+                    value={field.value?.join('\n') ?? ''}
+                    onChange={(event) => {
+                      const prerequisites = event.target.value
+                        .split('\n')
+                        .map((item) => item.trim())
+                        .filter(Boolean);
+                      field.onChange(prerequisites);
+                    }}
+                  />
+                </FormControl>
+                <FormDescription className="text-xs">
+                  One prerequisite per line
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           {/* Learning Objectives */}
-          <div className="space-y-2">
-            <Label htmlFor="learningObjectives">Learning Objectives</Label>
-            <textarea
-              id="learningObjectives"
-              placeholder="Enter each learning objective on a new line"
-              className="min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              onChange={(e) => {
-                const objectives = e.target.value.split('\n').map((item) => item.trim()).filter(Boolean);
-                setValue('learningObjectives', objectives);
-              }}
-              defaultValue={course?.learningObjectives?.join('\n')}
-            />
-            <p className="text-xs text-muted-foreground">One objective per line</p>
-          </div>
+          <FormField
+            control={form.control}
+            name="learningObjectives"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Learning Objectives</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Enter each learning objective on a new line"
+                    rows={4}
+                    value={field.value?.join('\n') ?? ''}
+                    onChange={(event) => {
+                      const objectives = event.target.value
+                        .split('\n')
+                        .map((item) => item.trim())
+                        .filter(Boolean);
+                      field.onChange(objectives);
+                    }}
+                  />
+                </FormControl>
+                <FormDescription className="text-xs">
+                  One objective per line
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </TabsContent>
-      </Tabs>
+        </Tabs>
 
-      {/* Submit Button */}
-      <div className="flex justify-end gap-2">
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? 'Saving...' : course ? 'Update Course' : 'Create Course'}
-        </Button>
-      </div>
-    </form>
+        {/* Submit Button */}
+        <div className="flex justify-end gap-2">
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? 'Saving...' : course ? 'Update Course' : 'Create Course'}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 };

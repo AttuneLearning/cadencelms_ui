@@ -23,6 +23,7 @@ import {
   GraduationCap,
 } from 'lucide-react';
 import type { LearningEvent } from '@/entities/learning-event';
+import { PageHeader } from '@/shared/ui/page-header';
 
 /**
  * Format duration in seconds to readable time string
@@ -198,13 +199,11 @@ export const MyLearningPage: React.FC = () => {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">My Learning</h1>
-        <p className="text-muted-foreground">
-          Track your progress and continue your learning journey
-        </p>
-      </div>
+      <PageHeader
+        title="My Learning"
+        description="Track your progress and continue your learning journey"
+        className="mb-8"
+      />
 
       {/* Error State - Enrollments */}
       {enrollmentsError && (

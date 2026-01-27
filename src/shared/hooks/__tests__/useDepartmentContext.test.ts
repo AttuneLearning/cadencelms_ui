@@ -28,7 +28,7 @@ import type { RoleHierarchy } from '@/shared/types/auth';
  * Reset all stores to initial state before each test
  */
 function resetStores() {
-  // Reset auth store
+  // Reset auth store - UNIFIED AUTHORIZATION (ADR-AUTH-001)
   useAuthStore.setState({
     accessToken: null,
     user: null,
@@ -36,6 +36,11 @@ function resetStores() {
     isAuthenticated: false,
     isLoading: false,
     error: null,
+    // New unified authorization fields
+    globalRights: [],
+    departmentRights: {},
+    departmentHierarchy: {},
+    permissionVersion: 0,
   });
 
   // Reset navigation store
@@ -203,15 +208,20 @@ describe('useDepartmentContext', () => {
     });
 
     it('should return true for permissions in current department', () => {
-      // Select department with specific permissions
+      // UNIFIED AUTHORIZATION: Set up departmentRights in authStore
       act(() => {
+        useAuthStore.setState({
+          isAuthenticated: true,
+          departmentRights: {
+            'dept-123': [
+              'course:content:view',
+              'course:content:edit',
+              'course:enrollment:view',
+            ],
+          },
+        });
         useNavigationStore.setState({
           selectedDepartmentId: 'dept-123',
-          currentDepartmentAccessRights: [
-            'course:content:view',
-            'course:content:edit',
-            'course:enrollment:view',
-          ],
         });
       });
 
@@ -223,10 +233,16 @@ describe('useDepartmentContext', () => {
     });
 
     it('should return false for permissions not in current department', () => {
+      // UNIFIED AUTHORIZATION: Set up departmentRights in authStore
       act(() => {
+        useAuthStore.setState({
+          isAuthenticated: true,
+          departmentRights: {
+            'dept-123': ['course:content:view'],
+          },
+        });
         useNavigationStore.setState({
           selectedDepartmentId: 'dept-123',
-          currentDepartmentAccessRights: ['course:content:view'],
         });
       });
 
@@ -238,18 +254,15 @@ describe('useDepartmentContext', () => {
     });
 
     it('should handle wildcard system permission', () => {
-      // Set up global admin with system:* permission
+      // UNIFIED AUTHORIZATION: system:* goes in globalRights
       act(() => {
         useAuthStore.setState({
-          roleHierarchy: {
-            ...createMockRoleHierarchy(),
-            allPermissions: ['system:*'],
-          },
+          isAuthenticated: true,
+          globalRights: ['system:*'],
+          departmentRights: {},
         });
-
         useNavigationStore.setState({
           selectedDepartmentId: 'dept-123',
-          currentDepartmentAccessRights: [],
         });
       });
 
@@ -262,10 +275,16 @@ describe('useDepartmentContext', () => {
     });
 
     it('should handle wildcard domain permissions', () => {
+      // UNIFIED AUTHORIZATION: Set up departmentRights in authStore
       act(() => {
+        useAuthStore.setState({
+          isAuthenticated: true,
+          departmentRights: {
+            'dept-123': ['course:*', 'user:profile:view'],
+          },
+        });
         useNavigationStore.setState({
           selectedDepartmentId: 'dept-123',
-          currentDepartmentAccessRights: ['course:*', 'user:profile:view'],
         });
       });
 
@@ -307,19 +326,22 @@ describe('useDepartmentContext', () => {
 
   describe('Multiple Permission Checking', () => {
     beforeEach(() => {
+      // UNIFIED AUTHORIZATION: Set up departmentRights in authStore
       act(() => {
         useAuthStore.setState({
           roleHierarchy: createMockRoleHierarchy(),
           isAuthenticated: true,
+          departmentRights: {
+            'dept-123': [
+              'course:content:view',
+              'course:content:edit',
+              'course:enrollment:view',
+            ],
+          },
         });
 
         useNavigationStore.setState({
           selectedDepartmentId: 'dept-123',
-          currentDepartmentAccessRights: [
-            'course:content:view',
-            'course:content:edit',
-            'course:enrollment:view',
-          ],
         });
       });
     });
@@ -592,22 +614,24 @@ describe('useDepartmentContext', () => {
 
   describe('Integration', () => {
     it('should work with complete realistic scenario', () => {
-      // Set up auth store with role hierarchy
+      // UNIFIED AUTHORIZATION: Set up authStore with departmentRights
       act(() => {
         useAuthStore.setState({
           roleHierarchy: createMockRoleHierarchy(),
           isAuthenticated: true,
+          departmentRights: {
+            'dept-123': [
+              'course:content:view',
+              'course:content:edit',
+              'course:enrollment:view',
+            ],
+          },
         });
 
         // Select Engineering department
         useNavigationStore.setState({
           selectedDepartmentId: 'dept-123',
           currentDepartmentRoles: ['instructor'],
-          currentDepartmentAccessRights: [
-            'course:content:view',
-            'course:content:edit',
-            'course:enrollment:view',
-          ],
           currentDepartmentName: 'Engineering',
         });
       });
@@ -619,7 +643,7 @@ describe('useDepartmentContext', () => {
       expect(result.current.currentDepartmentName).toBe('Engineering');
       expect(result.current.currentDepartmentRoles).toContain('instructor');
 
-      // Verify permissions
+      // Verify permissions (now delegated to authStore)
       expect(result.current.hasPermission('course:content:view')).toBe(true);
       expect(result.current.hasPermission('course:content:edit')).toBe(true);
       expect(result.current.hasPermission('course:content:delete')).toBe(false);

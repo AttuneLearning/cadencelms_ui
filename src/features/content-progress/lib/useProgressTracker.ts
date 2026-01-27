@@ -33,7 +33,7 @@ export const useProgressTracker = ({
 
   const startTimeRef = useRef<number | null>(null);
   const accumulatedTimeRef = useRef(0);
-  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSavedDataRef = useRef<ProgressUpdate>({});
 
   // Start tracking

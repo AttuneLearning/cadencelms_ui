@@ -19,6 +19,7 @@ import {
   TableRow,
 } from '@/shared/ui/table';
 import { useToast } from '@/shared/ui/use-toast';
+import { PageHeader } from '@/shared/ui/page-header';
 import { Progress } from '@/shared/ui/progress';
 import {
   ArrowLeft,
@@ -130,41 +131,35 @@ export const AuditLogDetailPage: React.FC = () => {
 
   return (
     <div className="container mx-auto py-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Audit Log Details</h1>
-          <p className="text-muted-foreground mt-1">
-            View detailed information about this audit log entry
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleCopyLogId}
-          >
-            <Copy className="h-4 w-4 mr-2" />
-            Copy Log ID
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleExport}
-            disabled={exportMutation.isPending}
-          >
-            <Download className="h-4 w-4 mr-2" />
-            {exportMutation.isPending ? 'Exporting...' : 'Export'}
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => navigate('/admin/audit-logs')}
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Logs
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Audit Log Details"
+        description="View detailed information about this audit log entry"
+      >
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleCopyLogId}
+        >
+          <Copy className="h-4 w-4 mr-2" />
+          Copy Log ID
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleExport}
+          disabled={exportMutation.isPending}
+        >
+          <Download className="h-4 w-4 mr-2" />
+          {exportMutation.isPending ? 'Exporting...' : 'Export'}
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => navigate('/admin/audit-logs')}
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Logs
+        </Button>
+      </PageHeader>
 
       {/* Main Details Card */}
       <Card>

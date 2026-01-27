@@ -90,7 +90,7 @@ export function useStartContentAttempt() {
  */
 export function useUpdateContentAttempt(debounceMs = 30000) {
   const queryClient = useQueryClient();
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const mutation = useMutation({
     mutationFn: ({
@@ -181,7 +181,7 @@ export function useSaveScormData() {
  */
 export function useSaveVideoProgress(debounceMs = 5000) {
   const queryClient = useQueryClient();
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const mutation = useMutation({
     mutationFn: ({

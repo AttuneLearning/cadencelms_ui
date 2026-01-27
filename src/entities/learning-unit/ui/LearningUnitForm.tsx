@@ -3,7 +3,7 @@
  * Form for creating or editing learning units
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
@@ -19,6 +19,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Alert } from '@/shared/ui/alert';
 import { Loader2 } from 'lucide-react';
+import { useLookupValues } from '@/entities/lookup-value';
 import type {
   LearningUnit,
   CreateLearningUnitPayload,
@@ -49,9 +50,9 @@ export const LearningUnitForm: React.FC<LearningUnitFormProps> = ({
   const [formData, setFormData] = useState({
     title: learningUnit?.title || '',
     description: learningUnit?.description || '',
-    type: learningUnit?.type || 'video' as LearningUnitType,
+    type: (learningUnit?.type || '') as LearningUnitType | '',
     contentId: learningUnit?.contentId || '',
-    category: learningUnit?.category || 'exposition' as LearningUnitCategory,
+    category: learningUnit?.category ?? null as LearningUnitCategory | null,
     isRequired: learningUnit?.isRequired ?? true,
     isReplayable: learningUnit?.isReplayable ?? false,
     weight: learningUnit?.weight ?? 0,
@@ -72,42 +73,72 @@ export const LearningUnitForm: React.FC<LearningUnitFormProps> = ({
     const payload: CreateLearningUnitPayload = {
       title: formData.title,
       description: formData.description || undefined,
-      type: formData.type,
+      type: (formData.type || 'media') as LearningUnitType,
       contentId: formData.contentId || undefined,
-      category: formData.category,
+      category: formData.category ?? undefined,
       isRequired: formData.isRequired,
       isReplayable: formData.isReplayable,
       weight: formData.weight,
       estimatedDuration: formData.estimatedDuration || undefined,
-      settings: formData.category === 'assessment' ? formData.settings : undefined,
+      settings: formData.type === 'assessment' ? formData.settings : undefined,
     };
 
     onSubmit(payload);
   };
 
-  const getTypeOptions = (): { value: LearningUnitType; label: string }[] => {
-    switch (formData.category) {
-      case 'exposition':
-        return [
-          { value: 'video', label: 'Video' },
-          { value: 'document', label: 'Document' },
-          { value: 'scorm', label: 'SCORM Package' },
-          { value: 'custom', label: 'Custom Content' },
-        ];
-      case 'practice':
-        return [
-          { value: 'exercise', label: 'Exercise' },
-          { value: 'custom', label: 'Custom Practice' },
-        ];
-      case 'assessment':
-        return [
-          { value: 'assessment', label: 'Quiz/Exam' },
-          { value: 'exercise', label: 'Graded Exercise' },
-        ];
-      default:
-        return [];
+  const { data: typeLookupData } = useLookupValues({
+    category: 'learning-unit-type',
+    isActive: true,
+  });
+
+  const { data: categoryLookupData } = useLookupValues({
+    category: 'learning-unit-category',
+    isActive: true,
+  });
+
+  const fallbackTypeOptions: Array<{ value: LearningUnitType; label: string }> = [
+    { value: 'media', label: 'Media' },
+    { value: 'document', label: 'Document' },
+    { value: 'scorm', label: 'SCORM Package' },
+    { value: 'custom', label: 'Custom' },
+    { value: 'exercise', label: 'Exercise' },
+    { value: 'assessment', label: 'Assessment' },
+    { value: 'assignment', label: 'Assignment' },
+  ];
+
+  const typeOptions = useMemo(() => {
+    if (typeLookupData?.values?.length) {
+      return typeLookupData.values.map((value) => ({
+        value: value.key as LearningUnitType,
+        label: value.displayAs,
+      }));
     }
-  };
+    return fallbackTypeOptions;
+  }, [typeLookupData, fallbackTypeOptions]);
+
+  const categoryOptions = useMemo(() => {
+    if (categoryLookupData?.values?.length) {
+      return categoryLookupData.values.map((value) => ({
+        value: value.key as LearningUnitCategory,
+        label: value.displayAs,
+      }));
+    }
+    return [
+      { value: 'topic', label: 'Topic' },
+      { value: 'practice', label: 'Practice' },
+      { value: 'assignment', label: 'Assignment' },
+      { value: 'graded', label: 'Graded' },
+    ];
+  }, [categoryLookupData]);
+
+  useEffect(() => {
+    if (!formData.type && typeOptions.length > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        type: typeOptions[0].value,
+      }));
+    }
+  }, [formData.type, typeOptions]);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -122,7 +153,7 @@ export const LearningUnitForm: React.FC<LearningUnitFormProps> = ({
         <CardHeader>
           <CardTitle>Basic Information</CardTitle>
           <CardDescription>
-            {learningUnit ? 'Update the learning unit.' : 'Create a new learning unit.'}
+            {learningUnit ? 'Update the learning activity.' : 'Create a new learning activity.'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -153,31 +184,30 @@ export const LearningUnitForm: React.FC<LearningUnitFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label>Category</Label>
+            <Label>Category (optional)</Label>
             <Select
-              value={formData.category}
-              onValueChange={(value: LearningUnitCategory) => {
-                const newType = value === 'assessment' ? 'assessment' : value === 'practice' ? 'exercise' : 'video';
+              value={formData.category ?? 'none'}
+              onValueChange={(value) =>
                 setFormData({
                   ...formData,
-                  category: value,
-                  type: newType as LearningUnitType,
-                });
-              }}
+                  category: value === 'none' ? null : (value as LearningUnitCategory),
+                })
+              }
             >
               <SelectTrigger>
-                <SelectValue />
+                <SelectValue placeholder="None" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="exposition">Exposition (Instructional Content)</SelectItem>
-                <SelectItem value="practice">Practice (Exercises)</SelectItem>
-                <SelectItem value="assessment">Assessment (Quizzes/Exams)</SelectItem>
+                <SelectItem value="none">None</SelectItem>
+                {categoryOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
-              {formData.category === 'exposition' && 'Instructional content like videos, documents, presentations.'}
-              {formData.category === 'practice' && 'Practice exercises for skill building.'}
-              {formData.category === 'assessment' && 'Evaluations to measure learner knowledge.'}
+              Optional grouping label. Leave blank if this activity does not need a category.
             </p>
           </div>
 
@@ -190,10 +220,10 @@ export const LearningUnitForm: React.FC<LearningUnitFormProps> = ({
               }
             >
               <SelectTrigger>
-                <SelectValue />
+                <SelectValue placeholder="Select a content type" />
               </SelectTrigger>
               <SelectContent>
-                {getTypeOptions().map((opt) => (
+                {typeOptions.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>
                     {opt.label}
                   </SelectItem>
@@ -287,8 +317,8 @@ export const LearningUnitForm: React.FC<LearningUnitFormProps> = ({
         </CardContent>
       </Card>
 
-      {/* Assessment Settings (only for assessment category) */}
-      {formData.category === 'assessment' && (
+      {/* Assessment Settings (only for assessment type) */}
+      {formData.type === 'assessment' && (
         <Card>
           <CardHeader>
             <CardTitle>Assessment Settings</CardTitle>
@@ -406,9 +436,9 @@ export const LearningUnitForm: React.FC<LearningUnitFormProps> = ({
         <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
           Cancel
         </Button>
-        <Button type="submit" disabled={isLoading || !formData.title.trim()}>
+        <Button type="submit" disabled={isLoading || !formData.title.trim() || !formData.type}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {learningUnit ? 'Update Learning Unit' : 'Create Learning Unit'}
+          {learningUnit ? 'Update Learning Activity' : 'Create Learning Activity'}
         </Button>
       </div>
     </form>

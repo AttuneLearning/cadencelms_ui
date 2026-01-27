@@ -11,7 +11,7 @@ import { ScormPlayer } from '../ScormPlayer';
 // Mock the SCORM API
 vi.mock('@/shared/lib/scorm/scormApi', () => {
   return {
-    ScormAPI: vi.fn(function (version, options) {
+    ScormAPI: vi.fn(function () {
       return {
         initialize: vi.fn(),
         destroy: vi.fn(),
@@ -134,7 +134,7 @@ describe('ScormPlayer', () => {
     let terminateCallback: ((data: Record<string, string>) => void) | undefined;
 
     const { ScormAPI } = await import('@/shared/lib/scorm/scormApi');
-    (ScormAPI as any).mockImplementation(function (version: string, options: any) {
+    (ScormAPI as any).mockImplementation(function (_version: string, options: any) {
       terminateCallback = options.onTerminate;
       return {
         initialize: vi.fn(),
@@ -168,7 +168,7 @@ describe('ScormPlayer', () => {
     let commitCallback: ((data: Record<string, string>) => void) | undefined;
 
     const { ScormAPI } = await import('@/shared/lib/scorm/scormApi');
-    (ScormAPI as any).mockImplementation(function (version: string, options: any) {
+    (ScormAPI as any).mockImplementation(function (_version: string, options: any) {
       commitCallback = options.onCommit;
       return {
         initialize: vi.fn(),
@@ -210,7 +210,7 @@ describe('ScormPlayer', () => {
     let errorCallback: ((error: any) => void) | undefined;
 
     const { ScormAPI } = await import('@/shared/lib/scorm/scormApi');
-    (ScormAPI as any).mockImplementation(function (version: string, options: any) {
+    (ScormAPI as any).mockImplementation(function (_version: string, options: any) {
       errorCallback = options.onError;
       return {
         initialize: vi.fn(),
@@ -305,7 +305,7 @@ describe('ScormPlayer', () => {
     let commitCallback: ((data: Record<string, string>) => void) | undefined;
 
     const { ScormAPI } = await import('@/shared/lib/scorm/scormApi');
-    (ScormAPI as any).mockImplementation(function (version: string, options: any) {
+    (ScormAPI as any).mockImplementation(function (_version: string, options: any) {
       commitCallback = options.onCommit;
       return {
         initialize: vi.fn(),

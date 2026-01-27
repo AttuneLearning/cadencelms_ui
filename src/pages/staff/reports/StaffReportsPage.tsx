@@ -41,6 +41,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/shared/ui/alert-dialog';
+import { PageHeader } from '@/shared/ui/page-header';
 import {
   Table,
   TableBody,

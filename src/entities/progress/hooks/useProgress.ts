@@ -145,7 +145,7 @@ export function useDetailedProgressReport(
  */
 export function useUpdateProgress() {
   const queryClient = useQueryClient();
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingUpdateRef = useRef<UpdateProgressRequest | null>(null);
 
   const mutation = useMutation({

@@ -65,11 +65,10 @@ export const QuestionBankSelector: React.FC<QuestionBankSelectorProps> = ({
   const [filters, setFilters] = useState<QuestionFilters>({
     page: 1,
     limit: 20,
-    department,
   });
 
   // Query
-  const { data: questionsData, isLoading, error } = useQuestions(filters);
+  const { data: questionsData, isLoading, error } = useQuestions(department || '', filters);
 
   // Handle question selection
   const handleToggleQuestion = (question: QuestionListItem) => {
@@ -112,7 +111,6 @@ export const QuestionBankSelector: React.FC<QuestionBankSelectorProps> = ({
     setFilters({
       page: 1,
       limit: 20,
-      department,
     });
   };
 
@@ -126,7 +124,7 @@ export const QuestionBankSelector: React.FC<QuestionBankSelectorProps> = ({
     const questionReferences: QuestionReference[] = selectedQuestions.map((q) => ({
       questionId: q.id,
       questionText: q.questionText,
-      questionType: q.questionType as any,
+      questionType: q.questionTypes[0] as any,
       options: q.options.map((opt) => opt.text),
       correctAnswer: q.correctAnswer,
       points: q.points,
@@ -340,7 +338,7 @@ export const QuestionBankSelector: React.FC<QuestionBankSelectorProps> = ({
                       />
                       <div className="flex-1" onClick={() => !isPreSelected && handleToggleQuestion(question)}>
                         <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="secondary">{formatQuestionType(question.questionType)}</Badge>
+                          <Badge variant="secondary">{formatQuestionType(question.questionTypes[0])}</Badge>
                           <Badge variant={getDifficultyVariant(question.difficulty)}>
                             {formatDifficulty(question.difficulty)}
                           </Badge>
@@ -443,7 +441,7 @@ export const QuestionBankSelector: React.FC<QuestionBankSelectorProps> = ({
           {previewQuestion && (
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <Badge variant="secondary">{formatQuestionType(previewQuestion.questionType)}</Badge>
+                <Badge variant="secondary">{formatQuestionType(previewQuestion.questionTypes[0])}</Badge>
                 <Badge variant={getDifficultyVariant(previewQuestion.difficulty)}>
                   {formatDifficulty(previewQuestion.difficulty)}
                 </Badge>

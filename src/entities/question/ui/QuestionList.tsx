@@ -36,13 +36,12 @@ export function QuestionList({
     page: 1,
     limit: 10,
     ...initialFilters,
-    ...(departmentId && { department: departmentId }),
   });
 
   const [searchInput, setSearchInput] = useState(filters.search || '');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  const { data, isLoading, error } = useQuestions(filters);
+  const { data, isLoading, error } = useQuestions(departmentId || '', filters);
 
   const handleFilterChange = (key: keyof QuestionListParams, value: string | undefined) => {
     setFilters((prev) => ({

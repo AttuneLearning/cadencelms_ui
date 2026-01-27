@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from '@/shared/ui/select';
 import { BookOpen, Search as SearchIcon } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 import type { EnrollmentStatus } from '@/entities/enrollment';
 
 type FilterStatus = 'all' | 'in-progress' | 'not-started' | 'completed';
@@ -134,13 +135,11 @@ const MyCoursesPageInner: React.FC = () => {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">My Courses</h1>
-        <p className="text-muted-foreground">
-          Track your learning progress and continue where you left off
-        </p>
-      </div>
+      <PageHeader
+        title="My Courses"
+        description="Track your learning progress and continue where you left off"
+        className="mb-8"
+      />
 
       {/* Filters and Search */}
       <div className="mb-6 space-y-4">

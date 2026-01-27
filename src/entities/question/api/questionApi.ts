@@ -22,70 +22,86 @@ interface ApiResponse<T> {
 }
 
 /**
- * GET /questions - List questions with pagination and filtering
+ * GET /departments/:departmentId/questions - List questions with pagination and filtering
+ * Updated for department-scoped API v1.1.0
  */
 export async function getQuestions(
+  departmentId: string,
   params?: QuestionListParams
 ): Promise<QuestionListResponse> {
   const response = await client.get<ApiResponse<QuestionListResponse>>(
-    '/questions',
+    `/departments/${departmentId}/questions`,
     { params }
   );
   return response.data.data;
 }
 
 /**
- * POST /questions - Create a new question
+ * POST /departments/:departmentId/questions - Create a new question
+ * Updated for department-scoped API v1.1.0
  */
 export async function createQuestion(
+  departmentId: string,
   payload: CreateQuestionPayload
 ): Promise<Question> {
   const response = await client.post<ApiResponse<Question>>(
-    '/questions',
+    `/departments/${departmentId}/questions`,
     payload
   );
   return response.data.data;
 }
 
 /**
- * GET /questions/:id - Get question details by ID
+ * GET /departments/:departmentId/questions/:id - Get question details by ID
+ * Updated for department-scoped API v1.1.0
  */
-export async function getQuestionById(id: string): Promise<QuestionDetails> {
+export async function getQuestionById(
+  departmentId: string,
+  id: string
+): Promise<QuestionDetails> {
   const response = await client.get<ApiResponse<QuestionDetails>>(
-    `/questions/${id}`
+    `/departments/${departmentId}/questions/${id}`
   );
   return response.data.data;
 }
 
 /**
- * PUT /questions/:id - Update question information
+ * PUT /departments/:departmentId/questions/:id - Update question information
+ * Updated for department-scoped API v1.1.0
  */
 export async function updateQuestion(
+  departmentId: string,
   id: string,
   payload: UpdateQuestionPayload
 ): Promise<Question> {
   const response = await client.put<ApiResponse<Question>>(
-    `/questions/${id}`,
+    `/departments/${departmentId}/questions/${id}`,
     payload
   );
   return response.data.data;
 }
 
 /**
- * DELETE /questions/:id - Delete question (soft delete)
+ * DELETE /departments/:departmentId/questions/:id - Delete question (soft delete)
+ * Updated for department-scoped API v1.1.0
  */
-export async function deleteQuestion(id: string): Promise<void> {
-  await client.delete(`/questions/${id}`);
+export async function deleteQuestion(
+  departmentId: string,
+  id: string
+): Promise<void> {
+  await client.delete(`/departments/${departmentId}/questions/${id}`);
 }
 
 /**
- * POST /questions/bulk - Bulk import questions
+ * POST /departments/:departmentId/questions/bulk - Bulk import questions
+ * Updated for department-scoped API v1.1.0
  */
 export async function bulkImportQuestions(
+  departmentId: string,
   payload: BulkImportPayload
 ): Promise<BulkImportResponse> {
   const response = await client.post<ApiResponse<BulkImportResponse>>(
-    '/questions/bulk',
+    `/departments/${departmentId}/questions/bulk`,
     payload
   );
   return response.data.data;

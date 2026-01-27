@@ -31,9 +31,11 @@ import type {
 } from './types';
 
 /**
- * Hook to fetch paginated list of questions (GET /api/v2/questions)
+ * Hook to fetch paginated list of questions (GET /api/v2/departments/:id/questions)
+ * Updated for department-scoped API v1.1.0
  */
 export function useQuestions(
+  departmentId: string,
   params?: QuestionListParams,
   options?: Omit<
     UseQueryOptions<
@@ -46,17 +48,20 @@ export function useQuestions(
   >
 ) {
   return useQuery({
-    queryKey: questionKeys.list(params),
-    queryFn: () => getQuestions(params),
+    queryKey: questionKeys.list(departmentId, params),
+    queryFn: () => getQuestions(departmentId, params),
     staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: !!departmentId,
     ...options,
   });
 }
 
 /**
- * Hook to fetch single question details (GET /api/v2/questions/:id)
+ * Hook to fetch single question details (GET /api/v2/departments/:id/questions/:id)
+ * Updated for department-scoped API v1.1.0
  */
 export function useQuestion(
+  departmentId: string,
   id: string,
   options?: Omit<
     UseQueryOptions<
@@ -69,26 +74,28 @@ export function useQuestion(
   >
 ) {
   return useQuery({
-    queryKey: questionKeys.detail(id),
-    queryFn: () => getQuestionById(id),
+    queryKey: questionKeys.detail(departmentId, id),
+    queryFn: () => getQuestionById(departmentId, id),
     staleTime: 5 * 60 * 1000, // 5 minutes
-    enabled: !!id,
+    enabled: !!departmentId && !!id,
     ...options,
   });
 }
 
 /**
- * Hook to create a new question (POST /api/v2/questions)
+ * Hook to create a new question (POST /api/v2/departments/:id/questions)
+ * Updated for department-scoped API v1.1.0
  */
 export function useCreateQuestion(
+  departmentId: string,
   options?: UseMutationOptions<Question, Error, CreateQuestionPayload>
 ) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: createQuestion,
+    mutationFn: (payload) => createQuestion(departmentId, payload),
     onSuccess: () => {
-      // Invalidate all question lists
+      // Invalidate all question lists for this department
       queryClient.invalidateQueries({ queryKey: questionKeys.lists() });
     },
     ...options,
@@ -96,9 +103,11 @@ export function useCreateQuestion(
 }
 
 /**
- * Hook to update an existing question (PUT /api/v2/questions/:id)
+ * Hook to update an existing question (PUT /api/v2/departments/:id/questions/:id)
+ * Updated for department-scoped API v1.1.0
  */
 export function useUpdateQuestion(
+  departmentId: string,
   options?: UseMutationOptions<
     Question,
     Error,
@@ -108,10 +117,10 @@ export function useUpdateQuestion(
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, payload }) => updateQuestion(id, payload),
+    mutationFn: ({ id, payload }) => updateQuestion(departmentId, id, payload),
     onSuccess: (data, variables) => {
       // Update cached detail
-      queryClient.setQueryData(questionKeys.detail(variables.id), data);
+      queryClient.setQueryData(questionKeys.detail(departmentId, variables.id), data);
       // Invalidate lists
       queryClient.invalidateQueries({ queryKey: questionKeys.lists() });
     },
@@ -120,18 +129,20 @@ export function useUpdateQuestion(
 }
 
 /**
- * Hook to delete a question (DELETE /api/v2/questions/:id)
+ * Hook to delete a question (DELETE /api/v2/departments/:id/questions/:id)
+ * Updated for department-scoped API v1.1.0
  */
 export function useDeleteQuestion(
+  departmentId: string,
   options?: UseMutationOptions<void, Error, string>
 ) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: deleteQuestion,
+    mutationFn: (id) => deleteQuestion(departmentId, id),
     onSuccess: (_, id) => {
       // Remove from cache
-      queryClient.removeQueries({ queryKey: questionKeys.detail(id) });
+      queryClient.removeQueries({ queryKey: questionKeys.detail(departmentId, id) });
       // Invalidate lists
       queryClient.invalidateQueries({ queryKey: questionKeys.lists() });
     },
@@ -140,15 +151,17 @@ export function useDeleteQuestion(
 }
 
 /**
- * Hook to bulk import questions (POST /api/v2/questions/bulk)
+ * Hook to bulk import questions (POST /api/v2/departments/:id/questions/bulk)
+ * Updated for department-scoped API v1.1.0
  */
 export function useBulkImportQuestions(
+  departmentId: string,
   options?: UseMutationOptions<BulkImportResponse, Error, BulkImportPayload>
 ) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: bulkImportQuestions,
+    mutationFn: (payload) => bulkImportQuestions(departmentId, payload),
     onSuccess: () => {
       // Invalidate all question lists after bulk import
       queryClient.invalidateQueries({ queryKey: questionKeys.lists() });
@@ -160,8 +173,10 @@ export function useBulkImportQuestions(
 /**
  * Hook to duplicate a question
  * Creates a new question based on an existing one
+ * Updated for department-scoped API v1.1.0
  */
 export function useDuplicateQuestion(
+  departmentId: string,
   options?: UseMutationOptions<Question, Error, string>
 ) {
   const queryClient = useQueryClient();
@@ -169,22 +184,24 @@ export function useDuplicateQuestion(
   return useMutation({
     mutationFn: async (id: string) => {
       // Fetch the original question
-      const original = await getQuestionById(id);
+      const original = await getQuestionById(departmentId, id);
 
       // Create a new question with duplicated data
       const duplicatePayload: CreateQuestionPayload = {
+        questionBankId: original.questionBankId,
         questionText: `${original.questionText} (Copy)`,
-        questionType: original.questionType,
+        questionTypes: original.questionTypes,
         options: original.options,
         correctAnswer: original.correctAnswer,
         points: original.points,
         difficulty: original.difficulty,
         tags: original.tags,
         explanation: original.explanation || undefined,
-        department: original.department || undefined,
+        knowledgeNodeId: original.knowledgeNodeId,
+        cognitiveDepth: original.cognitiveDepth,
       };
 
-      return createQuestion(duplicatePayload);
+      return createQuestion(departmentId, duplicatePayload);
     },
     onSuccess: () => {
       // Invalidate all question lists

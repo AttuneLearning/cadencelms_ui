@@ -15,7 +15,7 @@ import {
   deleteQuestion,
   bulkImportQuestions,
 } from '../questionApi';
-import type { QuestionListResponse } from '../../model/types';
+import type { QuestionListResponse, CreateQuestionPayload } from '../../model/types';
 import {
   mockQuestions,
   mockQuestionDetails,
@@ -29,6 +29,7 @@ import {
 
 describe('questionApi', () => {
   const baseUrl = env.apiBaseUrl;
+  const departmentId = 'dept-123';
 
   beforeEach(() => {
     server.resetHandlers();
@@ -57,7 +58,7 @@ describe('questionApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/questions`, () => {
+        http.get(`${baseUrl}/departments/${departmentId}/questions`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -65,7 +66,7 @@ describe('questionApi', () => {
         })
       );
 
-      const result = await getQuestions();
+      const result = await getQuestions(departmentId);
 
       expect(result).toEqual(mockResponse);
       expect(result.questions).toHaveLength(mockQuestions.length);
@@ -87,7 +88,7 @@ describe('questionApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/questions`, ({ request }) => {
+        http.get(`${baseUrl}/departments/${departmentId}/questions`, ({ request }) => {
           const url = new URL(request.url);
           capturedParams = url.searchParams;
           return HttpResponse.json({
@@ -97,7 +98,7 @@ describe('questionApi', () => {
         })
       );
 
-      const result = await getQuestions({ page: 1, limit: 2 });
+      const result = await getQuestions(departmentId, { page: 1, limit: 2 });
 
       expect(result).toEqual(mockResponse);
       expect(capturedParams).not.toBeNull();
@@ -107,7 +108,7 @@ describe('questionApi', () => {
 
     it('should fetch questions with question type filter', async () => {
       const multipleChoiceQuestions = mockQuestions.filter(
-        (q) => q.questionType === 'multiple_choice'
+        (q) => q.questionTypes.includes('multiple_choice')
       );
       const mockResponse: QuestionListResponse = {
         questions: multipleChoiceQuestions,
@@ -124,7 +125,7 @@ describe('questionApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/questions`, ({ request }) => {
+        http.get(`${baseUrl}/departments/${departmentId}/questions`, ({ request }) => {
           const url = new URL(request.url);
           capturedParams = url.searchParams;
           return HttpResponse.json({
@@ -134,7 +135,7 @@ describe('questionApi', () => {
         })
       );
 
-      const result = await getQuestions({ questionType: 'multiple_choice' });
+      const result = await getQuestions(departmentId, { questionType: 'multiple_choice' });
 
       expect(result.questions).toEqual(multipleChoiceQuestions);
       expect(capturedParams).not.toBeNull();
@@ -158,7 +159,7 @@ describe('questionApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/questions`, ({ request }) => {
+        http.get(`${baseUrl}/departments/${departmentId}/questions`, ({ request }) => {
           const url = new URL(request.url);
           capturedParams = url.searchParams;
           return HttpResponse.json({
@@ -168,7 +169,7 @@ describe('questionApi', () => {
         })
       );
 
-      const result = await getQuestions({ difficulty: 'easy' });
+      const result = await getQuestions(departmentId, { difficulty: 'easy' });
 
       expect(result.questions).toEqual(easyQuestions);
       expect(capturedParams).not.toBeNull();
@@ -194,7 +195,7 @@ describe('questionApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/questions`, ({ request }) => {
+        http.get(`${baseUrl}/departments/${departmentId}/questions`, ({ request }) => {
           const url = new URL(request.url);
           capturedParams = url.searchParams;
           return HttpResponse.json({
@@ -204,7 +205,7 @@ describe('questionApi', () => {
         })
       );
 
-      const result = await getQuestions({ tag: 'javascript' });
+      const result = await getQuestions(departmentId, { tag: 'javascript' });
 
       expect(result.questions).toEqual(javascriptQuestions);
       expect(capturedParams).not.toBeNull();
@@ -227,7 +228,7 @@ describe('questionApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/questions`, ({ request }) => {
+        http.get(`${baseUrl}/departments/${departmentId}/questions`, ({ request }) => {
           const url = new URL(request.url);
           capturedParams = url.searchParams;
           return HttpResponse.json({
@@ -237,7 +238,7 @@ describe('questionApi', () => {
         })
       );
 
-      const result = await getQuestions({ search: 'JavaScript' });
+      const result = await getQuestions(departmentId, { search: 'JavaScript' });
 
       expect(result.questions).toHaveLength(1);
       expect(capturedParams).not.toBeNull();
@@ -260,7 +261,7 @@ describe('questionApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/questions`, ({ request }) => {
+        http.get(`${baseUrl}/departments/${departmentId}/questions`, ({ request }) => {
           const url = new URL(request.url);
           capturedParams = url.searchParams;
           return HttpResponse.json({
@@ -270,7 +271,7 @@ describe('questionApi', () => {
         })
       );
 
-      const result = await getQuestions({ sort: '-createdAt' });
+      const result = await getQuestions(departmentId, { sort: '-createdAt' });
 
       expect(result).toEqual(mockResponse);
       expect(capturedParams).not.toBeNull();
@@ -291,7 +292,7 @@ describe('questionApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/questions`, () => {
+        http.get(`${baseUrl}/departments/${departmentId}/questions`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -299,7 +300,7 @@ describe('questionApi', () => {
         })
       );
 
-      const result = await getQuestions();
+      const result = await getQuestions(departmentId);
 
       expect(result.questions).toHaveLength(0);
       expect(result.pagination.total).toBe(0);
@@ -307,7 +308,7 @@ describe('questionApi', () => {
 
     it('should handle API errors', async () => {
       server.use(
-        http.get(`${baseUrl}/questions`, () => {
+        http.get(`${baseUrl}/departments/${departmentId}/questions`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -318,7 +319,7 @@ describe('questionApi', () => {
         })
       );
 
-      await expect(getQuestions()).rejects.toThrow();
+      await expect(getQuestions(departmentId)).rejects.toThrow();
     });
   });
 
@@ -328,10 +329,13 @@ describe('questionApi', () => {
 
   describe('createQuestion', () => {
     it('should create a new multiple choice question', async () => {
-      const newQuestion = createMockQuestion(mockCreateQuestionPayload);
+      const newQuestion = createMockQuestion({
+        ...mockCreateQuestionPayload,
+        id: 'new-q1',
+      });
 
       server.use(
-        http.post(`${baseUrl}/questions`, () => {
+        http.post(`${baseUrl}/departments/${departmentId}/questions`, () => {
           return HttpResponse.json({
             success: true,
             data: newQuestion,
@@ -339,17 +343,18 @@ describe('questionApi', () => {
         })
       );
 
-      const result = await createQuestion(mockCreateQuestionPayload);
+      const result = await createQuestion(departmentId, mockCreateQuestionPayload);
 
       expect(result).toEqual(newQuestion);
       expect(result.questionText).toBe(mockCreateQuestionPayload.questionText);
-      expect(result.questionType).toBe(mockCreateQuestionPayload.questionType);
+      expect(result.questionTypes[0]).toBe(mockCreateQuestionPayload.questionTypes[0]);
     });
 
     it('should create a true/false question', async () => {
-      const trueFalsePayload = {
+      const trueFalsePayload: CreateQuestionPayload = {
+        questionBankId: 'qb-1',
         questionText: 'Is TypeScript statically typed?',
-        questionType: 'true_false' as const,
+        questionTypes: ['true_false'],
         options: [
           { text: 'True', isCorrect: true },
           { text: 'False', isCorrect: false },
@@ -359,10 +364,20 @@ describe('questionApi', () => {
         difficulty: 'easy' as const,
         tags: ['typescript'],
       };
-      const newQuestion = createMockQuestion(trueFalsePayload);
+      const newQuestion = createMockQuestion({
+        questionTypes: ['true_false'],
+        options: [
+          { text: 'True', isCorrect: true },
+          { text: 'False', isCorrect: false },
+        ],
+        correctAnswer: 'True',
+        points: 1,
+        difficulty: 'easy' as const,
+        tags: ['typescript'],
+      });
 
       server.use(
-        http.post(`${baseUrl}/questions`, () => {
+        http.post(`${baseUrl}/departments/${departmentId}/questions`, () => {
           return HttpResponse.json({
             success: true,
             data: newQuestion,
@@ -370,28 +385,33 @@ describe('questionApi', () => {
         })
       );
 
-      const result = await createQuestion(trueFalsePayload);
+      const result = await createQuestion(departmentId, trueFalsePayload);
 
-      expect(result.questionType).toBe('true_false');
+      expect(result.questionTypes[0]).toBe('true_false');
       expect(result.options).toHaveLength(2);
     });
 
     it('should create a short answer question', async () => {
-      const shortAnswerPayload = {
+      const shortAnswerPayload: CreateQuestionPayload = {
+        questionBankId: 'qb-1',
         questionText: 'What is closure?',
-        questionType: 'short_answer' as const,
+        questionTypes: ['short_answer'],
         correctAnswer: 'A function with access to outer scope',
         points: 2,
         difficulty: 'medium' as const,
         tags: ['javascript'],
       };
       const newQuestion = createMockQuestion({
-        ...shortAnswerPayload,
-        options: [], // Override default options for short answer
+        questionTypes: ['short_answer'],
+        correctAnswer: 'A function with access to outer scope',
+        points: 2,
+        difficulty: 'medium' as const,
+        tags: ['javascript'],
+        options: [],
       });
 
       server.use(
-        http.post(`${baseUrl}/questions`, () => {
+        http.post(`${baseUrl}/departments/${departmentId}/questions`, () => {
           return HttpResponse.json({
             success: true,
             data: newQuestion,
@@ -399,15 +419,15 @@ describe('questionApi', () => {
         })
       );
 
-      const result = await createQuestion(shortAnswerPayload);
+      const result = await createQuestion(departmentId, shortAnswerPayload);
 
-      expect(result.questionType).toBe('short_answer');
+      expect(result.questionTypes[0]).toBe('short_answer');
       expect(result.options).toHaveLength(0);
     });
 
     it('should handle validation errors', async () => {
       server.use(
-        http.post(`${baseUrl}/questions`, () => {
+        http.post(`${baseUrl}/departments/${departmentId}/questions`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -419,9 +439,10 @@ describe('questionApi', () => {
       );
 
       await expect(
-        createQuestion({
+        createQuestion(departmentId, {
+          questionBankId: 'qb-1',
           questionText: '',
-          questionType: 'multiple_choice',
+          questionTypes: ['multiple_choice'],
           points: 1,
         })
       ).rejects.toThrow();
@@ -437,7 +458,7 @@ describe('questionApi', () => {
       const mockQuestion = mockQuestionDetails[0];
 
       server.use(
-        http.get(`${baseUrl}/questions/${mockQuestion.id}`, () => {
+        http.get(`${baseUrl}/departments/${departmentId}/questions/${mockQuestion.id}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockQuestion,
@@ -445,7 +466,7 @@ describe('questionApi', () => {
         })
       );
 
-      const result = await getQuestionById(mockQuestion.id);
+      const result = await getQuestionById(departmentId, mockQuestion.id);
 
       expect(result).toEqual(mockQuestion);
       expect(result.id).toBe(mockQuestion.id);
@@ -455,7 +476,7 @@ describe('questionApi', () => {
       const mockQuestion = mockQuestionDetails[0];
 
       server.use(
-        http.get(`${baseUrl}/questions/${mockQuestion.id}`, () => {
+        http.get(`${baseUrl}/departments/${departmentId}/questions/${mockQuestion.id}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockQuestion,
@@ -463,7 +484,7 @@ describe('questionApi', () => {
         })
       );
 
-      const result = await getQuestionById(mockQuestion.id);
+      const result = await getQuestionById(departmentId, mockQuestion.id);
 
       expect(result.usageCount).toBeDefined();
       expect(result.lastUsed).toBeDefined();
@@ -471,7 +492,7 @@ describe('questionApi', () => {
 
     it('should handle question not found', async () => {
       server.use(
-        http.get(`${baseUrl}/questions/invalid-id`, () => {
+        http.get(`${baseUrl}/departments/${departmentId}/questions/invalid-id`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -482,7 +503,7 @@ describe('questionApi', () => {
         })
       );
 
-      await expect(getQuestionById('invalid-id')).rejects.toThrow();
+      await expect(getQuestionById(departmentId, 'invalid-id')).rejects.toThrow();
     });
   });
 
@@ -499,7 +520,7 @@ describe('questionApi', () => {
       });
 
       server.use(
-        http.put(`${baseUrl}/questions/${questionId}`, () => {
+        http.put(`${baseUrl}/departments/${departmentId}/questions/${questionId}`, () => {
           return HttpResponse.json({
             success: true,
             data: updatedQuestion,
@@ -507,7 +528,7 @@ describe('questionApi', () => {
         })
       );
 
-      const result = await updateQuestion(questionId, mockUpdateQuestionPayload);
+      const result = await updateQuestion(departmentId, questionId, mockUpdateQuestionPayload);
 
       expect(result).toEqual(updatedQuestion);
       expect(result.questionText).toBe(mockUpdateQuestionPayload.questionText);
@@ -525,7 +546,7 @@ describe('questionApi', () => {
       });
 
       server.use(
-        http.put(`${baseUrl}/questions/${questionId}`, () => {
+        http.put(`${baseUrl}/departments/${departmentId}/questions/${questionId}`, () => {
           return HttpResponse.json({
             success: true,
             data: updatedQuestion,
@@ -533,7 +554,7 @@ describe('questionApi', () => {
         })
       );
 
-      const result = await updateQuestion(questionId, partialUpdate);
+      const result = await updateQuestion(departmentId, questionId, partialUpdate);
 
       expect(result.difficulty).toBe('hard');
       expect(result.tags).toEqual(['advanced', 'javascript']);
@@ -552,7 +573,7 @@ describe('questionApi', () => {
       });
 
       server.use(
-        http.put(`${baseUrl}/questions/${questionId}`, () => {
+        http.put(`${baseUrl}/departments/${departmentId}/questions/${questionId}`, () => {
           return HttpResponse.json({
             success: true,
             data: updatedQuestion,
@@ -560,7 +581,7 @@ describe('questionApi', () => {
         })
       );
 
-      const result = await updateQuestion(questionId, { options: updatedOptions });
+      const result = await updateQuestion(departmentId, questionId, { options: updatedOptions });
 
       expect(result.options).toEqual(updatedOptions);
     });
@@ -569,7 +590,7 @@ describe('questionApi', () => {
       const questionId = 'q1';
 
       server.use(
-        http.put(`${baseUrl}/questions/${questionId}`, () => {
+        http.put(`${baseUrl}/departments/${departmentId}/questions/${questionId}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -580,7 +601,7 @@ describe('questionApi', () => {
         })
       );
 
-      await expect(updateQuestion(questionId, { points: -1 })).rejects.toThrow();
+      await expect(updateQuestion(departmentId, questionId, { points: -1 })).rejects.toThrow();
     });
   });
 
@@ -593,7 +614,7 @@ describe('questionApi', () => {
       const questionId = 'q1';
 
       server.use(
-        http.delete(`${baseUrl}/questions/${questionId}`, () => {
+        http.delete(`${baseUrl}/departments/${departmentId}/questions/${questionId}`, () => {
           return HttpResponse.json({
             success: true,
             message: 'Question deleted successfully',
@@ -601,14 +622,14 @@ describe('questionApi', () => {
         })
       );
 
-      await expect(deleteQuestion(questionId)).resolves.toBeUndefined();
+      await expect(deleteQuestion(departmentId, questionId)).resolves.toBeUndefined();
     });
 
     it('should handle delete of non-existent question', async () => {
       const questionId = 'invalid-id';
 
       server.use(
-        http.delete(`${baseUrl}/questions/${questionId}`, () => {
+        http.delete(`${baseUrl}/departments/${departmentId}/questions/${questionId}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -619,7 +640,7 @@ describe('questionApi', () => {
         })
       );
 
-      await expect(deleteQuestion(questionId)).rejects.toThrow();
+      await expect(deleteQuestion(departmentId, questionId)).rejects.toThrow();
     });
   });
 
@@ -637,7 +658,7 @@ describe('questionApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/questions/bulk`, () => {
+        http.post(`${baseUrl}/departments/${departmentId}/questions/bulk`, () => {
           return HttpResponse.json({
             success: true,
             data: mockBulkImportSuccessResponse,
@@ -645,7 +666,7 @@ describe('questionApi', () => {
         })
       );
 
-      const result = await bulkImportQuestions(payload);
+      const result = await bulkImportQuestions(departmentId, payload);
 
       expect(result).toEqual(mockBulkImportSuccessResponse);
       expect(result.imported).toBe(3);
@@ -661,7 +682,7 @@ describe('questionApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/questions/bulk`, () => {
+        http.post(`${baseUrl}/departments/${departmentId}/questions/bulk`, () => {
           return HttpResponse.json({
             success: true,
             data: mockBulkImportPartialResponse,
@@ -669,7 +690,7 @@ describe('questionApi', () => {
         })
       );
 
-      const result = await bulkImportQuestions(payload);
+      const result = await bulkImportQuestions(departmentId, payload);
 
       expect(result.imported).toBe(2);
       expect(result.failed).toBe(1);
@@ -697,7 +718,7 @@ describe('questionApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/questions/bulk`, () => {
+        http.post(`${baseUrl}/departments/${departmentId}/questions/bulk`, () => {
           return HttpResponse.json({
             success: true,
             data: response,
@@ -705,7 +726,7 @@ describe('questionApi', () => {
         })
       );
 
-      const result = await bulkImportQuestions(payload);
+      const result = await bulkImportQuestions(departmentId, payload);
 
       expect(result.imported).toBe(1);
       expect(result.updated).toBe(2);
@@ -718,7 +739,7 @@ describe('questionApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/questions/bulk`, () => {
+        http.post(`${baseUrl}/departments/${departmentId}/questions/bulk`, () => {
           return HttpResponse.json({
             success: true,
             data: mockBulkImportSuccessResponse,
@@ -726,7 +747,7 @@ describe('questionApi', () => {
         })
       );
 
-      const result = await bulkImportQuestions(payload);
+      const result = await bulkImportQuestions(departmentId, payload);
 
       expect(result.imported).toBe(3);
     });
@@ -738,7 +759,7 @@ describe('questionApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/questions/bulk`, () => {
+        http.post(`${baseUrl}/departments/${departmentId}/questions/bulk`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -749,7 +770,7 @@ describe('questionApi', () => {
         })
       );
 
-      await expect(bulkImportQuestions(payload)).rejects.toThrow();
+      await expect(bulkImportQuestions(departmentId, payload)).rejects.toThrow();
     });
   });
 });

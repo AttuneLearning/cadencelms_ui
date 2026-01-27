@@ -33,6 +33,7 @@ import {
   Circle,
 } from 'lucide-react';
 import { useNavigation } from '@/shared/lib/navigation/useNavigation';
+import { PageHeader } from '@/shared/ui/page-header';
 
 type FilterStatus = 'all' | 'in-progress' | 'completed';
 
@@ -220,12 +221,11 @@ export const ProgressDashboardPage: React.FC = () => {
   if (enrollments.length === 0 && filterStatus === 'all') {
     return (
       <div className="container mx-auto py-8 px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">My Progress</h1>
-          <p className="text-muted-foreground">
-            Track your learning journey across all courses
-          </p>
-        </div>
+        <PageHeader
+          title="My Progress"
+          description="Track your learning journey across all courses"
+          className="mb-8"
+        />
         <Card>
           <CardContent className="py-12">
             <div className="text-center">
@@ -246,13 +246,11 @@ export const ProgressDashboardPage: React.FC = () => {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">My Progress</h1>
-        <p className="text-muted-foreground">
-          Track your learning journey across all courses
-        </p>
-      </div>
+      <PageHeader
+        title="My Progress"
+        description="Track your learning journey across all courses"
+        className="mb-8"
+      />
 
       {/* Overall Progress Summary */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

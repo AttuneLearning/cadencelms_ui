@@ -28,12 +28,14 @@ import { Label } from '@/shared/ui/label';
 import { Textarea } from '@/shared/ui/textarea';
 import { Separator } from '@/shared/ui/separator';
 import { useToast } from '@/shared/ui/use-toast';
+import { PageHeader } from '@/shared/ui/page-header';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
 import {
   useCourseModule,
   useUpdateCourseModule,
 } from '@/entities/course-module/hooks/useCourseModules';
+import { useLearningUnits, type LearningUnitListItem } from '@/entities/learning-unit';
 import { LessonItem } from '@/features/courses/ui/LessonItem';
 import { LessonSettingsDialog } from '@/features/courses/ui/LessonSettingsDialog';
 import type {
@@ -45,6 +47,37 @@ interface ModuleEditorPageParams {
   courseId: string;
   moduleId: string;
 }
+
+const mapLearningUnitToLesson = (unit: LearningUnitListItem): LessonListItem => {
+  const completionCriteria = unit.type === 'assessment'
+    ? {
+        type: 'quiz_score' as const,
+        minimumScore: 70,
+        allowEarlyCompletion: false,
+      }
+    : {
+        type: 'view_time' as const,
+        requiredPercentage: 80,
+        allowEarlyCompletion: false,
+      };
+
+  return {
+    id: unit.id,
+    order: unit.sequence,
+    title: unit.title,
+    type: (unit.type === 'assessment' || unit.type === 'assignment'
+      ? 'exercise'
+      : unit.type === 'media'
+        ? 'media'
+        : unit.type) as LessonListItem['type'],
+    duration: unit.estimatedDuration ? unit.estimatedDuration * 60 : null,
+    settings: {
+      isRequired: unit.isRequired,
+      completionCriteria,
+    },
+    isPublished: unit.isActive,
+  };
+};
 
 export const ModuleEditorPage: React.FC = () => {
   const { courseId, moduleId } = useParams<Record<keyof ModuleEditorPageParams, string>>();
@@ -66,6 +99,12 @@ export const ModuleEditorPage: React.FC = () => {
     error,
   } = useCourseModule(courseId!, moduleId!);
 
+  const {
+    data: learningUnitsData,
+    isLoading: isLearningUnitsLoading,
+    error: learningUnitsError,
+  } = useLearningUnits(moduleId!);
+
   const updateModuleMutation = useUpdateCourseModule();
 
   // Local state for lessons
@@ -84,16 +123,20 @@ export const ModuleEditorPage: React.FC = () => {
       setModuleTitle(module.title);
       setModuleDescription(module.description || '');
       setModuleDuration(module.duration);
-
-      // Convert course segment to lessons format
-      // In a real implementation, this would come from a lessons API
-      // For now, we'll use mock data structure
-      const mockLessons: LessonListItem[] = [
-        // This would be fetched from the API in a real implementation
-      ];
-      setLessons(mockLessons);
     }
   }, [module]);
+
+  React.useEffect(() => {
+    if (learningUnitsData?.learningUnits) {
+      const mappedLessons = learningUnitsData.learningUnits
+        .slice()
+        .sort((a, b) => a.sequence - b.sequence)
+        .map(mapLearningUnitToLesson);
+      setLessons(mappedLessons);
+    } else if (!isLearningUnitsLoading) {
+      setLessons([]);
+    }
+  }, [learningUnitsData, isLearningUnitsLoading]);
 
   // Drag-and-drop sensors
   const sensors = useSensors(
@@ -207,12 +250,8 @@ export const ModuleEditorPage: React.FC = () => {
     }
   };
 
-  const handleAddLesson = () => {
-    // In a real implementation, this would open a content selector dialog
-    toast({
-      title: 'Add Lesson',
-      description: 'Content selector dialog would open here.',
-    });
+  const handleCreateLearningActivity = () => {
+    navigate(`/staff/courses/${courseId}/modules/${moduleId}/learning-activities/new`);
   };
 
   const availablePreviousLessons = selectedLesson
@@ -247,22 +286,26 @@ export const ModuleEditorPage: React.FC = () => {
 
   return (
     <div className="container mx-auto py-8">
-      {/* Header */}
-      <div className="mb-6">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate(`/staff/courses/${courseId}`)}
-          className="mb-4"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Course
+      <PageHeader
+        title="Module Editor"
+        description="Organize learning activities and configure completion settings"
+        className="mb-6"
+        backButton={
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(`/staff/courses/${courseId}`)}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Course
+          </Button>
+        }
+      >
+        <Button onClick={handleCreateLearningActivity}>
+          <Plus className="mr-2 h-4 w-4" />
+          Create Learning Activity
         </Button>
-        <h1 className="text-3xl font-bold">Module Editor</h1>
-        <p className="text-muted-foreground">
-          Organize lessons and configure completion settings
-        </p>
-      </div>
+      </PageHeader>
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Main Content */}
@@ -313,27 +356,39 @@ export const ModuleEditorPage: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* Lessons List */}
+          {/* Learning Activities List */}
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>Lessons</CardTitle>
+                  <CardTitle>Learning Activities</CardTitle>
                   <CardDescription>
                     Drag to reorder, click to edit settings
                   </CardDescription>
                 </div>
-                <Button onClick={handleAddLesson}>
+                <Button onClick={handleCreateLearningActivity}>
                   <Plus className="mr-2 h-4 w-4" />
-                  Add Lesson
+                  Create Learning Activity
                 </Button>
               </div>
             </CardHeader>
             <CardContent>
-              {lessons.length === 0 ? (
+              {learningUnitsError ? (
+                <Alert variant="destructive">
+                  <AlertDescription>
+                    Failed to load learning activities. Please try again later.
+                  </AlertDescription>
+                </Alert>
+              ) : isLearningUnitsLoading && lessons.length === 0 ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <Skeleton key={i} className="h-20 w-full" />
+                  ))}
+                </div>
+              ) : lessons.length === 0 ? (
                 <div className="py-12 text-center">
                   <p className="text-muted-foreground mb-4">
-                    No lessons added yet. Click "Add Lesson" to get started.
+                    No learning activities added yet. Click "Create Learning Activity" to get started.
                   </p>
                 </div>
               ) : (
@@ -371,12 +426,12 @@ export const ModuleEditorPage: React.FC = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Total Lessons</span>
+                <span className="text-muted-foreground">Total Activities</span>
                 <span className="font-medium">{lessons.length}</span>
               </div>
               <Separator />
               <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Required Lessons</span>
+                <span className="text-muted-foreground">Required Activities</span>
                 <span className="font-medium">
                   {lessons.filter((l) => l.settings.isRequired).length}
                 </span>

@@ -2,7 +2,7 @@
  * Tests for Enrollment React Query Hooks
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { http, HttpResponse } from 'msw';
@@ -196,8 +196,7 @@ describe('Enrollment Hooks', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/enrollments`, ({ request }) => {
-          const url = new URL(request.url);
+        http.get(`${baseUrl}/enrollments`, () => {
           // In real implementation, would check for learner=current or similar
           return HttpResponse.json({
             success: true,

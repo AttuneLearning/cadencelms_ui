@@ -23,7 +23,6 @@ import {
   DialogFooter,
 } from '@/shared/ui/dialog';
 import { Button } from '@/shared/ui/button';
-import { Label } from '@/shared/ui/label';
 import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
 import { Card } from '@/shared/ui/card';
@@ -53,6 +52,15 @@ import {
   type CurrentGrade,
   type GradeOverrideFormValues,
 } from '@/entities/enrollment';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/shared/ui/form';
 
 // =====================
 // VALIDATION SCHEMA
@@ -150,14 +158,7 @@ export const GradeOverrideDialog: React.FC<GradeOverrideDialogProps> = ({
 
   const overrideMutation = useOverrideGrade();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isValid },
-    watch,
-    reset,
-    setValue,
-  } = useForm<GradeOverrideFormValues>({
+  const form = useForm<GradeOverrideFormValues>({
     resolver: zodResolver(gradeOverrideSchema),
     mode: 'onChange',
     defaultValues: {
@@ -168,17 +169,17 @@ export const GradeOverrideDialog: React.FC<GradeOverrideDialogProps> = ({
     },
   });
 
-  const reason = watch('reason');
+  const reason = form.watch('reason');
   const reasonLength = reason?.length || 0;
 
   // Reset form when dialog opens/closes
   useEffect(() => {
     if (!open) {
-      reset();
+      form.reset();
       setShowConfirmation(false);
       setFormData(null);
     }
-  }, [open, reset]);
+  }, [open, form]);
 
   // Handle form submission (show confirmation first)
   const onSubmit = (data: GradeOverrideFormValues) => {
@@ -277,144 +278,172 @@ export const GradeOverrideDialog: React.FC<GradeOverrideDialogProps> = ({
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Current Grade Display */}
-            <Card className="p-4 bg-muted/50">
-              <div className="space-y-1">
-                <Label className="text-sm font-medium">Current Grade</Label>
-                <p className="text-2xl font-bold">{formatGradeDisplay(currentGrade)}</p>
-                {currentGrade.gradedAt && (
-                  <p className="text-xs text-muted-foreground">
-                    Graded on {new Date(currentGrade.gradedAt).toLocaleDateString()}
-                    {currentGrade.gradedBy &&
-                      ` by ${currentGrade.gradedBy.firstName} ${currentGrade.gradedBy.lastName}`}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Current Grade Display */}
+              <Card className="p-4 bg-muted/50">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium">Current Grade</p>
+                  <p className="text-2xl font-bold">{formatGradeDisplay(currentGrade)}</p>
+                  {currentGrade.gradedAt && (
+                    <p className="text-xs text-muted-foreground">
+                      Graded on {new Date(currentGrade.gradedAt).toLocaleDateString()}
+                      {currentGrade.gradedBy &&
+                        ` by ${currentGrade.gradedBy.firstName} ${currentGrade.gradedBy.lastName}`}
+                    </p>
+                  )}
+                </div>
+              </Card>
+
+              {/* New Grade Inputs */}
+              <div className="space-y-4">
+                <div>
+                  <p className="text-base font-semibold">New Grade</p>
+                  <p className="text-sm text-muted-foreground">
+                    Provide at least one grade field (percentage, letter, or points)
                   </p>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-3">
+                  {/* Grade Percentage */}
+                  <FormField
+                    control={form.control}
+                    name="gradePercentage"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Percentage (0-100)</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min={GRADE_OVERRIDE_VALIDATION.PERCENTAGE_MIN}
+                            max={GRADE_OVERRIDE_VALIDATION.PERCENTAGE_MAX}
+                            step="0.01"
+                            placeholder="85"
+                            value={field.value ?? ''}
+                            onChange={(event) => {
+                              const value = event.target.value;
+                              field.onChange(value === '' ? '' : Number(value));
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Grade Letter */}
+                  <FormField
+                    control={form.control}
+                    name="gradeLetter"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Letter Grade</FormLabel>
+                        <Select value={field.value || ''} onValueChange={field.onChange}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select grade" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {VALID_GRADE_LETTERS.map((letter) => (
+                              <SelectItem key={letter} value={letter}>
+                                {letter}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Grade Points */}
+                  <FormField
+                    control={form.control}
+                    name="gradePoints"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Points (0-4.0)</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min={GRADE_OVERRIDE_VALIDATION.POINTS_MIN}
+                            max={GRADE_OVERRIDE_VALIDATION.POINTS_MAX}
+                            step="0.1"
+                            placeholder="4.0"
+                            value={field.value ?? ''}
+                            onChange={(event) => {
+                              const value = event.target.value;
+                              field.onChange(value === '' ? '' : Number(value));
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              {/* Reason Field */}
+              <FormField
+                control={form.control}
+                name="reason"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center justify-between">
+                      <FormLabel>
+                        Reason for Override <span className="text-destructive">*</span>
+                      </FormLabel>
+                      <span
+                        className={`text-xs ${
+                          reasonLength < GRADE_OVERRIDE_VALIDATION.REASON_MIN_LENGTH
+                            ? 'text-destructive'
+                            : reasonLength > GRADE_OVERRIDE_VALIDATION.REASON_MAX_LENGTH
+                              ? 'text-destructive'
+                              : 'text-muted-foreground'
+                        }`}
+                      >
+                        {reasonLength} / {GRADE_OVERRIDE_VALIDATION.REASON_MAX_LENGTH}
+                      </span>
+                    </div>
+                    <FormControl>
+                      <Textarea
+                        rows={4}
+                        placeholder="Explain the reason for this grade override (e.g., 'Grade appeal approved by academic committee after review of exam 2.')..."
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription className="text-xs">
+                      Minimum {GRADE_OVERRIDE_VALIDATION.REASON_MIN_LENGTH} characters required. This
+                      reason will be permanently logged in the audit trail.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
-            </Card>
-
-            {/* New Grade Inputs */}
-            <div className="space-y-4">
-              <div>
-                <Label className="text-base font-semibold">New Grade</Label>
-                <p className="text-sm text-muted-foreground">
-                  Provide at least one grade field (percentage, letter, or points)
-                </p>
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-3">
-                {/* Grade Percentage */}
-                <div className="space-y-2">
-                  <Label htmlFor="gradePercentage">Percentage (0-100)</Label>
-                  <Input
-                    id="gradePercentage"
-                    type="number"
-                    min={GRADE_OVERRIDE_VALIDATION.PERCENTAGE_MIN}
-                    max={GRADE_OVERRIDE_VALIDATION.PERCENTAGE_MAX}
-                    step="0.01"
-                    placeholder="85"
-                    {...register('gradePercentage', { valueAsNumber: true })}
-                  />
-                  {errors.gradePercentage && (
-                    <p className="text-xs text-destructive">{errors.gradePercentage.message}</p>
-                  )}
-                </div>
-
-                {/* Grade Letter */}
-                <div className="space-y-2">
-                  <Label htmlFor="gradeLetter">Letter Grade</Label>
-                  <Select
-                    value={watch('gradeLetter')}
-                    onValueChange={(value) => setValue('gradeLetter', value)}
-                  >
-                    <SelectTrigger id="gradeLetter">
-                      <SelectValue placeholder="Select grade" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {VALID_GRADE_LETTERS.map((letter) => (
-                        <SelectItem key={letter} value={letter}>
-                          {letter}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.gradeLetter && (
-                    <p className="text-xs text-destructive">{errors.gradeLetter.message}</p>
-                  )}
-                </div>
-
-                {/* Grade Points */}
-                <div className="space-y-2">
-                  <Label htmlFor="gradePoints">Points (0-4.0)</Label>
-                  <Input
-                    id="gradePoints"
-                    type="number"
-                    min={GRADE_OVERRIDE_VALIDATION.POINTS_MIN}
-                    max={GRADE_OVERRIDE_VALIDATION.POINTS_MAX}
-                    step="0.1"
-                    placeholder="4.0"
-                    {...register('gradePoints', { valueAsNumber: true })}
-                  />
-                  {errors.gradePoints && (
-                    <p className="text-xs text-destructive">{errors.gradePoints.message}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Reason Field */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="reason">
-                  Reason for Override <span className="text-destructive">*</span>
-                </Label>
-                <span
-                  className={`text-xs ${
-                    reasonLength < GRADE_OVERRIDE_VALIDATION.REASON_MIN_LENGTH
-                      ? 'text-destructive'
-                      : reasonLength > GRADE_OVERRIDE_VALIDATION.REASON_MAX_LENGTH
-                        ? 'text-destructive'
-                        : 'text-muted-foreground'
-                  }`}
-                >
-                  {reasonLength} / {GRADE_OVERRIDE_VALIDATION.REASON_MAX_LENGTH}
-                </span>
-              </div>
-              <Textarea
-                id="reason"
-                rows={4}
-                placeholder="Explain the reason for this grade override (e.g., 'Grade appeal approved by academic committee after review of exam 2.')..."
-                {...register('reason')}
               />
-              {errors.reason && (
-                <p className="text-xs text-destructive">{errors.reason.message}</p>
-              )}
-              <p className="text-xs text-muted-foreground">
-                Minimum {GRADE_OVERRIDE_VALIDATION.REASON_MIN_LENGTH} characters required. This
-                reason will be permanently logged in the audit trail.
-              </p>
-            </div>
 
-            {/* Actions */}
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={!isValid || overrideMutation.isPending}>
-                {overrideMutation.isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <Edit className="mr-2 h-4 w-4" />
-                    Override Grade
-                  </>
-                )}
-              </Button>
-            </DialogFooter>
-          </form>
+              {/* Actions */}
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={!form.formState.isValid || overrideMutation.isPending}>
+                  {overrideMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <Edit className="mr-2 h-4 w-4" />
+                      Override Grade
+                    </>
+                  )}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
 

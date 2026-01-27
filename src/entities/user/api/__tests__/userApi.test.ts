@@ -98,7 +98,7 @@ describe('userApi', () => {
     });
 
     it('should fetch users with role filter', async () => {
-      const filteredUsers = mockUsers.filter(u => u.roles.includes('staff'));
+      const filteredUsers = mockUsers.filter(u => u.roles?.includes('staff'));
 
       const mockResponse: UserListResponse = {
         users: filteredUsers,

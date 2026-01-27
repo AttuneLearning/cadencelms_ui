@@ -9,13 +9,12 @@
  * - Supports date range filtering
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
 import { Separator } from '@/shared/ui/separator';
-import { Button } from '@/shared/ui/button';
-import { Clock, User, AlertCircle, Calendar, Loader2 } from 'lucide-react';
+import { Clock, User, AlertCircle, Loader2 } from 'lucide-react';
 import { useGradeHistory, type GradeHistoryEntry } from '@/entities/enrollment';
 
 interface GradeOverrideHistoryProps {
@@ -81,13 +80,11 @@ export const GradeOverrideHistory: React.FC<GradeOverrideHistoryProps> = ({
   enrollmentId,
   className,
 }) => {
-  const [dateRange, setDateRange] = useState<{ startDate?: string; endDate?: string }>({});
-
   const {
     data: history = [],
     isLoading,
     error,
-  } = useGradeHistory(enrollmentId, dateRange);
+  } = useGradeHistory(enrollmentId, {});
 
   if (isLoading) {
     return (

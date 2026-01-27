@@ -9,10 +9,18 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
-import { Label } from '@/shared/ui/label';
 import { Textarea } from '@/shared/ui/textarea';
 import { Switch } from '@/shared/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/shared/ui/form';
 import type {
   CreateCourseModulePayload,
   UpdateCourseModulePayload,
@@ -42,13 +50,7 @@ export const CourseModuleForm: React.FC<CourseModuleFormProps> = ({
   onCancel,
   isLoading = false,
 }) => {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm<FormData>({
+  const form = useForm<FormData>({
     defaultValues: {
       title: defaultValues?.title || '',
       description: defaultValues?.description || '',
@@ -75,152 +77,204 @@ export const CourseModuleForm: React.FC<CourseModuleFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-      {/* Basic Information */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Module Information</CardTitle>
-          <CardDescription>
-            Modules are like chapters or sections within your course. Add learning content (videos, documents, assessments) after creating the module.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Title *</Label>
-            <Input
-              id="title"
-              {...register('title', {
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
+        {/* Basic Information */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Module Information</CardTitle>
+            <CardDescription>
+              Modules are like chapters or sections within your course. Add learning content (videos, documents, assessments) after creating the module.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <FormField
+              control={form.control}
+              name="title"
+              rules={{
                 required: 'Title is required',
                 minLength: { value: 1, message: 'Title must be at least 1 character' },
                 maxLength: { value: 200, message: 'Title must be at most 200 characters' },
-              })}
-              placeholder="e.g., Introduction, Chapter 1, Unit A"
+              }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title *</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="e.g., Introduction, Chapter 1, Unit A"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.title && (
-              <p className="text-sm text-destructive">{errors.title.message}</p>
-            )}
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              {...register('description', {
+            <FormField
+              control={form.control}
+              name="description"
+              rules={{
                 maxLength: { value: 2000, message: 'Description must be at most 2000 characters' },
-              })}
-              placeholder="Describe what learners will cover in this module"
-              rows={4}
+              }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Describe what learners will cover in this module"
+                      rows={4}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.description && (
-              <p className="text-sm text-destructive">{errors.description.message}</p>
-            )}
-          </div>
 
-          {mode === 'create' && (
-            <div className="space-y-2">
-              <Label htmlFor="order">Order *</Label>
-              <Input
-                id="order"
-                type="number"
-                {...register('order', {
+            {mode === 'create' && (
+              <FormField
+                control={form.control}
+                name="order"
+                rules={{
                   required: 'Order is required',
                   min: { value: 1, message: 'Order must be at least 1' },
-                })}
-                placeholder="1"
+                }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Order *</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="1"
+                        value={field.value ?? ''}
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          field.onChange(value === '' ? undefined : Number(value));
+                        }}
+                      />
+                    </FormControl>
+                    <FormDescription className="text-xs">
+                      Position of this module in the course sequence
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              {errors.order && (
-                <p className="text-sm text-destructive">{errors.order.message}</p>
-              )}
-              <p className="text-xs text-muted-foreground">
-                Position of this module in the course sequence
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            )}
+          </CardContent>
+        </Card>
 
-      {/* Optional Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Settings</CardTitle>
-          <CardDescription>
-            Optional configuration for this module
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="passingScore">Passing Score (%)</Label>
-              <Input
-                id="passingScore"
-                type="number"
-                {...register('passingScore', {
+        {/* Optional Settings */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Settings</CardTitle>
+            <CardDescription>
+              Optional configuration for this module
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="passingScore"
+                rules={{
                   min: { value: 0, message: 'Must be at least 0' },
                   max: { value: 100, message: 'Must be at most 100' },
-                })}
-                placeholder="70"
+                }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Passing Score (%)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="70"
+                        value={field.value ?? ''}
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          field.onChange(value === '' ? undefined : Number(value));
+                        }}
+                      />
+                    </FormControl>
+                    <FormDescription className="text-xs">
+                      Minimum score required to pass this module
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              {errors.passingScore && (
-                <p className="text-sm text-destructive">{errors.passingScore.message}</p>
-              )}
-              <p className="text-xs text-muted-foreground">
-                Minimum score required to pass this module
-              </p>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="duration">Estimated Duration (minutes)</Label>
-              <Input
-                id="duration"
-                type="number"
-                {...register('duration', {
+              <FormField
+                control={form.control}
+                name="duration"
+                rules={{
                   min: { value: 0, message: 'Must be at least 0' },
-                })}
-                placeholder="30"
+                }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Estimated Duration (minutes)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="30"
+                        value={field.value ?? ''}
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          field.onChange(value === '' ? undefined : Number(value));
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              {errors.duration && (
-                <p className="text-sm text-destructive">{errors.duration.message}</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Publishing */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Visibility</CardTitle>
+            <CardDescription>
+              Control when learners can see this module
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <FormField
+              control={form.control}
+              name="isPublished"
+              render={({ field }) => (
+                <FormItem className="flex items-center justify-between space-y-0">
+                  <div className="space-y-0.5">
+                    <FormLabel>Published</FormLabel>
+                    <FormDescription>
+                      Make this module visible to enrolled learners
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={!!field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
               )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Publishing */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Visibility</CardTitle>
-          <CardDescription>
-            Control when learners can see this module
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>Published</Label>
-              <p className="text-sm text-muted-foreground">
-                Make this module visible to enrolled learners
-              </p>
-            </div>
-            <Switch
-              checked={watch('isPublished')}
-              onCheckedChange={(checked: boolean) => setValue('isPublished', checked)}
             />
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* Form Actions */}
-      <div className="flex justify-end gap-3">
-        {onCancel && (
-          <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
-            Cancel
+        {/* Form Actions */}
+        <div className="flex justify-end gap-3">
+          {onCancel && (
+            <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
+              Cancel
+            </Button>
+          )}
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? 'Saving...' : mode === 'create' ? 'Create Module' : 'Update Module'}
           </Button>
-        )}
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? 'Saving...' : mode === 'create' ? 'Create Module' : 'Update Module'}
-        </Button>
-      </div>
-    </form>
+        </div>
+      </form>
+    </Form>
   );
 };

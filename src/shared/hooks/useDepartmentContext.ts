@@ -1,22 +1,23 @@
 /**
- * useDepartmentContext Hook - Track C Implementation
- * Version: 2.1.0 (Contract Alignment - Phase 1)
- * Date: 2026-01-11
+ * useDepartmentContext Hook - Unified Authorization
+ * Version: 3.0.0 (ADR-AUTH-001)
+ * Date: 2026-01-22
  *
- * Combines authStore roleHierarchy with navigationStore department selection
- * to provide a complete department context for permission-aware components.
+ * Provides department context with UNIFIED permission checking via authStore.
+ *
+ * IMPORTANT: All permission checks delegate to authStore.hasPermission()
+ * to ensure a SINGLE source of truth for authorization (ADR-AUTH-001).
  *
  * Features:
- * - Current department ID, roles, and access rights from navigationStore
- * - Permission checking scoped to current department
+ * - Current department ID from navigationStore
+ * - Permission checking via authStore (globalRights + departmentRights)
  * - Role checking within current department
  * - Department switching capability
  * - Loading state management
- * - Handles null/undefined gracefully
  *
  * Dependencies:
- * - Track A: authStore with roleHierarchy
- * - Track B: navigationStore with department state
+ * - authStore: Unified authorization (globalRights, departmentRights)
+ * - navigationStore: Department selection state
  */
 
 import { useMemo, useCallback } from 'react';
@@ -105,8 +106,10 @@ export interface DepartmentContext {
  * ```
  */
 export function useDepartmentContext(): DepartmentContext {
-  // Get auth state (for permission checking)
-  const roleHierarchy = useAuthStore((state) => state.roleHierarchy);
+  // Get auth state - UNIFIED authorization (ADR-AUTH-001)
+  const authHasPermission = useAuthStore((state) => state.hasPermission);
+  const authHasAnyPermission = useAuthStore((state) => state.hasAnyPermission);
+  const authHasAllPermissions = useAuthStore((state) => state.hasAllPermissions);
 
   // Get navigation state (for current department context)
   const selectedDepartmentId = useNavigationStore((state) => state.selectedDepartmentId);
@@ -120,69 +123,46 @@ export function useDepartmentContext(): DepartmentContext {
   const switchDepartmentAction = useNavigationStore((state) => state.switchDepartment);
 
   // ============================================================================
-  // Permission Checking Functions (Memoized)
+  // Permission Checking Functions - UNIFIED via authStore (ADR-AUTH-001)
   // ============================================================================
 
   /**
    * Check if user has a specific permission in the current department
-   * Uses cached access rights from navigationStore for efficiency
+   * DELEGATES to authStore.hasPermission for SINGLE source of truth
    */
   const hasPermission = useMemo(() => {
     return (permission: string): boolean => {
-      // No department selected - no permissions
-      if (!selectedDepartmentId) {
-        return false;
-      }
-
-      // No auth data - no permissions
-      if (!roleHierarchy) {
-        return false;
-      }
-
-      // Check for wildcard permission (global-admin)
-      if (roleHierarchy.allPermissions.includes('system:*')) {
-        return true;
-      }
-
-      // Check if permission exists in current department's cached access rights
-      // This is more efficient than traversing roleHierarchy
-      if (currentDepartmentAccessRights.includes(permission)) {
-        return true;
-      }
-
-      // Check for wildcard patterns (e.g., "course:*" matches "course:content:edit")
-      const [domain] = permission.split(':');
-      if (currentDepartmentAccessRights.includes(`${domain}:*`)) {
-        return true;
-      }
-
-      return false;
+      // Delegate to authStore with current department ID
+      // authStore.hasPermission checks globalRights first, then departmentRights
+      return authHasPermission(permission, selectedDepartmentId ?? undefined);
     };
-  }, [selectedDepartmentId, roleHierarchy, currentDepartmentAccessRights]);
+  }, [authHasPermission, selectedDepartmentId]);
 
   /**
    * Check if user has any of the specified permissions in current department
+   * DELEGATES to authStore.hasAnyPermission for SINGLE source of truth
    */
   const hasAnyPermission = useMemo(() => {
     return (permissions: string[]): boolean => {
       if (permissions.length === 0) {
         return false;
       }
-      return permissions.some((perm) => hasPermission(perm));
+      return authHasAnyPermission(permissions, selectedDepartmentId ?? undefined);
     };
-  }, [hasPermission]);
+  }, [authHasAnyPermission, selectedDepartmentId]);
 
   /**
    * Check if user has all of the specified permissions in current department
+   * DELEGATES to authStore.hasAllPermissions for SINGLE source of truth
    */
   const hasAllPermissions = useMemo(() => {
     return (permissions: string[]): boolean => {
       if (permissions.length === 0) {
         return true; // Empty array = no requirements
       }
-      return permissions.every((perm) => hasPermission(perm));
+      return authHasAllPermissions(permissions, selectedDepartmentId ?? undefined);
     };
-  }, [hasPermission]);
+  }, [authHasAllPermissions, selectedDepartmentId]);
 
   /**
    * Check if user has a specific role in the current department

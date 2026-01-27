@@ -52,9 +52,9 @@ export function QuestionCard({
         return <CheckCircle2 className="h-4 w-4" />;
       case 'short_answer':
         return <Type className="h-4 w-4" />;
-      case 'essay':
+      case 'long_answer':
         return <FileText className="h-4 w-4" />;
-      case 'fill_blank':
+      case 'fill_in_blank':
         return <PenTool className="h-4 w-4" />;
       default:
         return <HelpCircle className="h-4 w-4" />;
@@ -69,9 +69,9 @@ export function QuestionCard({
         return 'True/False';
       case 'short_answer':
         return 'Short Answer';
-      case 'essay':
-        return 'Essay';
-      case 'fill_blank':
+      case 'long_answer':
+        return 'Long Answer';
+      case 'fill_in_blank':
         return 'Fill in the Blank';
       default:
         return type;
@@ -95,11 +95,11 @@ export function QuestionCard({
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
             <CardTitle className="flex items-center gap-2 flex-wrap">
-              {getQuestionTypeIcon(question.questionType)}
+              {getQuestionTypeIcon(question.questionTypes[0] as QuestionType)}
               <span className="truncate">{truncateText(question.questionText, 80)}</span>
             </CardTitle>
             <CardDescription className="mt-2">
-              {getQuestionTypeLabel(question.questionType)}
+              {getQuestionTypeLabel(question.questionTypes[0] as QuestionType)}
             </CardDescription>
           </div>
           <div className="flex flex-col gap-2">
@@ -117,8 +117,8 @@ export function QuestionCard({
       <CardContent>
         <div className="space-y-4">
           {/* Answer Options Preview for Multiple Choice */}
-          {(question.questionType === 'multiple_choice' ||
-            question.questionType === 'true_false') &&
+          {(question.questionTypes[0] === 'multiple_choice' ||
+            question.questionTypes[0] === 'true_false') &&
             question.options.length > 0 && (
               <div className="space-y-2">
                 <div className="text-xs font-medium text-muted-foreground">Options:</div>
@@ -173,7 +173,7 @@ export function QuestionCard({
                 </div>
               </div>
 
-              {question.lastUsed && (
+              {'lastUsed' in question && question.lastUsed && (
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                   <div>

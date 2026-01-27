@@ -14,16 +14,25 @@
 
 /**
  * Learning Unit Content Type
+ * - media replaces legacy video
  */
-export type LearningUnitType = 'scorm' | 'custom' | 'exercise' | 'video' | 'document' | 'assessment';
+export type LearningUnitType =
+  | 'media'
+  | 'document'
+  | 'scorm'
+  | 'custom'
+  | 'exercise'
+  | 'assessment'
+  | 'assignment';
 
 /**
  * Learning Unit Category
- * - exposition: Instructional content (videos, documents, presentations)
+ * - topic: Instructional content (videos, documents, presentations)
  * - practice: Practice exercises (exercises, simulations)
- * - assessment: Evaluations (quizzes, exams)
+ * - assignment: Ungraded assignments or submissions
+ * - graded: Graded evaluations (quizzes, exams)
  */
-export type LearningUnitCategory = 'exposition' | 'practice' | 'assessment';
+export type LearningUnitCategory = 'topic' | 'practice' | 'assignment' | 'graded';
 
 // =====================
 // NESTED TYPES
@@ -63,9 +72,10 @@ export interface UserRef {
  * Category Counts - Summary of learning units by category
  */
 export interface CategoryCounts {
-  exposition: number;
+  topic: number;
   practice: number;
-  assessment: number;
+  assignment: number;
+  graded: number;
 }
 
 // =====================
@@ -86,7 +96,7 @@ export interface LearningUnit {
   type: LearningUnitType;
   contentId: string | null;
   content?: unknown | null;
-  category: LearningUnitCategory;
+  category: LearningUnitCategory | null;
   isRequired: boolean;
   isReplayable: boolean;
   weight: number; // 0-100, used for module completion calculation
@@ -111,7 +121,7 @@ export interface LearningUnitListItem {
   description: string | null;
   type: LearningUnitType;
   contentId: string | null;
-  category: LearningUnitCategory;
+  category: LearningUnitCategory | null;
   isRequired: boolean;
   isReplayable: boolean;
   weight: number;
@@ -134,7 +144,7 @@ export interface CreateLearningUnitPayload {
   description?: string;
   type: LearningUnitType;
   contentId?: string;
-  category: LearningUnitCategory;
+  category?: LearningUnitCategory | null;
   isRequired?: boolean;
   isReplayable?: boolean;
   weight?: number;
@@ -153,7 +163,7 @@ export interface UpdateLearningUnitPayload {
   description?: string;
   type?: LearningUnitType;
   contentId?: string;
-  category?: LearningUnitCategory;
+  category?: LearningUnitCategory | null;
   isRequired?: boolean;
   isReplayable?: boolean;
   weight?: number;
@@ -251,7 +261,7 @@ export interface LearningUnitFormData {
   description?: string;
   type: LearningUnitType;
   contentId?: string;
-  category: LearningUnitCategory;
+  category?: LearningUnitCategory | null;
   isRequired?: boolean;
   isReplayable?: boolean;
   weight?: number;
@@ -278,7 +288,7 @@ export const DEFAULT_LEARNING_UNIT_SETTINGS: LearningUnitSettings = {
  * Type guard to check if a learning unit is an assessment
  */
 export function isAssessmentUnit(unit: LearningUnit | LearningUnitListItem): boolean {
-  return unit.category === 'assessment';
+  return unit.category === 'graded' || unit.type === 'assessment';
 }
 
 /**

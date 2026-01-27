@@ -19,7 +19,8 @@ import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { Badge } from '@/shared/ui/badge';
 import { useToast } from '@/shared/ui/use-toast';
 import { useNavigation } from '@/shared/lib/navigation/useNavigation';
-import { AlertCircle, Edit, X, Building2, Users, FlaskConical, User, FileText } from 'lucide-react';
+import { AlertCircle, Edit, X, Building2, Users, User, FileText } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 import type { UserProfileContext } from '@/entities/user-profile/model/types';
 import { useAuthStore } from '@/features/auth/model/authStore';
 
@@ -122,20 +123,17 @@ export const ProfilePage: React.FC = () => {
   return (
     <div className="container mx-auto py-8 space-y-8 max-w-4xl">
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">My Profile</h1>
-          <p className="text-muted-foreground">
-            View and manage your personal information
-          </p>
-        </div>
+      <PageHeader
+        title="My Profile"
+        description="View and manage your personal information"
+      >
         {!isEditing && (
           <Button onClick={() => setIsEditing(true)}>
             <Edit className="mr-2 h-4 w-4" />
             Edit Profile
           </Button>
         )}
-      </div>
+      </PageHeader>
 
       {/* Profile Card or Edit Form */}
       {isEditing ? (

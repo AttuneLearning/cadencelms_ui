@@ -31,7 +31,7 @@ describe('useAutoSave', () => {
 
   it.skip('should debounce save for 2 minutes by default', async () => {
     const mockSave = vi.fn().mockResolvedValue(undefined);
-    const { result, rerender } = renderHook(
+    const { rerender } = renderHook(
       ({ data }) =>
         useAutoSave({
           data,
@@ -64,7 +64,7 @@ describe('useAutoSave', () => {
 
   it.skip('should use custom debounce time', async () => {
     const mockSave = vi.fn().mockResolvedValue(undefined);
-    const { result, rerender } = renderHook(
+    const { rerender } = renderHook(
       ({ data }) =>
         useAutoSave({
           data,
@@ -211,7 +211,7 @@ describe('useAutoSave', () => {
   it.skip('should not save when disabled', async () => {
     const mockSave = vi.fn().mockResolvedValue(undefined);
 
-    const { result, rerender } = renderHook(
+    const { rerender } = renderHook(
       ({ data }) =>
         useAutoSave({
           data,

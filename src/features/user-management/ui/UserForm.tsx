@@ -14,7 +14,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
-import { Label } from '@/shared/ui/label';
 import {
   Select,
   SelectContent,
@@ -27,6 +26,15 @@ import { Briefcase, GraduationCap } from 'lucide-react';
 import { userFormSchema, STAFF_DEPARTMENT_ROLES, LEARNER_DEPARTMENT_ROLES, type UserFormValues } from '../model/validation';
 import type { UserListItem, Role, UserStatus } from '@/entities/user';
 import { DepartmentMultiSelect, type DepartmentSelection } from './DepartmentMultiSelect';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/shared/ui/form';
 
 interface UserFormProps {
   user?: UserListItem;
@@ -74,13 +82,7 @@ export const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, isLoading })
     return { initialStaffDepts: staffDepts, initialLearnerDepts: learnerDepts };
   }, [user?.departments, staffRoleKeys, learnerRoleKeys]);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    watch,
-  } = useForm<UserFormValues>({
+  const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
     defaultValues: user
       ? {
@@ -105,193 +107,286 @@ export const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, isLoading })
         },
   });
 
-  const selectedRoles = watch('roles');
-  const status = watch('status');
-  const staffDepartmentMemberships = watch('staffDepartmentMemberships') || [];
-  const learnerDepartmentMemberships = watch('learnerDepartmentMemberships') || [];
+  const selectedRoles = form.watch('roles');
+  const status = form.watch('status');
+  const staffDepartmentMemberships = form.watch('staffDepartmentMemberships') || [];
+  const learnerDepartmentMemberships = form.watch('learnerDepartmentMemberships') || [];
   
   // Conditional visibility
   const showStaffSection = selectedRoles?.includes('staff') || selectedRoles?.includes('global-admin');
   const showLearnerSection = selectedRoles?.includes('learner');
 
   const handleStaffDepartmentChange = (departments: DepartmentSelection[]) => {
-    setValue('staffDepartmentMemberships', departments);
+    form.setValue('staffDepartmentMemberships', departments);
   };
   
   const handleLearnerDepartmentChange = (departments: DepartmentSelection[]) => {
-    setValue('learnerDepartmentMemberships', departments);
+    form.setValue('learnerDepartmentMemberships', departments);
   };
 
-  const handleRoleToggle = (role: Role) => {
-    const currentRoles = selectedRoles || [];
+  const handleRoleToggle = (role: Role, currentRoles: Role[], onChange: (value: Role[]) => void) => {
     if (currentRoles.includes(role)) {
-      setValue(
-        'roles',
-        currentRoles.filter((r) => r !== role)
-      );
+      onChange(currentRoles.filter((r) => r !== role));
     } else {
-      setValue('roles', [...currentRoles, role]);
+      onChange([...currentRoles, role]);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {/* Email */}
-      <div className="space-y-2">
-        <Label htmlFor="email">
-          Email <span className="text-destructive">*</span>
-        </Label>
-        <Input id="email" type="email" {...register('email')} />
-        {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
-      </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* Email */}
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Email <span className="text-destructive">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input type="email" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      {/* First Name */}
-      <div className="space-y-2">
-        <Label htmlFor="firstName">
-          First Name <span className="text-destructive">*</span>
-        </Label>
-        <Input id="firstName" {...register('firstName')} />
-        {errors.firstName && (
-          <p className="text-sm text-destructive">{errors.firstName.message}</p>
+        {/* First Name */}
+        <FormField
+          control={form.control}
+          name="firstName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                First Name <span className="text-destructive">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Last Name */}
+        <FormField
+          control={form.control}
+          name="lastName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Last Name <span className="text-destructive">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Password */}
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Password {!user && <span className="text-destructive">*</span>}
+                {user && (
+                  <span className="text-muted-foreground text-sm">
+                    (leave blank to keep current)
+                  </span>
+                )}
+              </FormLabel>
+              <FormControl>
+                <Input type="password" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Roles */}
+        <FormField
+          control={form.control}
+          name="roles"
+          render={({ field }) => {
+            const currentRoles = field.value || [];
+            return (
+              <FormItem>
+                <FormLabel>
+                  Roles <span className="text-destructive">*</span>
+                </FormLabel>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="role-learner"
+                      checked={currentRoles.includes('learner')}
+                      onCheckedChange={() =>
+                        handleRoleToggle('learner', currentRoles, field.onChange)
+                      }
+                    />
+                    <FormLabel htmlFor="role-learner" className="font-normal">
+                      Learner
+                    </FormLabel>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="role-staff"
+                      checked={currentRoles.includes('staff')}
+                      onCheckedChange={() =>
+                        handleRoleToggle('staff', currentRoles, field.onChange)
+                      }
+                    />
+                    <FormLabel htmlFor="role-staff" className="font-normal">
+                      Staff
+                    </FormLabel>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="role-admin"
+                      checked={currentRoles.includes('global-admin')}
+                      onCheckedChange={() =>
+                        handleRoleToggle('global-admin', currentRoles, field.onChange)
+                      }
+                    />
+                    <FormLabel htmlFor="role-admin" className="font-normal">
+                      Administrator
+                    </FormLabel>
+                  </div>
+                </div>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
+        />
+
+        {/* Status */}
+        <FormField
+          control={form.control}
+          name="status"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Status <span className="text-destructive">*</span>
+              </FormLabel>
+              <Select value={field.value} onValueChange={field.onChange}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="suspended">Suspended</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Staff Department Memberships - shown when user has 'staff' or 'global-admin' role */}
+        {showStaffSection && (
+          <FormField
+            control={form.control}
+            name="staffDepartmentMemberships"
+            render={({ field }) => (
+              <FormItem className="space-y-3 p-4 rounded-lg border bg-blue-50/50 dark:bg-blue-950/20">
+                <div className="flex items-center gap-2">
+                  <Briefcase className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  <FormLabel className="text-base font-medium">Staff Department Memberships</FormLabel>
+                </div>
+                <FormDescription className="text-sm">
+                  Assign staff roles like Instructor, Department Admin, Content Admin, etc.
+                </FormDescription>
+                <FormControl>
+                  <DepartmentMultiSelect
+                    value={field.value || staffDepartmentMemberships}
+                    onChange={(departments) => {
+                      field.onChange(departments);
+                      handleStaffDepartmentChange(departments);
+                    }}
+                    roleType="staff"
+                    placeholder="Search and add staff departments..."
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
         )}
-      </div>
 
-      {/* Last Name */}
-      <div className="space-y-2">
-        <Label htmlFor="lastName">
-          Last Name <span className="text-destructive">*</span>
-        </Label>
-        <Input id="lastName" {...register('lastName')} />
-        {errors.lastName && <p className="text-sm text-destructive">{errors.lastName.message}</p>}
-      </div>
+        {/* Learner Department Memberships - shown when user has 'learner' role */}
+        {showLearnerSection && (
+          <FormField
+            control={form.control}
+            name="learnerDepartmentMemberships"
+            render={({ field }) => (
+              <FormItem className="space-y-3 p-4 rounded-lg border bg-green-50/50 dark:bg-green-950/20">
+                <div className="flex items-center gap-2">
+                  <GraduationCap className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  <FormLabel className="text-base font-medium">Learner Department Memberships</FormLabel>
+                </div>
+                <FormDescription className="text-sm">
+                  Assign learner roles like Course Taker, Auditor, or Supervisor.
+                </FormDescription>
+                <FormControl>
+                  <DepartmentMultiSelect
+                    value={field.value || learnerDepartmentMemberships}
+                    onChange={(departments) => {
+                      field.onChange(departments);
+                      handleLearnerDepartmentChange(departments);
+                    }}
+                    roleType="learner"
+                    placeholder="Search and add learner departments..."
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        )}
 
-      {/* Password */}
-      <div className="space-y-2">
-        <Label htmlFor="password">
-          Password {!user && <span className="text-destructive">*</span>}
-          {user && <span className="text-muted-foreground text-sm">(leave blank to keep current)</span>}
-        </Label>
-        <Input id="password" type="password" {...register('password')} />
-        {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
-      </div>
+        {/* Optional Fields */}
+        <div className="space-y-4">
+          <h3 className="text-sm font-medium">Optional Information</h3>
 
-      {/* Roles */}
-      <div className="space-y-2">
-        <Label>
-          Roles <span className="text-destructive">*</span>
-        </Label>
-        <div className="space-y-2">
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="role-learner"
-              checked={selectedRoles?.includes('learner')}
-              onCheckedChange={() => handleRoleToggle('learner')}
-            />
-            <Label htmlFor="role-learner" className="font-normal">
-              Learner
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="role-staff"
-              checked={selectedRoles?.includes('staff')}
-              onCheckedChange={() => handleRoleToggle('staff')}
-            />
-            <Label htmlFor="role-staff" className="font-normal">
-              Staff
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="role-admin"
-              checked={selectedRoles?.includes('global-admin')}
-              onCheckedChange={() => handleRoleToggle('global-admin')}
-            />
-            <Label htmlFor="role-admin" className="font-normal">
-              Administrator
-            </Label>
-          </div>
-        </div>
-        {errors.roles && <p className="text-sm text-destructive">{errors.roles.message}</p>}
-      </div>
+          <FormField
+            control={form.control}
+            name="phoneNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone Number</FormLabel>
+                <FormControl>
+                  <Input type="tel" {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
 
-      {/* Status */}
-      <div className="space-y-2">
-        <Label htmlFor="status">
-          Status <span className="text-destructive">*</span>
-        </Label>
-        <Select value={status} onValueChange={(value: UserStatus) => setValue('status', value)}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="inactive">Inactive</SelectItem>
-            <SelectItem value="suspended">Suspended</SelectItem>
-          </SelectContent>
-        </Select>
-        {errors.status && <p className="text-sm text-destructive">{errors.status.message}</p>}
-      </div>
-
-      {/* Staff Department Memberships - shown when user has 'staff' or 'global-admin' role */}
-      {showStaffSection && (
-        <div className="space-y-3 p-4 rounded-lg border bg-blue-50/50 dark:bg-blue-950/20">
-          <div className="flex items-center gap-2">
-            <Briefcase className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-            <Label className="text-base font-medium">Staff Department Memberships</Label>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Assign staff roles like Instructor, Department Admin, Content Admin, etc.
-          </p>
-          <DepartmentMultiSelect
-            value={staffDepartmentMemberships}
-            onChange={handleStaffDepartmentChange}
-            roleType="staff"
-            placeholder="Search and add staff departments..."
+          <FormField
+            control={form.control}
+            name="jobTitle"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Job Title</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+              </FormItem>
+            )}
           />
         </div>
-      )}
 
-      {/* Learner Department Memberships - shown when user has 'learner' role */}
-      {showLearnerSection && (
-        <div className="space-y-3 p-4 rounded-lg border bg-green-50/50 dark:bg-green-950/20">
-          <div className="flex items-center gap-2">
-            <GraduationCap className="h-5 w-5 text-green-600 dark:text-green-400" />
-            <Label className="text-base font-medium">Learner Department Memberships</Label>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Assign learner roles like Course Taker, Auditor, or Supervisor.
-          </p>
-          <DepartmentMultiSelect
-            value={learnerDepartmentMemberships}
-            onChange={handleLearnerDepartmentChange}
-            roleType="learner"
-            placeholder="Search and add learner departments..."
-          />
+        {/* Submit Button */}
+        <div className="flex justify-end gap-2">
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? 'Saving...' : user ? 'Update User' : 'Create User'}
+          </Button>
         </div>
-      )}
-
-      {/* Optional Fields */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-medium">Optional Information</h3>
-
-        <div className="space-y-2">
-          <Label htmlFor="phoneNumber">Phone Number</Label>
-          <Input id="phoneNumber" type="tel" {...register('phoneNumber')} />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="jobTitle">Job Title</Label>
-          <Input id="jobTitle" {...register('jobTitle')} />
-        </div>
-      </div>
-
-      {/* Submit Button */}
-      <div className="flex justify-end gap-2">
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? 'Saving...' : user ? 'Update User' : 'Create User'}
-        </Button>
-      </div>
-    </form>
+      </form>
+    </Form>
   );
 };

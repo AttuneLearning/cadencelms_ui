@@ -7,21 +7,17 @@ import React from 'react';
 import { useAuth } from '@/features/auth/model/useAuth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { BookOpen, Award, Clock, TrendingUp } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 
 export const LearnerDashboardPage: React.FC = () => {
   const { user } = useAuth();
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      {/* Welcome Section */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold">
-          Welcome back, {user?.firstName || 'Learner'}!
-        </h1>
-        <p className="text-muted-foreground">
-          Here's your learning overview
-        </p>
-      </div>
+      <PageHeader
+        title={`Welcome back, ${user?.firstName || 'Learner'}!`}
+        description="Here's your learning overview"
+      />
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

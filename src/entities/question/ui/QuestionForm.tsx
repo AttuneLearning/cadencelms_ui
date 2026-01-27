@@ -44,7 +44,7 @@ export function QuestionForm({
 }: QuestionFormProps) {
   const [formData, setFormData] = useState<QuestionFormData>({
     questionText: initialData?.questionText || '',
-    questionType: initialData?.questionType || 'multiple_choice',
+    questionType: (initialData?.questionTypes?.[0] as QuestionType) || 'multiple_choice',
     options: initialData?.options || [
       { text: '', isCorrect: false },
       { text: '', isCorrect: false },
@@ -54,7 +54,6 @@ export function QuestionForm({
     difficulty: initialData?.difficulty || 'medium',
     tags: initialData?.tags || [],
     explanation: initialData?.explanation || '',
-    department: initialData?.department || undefined,
   });
 
   const [tagInput, setTagInput] = useState('');
@@ -175,7 +174,7 @@ export function QuestionForm({
 
     // Correct answer validation for other types
     if (
-      (formData.questionType === 'short_answer' || formData.questionType === 'fill_blank') &&
+      (formData.questionType === 'short_answer' || formData.questionType === 'fill_in_blank') &&
       !formData.correctAnswer
     ) {
       newErrors.correctAnswer = 'Correct answer is required';
@@ -199,8 +198,8 @@ export function QuestionForm({
     formData.questionType === 'multiple_choice' || formData.questionType === 'true_false';
   const requiresCorrectAnswer =
     formData.questionType === 'short_answer' ||
-    formData.questionType === 'essay' ||
-    formData.questionType === 'fill_blank';
+    formData.questionType === 'long_answer' ||
+    formData.questionType === 'fill_in_blank';
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -336,18 +335,18 @@ export function QuestionForm({
         </Card>
       )}
 
-      {/* Correct Answer (Short Answer / Essay / Fill Blank) */}
+      {/* Correct Answer (Short Answer / Long Answer / Fill Blank) */}
       {requiresCorrectAnswer && (
         <div className="space-y-2">
           <Label htmlFor="correctAnswer">
-            Correct Answer {formData.questionType !== 'essay' && <span className="text-destructive">*</span>}
+            Correct Answer {formData.questionType !== 'long_answer' && <span className="text-destructive">*</span>}
           </Label>
           <Textarea
             id="correctAnswer"
             value={Array.isArray(formData.correctAnswer) ? formData.correctAnswer.join(', ') : formData.correctAnswer}
             onChange={(e) => handleChange('correctAnswer', e.target.value)}
             placeholder={
-              formData.questionType === 'essay'
+              formData.questionType === 'long_answer'
                 ? 'Optional - Add model answer or grading rubric'
                 : 'Enter the correct answer'
             }
@@ -357,9 +356,9 @@ export function QuestionForm({
           {errors.correctAnswer && (
             <p className="text-sm text-destructive">{errors.correctAnswer}</p>
           )}
-          {formData.questionType === 'essay' && (
+          {formData.questionType === 'long_answer' && (
             <p className="text-xs text-muted-foreground">
-              Essays are graded manually. This field is optional.
+              Long answers are graded manually. This field is optional.
             </p>
           )}
         </div>

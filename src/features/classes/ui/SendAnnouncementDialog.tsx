@@ -18,10 +18,17 @@ import {
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
-import { Label } from '@/shared/ui/label';
 import { Card, CardContent } from '@/shared/ui/card';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { Mail, Send } from 'lucide-react';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/shared/ui/form';
 
 interface SendAnnouncementDialogProps {
   open: boolean;
@@ -47,13 +54,7 @@ export function SendAnnouncementDialog({
   onClose,
   onSuccess,
 }: SendAnnouncementDialogProps) {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting, isValid },
-    watch,
-    reset,
-  } = useForm<AnnouncementFormData>({
+  const form = useForm<AnnouncementFormData>({
     resolver: zodResolver(announcementSchema),
     mode: 'onChange',
     defaultValues: {
@@ -62,14 +63,14 @@ export function SendAnnouncementDialog({
     },
   });
 
-  const subject = watch('subject');
-  const message = watch('message');
+  const subject = form.watch('subject');
+  const message = form.watch('message');
 
   useEffect(() => {
     if (!open) {
-      reset();
+      form.reset();
     }
-  }, [open, reset]);
+  }, [open, form]);
 
   const onSubmit = async (data: AnnouncementFormData) => {
     try {
@@ -90,7 +91,7 @@ export function SendAnnouncementDialog({
   };
 
   const handleClose = () => {
-    reset();
+    form.reset();
     onClose();
   };
 
@@ -104,55 +105,64 @@ export function SendAnnouncementDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex-1 overflow-hidden flex flex-col">
-          <div className="space-y-4 flex-1 overflow-y-auto">
-            {/* Subject Field */}
-            <div className="space-y-2">
-              <Label htmlFor="subject">
-                Subject <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="subject"
-                placeholder="Enter announcement subject..."
-                {...register('subject')}
-                aria-invalid={errors.subject ? 'true' : 'false'}
-              />
-              <div className="flex items-center justify-between">
-                {errors.subject && (
-                  <p className="text-sm text-destructive">{errors.subject.message}</p>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 overflow-hidden flex flex-col">
+            <div className="space-y-4 flex-1 overflow-y-auto">
+              {/* Subject Field */}
+              <FormField
+                control={form.control}
+                name="subject"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Subject <span className="text-destructive">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter announcement subject..."
+                        {...field}
+                      />
+                    </FormControl>
+                    <div className="flex items-center justify-between">
+                      <FormMessage />
+                      <span className="text-xs text-muted-foreground ml-auto">
+                        {subject?.length || 0} / 100
+                      </span>
+                    </div>
+                  </FormItem>
                 )}
-                <span className="text-xs text-muted-foreground ml-auto">
-                  {subject?.length || 0} / 100
-                </span>
-              </div>
-            </div>
+              />
 
-            {/* Message Field */}
-            <div className="space-y-2">
-              <Label htmlFor="message">
-                Message <span className="text-destructive">*</span>
-              </Label>
-              <Textarea
-                id="message"
-                placeholder="Enter your announcement message..."
-                rows={8}
-                {...register('message')}
-                aria-invalid={errors.message ? 'true' : 'false'}
-              />
-              <div className="flex items-center justify-between">
-                {errors.message && (
-                  <p className="text-sm text-destructive">{errors.message.message}</p>
+              {/* Message Field */}
+              <FormField
+                control={form.control}
+                name="message"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Message <span className="text-destructive">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Enter your announcement message..."
+                        rows={8}
+                        {...field}
+                      />
+                    </FormControl>
+                    <div className="flex items-center justify-between">
+                      <FormMessage />
+                      <span className="text-xs text-muted-foreground ml-auto">
+                        {message?.length || 0} / 2000
+                      </span>
+                    </div>
+                  </FormItem>
                 )}
-                <span className="text-xs text-muted-foreground ml-auto">
-                  {message?.length || 0} / 2000
-                </span>
-              </div>
-            </div>
+              />
 
             {/* Preview */}
             {subject && message && (
               <div className="space-y-2">
-                <Label>Preview</Label>
+                <div className="text-sm font-medium">Preview</div>
                 <Card>
                   <CardContent className="pt-6">
                     <div className="space-y-2">
@@ -190,27 +200,28 @@ export function SendAnnouncementDialog({
             </Alert>
           </div>
 
-          <DialogFooter className="mt-6">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={!isValid || isSubmitting}>
-              {isSubmitting ? (
-                'Sending...'
-              ) : (
-                <>
-                  <Send className="mr-2 h-4 w-4" />
-                  Send
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter className="mt-6">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleClose}
+                disabled={form.formState.isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={!form.formState.isValid || form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? (
+                  'Sending...'
+                ) : (
+                  <>
+                    <Send className="mr-2 h-4 w-4" />
+                    Send
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

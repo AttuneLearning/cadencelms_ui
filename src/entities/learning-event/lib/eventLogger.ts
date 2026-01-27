@@ -65,11 +65,11 @@ const DEFAULT_OPTIONS: Required<EventLoggerOptions> = {
 export class EventLogger {
   private options: Required<EventLoggerOptions>;
   private queue: QueuedEvent[] = [];
-  private flushTimer: NodeJS.Timeout | null = null;
+  private flushTimer: ReturnType<typeof setTimeout> | null = null;
   private isDestroyed = false;
   private isFlushing = false;
   private retryQueue: QueuedEvent[] = [];
-  private retryTimer: NodeJS.Timeout | null = null;
+  private retryTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(options: EventLoggerOptions = {}) {
     this.options = { ...DEFAULT_OPTIONS, ...options };
@@ -85,7 +85,7 @@ export class EventLogger {
    * Log a learning event
    * Non-blocking - adds to queue and returns immediately
    */
-  logEvent(event: CreateLearningEventData, options?: LogEventOptions): void {
+  logEvent(event: CreateLearningEventData): void {
     if (this.isDestroyed) {
       console.warn('[EventLogger] Cannot log event - logger is destroyed');
       return;
@@ -223,7 +223,7 @@ export class EventLogger {
   /**
    * Handle beforeunload event
    */
-  private handleBeforeUnload = (event: BeforeUnloadEvent): void => {
+  private handleBeforeUnload = (): void => {
     if (this.queue.length > 0) {
       // Try to flush synchronously
       // Note: Modern browsers have restrictions on async operations in beforeunload

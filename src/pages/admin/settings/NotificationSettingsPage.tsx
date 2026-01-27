@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { useToast } from '@/shared/ui/use-toast';
 import { Loader2, Save, ArrowLeft } from 'lucide-react';
 import { useSettingsByCategory, useUpdateSettings, type NotificationSettings } from '@/entities/settings';
+import { PageHeader } from '@/shared/ui/page-header';
 
 export const NotificationSettingsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -55,13 +56,14 @@ export const NotificationSettingsPage: React.FC = () => {
   if (error) {
     return (
       <div className="space-y-8 p-8">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={() => navigate('/admin/settings')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
-          <h1 className="text-3xl font-bold">Notification Settings</h1>
-        </div>
+        <PageHeader
+          title="Notification Settings"
+          backButton={
+            <Button variant="ghost" size="sm" onClick={() => navigate('/admin/settings')}>
+              <ArrowLeft className="h-4 w-4 mr-2" />Back
+            </Button>
+          }
+        />
         <Card className="border-destructive">
           <CardContent className="pt-6">
             <div className="text-destructive">
@@ -76,16 +78,15 @@ export const NotificationSettingsPage: React.FC = () => {
 
   return (
     <div className="space-y-8 p-8">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" onClick={() => navigate('/admin/settings')}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold">Notification Settings</h1>
-          <p className="text-muted-foreground">Configure notification preferences</p>
-        </div>
-      </div>
+      <PageHeader
+        title="Notification Settings"
+        description="Configure notification preferences"
+        backButton={
+          <Button variant="ghost" size="sm" onClick={() => navigate('/admin/settings')}>
+            <ArrowLeft className="h-4 w-4 mr-2" />Back
+          </Button>
+        }
+      />
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>

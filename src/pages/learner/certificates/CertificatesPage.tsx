@@ -23,6 +23,7 @@ import { Award, Search as SearchIcon, Printer, Download, Calendar, Hash, Share2,
 import { useToast } from '@/shared/ui/use-toast';
 import { ErrorPanel } from '@/shared/ui/error-panel';
 import { DataShapeWarning } from '@/shared/ui/data-shape-warning';
+import { PageHeader } from '@/shared/ui/page-header';
 import type { EnrollmentListItem } from '@/entities/enrollment';
 
 // Format date to readable string
@@ -254,13 +255,11 @@ export const CertificatesPage: React.FC = () => {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">My Certificates</h1>
-        <p className="text-muted-foreground">
-          View and download your earned certificates for completed courses
-        </p>
-      </div>
+      <PageHeader
+        title="My Certificates"
+        description="View and download your earned certificates for completed courses"
+        className="mb-8"
+      />
 
       {/* Search and Sort */}
       <div className="mb-6 space-y-4">

@@ -10,13 +10,20 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
-import { Label } from '@/shared/ui/label';
 import { Textarea } from '@/shared/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Checkbox } from '@/shared/ui/checkbox';
 import { Separator } from '@/shared/ui/separator';
 import { Badge } from '@/shared/ui/badge';
 import { useToast } from '@/shared/ui/use-toast';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/shared/ui/form';
 import {
   useCertificateTemplateDetail,
   useCreateCertificateTemplate,
@@ -68,13 +75,7 @@ export const CertificateTemplateEditorPage: React.FC = () => {
   const updateTemplateMutation = useUpdateCertificateTemplate();
 
   // Form
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors, isDirty },
-  } = useForm<TemplateFormData>({
+  const form = useForm<TemplateFormData>({
     resolver: zodResolver(templateFormSchema),
     defaultValues: {
       name: '',
@@ -85,23 +86,23 @@ export const CertificateTemplateEditorPage: React.FC = () => {
     },
   });
 
-  const htmlTemplate = watch('htmlTemplate');
+  const htmlTemplate = form.watch('htmlTemplate');
 
   // Update form when template loads
   React.useEffect(() => {
     if (template) {
-      setValue('name', template.name);
-      setValue('description', template.description);
-      setValue('htmlTemplate', template.htmlTemplate);
-      setValue('isDefault', template.isDefault);
-      setValue('isActive', template.isActive);
+      form.setValue('name', template.name);
+      form.setValue('description', template.description);
+      form.setValue('htmlTemplate', template.htmlTemplate);
+      form.setValue('isDefault', template.isDefault);
+      form.setValue('isActive', template.isActive);
     }
-  }, [template, setValue]);
+  }, [template, form]);
 
   // Track unsaved changes
   React.useEffect(() => {
-    setHasUnsavedChanges(isDirty);
-  }, [isDirty]);
+    setHasUnsavedChanges(form.formState.isDirty);
+  }, [form.formState.isDirty]);
 
   // Update preview when HTML changes
   React.useEffect(() => {
@@ -151,8 +152,8 @@ export const CertificateTemplateEditorPage: React.FC = () => {
   };
 
   const handleInsertVariable = (variable: string) => {
-    const currentTemplate = watch('htmlTemplate');
-    setValue('htmlTemplate', currentTemplate + ` ${variable}`, { shouldDirty: true });
+    const currentTemplate = form.watch('htmlTemplate');
+    form.setValue('htmlTemplate', currentTemplate + ` ${variable}`, { shouldDirty: true });
   };
 
   const handleCopyVariable = async (variable: string) => {
@@ -182,8 +183,9 @@ export const CertificateTemplateEditorPage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6 p-8">
-      <PageHeader
+    <Form {...form}>
+      <div className="space-y-6 p-8">
+        <PageHeader
         title={isNewTemplate ? 'Create Certificate Template' : 'Edit Certificate Template'}
         description={
           hasUnsavedChanges ? (
@@ -219,7 +221,7 @@ export const CertificateTemplateEditorPage: React.FC = () => {
         </Button>
 
         <Button
-          onClick={handleSubmit(handleSave)}
+          onClick={form.handleSubmit(handleSave)}
           disabled={
             createTemplateMutation.isPending || updateTemplateMutation.isPending
           }
@@ -314,61 +316,85 @@ export const CertificateTemplateEditorPage: React.FC = () => {
               <CardTitle>Template Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">
-                  Template Name <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id="name"
-                  {...register('name')}
-                  placeholder="e.g., Course Completion Certificate"
-                />
-                {errors.name && (
-                  <p className="text-sm text-destructive">{errors.name.message}</p>
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Template Name <span className="text-destructive">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="e.g., Course Completion Certificate"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
+              />
 
-              <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  {...register('description')}
-                  placeholder="Brief description of this template"
-                  rows={2}
-                />
-                {errors.description && (
-                  <p className="text-sm text-destructive">{errors.description.message}</p>
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Brief description of this template"
+                        rows={2}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
+              />
 
               <Separator />
 
               <div className="flex items-center gap-4">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="isActive"
-                    checked={watch('isActive')}
-                    onCheckedChange={(checked) =>
-                      setValue('isActive', checked as boolean, { shouldDirty: true })
-                    }
-                  />
-                  <Label htmlFor="isActive" className="text-sm font-normal cursor-pointer">
-                    Active
-                  </Label>
-                </div>
+                <FormField
+                  control={form.control}
+                  name="isActive"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center space-x-2 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={!!field.value}
+                          onCheckedChange={(checked) =>
+                            field.onChange(!!checked)
+                          }
+                        />
+                      </FormControl>
+                      <FormLabel className="text-sm font-normal cursor-pointer">
+                        Active
+                      </FormLabel>
+                    </FormItem>
+                  )}
+                />
 
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="isDefault"
-                    checked={watch('isDefault')}
-                    onCheckedChange={(checked) =>
-                      setValue('isDefault', checked as boolean, { shouldDirty: true })
-                    }
-                  />
-                  <Label htmlFor="isDefault" className="text-sm font-normal cursor-pointer">
-                    Set as Default
-                  </Label>
-                </div>
+                <FormField
+                  control={form.control}
+                  name="isDefault"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center space-x-2 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={!!field.value}
+                          onCheckedChange={(checked) =>
+                            field.onChange(!!checked)
+                          }
+                        />
+                      </FormControl>
+                      <FormLabel className="text-sm font-normal cursor-pointer">
+                        Set as Default
+                      </FormLabel>
+                    </FormItem>
+                  )}
+                />
               </div>
             </CardContent>
           </Card>
@@ -391,24 +417,29 @@ export const CertificateTemplateEditorPage: React.FC = () => {
                   dangerouslySetInnerHTML={{ __html: previewHtml }}
                 />
               ) : (
-                <>
-                  <Textarea
-                    {...register('htmlTemplate')}
-                    className="font-mono text-sm min-h-[600px]"
-                    placeholder="Enter HTML template with inline CSS..."
-                  />
-                  {errors.htmlTemplate && (
-                    <p className="text-sm text-destructive mt-2">
-                      {errors.htmlTemplate.message}
-                    </p>
+                <FormField
+                  control={form.control}
+                  name="htmlTemplate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Textarea
+                          className="font-mono text-sm min-h-[600px]"
+                          placeholder="Enter HTML template with inline CSS..."
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="mt-2" />
+                    </FormItem>
                   )}
-                </>
+                />
               )}
             </CardContent>
           </Card>
         </div>
       </div>
-    </div>
+      </div>
+    </Form>
   );
 };
 

@@ -36,8 +36,6 @@ import { Search, Download, Trash2, ArrowUpDown, MoreVertical, Edit } from 'lucid
 import { useFeatureAccess } from '@/shared/hooks/useFeatureAccess';
 import { useEnrollment } from '@/entities/enrollment';
 import { GradeOverrideDialog } from '@/features/grading/ui/GradeOverrideDialog';
-import { Skeleton } from '@/shared/ui/skeleton';
-import type { CurrentGrade } from '@/entities/enrollment';
 
 interface StudentListProps {
   students: RosterItem[];
@@ -71,7 +69,7 @@ export function StudentList({ students, onRemove, onExport }: StudentListProps) 
   const { canOverrideGrades } = useFeatureAccess();
 
   // Fetch full enrollment details when override dialog is opened
-  const { data: selectedEnrollment, isLoading: isLoadingEnrollment } = useEnrollment(
+  const { data: selectedEnrollment } = useEnrollment(
     selectedEnrollmentId || '',
     {
       enabled: !!selectedEnrollmentId && overrideDialogOpen,

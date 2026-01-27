@@ -68,9 +68,11 @@ export const LearningUnitCard: React.FC<LearningUnitCardProps> = ({
                 <Badge variant="outline" className="text-xs">
                   {learningUnit.sequence}
                 </Badge>
-                <Badge variant="secondary" className="text-xs">
-                  {getCategoryLabel(learningUnit.category)}
-                </Badge>
+                {learningUnit.category && (
+                  <Badge variant="secondary" className="text-xs">
+                    {getCategoryLabel(learningUnit.category)}
+                  </Badge>
+                )}
                 {!learningUnit.isActive && (
                   <Badge variant="outline" className="text-xs text-muted-foreground">
                     Inactive
@@ -142,13 +144,15 @@ export const LearningUnitCard: React.FC<LearningUnitCardProps> = ({
 
 function getTypeIcon(type: LearningUnitType): React.ComponentType<{ className?: string }> {
   switch (type) {
-    case 'video':
+    case 'media':
       return Video;
     case 'document':
       return FileText;
     case 'exercise':
       return BookOpen;
     case 'assessment':
+      return ClipboardCheck;
+    case 'assignment':
       return ClipboardCheck;
     case 'scorm':
       return Package;
@@ -160,14 +164,16 @@ function getTypeIcon(type: LearningUnitType): React.ComponentType<{ className?: 
 
 function getTypeLabel(type: LearningUnitType): string {
   switch (type) {
-    case 'video':
-      return 'Video';
+    case 'media':
+      return 'Media';
     case 'document':
       return 'Document';
     case 'exercise':
       return 'Exercise';
     case 'assessment':
       return 'Assessment';
+    case 'assignment':
+      return 'Assignment';
     case 'scorm':
       return 'SCORM';
     case 'custom':
@@ -179,25 +185,32 @@ function getTypeLabel(type: LearningUnitType): string {
 
 function getCategoryLabel(category: LearningUnitCategory): string {
   switch (category) {
-    case 'exposition':
-      return 'Learn';
+    case 'topic':
+      return 'Topic';
     case 'practice':
       return 'Practice';
-    case 'assessment':
-      return 'Assess';
+    case 'assignment':
+      return 'Assignment';
+    case 'graded':
+      return 'Graded';
     default:
       return category;
   }
 }
 
-function getCategoryColor(category: LearningUnitCategory): string {
+function getCategoryColor(category: LearningUnitCategory | null): string {
+  if (!category) {
+    return 'bg-gray-100 text-gray-700';
+  }
   switch (category) {
-    case 'exposition':
+    case 'topic':
       return 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300';
     case 'practice':
       return 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300';
-    case 'assessment':
+    case 'assignment':
       return 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300';
+    case 'graded':
+      return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300';
     default:
       return 'bg-gray-100 text-gray-700';
   }

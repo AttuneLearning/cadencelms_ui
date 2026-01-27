@@ -18,7 +18,7 @@ export type PresentationMode = 'prescribed' | 'learner_choice' | 'random';
 
 export type RepetitionMode = 'none' | 'until_passed' | 'until_mastery' | 'spaced';
 
-export type LearningUnitCategory = 'exposition' | 'practice' | 'assessment';
+export type LearningUnitCategory = 'topic' | 'practice' | 'assignment' | 'graded';
 
 // =====================
 // NESTED TYPES
@@ -92,7 +92,7 @@ export interface UserRef {
 export interface LearningUnitSummary {
   id: string;
   title: string;
-  category: LearningUnitCategory;
+  category: LearningUnitCategory | null;
   type: string;
   sequence: number;
   isRequired: boolean;

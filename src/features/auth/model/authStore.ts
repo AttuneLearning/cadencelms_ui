@@ -299,10 +299,34 @@ export const useAuthStore = create<AuthState>()(
           });
 
           // UNIFIED AUTHORIZATION: Extract new fields from API response
-          const globalRights = data.globalRights || [];
-          const departmentRights = data.departmentRights || {};
+          // FALLBACK: If API doesn't provide new fields, build from existing data
+          let globalRights = data.globalRights;
+          let departmentRights = data.departmentRights;
           const departmentHierarchy = data.departmentHierarchy || {};
           const permissionVersion = data.permissionVersion || 0;
+
+          // If globalRights not provided, extract from allAccessRights
+          if (!globalRights || globalRights.length === 0) {
+            // Check if user has global-admin userType - they get all rights globally
+            if (userTypeKeys.includes('global-admin')) {
+              globalRights = data.allAccessRights || [];
+            } else {
+              // Non-global-admin users: only system:* type permissions are global
+              globalRights = (data.allAccessRights || []).filter(
+                (right: string) => right.startsWith('system:')
+              );
+            }
+          }
+
+          // If departmentRights not provided, build from departmentMemberships
+          if (!departmentRights || Object.keys(departmentRights).length === 0) {
+            departmentRights = {};
+            for (const membership of data.departmentMemberships || []) {
+              if (membership.accessRights && membership.accessRights.length > 0) {
+                departmentRights[membership.departmentId] = membership.accessRights;
+              }
+            }
+          }
 
           // Update state
           set({
@@ -323,8 +347,13 @@ export const useAuthStore = create<AuthState>()(
             userId: user._id,
             userTypes: user.userTypes,
             defaultDashboard: user.defaultDashboard,
-            globalRights: globalRights.length,
-            departmentRightsKeys: Object.keys(departmentRights),
+            globalRights,
+            departmentRights,
+            departmentMemberships: data.departmentMemberships?.map((m: any) => ({
+              id: m.departmentId,
+              name: m.departmentName,
+              rights: m.accessRights?.length || 0,
+            })),
             permissionVersion,
           });
         } catch (error: any) {
@@ -623,10 +652,32 @@ export const useAuthStore = create<AuthState>()(
           }
 
           // UNIFIED AUTHORIZATION: Extract new fields from API response
-          const globalRights = data.globalRights || [];
-          const departmentRights = data.departmentRights || {};
+          // FALLBACK: If API doesn't provide new fields, build from existing data
+          let globalRights = data.globalRights;
+          let departmentRights = data.departmentRights;
           const departmentHierarchy = data.departmentHierarchy || {};
           const permissionVersion = data.permissionVersion || 0;
+
+          // If globalRights not provided, extract from allAccessRights
+          if (!globalRights || globalRights.length === 0) {
+            if (userTypeKeys.includes('global-admin')) {
+              globalRights = data.allAccessRights || [];
+            } else {
+              globalRights = (data.allAccessRights || []).filter(
+                (right: string) => right.startsWith('system:')
+              );
+            }
+          }
+
+          // If departmentRights not provided, build from departmentMemberships
+          if (!departmentRights || Object.keys(departmentRights).length === 0) {
+            departmentRights = {};
+            for (const membership of data.departmentMemberships || []) {
+              if (membership.accessRights && membership.accessRights.length > 0) {
+                departmentRights[membership.departmentId] = membership.accessRights;
+              }
+            }
+          }
 
           set({
             accessToken,

@@ -10,7 +10,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
-import { Label } from '@/shared/ui/label';
 import { Textarea } from '@/shared/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
@@ -59,6 +58,15 @@ import {
   Play,
 } from 'lucide-react';
 import { PageHeader } from '@/shared/ui/page-header';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/shared/ui/form';
 import { useAuthStore } from '@/features/auth/model/authStore';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 
@@ -146,6 +154,7 @@ export const CourseEditorPage: React.FC<CourseEditorPageProps> = ({ defaultDepar
     return depts;
   }, [userDepartments, hierarchyData]);
 
+
   // Check if user is billing-admin (read-only access)
   const isBillingAdmin = user?.roles?.includes('billing-admin');
   const isReadOnly = isBillingAdmin && !user?.roles?.includes('content-admin');
@@ -186,13 +195,7 @@ export const CourseEditorPage: React.FC<CourseEditorPageProps> = ({ defaultDepar
   const reorderSegmentsMutation = useReorderCourseModules();
 
   // Form
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors, isDirty },
-  } = useForm<CourseFormData>({
+  const form = useForm<CourseFormData>({
     resolver: zodResolver(courseFormSchema),
     defaultValues: {
       title: '',
@@ -211,24 +214,30 @@ export const CourseEditorPage: React.FC<CourseEditorPageProps> = ({ defaultDepar
     },
   });
 
+  React.useEffect(() => {
+    if (availableDepartments.length === 1 && !form.getValues('department')) {
+      form.setValue('department', availableDepartments[0].id, { shouldValidate: true });
+    }
+  }, [availableDepartments, form]);
+
   // Update form when course loads
   React.useEffect(() => {
     if (course) {
-      setValue('title', course.title);
-      setValue('code', course.code);
-      setValue('description', course.description || '');
-      setValue('department', course.department?.id || '');
-      setValue('program', course.program?.id || '');
-      setValue('credits', course.credits || 3);
-      setValue('duration', course.duration || 40);
-      setValue('settings', course.settings);
+      form.setValue('title', course.title);
+      form.setValue('code', course.code);
+      form.setValue('description', course.description || '');
+      form.setValue('department', course.department?.id || '');
+      form.setValue('program', course.program?.id || '');
+      form.setValue('credits', course.credits || 3);
+      form.setValue('duration', course.duration || 40);
+      form.setValue('settings', course.settings);
     }
-  }, [course, setValue]);
+  }, [course, form]);
 
   // Track unsaved changes
   React.useEffect(() => {
-    setHasUnsavedChanges(isDirty);
-  }, [isDirty]);
+    setHasUnsavedChanges(form.formState.isDirty);
+  }, [form.formState.isDirty]);
 
   // Handlers - Course
   const handleSaveCourse = async (data: CourseFormData) => {
@@ -329,11 +338,16 @@ export const CourseEditorPage: React.FC<CourseEditorPageProps> = ({ defaultDepar
   };
 
   const handleEditModule = (module: CourseModuleListItem) => {
-    setModuleDialog({
-      open: true,
-      mode: 'edit',
-      module,
-    });
+    if (!courseId) {
+      toast({
+        title: 'Missing course context',
+        description: 'Please save the course before editing modules.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    navigate(`/staff/courses/${courseId}/modules/${module.id}/edit`);
   };
 
   const handleDeleteModule = (module: CourseModuleListItem) => {
@@ -453,7 +467,8 @@ export const CourseEditorPage: React.FC<CourseEditorPageProps> = ({ defaultDepar
   const courseStatus = course?.status;
 
   return (
-    <div className="space-y-6 p-8">
+    <Form {...form}>
+      <div className="space-y-6 p-8">
       <PageHeader
         title={isNewCourse ? 'Create Course' : 'Edit Course'}
         description={
@@ -512,7 +527,7 @@ export const CourseEditorPage: React.FC<CourseEditorPageProps> = ({ defaultDepar
         )}
 
         <Button
-          onClick={handleSubmit(handleSaveCourse)}
+          onClick={form.handleSubmit(handleSaveCourse)}
           disabled={
             isReadOnly || createCourseMutation.isPending || updateCourseMutation.isPending
           }
@@ -548,125 +563,173 @@ export const CourseEditorPage: React.FC<CourseEditorPageProps> = ({ defaultDepar
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">
-                  Course Title <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id="title"
-                  {...register('title')}
-                  placeholder="e.g., Introduction to Web Development"
-                  disabled={isReadOnly}
-                />
-                {errors.title && (
-                  <p className="text-sm text-destructive">{errors.title.message}</p>
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Course Title <span className="text-destructive">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="e.g., Introduction to Web Development"
+                        disabled={isReadOnly}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
+              />
 
-              <div className="space-y-2">
-                <Label htmlFor="code">
-                  Course Code <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id="code"
-                  {...register('code')}
-                  placeholder="e.g., WEB101"
-                  className="font-mono uppercase"
-                  disabled={isReadOnly || !isNewCourse}
-                />
-                {errors.code && (
-                  <p className="text-sm text-destructive">{errors.code.message}</p>
+              <FormField
+                control={form.control}
+                name="code"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Course Code <span className="text-destructive">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="e.g., WEB101"
+                        className="font-mono uppercase"
+                        disabled={isReadOnly || !isNewCourse}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription className="text-xs">
+                      Up to 35 letters and numbers
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
                 )}
-                <p className="text-xs text-muted-foreground">
-                  Up to 35 letters and numbers
-                </p>
-              </div>
+              />
 
-              <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  {...register('description')}
-                  placeholder="Describe what students will learn"
-                  rows={4}
-                  disabled={isReadOnly}
-                />
-                {errors.description && (
-                  <p className="text-sm text-destructive">{errors.description.message}</p>
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Describe what students will learn"
+                        rows={4}
+                        disabled={isReadOnly}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
+              />
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="credits">Credits</Label>
-                  <Input
-                    id="credits"
-                    type="number"
-                    {...register('credits', { valueAsNumber: true })}
-                    min={0}
-                    max={10}
-                    disabled={isReadOnly}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="credits"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Credits</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={0}
+                          max={10}
+                          disabled={isReadOnly}
+                          value={field.value ?? ''}
+                          onChange={(event) => {
+                            const value = event.target.value;
+                            field.onChange(value === '' ? undefined : Number(value));
+                          }}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
 
-                <div className="space-y-2">
-                  <Label htmlFor="duration">Duration (hours)</Label>
-                  <Input
-                    id="duration"
-                    type="number"
-                    {...register('duration', { valueAsNumber: true })}
-                    min={0}
-                    disabled={isReadOnly}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="department">
-                  Department <span className="text-destructive">*</span>
-                </Label>
-                {availableDepartments.length === 1 ? (
-                  <>
-                    <Input
-                      id="department"
-                      value={availableDepartments[0].name}
-                      disabled
-                      className="bg-muted"
-                    />
-                    <input type="hidden" {...register('department')} />
-                  </>
-                ) : (
-                  <Select
-                    value={watch('department')}
-                    onValueChange={(value) => setValue('department', value, { shouldValidate: true })}
-                    disabled={isReadOnly}
-                  >
-                    <SelectTrigger id="department">
-                      <SelectValue placeholder="Select a department" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableDepartments.map((dept) => (
-                        <SelectItem key={dept.id} value={dept.id}>
-                          {dept.isChild ? `↳ ${dept.name}` : dept.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-                {errors.department && (
-                  <p className="text-sm text-destructive">{errors.department.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="program">Program</Label>
-                <Input
-                  id="program"
-                  {...register('program')}
-                  disabled={isReadOnly}
-                  placeholder="Program ID (optional)"
+                <FormField
+                  control={form.control}
+                  name="duration"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Duration (hours)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={0}
+                          disabled={isReadOnly}
+                          value={field.value ?? ''}
+                          onChange={(event) => {
+                            const value = event.target.value;
+                            field.onChange(value === '' ? undefined : Number(value));
+                          }}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
                 />
               </div>
+
+              <FormField
+                control={form.control}
+                name="department"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Department <span className="text-destructive">*</span>
+                    </FormLabel>
+                    {availableDepartments.length === 1 ? (
+                      <FormControl>
+                        <Input
+                          value={availableDepartments[0].name}
+                          disabled
+                          className="bg-muted"
+                        />
+                      </FormControl>
+                    ) : (
+                      <Select
+                        value={field.value}
+                        onValueChange={(value) => field.onChange(value)}
+                        disabled={isReadOnly}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a department" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {availableDepartments.map((dept) => (
+                            <SelectItem key={dept.id} value={dept.id}>
+                              {dept.isChild ? `↳ ${dept.name}` : dept.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="program"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Program</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Program ID (optional)"
+                        disabled={isReadOnly}
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
             </CardContent>
           </Card>
 
@@ -678,70 +741,98 @@ export const CourseEditorPage: React.FC<CourseEditorPageProps> = ({ defaultDepar
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="allowSelfEnrollment">Allow Self-Enrollment</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Students can enroll without instructor approval
-                  </p>
-                </div>
-                <Checkbox
-                  id="allowSelfEnrollment"
-                  checked={watch('settings.allowSelfEnrollment')}
-                  onCheckedChange={(checked) =>
-                    setValue('settings.allowSelfEnrollment', checked as boolean, {
-                      shouldDirty: true,
-                    })
-                  }
-                  disabled={isReadOnly}
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="settings.allowSelfEnrollment"
+                render={({ field }) => (
+                  <FormItem className="flex items-center justify-between space-y-0">
+                    <div className="space-y-0.5">
+                      <FormLabel>Allow Self-Enrollment</FormLabel>
+                      <FormDescription>
+                        Students can enroll without instructor approval
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Checkbox
+                        checked={!!field.value}
+                        onCheckedChange={(checked) => field.onChange(!!checked)}
+                        disabled={isReadOnly}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
               <Separator />
 
-              <div className="space-y-2">
-                <Label htmlFor="passingScore">Passing Score (%)</Label>
-                <Input
-                  id="passingScore"
-                  type="number"
-                  {...register('settings.passingScore', { valueAsNumber: true })}
-                  min={0}
-                  max={100}
-                  disabled={isReadOnly}
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="settings.passingScore"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Passing Score (%)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={0}
+                        max={100}
+                        disabled={isReadOnly}
+                        value={field.value ?? ''}
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          field.onChange(value === '' ? undefined : Number(value));
+                        }}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
-              <div className="space-y-2">
-                <Label htmlFor="maxAttempts">Maximum Attempts</Label>
-                <Input
-                  id="maxAttempts"
-                  type="number"
-                  {...register('settings.maxAttempts', { valueAsNumber: true })}
-                  min={1}
-                  disabled={isReadOnly}
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="settings.maxAttempts"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Maximum Attempts</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={1}
+                        disabled={isReadOnly}
+                        value={field.value ?? ''}
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          field.onChange(value === '' ? undefined : Number(value));
+                        }}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
               <Separator />
 
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="certificateEnabled">Enable Certificate</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Award certificate upon completion
-                  </p>
-                </div>
-                <Checkbox
-                  id="certificateEnabled"
-                  checked={watch('settings.certificateEnabled')}
-                  onCheckedChange={(checked) =>
-                    setValue('settings.certificateEnabled', checked as boolean, {
-                      shouldDirty: true,
-                    })
-                  }
-                  disabled={isReadOnly}
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="settings.certificateEnabled"
+                render={({ field }) => (
+                  <FormItem className="flex items-center justify-between space-y-0">
+                    <div className="space-y-0.5">
+                      <FormLabel>Enable Certificate</FormLabel>
+                      <FormDescription>
+                        Award certificate upon completion
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Checkbox
+                        checked={!!field.value}
+                        onCheckedChange={(checked) => field.onChange(!!checked)}
+                        disabled={isReadOnly}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
             </CardContent>
           </Card>
         </div>
@@ -827,7 +918,8 @@ export const CourseEditorPage: React.FC<CourseEditorPageProps> = ({ defaultDepar
         confirmText="Unpublish"
         isLoading={unpublishMutation.isPending}
       />
-    </div>
+      </div>
+    </Form>
   );
 };
 

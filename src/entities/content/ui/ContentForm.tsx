@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Control, type UseFormReturn } from 'react-hook-form';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
@@ -20,6 +20,13 @@ import { Progress } from '@/shared/ui/progress';
 import { Upload, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useUploadScormPackage, useUploadMediaFile } from '../model/useContent';
 import type { MediaType } from '../model/types';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@/shared/ui/form';
 
 type FormMode = 'scorm' | 'media';
 
@@ -42,6 +49,8 @@ interface MediaFormInputs {
   departmentId?: string;
   type: MediaType;
 }
+
+type ContentFormValues = ScormFormInputs | MediaFormInputs;
 
 export function ContentForm({
   mode = 'scorm',
@@ -153,6 +162,8 @@ export function ContentForm({
   const isUploading = uploadStatus === 'uploading';
   const isSuccess = uploadStatus === 'success';
   const isError = uploadStatus === 'error';
+  const activeForm = mode === 'scorm' ? scormForm : mediaForm;
+  const formControl = activeForm.control as Control<ContentFormValues>;
 
   const getAcceptedFileTypes = () => {
     if (mode === 'scorm') {
@@ -191,30 +202,39 @@ export function ContentForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {mode === 'media' && (
-        <div className="space-y-2">
-          <Label htmlFor="type">Media Type</Label>
-          <Select
-            value={mediaForm.watch('type')}
-            onValueChange={(value) => mediaForm.setValue('type', value as MediaType)}
-            disabled={isUploading || isSuccess}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select media type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="video">Video</SelectItem>
-              <SelectItem value="audio">Audio</SelectItem>
-              <SelectItem value="image">Image</SelectItem>
-              <SelectItem value="document">Document</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      )}
+    <Form {...(activeForm as UseFormReturn<ContentFormValues>)}>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {mode === 'media' && (
+          <FormField
+            control={mediaForm.control}
+            name="type"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Media Type</FormLabel>
+                <Select
+                  value={field.value}
+                  onValueChange={(value) => field.onChange(value as MediaType)}
+                  disabled={isUploading || isSuccess}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select media type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="video">Video</SelectItem>
+                    <SelectItem value="audio">Audio</SelectItem>
+                    <SelectItem value="image">Image</SelectItem>
+                    <SelectItem value="document">Document</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormItem>
+            )}
+          />
+        )}
 
       <div className="space-y-2">
-        <Label htmlFor="file">
+        <Label>
           {mode === 'scorm' ? 'SCORM Package (ZIP)' : 'Media File'}
         </Label>
         <div className="flex items-center gap-2">
@@ -239,7 +259,7 @@ export function ContentForm({
 
       {mode === 'scorm' && (
         <div className="space-y-2">
-          <Label htmlFor="thumbnail">Thumbnail (Optional)</Label>
+          <Label>Thumbnail (Optional)</Label>
           <Input
             id="thumbnail"
             type="file"
@@ -250,29 +270,45 @@ export function ContentForm({
         </div>
       )}
 
-      <div className="space-y-2">
-        <Label htmlFor="title">
-          Title {mode === 'scorm' && '(Optional - uses manifest title if not provided)'}
-        </Label>
-        <Input
-          id="title"
-          {...(mode === 'scorm' ? scormForm.register('title') : mediaForm.register('title'))}
-          placeholder={mode === 'scorm' ? 'Override manifest title' : 'Enter title'}
-          disabled={isUploading || isSuccess}
-          required={mode === 'media'}
-        />
-      </div>
+      <FormField
+        control={formControl}
+        name="title"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>
+              Title {mode === 'scorm' && '(Optional - uses manifest title if not provided)'}
+            </FormLabel>
+            <FormControl>
+              <Input
+                placeholder={mode === 'scorm' ? 'Override manifest title' : 'Enter title'}
+                disabled={isUploading || isSuccess}
+                required={mode === 'media'}
+                value={field.value ?? ''}
+                onChange={field.onChange}
+              />
+            </FormControl>
+          </FormItem>
+        )}
+      />
 
-      <div className="space-y-2">
-        <Label htmlFor="description">Description (Optional)</Label>
-        <Textarea
-          id="description"
-          {...(mode === 'scorm' ? scormForm.register('description') : mediaForm.register('description'))}
-          placeholder="Enter description"
-          disabled={isUploading || isSuccess}
-          rows={3}
-        />
-      </div>
+      <FormField
+        control={formControl}
+        name="description"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Description (Optional)</FormLabel>
+            <FormControl>
+              <Textarea
+                placeholder="Enter description"
+                disabled={isUploading || isSuccess}
+                rows={3}
+                value={field.value ?? ''}
+                onChange={field.onChange}
+              />
+            </FormControl>
+          </FormItem>
+        )}
+      />
 
       {uploadProgress > 0 && uploadStatus === 'uploading' && (
         <div className="space-y-2">
@@ -331,5 +367,6 @@ export function ContentForm({
         </Button>
       </div>
     </form>
+  </Form>
   );
 }

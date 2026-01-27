@@ -536,15 +536,6 @@ describe('QuestionCard', () => {
       expect(explanationContainer).not.toBeInTheDocument();
     });
 
-    it('should handle question with null department', () => {
-      const question = createMultipleChoiceQuestion({ department: null });
-
-      render(<QuestionCard question={question} />);
-
-      // Should render without errors
-      expect(screen.getByText(question.questionText)).toBeInTheDocument();
-    });
-
     it('should handle very long option text', () => {
       const question = createMultipleChoiceQuestion({
         options: [

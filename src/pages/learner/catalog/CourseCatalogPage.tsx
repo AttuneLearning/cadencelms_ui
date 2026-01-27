@@ -14,6 +14,7 @@ import { Button } from '@/shared/ui/button';
 import { Card, CardContent } from '@/shared/ui/card';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { BookOpen, ChevronLeft, ChevronRight } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 
 export const CourseCatalogPage: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
@@ -51,13 +52,11 @@ export const CourseCatalogPage: React.FC = () => {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Course Catalog</h1>
-        <p className="text-muted-foreground">
-          Browse and enroll in available courses
-        </p>
-      </div>
+      <PageHeader
+        title="Course Catalog"
+        description="Browse and enroll in available courses"
+        className="mb-8"
+      />
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Sidebar - Filters */}

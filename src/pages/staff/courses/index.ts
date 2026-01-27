@@ -8,3 +8,4 @@ export { CoursePreviewPage } from './CoursePreviewPage';
 export { StaffCoursesPage } from './StaffCoursesPage';
 export { CourseEditorPage } from './CourseEditorPage';
 export { ContentUploaderPage } from './ContentUploaderPage';
+export { CreateLearningActivityPage } from './CreateLearningActivityPage';
