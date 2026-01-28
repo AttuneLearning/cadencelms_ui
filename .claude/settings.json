@@ -1,9 +1,11 @@
 {
   "permissions": {
     "additionalDirectories": [
-      "~/github/cadencelms_api",
-      "~/github/lms_ui",
-      "~/github/lms_ui/1_lms_ui_v2"
+      "~/github/cadencelms_api"
     ]
+  },
+  "enabledPlugins": {
+    "typescript-lsp@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true
   }
 }

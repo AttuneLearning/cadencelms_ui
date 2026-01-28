@@ -54,6 +54,7 @@ import {
   FileText,
   AlertCircle,
 } from 'lucide-react';
+import { PageHeader } from '@/shared/ui/page-header';
 
 export const ExerciseBuilderPage: React.FC = () => {
   const navigate = useNavigate();
@@ -310,49 +311,43 @@ export const ExerciseBuilderPage: React.FC = () => {
   return (
     <div className="container mx-auto py-8 max-w-7xl">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
+      <PageHeader
+        title={exerciseId ? 'Edit Exercise' : 'Create Exercise'}
+        description={exerciseId
+          ? 'Update exercise settings and questions'
+          : 'Build a new quiz or assessment'}
+        backButton={
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <div>
-            <h1 className="text-3xl font-bold">
-              {exerciseId ? 'Edit Exercise' : 'Create Exercise'}
-            </h1>
-            <p className="text-muted-foreground">
-              {exerciseId
-                ? 'Update exercise settings and questions'
-                : 'Build a new quiz or assessment'}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          {hasUnsavedChanges && (
-            <Badge variant="secondary" className="mr-2">
-              Unsaved changes
-            </Badge>
-          )}
-          {courseId && (
-            <Button variant="default" onClick={handleSaveAndAddToModule}>
-              <Save className="mr-2 h-4 w-4" />
-              Save & Add to Module
-            </Button>
-          )}
-          {!courseId && (
-            <Button
-              variant="default"
-              onClick={activeTab === 'settings' ? handleSaveSettings : handleSaveQuestions}
-              disabled={createExercise.isPending || updateExercise.isPending}
-            >
-              {(createExercise.isPending || updateExercise.isPending) && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              <Save className="mr-2 h-4 w-4" />
-              Save
-            </Button>
-          )}
-        </div>
-      </div>
+        }
+        className="mb-6"
+      >
+        {hasUnsavedChanges && (
+          <Badge variant="secondary" className="mr-2">
+            Unsaved changes
+          </Badge>
+        )}
+        {courseId && (
+          <Button variant="default" onClick={handleSaveAndAddToModule}>
+            <Save className="mr-2 h-4 w-4" />
+            Save & Add to Module
+          </Button>
+        )}
+        {!courseId && (
+          <Button
+            variant="default"
+            onClick={activeTab === 'settings' ? handleSaveSettings : handleSaveQuestions}
+            disabled={createExercise.isPending || updateExercise.isPending}
+          >
+            {(createExercise.isPending || updateExercise.isPending) && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            <Save className="mr-2 h-4 w-4" />
+            Save
+          </Button>
+        )}
+      </PageHeader>
 
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="space-y-6">

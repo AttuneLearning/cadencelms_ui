@@ -6,7 +6,8 @@ import React from 'react';
 import { cn } from '@/shared/lib/utils';
 
 export interface PageHeaderProps {
-  title: string;
+  /** Page title - can be a string or ReactNode (for inline badges, icons, etc.) */
+  title: React.ReactNode;
   description?: React.ReactNode;
   children?: React.ReactNode;
   className?: string;

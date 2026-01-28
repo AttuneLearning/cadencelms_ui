@@ -43,6 +43,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/shared/ui';
+import { PageHeader } from '@/shared/ui/page-header';
 import { useDepartment } from '@/entities/department/model/useDepartment';
 import { useReportJobs } from '@/entities/report-job/hooks/useReportJobs';
 import { useDepartmentContext } from '@/shared/hooks';
@@ -241,31 +242,27 @@ export function DepartmentReportsPage() {
       </nav>
 
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight">{department.name} Reports</h1>
+      <PageHeader
+        title={
+          <span className="flex items-center gap-2">
+            {department.name} Reports
             <Badge variant="secondary" className="font-mono">
               <Building className="h-3 w-3 mr-1" />
               {department.code}
             </Badge>
-          </div>
-          <p className="text-muted-foreground">
-            Generate and view analytics reports for this department
-          </p>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          {canCreateReports && (
-            <Link to="/admin/reports/builder">
-              <Button>
-                <FileText className="h-4 w-4 mr-2" />
-                Advanced Report Builder
-              </Button>
-            </Link>
-          )}
-        </div>
-      </div>
+          </span>
+        }
+        description="Generate and view analytics reports for this department"
+      >
+        {canCreateReports && (
+          <Link to="/admin/reports/builder">
+            <Button>
+              <FileText className="h-4 w-4 mr-2" />
+              Advanced Report Builder
+            </Button>
+          </Link>
+        )}
+      </PageHeader>
 
       {/* Report Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>

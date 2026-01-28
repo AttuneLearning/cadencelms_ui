@@ -48,6 +48,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/ui';
+import { PageHeader } from '@/shared/ui/page-header';
 import { useDepartment } from '@/entities/department/model/useDepartment';
 import { useDepartmentContext } from '@/shared/hooks';
 
@@ -176,35 +177,31 @@ export function DepartmentSettingsPage() {
       </nav>
 
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight">{department.name} Settings</h1>
+      <PageHeader
+        title={
+          <span className="flex items-center gap-2">
+            {department.name} Settings
             <Badge variant="secondary" className="font-mono">
               <Building className="h-3 w-3 mr-1" />
               {department.code}
             </Badge>
-          </div>
-          <p className="text-muted-foreground">
-            Configure department settings and preferences
-          </p>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          {hasChanges && canManageSettings && (
-            <>
-              <Button variant="outline" onClick={() => setHasChanges(false)}>
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Discard
-              </Button>
-              <Button onClick={handleSave} disabled={isSaving}>
-                <Save className="h-4 w-4 mr-2" />
-                {isSaving ? 'Saving...' : 'Save Changes'}
-              </Button>
-            </>
-          )}
-        </div>
-      </div>
+          </span>
+        }
+        description="Configure department settings and preferences"
+      >
+        {hasChanges && canManageSettings && (
+          <>
+            <Button variant="outline" onClick={() => setHasChanges(false)}>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Discard
+            </Button>
+            <Button onClick={handleSave} disabled={isSaving}>
+              <Save className="h-4 w-4 mr-2" />
+              {isSaving ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </>
+        )}
+      </PageHeader>
 
       {/* Read-only notice */}
       {!canManageSettings && (

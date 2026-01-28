@@ -53,6 +53,7 @@ import {
   SelectValue,
   Progress,
 } from '@/shared/ui';
+import { PageHeader } from '@/shared/ui/page-header';
 import { useDepartment } from '@/entities/department/model/useDepartment';
 import { useEnrollments } from '@/entities/enrollment/hooks/useEnrollments';
 import { useDepartmentContext } from '@/shared/hooks';
@@ -231,28 +232,24 @@ export function DepartmentStudentsPage() {
       </nav>
 
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight">{department.name} Students</h1>
+      <PageHeader
+        title={
+          <span className="flex items-center gap-2">
+            {department.name} Students
             <Badge variant="secondary" className="font-mono">
               <Building className="h-3 w-3 mr-1" />
               {department.code}
             </Badge>
-          </div>
-          <p className="text-muted-foreground">
-            Manage student enrollments and track progress
-          </p>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          {canExport && (
-            <Button variant="outline" size="sm">
-              Export
-            </Button>
-          )}
-        </div>
-      </div>
+          </span>
+        }
+        description="Manage student enrollments and track progress"
+      >
+        {canExport && (
+          <Button variant="outline" size="sm">
+            Export
+          </Button>
+        )}
+      </PageHeader>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
