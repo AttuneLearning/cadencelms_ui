@@ -1,9 +1,13 @@
 /**
  * Question Entity Types
  * Generated from: /contracts/api/questions.contract.ts v1.0.0
+ * Updated for monolithic Question design per API v1.2.0
  *
  * Types for question bank management, including multiple question types,
  * answer options, difficulty levels, and bulk import functionality.
+ *
+ * Monolithic Design: A single Question can support multiple presentations
+ * (quiz, flashcard, matching) without content duplication.
  */
 
 /**
@@ -18,7 +22,10 @@ export type QuestionType =
   | 'long_answer'
   | 'matching'
   | 'flashcard'
-  | 'fill_in_blank';
+  | 'fill_in_blank'
+  // Legacy aliases used across parts of the UI
+  | 'essay'
+  | 'fill_blank';
 
 /**
  * Question Difficulty Levels
@@ -46,28 +53,101 @@ export interface QuestionHierarchy {
 }
 
 /**
+ * Media Layout Options
+ * Defines how text and media are arranged in content
+ */
+export type MediaLayout =
+  | 'text_only'
+  | 'media_only'
+  | 'media_above'
+  | 'media_below'
+  | 'media_left'
+  | 'media_right'
+  | 'media_background';
+
+/**
+ * Media Attachment
+ * Reference to uploaded media with display metadata
+ */
+export interface MediaAttachment {
+  mediaId: string;
+  url: string;
+  type: 'image' | 'video' | 'audio';
+  altText?: string;
+  caption?: string;
+}
+
+/**
+ * Media Content
+ * Rich content supporting text with optional media attachments
+ * Used for flashcard fronts/backs and matching columns
+ */
+export interface MediaContent {
+  text: string;
+  media?: MediaAttachment;
+  layout: MediaLayout;
+}
+
+/**
+ * Flashcard-Specific Data
+ * Extension fields for questions used as flashcards
+ */
+export interface FlashcardData {
+  /** Additional prompts/hints for the front of card */
+  prompts: string[];
+  /** Media for the front of the card */
+  frontMedia?: MediaContent;
+  /** Media for the back of the card */
+  backMedia?: MediaContent;
+}
+
+/**
+ * Matching-Specific Data
+ * Extension fields for questions used in matching exercises
+ */
+export interface MatchingData {
+  /** Media/rich content for Column A (prompt side) */
+  columnAMedia?: MediaContent;
+  /** Media/rich content for Column B (answer side) */
+  columnBMedia?: MediaContent;
+}
+
+/**
  * Base Question
  * Core question information used across all views
  * Updated for department-scoped API v1.1.0
+ * Updated for monolithic Question design per API v1.2.0
  */
 export interface Question {
   id: string;
   departmentId: string;
+  // Legacy field used by older UI surfaces
+  department?: string;
   questionBankId: string;
   questionText: string;
-  questionTypes: string[];  // Array of types
+  questionTypes: QuestionType[];  // Array of types - enables multi-presentation
+  // Legacy single type used by older UI surfaces
+  questionType?: QuestionType;
   options: AnswerOption[];
   correctAnswer: string | string[];
+  /** Distractors for matching exercises (wrong answers in Column B) */
+  distractors?: string[];
   points: number;
   difficulty: QuestionDifficulty;
   tags: string[];
   explanation: string | null;
-  
+
   // Adaptive learning fields (optional)
   knowledgeNodeId?: string;
   cognitiveDepth?: string;
   hierarchy?: QuestionHierarchy;
-  
+
+  // Monolithic design: type-specific extensions
+  /** Flashcard-specific data when questionTypes includes 'flashcard' */
+  flashcardData?: FlashcardData;
+  /** Matching-specific data when questionTypes includes 'matching' */
+  matchingData?: MatchingData;
+
   // Metadata
   usageCount?: number;
   createdBy: string;
@@ -132,20 +212,25 @@ export interface QuestionListResponse {
  * Create Question Payload
  */
 export interface CreateQuestionPayload {
-  questionBankId: string;
+  questionBankId?: string;
   questionText: string;
-  questionTypes: string[];
+  questionTypes: QuestionType[];
   options?: AnswerOption[];
   correctAnswer?: string | string[];
+  distractors?: string[];
   points: number;
   difficulty?: QuestionDifficulty;
   tags?: string[];
   explanation?: string;
-  
+
   // Adaptive learning fields (optional)
   knowledgeNodeId?: string;
   cognitiveDepth?: string;
   hierarchy?: Partial<QuestionHierarchy>;
+
+  // Monolithic design: type-specific extensions
+  flashcardData?: FlashcardData;
+  matchingData?: MatchingData;
 }
 
 /**
@@ -154,18 +239,23 @@ export interface CreateQuestionPayload {
 export interface UpdateQuestionPayload {
   questionBankId?: string;
   questionText?: string;
-  questionTypes?: string[];
+  questionTypes?: QuestionType[];
   options?: AnswerOption[];
   correctAnswer?: string | string[];
+  distractors?: string[];
   points?: number;
   difficulty?: QuestionDifficulty;
   tags?: string[];
   explanation?: string;
-  
+
   // Adaptive learning fields (optional)
   knowledgeNodeId?: string;
   cognitiveDepth?: string;
   hierarchy?: Partial<QuestionHierarchy>;
+
+  // Monolithic design: type-specific extensions
+  flashcardData?: FlashcardData;
+  matchingData?: MatchingData;
 }
 
 /**
@@ -220,6 +310,7 @@ export interface BulkImportResponse {
  */
 export interface QuestionFilters extends QuestionListParams {
   // Can add additional UI-specific filters here if needed
+  department?: string;
 }
 
 /**

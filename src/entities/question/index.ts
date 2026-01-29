@@ -1,6 +1,7 @@
 /**
  * Question Entity - Public API
  * Generated from: questions.contract.ts v1.0.0
+ * Updated for monolithic Question design per API v1.2.0
  */
 
 // Types
@@ -22,6 +23,13 @@ export type {
   QuestionFilters,
   QuestionFormData,
   Pagination,
+  // Monolithic design types
+  MediaLayout,
+  MediaAttachment,
+  MediaContent,
+  FlashcardData,
+  MatchingData,
+  QuestionHierarchy,
 } from './model/types';
 
 // Hooks
