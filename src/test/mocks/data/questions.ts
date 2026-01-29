@@ -40,7 +40,7 @@ export const mockQuestions: QuestionListItem[] = [
     questionText: 'What is JavaScript?',
     questionTypes: ['multiple_choice'],
     options: mockMultipleChoiceOptions,
-    correctAnswer: 'JavaScript is an interpreted language',
+    correctAnswers: ['JavaScript is an interpreted language'],
     points: 2,
     difficulty: 'easy',
     tags: ['javascript', 'basics', 'programming'],
@@ -56,7 +56,7 @@ export const mockQuestions: QuestionListItem[] = [
     questionText: 'Is TypeScript a superset of JavaScript?',
     questionTypes: ['true_false'],
     options: mockTrueFalseOptions,
-    correctAnswer: 'True',
+    correctAnswers: ['True'],
     points: 1,
     difficulty: 'easy',
     tags: ['typescript', 'javascript'],
@@ -72,7 +72,7 @@ export const mockQuestions: QuestionListItem[] = [
     questionText: 'What is the purpose of React Hooks?',
     questionTypes: ['short_answer'],
     options: [],
-    correctAnswer: 'React Hooks allow functional components to use state and lifecycle features',
+    correctAnswers: ['React Hooks allow functional components to use state and lifecycle features'],
     points: 3,
     difficulty: 'medium',
     tags: ['react', 'hooks', 'javascript'],
@@ -88,7 +88,7 @@ export const mockQuestions: QuestionListItem[] = [
     questionText: 'Explain the concept of closure in JavaScript and provide a practical use case.',
     questionTypes: ['long_answer'],
     options: [],
-    correctAnswer: 'A closure is a function that has access to variables in its outer scope, even after the outer function has returned. Common use cases include data privacy, function factories, and maintaining state in asynchronous operations.',
+    correctAnswers: ['A closure is a function that has access to variables in its outer scope, even after the outer function has returned. Common use cases include data privacy, function factories, and maintaining state in asynchronous operations.'],
     points: 5,
     difficulty: 'hard',
     tags: ['javascript', 'closures', 'advanced'],
@@ -104,7 +104,7 @@ export const mockQuestions: QuestionListItem[] = [
     questionText: 'Complete the code: const greeting = _____ => `Hello, ${name}!`;',
     questionTypes: ['fill_in_blank'],
     options: [],
-    correctAnswer: '(name)',
+    correctAnswers: ['(name)'],
     points: 2,
     difficulty: 'medium',
     tags: ['javascript', 'arrow-functions', 'syntax'],
@@ -125,7 +125,7 @@ export const mockQuestions: QuestionListItem[] = [
       { text: 'PUT', isCorrect: true },
       { text: 'DELETE', isCorrect: false },
     ],
-    correctAnswer: 'PUT',
+    correctAnswers: ['PUT'],
     points: 2,
     difficulty: 'easy',
     tags: ['http', 'api', 'rest'],
@@ -150,14 +150,15 @@ export const mockQuestionDetails: QuestionDetails[] = mockQuestions.map((q, inde
  */
 export const mockQuestionFormData: QuestionFormData = {
   questionText: 'What is a promise in JavaScript?',
-  questionType: 'multiple_choice',
+  questionTypes: ['multiple_choice'],
   options: [
     { text: 'A synchronous operation', isCorrect: false },
     { text: 'An object representing eventual completion of an async operation', isCorrect: true },
     { text: 'A function that returns undefined', isCorrect: false },
     { text: 'A type of array', isCorrect: false },
   ],
-  correctAnswer: 'An object representing eventual completion of an async operation',
+  correctAnswers: ['An object representing eventual completion of an async operation'],
+  distractors: [],
   points: 3,
   difficulty: 'medium',
   tags: ['javascript', 'async', 'promises'],
@@ -178,7 +179,7 @@ export const mockCreateQuestionPayload: CreateQuestionPayload = {
     { text: 'Creative Style Sheets', isCorrect: false },
     { text: 'Colorful Style Sheets', isCorrect: false },
   ],
-  correctAnswer: 'Cascading Style Sheets',
+  correctAnswers: ['Cascading Style Sheets'],
   points: 1,
   difficulty: 'easy',
   tags: ['css', 'basics'],
@@ -202,33 +203,33 @@ export const mockUpdateQuestionPayload: UpdateQuestionPayload = {
 export const mockBulkImportQuestions: BulkImportQuestionItem[] = [
   {
     questionText: 'What is HTML?',
-    questionType: 'multiple_choice',
+    questionTypes: ['multiple_choice'],
     options: [
       { text: 'HyperText Markup Language', isCorrect: true },
       { text: 'HighText Machine Language', isCorrect: false },
       { text: 'HyperText Modern Language', isCorrect: false },
     ],
-    correctAnswer: 'HyperText Markup Language',
+    correctAnswers: ['HyperText Markup Language'],
     points: 1,
     difficulty: 'easy',
     tags: ['html', 'basics'],
   },
   {
     questionText: 'Is Python a dynamically typed language?',
-    questionType: 'true_false',
+    questionTypes: ['true_false'],
     options: [
       { text: 'True', isCorrect: true },
       { text: 'False', isCorrect: false },
     ],
-    correctAnswer: 'True',
+    correctAnswers: ['True'],
     points: 1,
     difficulty: 'easy',
     tags: ['python', 'programming'],
   },
   {
     questionText: 'What is the capital of France?',
-    questionType: 'short_answer',
-    correctAnswer: 'Paris',
+    questionTypes: ['short_answer'],
+    correctAnswers: ['Paris'],
     points: 1,
     difficulty: 'easy',
     tags: ['geography'],
@@ -308,7 +309,7 @@ export const createMockQuestion = (overrides?: Partial<Question>): Question => (
     { text: 'Option 2', isCorrect: true },
     { text: 'Option 3', isCorrect: false },
   ],
-  correctAnswer: 'Option 2',
+  correctAnswers: ['Option 2'],
   points: 2,
   difficulty: 'medium',
   tags: ['test', 'sample'],
@@ -345,14 +346,14 @@ export const createMultipleChoiceQuestion = (
   overrides?: Partial<Question>
 ): Question => {
   return createMockQuestion({
-    questionType: 'multiple_choice',
+    questionTypes: ['multiple_choice'],
     options: [
       { text: 'Option A', isCorrect: false },
       { text: 'Option B', isCorrect: true },
       { text: 'Option C', isCorrect: false },
       { text: 'Option D', isCorrect: false },
     ],
-    correctAnswer: 'Option B',
+    correctAnswers: ['Option B'],
     ...overrides,
   });
 };
@@ -362,12 +363,12 @@ export const createMultipleChoiceQuestion = (
  */
 export const createTrueFalseQuestion = (overrides?: Partial<Question>): Question => {
   return createMockQuestion({
-    questionType: 'true_false',
+    questionTypes: ['true_false'],
     options: [
       { text: 'True', isCorrect: true },
       { text: 'False', isCorrect: false },
     ],
-    correctAnswer: 'True',
+    correctAnswers: ['True'],
     ...overrides,
   });
 };
@@ -377,9 +378,9 @@ export const createTrueFalseQuestion = (overrides?: Partial<Question>): Question
  */
 export const createShortAnswerQuestion = (overrides?: Partial<Question>): Question => {
   return createMockQuestion({
-    questionType: 'short_answer',
+    questionTypes: ['short_answer'],
     options: [],
-    correctAnswer: 'Sample short answer',
+    correctAnswers: ['Sample short answer'],
     ...overrides,
   });
 };
@@ -389,9 +390,9 @@ export const createShortAnswerQuestion = (overrides?: Partial<Question>): Questi
  */
 export const createEssayQuestion = (overrides?: Partial<Question>): Question => {
   return createMockQuestion({
-    questionType: 'essay',
+    questionTypes: ['essay'],
     options: [],
-    correctAnswer: 'Sample essay answer with detailed explanation',
+    correctAnswers: ['Sample essay answer with detailed explanation'],
     points: 5,
     difficulty: 'hard',
     ...overrides,
@@ -403,9 +404,9 @@ export const createEssayQuestion = (overrides?: Partial<Question>): Question => 
  */
 export const createFillBlankQuestion = (overrides?: Partial<Question>): Question => {
   return createMockQuestion({
-    questionType: 'fill_blank',
+    questionTypes: ['fill_blank'],
     options: [],
-    correctAnswer: 'correct word',
+    correctAnswers: ['correct word'],
     ...overrides,
   });
 };

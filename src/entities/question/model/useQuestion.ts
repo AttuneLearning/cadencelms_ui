@@ -192,7 +192,7 @@ export function useDuplicateQuestion(
         questionText: `${original.questionText} (Copy)`,
         questionTypes: original.questionTypes,
         options: original.options,
-        correctAnswer: original.correctAnswer,
+        correctAnswers: original.correctAnswers,
         points: original.points,
         difficulty: original.difficulty,
         tags: original.tags,

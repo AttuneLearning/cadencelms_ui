@@ -129,9 +129,9 @@ export const ExerciseBuilderPage: React.FC = () => {
         questionsData.questions.map((q) => ({
           questionId: q.id,
           questionText: q.questionText,
-          questionType: q.questionType,
+          questionTypes: q.questionTypes,
           options: q.options,
-          correctAnswer: q.correctAnswer,
+          correctAnswers: q.correctAnswers,
           points: q.points,
           order: q.order,
           explanation: q.explanation,
@@ -639,7 +639,7 @@ export const ExerciseBuilderPage: React.FC = () => {
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
                               <Badge variant="outline">Q{index + 1}</Badge>
-                              <Badge variant="secondary">{question.questionType}</Badge>
+                              <Badge variant="secondary">{question.questionTypes?.[0]}</Badge>
                               <Badge>{question.difficulty}</Badge>
                               <span className="text-sm text-muted-foreground">
                                 {question.points || 10} pts
@@ -695,11 +695,11 @@ export const ExerciseBuilderPage: React.FC = () => {
             questions={selectedQuestions.map((q, idx) => ({
               id: q.questionId || `q-${idx}`,
               questionText: q.questionText || '',
-              questionType: q.questionType || 'multiple_choice',
+              questionTypes: q.questionTypes || ['multiple_choice'],
               order: q.order || idx,
               points: q.points || 10,
               options: q.options,
-              correctAnswer: q.correctAnswer,
+              correctAnswers: q.correctAnswers || [],
               explanation: q.explanation,
               difficulty: q.difficulty || 'medium',
               tags: q.tags,

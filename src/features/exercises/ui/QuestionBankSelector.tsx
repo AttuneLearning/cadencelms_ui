@@ -126,7 +126,7 @@ export const QuestionBankSelector: React.FC<QuestionBankSelectorProps> = ({
       questionText: q.questionText,
       questionType: q.questionTypes[0] as any,
       options: q.options.map((opt) => opt.text),
-      correctAnswer: q.correctAnswer,
+      correctAnswer: q.correctAnswers,
       points: q.points,
       explanation: q.explanation || undefined,
       difficulty: q.difficulty,
@@ -510,10 +510,15 @@ export const QuestionBankSelector: React.FC<QuestionBankSelectorProps> = ({
 function formatQuestionType(type: QuestionType): string {
   const map: Record<QuestionType, string> = {
     multiple_choice: 'Multiple Choice',
+    multiple_select: 'Multiple Select',
     true_false: 'True/False',
     short_answer: 'Short Answer',
+    long_answer: 'Long Answer',
     essay: 'Essay',
     fill_blank: 'Fill in the Blank',
+    fill_in_blank: 'Fill in the Blank',
+    flashcard: 'Flashcard',
+    matching: 'Matching',
   };
   return map[type] || type;
 }

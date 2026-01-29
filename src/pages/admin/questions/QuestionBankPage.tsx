@@ -99,11 +99,26 @@ export const QuestionBankPage: React.FC = () => {
 
   const { toast } = useToast();
 
-  // Fetch questions with filters
-  const { data: questionsData, isLoading, error } = useQuestions(filters);
-
   // Fetch departments for the form
   const { data: departmentsData } = useDepartments({ limit: 1000 });
+
+  const departmentNameById = React.useMemo(() => {
+    return new Map((departmentsData?.departments || []).map((dept) => [dept.id, dept.name]));
+  }, [departmentsData]);
+
+  const activeDepartmentId =
+    filters.department || departmentsData?.departments?.[0]?.id || '';
+
+  const questionListParams = React.useMemo(() => {
+    const { department, ...rest } = filters;
+    return rest;
+  }, [filters]);
+
+  // Fetch questions with filters
+  const { data: questionsData, isLoading, error } = useQuestions(
+    activeDepartmentId,
+    questionListParams
+  );
 
   // Extract unique tags from questions
   React.useEffect(() => {
@@ -117,7 +132,7 @@ export const QuestionBankPage: React.FC = () => {
   }, [questionsData]);
 
   // Mutations
-  const createQuestion = useCreateQuestion({
+  const createQuestion = useCreateQuestion(activeDepartmentId, {
     onSuccess: () => {
       toast({
         title: 'Question created',
@@ -134,7 +149,7 @@ export const QuestionBankPage: React.FC = () => {
     },
   });
 
-  const updateQuestion = useUpdateQuestion({
+  const updateQuestion = useUpdateQuestion(activeDepartmentId, {
     onSuccess: () => {
       toast({
         title: 'Question updated',
@@ -151,7 +166,7 @@ export const QuestionBankPage: React.FC = () => {
     },
   });
 
-  const deleteQuestion = useDeleteQuestion({
+  const deleteQuestion = useDeleteQuestion(activeDepartmentId, {
     onSuccess: () => {
       toast({
         title: 'Question deleted',
@@ -169,7 +184,7 @@ export const QuestionBankPage: React.FC = () => {
     },
   });
 
-  const duplicateQuestion = useDuplicateQuestion({
+  const duplicateQuestion = useDuplicateQuestion(activeDepartmentId, {
     onSuccess: () => {
       toast({
         title: 'Question duplicated',
@@ -187,7 +202,7 @@ export const QuestionBankPage: React.FC = () => {
     },
   });
 
-  const bulkImport = useBulkImportQuestions({
+  const bulkImport = useBulkImportQuestions(bulkImportDepartment || activeDepartmentId, {
     onSuccess: (data) => {
       toast({
         title: 'Bulk import completed',
@@ -257,6 +272,15 @@ export const QuestionBankPage: React.FC = () => {
   };
 
   const handleFormSubmit = (data: QuestionFormData) => {
+    if (!activeDepartmentId) {
+      toast({
+        title: 'Department Required',
+        description: 'Please select a department before creating or editing questions.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     if (questionToEdit) {
       updateQuestion.mutate({
         id: questionToEdit.id,
@@ -421,7 +445,7 @@ export const QuestionBankPage: React.FC = () => {
       accessorKey: 'questionType',
       header: 'Type',
       cell: ({ row }) => {
-        const type = row.original.questionType;
+        const type = row.original.questionTypes?.[0];
         return <Badge variant="secondary">{formatQuestionType(type)}</Badge>;
       },
     },
@@ -449,7 +473,11 @@ export const QuestionBankPage: React.FC = () => {
       accessorKey: 'department',
       header: 'Department',
       cell: ({ row }) => {
-        const department = row.original.department;
+        const department =
+          row.original.department ||
+          (row.original.departmentId
+            ? departmentNameById.get(row.original.departmentId)
+            : undefined);
         return department ? (
           <span className="text-sm">{department}</span>
         ) : (
@@ -579,10 +607,13 @@ export const QuestionBankPage: React.FC = () => {
                 <SelectContent>
                   <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="multiple_choice">Multiple Choice</SelectItem>
+                  <SelectItem value="multiple_select">Multiple Select</SelectItem>
                   <SelectItem value="true_false">True/False</SelectItem>
                   <SelectItem value="short_answer">Short Answer</SelectItem>
                   <SelectItem value="essay">Essay</SelectItem>
-                  <SelectItem value="fill_blank">Fill in the Blank</SelectItem>
+                  <SelectItem value="fill_in_blank">Fill in the Blank</SelectItem>
+                  <SelectItem value="flashcard">Flashcard</SelectItem>
+                  <SelectItem value="matching">Matching</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -760,7 +791,7 @@ export const QuestionBankPage: React.FC = () => {
                   <Label>Type</Label>
                   <p className="text-sm mt-1">
                     <Badge variant="secondary">
-                      {formatQuestionType(questionToPreview.questionType)}
+                      {formatQuestionType(questionToPreview.questionTypes?.[0])}
                     </Badge>
                   </p>
                 </div>
@@ -810,15 +841,16 @@ export const QuestionBankPage: React.FC = () => {
                 </div>
               )}
 
-              {questionToPreview.correctAnswer &&
-                typeof questionToPreview.correctAnswer === 'string' &&
-                (questionToPreview.questionType === 'short_answer' ||
-                  questionToPreview.questionType === 'essay' ||
-                  questionToPreview.questionType === 'fill_blank') && (
+              {questionToPreview.correctAnswers &&
+                questionToPreview.correctAnswers.length > 0 &&
+                typeof questionToPreview.correctAnswers[0] === 'string' &&
+                (questionToPreview.questionTypes?.[0] === 'short_answer' ||
+                  questionToPreview.questionTypes?.[0] === 'essay' ||
+                  questionToPreview.questionTypes?.[0] === 'fill_blank') && (
                   <div>
                     <Label className="text-base font-semibold">Correct Answer</Label>
                     <p className="mt-2 p-3 bg-muted rounded-md">
-                      {questionToPreview.correctAnswer}
+                      {questionToPreview.correctAnswers[0]}
                     </p>
                   </div>
                 )}
@@ -987,11 +1019,17 @@ export const QuestionBankPage: React.FC = () => {
 };
 
 // Helper functions
-function formatQuestionType(type: QuestionType): string {
+function formatQuestionType(type: QuestionType | undefined): string {
+  if (!type) return 'Unknown';
   const map: Record<QuestionType, string> = {
     multiple_choice: 'Multiple Choice',
+    multiple_select: 'Multiple Select',
     true_false: 'True/False',
     short_answer: 'Short Answer',
+    long_answer: 'Long Answer',
+    matching: 'Matching',
+    flashcard: 'Flashcard',
+    fill_in_blank: 'Fill in the Blank',
     essay: 'Essay',
     fill_blank: 'Fill in the Blank',
   };

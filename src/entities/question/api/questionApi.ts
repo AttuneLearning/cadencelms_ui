@@ -1,6 +1,7 @@
 /**
  * Question API Client
  * Implements endpoints from questions.contract.ts v1.0.0
+ * Updated for monolithic Question design per API v1.2.0
  */
 
 import { client } from '@/shared/api/client';
@@ -23,7 +24,6 @@ interface ApiResponse<T> {
 
 /**
  * GET /departments/:departmentId/questions - List questions with pagination and filtering
- * Updated for department-scoped API v1.1.0
  */
 export async function getQuestions(
   departmentId: string,
@@ -38,7 +38,6 @@ export async function getQuestions(
 
 /**
  * POST /departments/:departmentId/questions - Create a new question
- * Updated for department-scoped API v1.1.0
  */
 export async function createQuestion(
   departmentId: string,
@@ -53,7 +52,6 @@ export async function createQuestion(
 
 /**
  * GET /departments/:departmentId/questions/:id - Get question details by ID
- * Updated for department-scoped API v1.1.0
  */
 export async function getQuestionById(
   departmentId: string,
@@ -67,7 +65,6 @@ export async function getQuestionById(
 
 /**
  * PUT /departments/:departmentId/questions/:id - Update question information
- * Updated for department-scoped API v1.1.0
  */
 export async function updateQuestion(
   departmentId: string,
@@ -83,7 +80,6 @@ export async function updateQuestion(
 
 /**
  * DELETE /departments/:departmentId/questions/:id - Delete question (soft delete)
- * Updated for department-scoped API v1.1.0
  */
 export async function deleteQuestion(
   departmentId: string,
@@ -94,7 +90,6 @@ export async function deleteQuestion(
 
 /**
  * POST /departments/:departmentId/questions/bulk - Bulk import questions
- * Updated for department-scoped API v1.1.0
  */
 export async function bulkImportQuestions(
   departmentId: string,

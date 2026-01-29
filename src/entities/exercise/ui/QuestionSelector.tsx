@@ -52,9 +52,9 @@ export const QuestionSelector: React.FC<QuestionSelectorProps> = ({
   const [showAddForm, setShowAddForm] = useState(false);
   const [newQuestion, setNewQuestion] = useState<QuestionFormData>({
     questionText: '',
-    questionType: 'multiple_choice',
+    questionTypes: ['multiple_choice'],
     options: ['', '', '', ''],
-    correctAnswer: '',
+    correctAnswers: [''],
     points: 10,
     difficulty: 'medium',
     explanation: '',
@@ -66,7 +66,7 @@ export const QuestionSelector: React.FC<QuestionSelectorProps> = ({
 
     // Filter empty options
     const filteredOptions =
-      newQuestion.questionType === 'multiple_choice' || newQuestion.questionType === 'matching'
+      newQuestion.questionTypes?.[0] === 'multiple_choice' || newQuestion.questionTypes?.[0] === 'matching'
         ? newQuestion.options?.filter((opt) => opt.trim() !== '')
         : undefined;
 
@@ -78,9 +78,9 @@ export const QuestionSelector: React.FC<QuestionSelectorProps> = ({
     // Reset form
     setNewQuestion({
       questionText: '',
-      questionType: 'multiple_choice',
+      questionTypes: ['multiple_choice'],
       options: ['', '', '', ''],
-      correctAnswer: '',
+      correctAnswers: [''],
       points: 10,
       difficulty: 'medium',
       explanation: '',
@@ -169,9 +169,9 @@ export const QuestionSelector: React.FC<QuestionSelectorProps> = ({
                 <div className="space-y-2">
                   <Label htmlFor="questionType">Question Type</Label>
                   <Select
-                    value={newQuestion.questionType}
+                    value={newQuestion.questionTypes?.[0]}
                     onValueChange={(value: QuestionType) =>
-                      setNewQuestion({ ...newQuestion, questionType: value })
+                      setNewQuestion({ ...newQuestion, questionTypes: [value] })
                     }
                     disabled={isLoading}
                   >
@@ -210,7 +210,7 @@ export const QuestionSelector: React.FC<QuestionSelectorProps> = ({
               </div>
 
               {/* Options for multiple choice/matching */}
-              {needsOptions(newQuestion.questionType!) && (
+              {needsOptions(newQuestion.questionTypes?.[0]!) && (
                 <div className="space-y-2">
                   <Label>Answer Options</Label>
                   {newQuestion.options?.map((option, index) => (
@@ -250,13 +250,13 @@ export const QuestionSelector: React.FC<QuestionSelectorProps> = ({
               )}
 
               {/* Correct Answer */}
-              {newQuestion.questionType === 'true_false' ? (
+              {newQuestion.questionTypes?.[0] === 'true_false' ? (
                 <div className="space-y-2">
                   <Label htmlFor="correctAnswer">Correct Answer</Label>
                   <Select
-                    value={newQuestion.correctAnswer as string}
+                    value={newQuestion.correctAnswers?.[0] as string}
                     onValueChange={(value) =>
-                      setNewQuestion({ ...newQuestion, correctAnswer: value })
+                      setNewQuestion({ ...newQuestion, correctAnswers: [value] })
                     }
                     disabled={isLoading}
                   >
@@ -276,9 +276,9 @@ export const QuestionSelector: React.FC<QuestionSelectorProps> = ({
                   </Label>
                   <Input
                     id="correctAnswer"
-                    value={newQuestion.correctAnswer as string}
+                    value={newQuestion.correctAnswers?.[0] as string}
                     onChange={(e) =>
-                      setNewQuestion({ ...newQuestion, correctAnswer: e.target.value })
+                      setNewQuestion({ ...newQuestion, correctAnswers: [e.target.value] })
                     }
                     placeholder="Enter correct answer"
                     required
@@ -351,7 +351,7 @@ export const QuestionSelector: React.FC<QuestionSelectorProps> = ({
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <Badge variant="outline">Q{index + 1}</Badge>
-                          <Badge variant="secondary">{question.questionType}</Badge>
+                          <Badge variant="secondary">{question.questionTypes[0]}</Badge>
                           <Badge>{question.difficulty}</Badge>
                           <span className="text-sm text-muted-foreground">
                             {question.points} pts
@@ -374,14 +374,14 @@ export const QuestionSelector: React.FC<QuestionSelectorProps> = ({
                       <div className="mt-3 space-y-1 pl-4 border-l-2">
                         {question.options.map((option, idx) => (
                           <div key={idx} className="flex items-center gap-2 text-sm">
-                            {option === question.correctAnswer ? (
+                            {option === question.correctAnswers[0] ? (
                               <CheckCircle2 className="h-4 w-4 text-green-600" />
                             ) : (
                               <XCircle className="h-4 w-4 text-muted-foreground" />
                             )}
                             <span
                               className={cn(
-                                option === question.correctAnswer && 'font-medium text-green-700'
+                                option === question.correctAnswers[0] && 'font-medium text-green-700'
                               )}
                             >
                               {option}

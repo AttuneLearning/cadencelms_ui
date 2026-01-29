@@ -330,8 +330,16 @@ describe('questionApi', () => {
   describe('createQuestion', () => {
     it('should create a new multiple choice question', async () => {
       const newQuestion = createMockQuestion({
-        ...mockCreateQuestionPayload,
         id: 'new-q1',
+        questionBankId: mockCreateQuestionPayload.questionBankId,
+        questionText: mockCreateQuestionPayload.questionText,
+        questionTypes: mockCreateQuestionPayload.questionTypes,
+        options: mockCreateQuestionPayload.options || [],
+        correctAnswers: mockCreateQuestionPayload.correctAnswers || [],
+        points: mockCreateQuestionPayload.points,
+        difficulty: mockCreateQuestionPayload.difficulty,
+        tags: mockCreateQuestionPayload.tags,
+        explanation: mockCreateQuestionPayload.explanation || null,
       });
 
       server.use(
@@ -359,7 +367,7 @@ describe('questionApi', () => {
           { text: 'True', isCorrect: true },
           { text: 'False', isCorrect: false },
         ],
-        correctAnswer: 'True',
+        correctAnswers: ['True'],
         points: 1,
         difficulty: 'easy' as const,
         tags: ['typescript'],
@@ -370,7 +378,7 @@ describe('questionApi', () => {
           { text: 'True', isCorrect: true },
           { text: 'False', isCorrect: false },
         ],
-        correctAnswer: 'True',
+        correctAnswers: ['True'],
         points: 1,
         difficulty: 'easy' as const,
         tags: ['typescript'],
@@ -396,14 +404,14 @@ describe('questionApi', () => {
         questionBankId: 'qb-1',
         questionText: 'What is closure?',
         questionTypes: ['short_answer'],
-        correctAnswer: 'A function with access to outer scope',
+        correctAnswers: ['A function with access to outer scope'],
         points: 2,
         difficulty: 'medium' as const,
         tags: ['javascript'],
       };
       const newQuestion = createMockQuestion({
         questionTypes: ['short_answer'],
-        correctAnswer: 'A function with access to outer scope',
+        correctAnswers: ['A function with access to outer scope'],
         points: 2,
         difficulty: 'medium' as const,
         tags: ['javascript'],
@@ -516,7 +524,11 @@ describe('questionApi', () => {
       const questionId = 'q1';
       const updatedQuestion = createMockQuestion({
         id: questionId,
-        ...mockUpdateQuestionPayload,
+        questionText: mockUpdateQuestionPayload.questionText,
+        points: mockUpdateQuestionPayload.points,
+        difficulty: mockUpdateQuestionPayload.difficulty,
+        tags: mockUpdateQuestionPayload.tags,
+        explanation: mockUpdateQuestionPayload.explanation || null,
       });
 
       server.use(

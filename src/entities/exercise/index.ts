@@ -31,6 +31,8 @@ export type {
   ReorderQuestionsResponse,
   ExerciseFormData,
   QuestionFormData,
+  FlashcardExerciseConfig,
+  MatchingExerciseConfig,
   Pagination,
 } from './model/types';
 

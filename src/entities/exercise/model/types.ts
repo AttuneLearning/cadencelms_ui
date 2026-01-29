@@ -1,18 +1,30 @@
 /**
  * Exercise Entity Types
  * Generated from: /contracts/api/exercises.contract.ts v1.0.0
+ * Updated for monolithic Question design per API v1.2.0
  *
  * Types for exercise/exam management including questions, scoring, and assessments.
  */
+
+// Import shared types from Question entity (per type-sharing pattern)
+import type {
+  QuestionType,
+  QuestionDifficulty,
+  FlashcardData,
+  MatchingData,
+  MediaContent,
+} from '@/entities/question';
+
+// Re-export QuestionType for convenience
+export type { QuestionType };
 
 // =====================
 // SHARED TYPES
 // =====================
 
-export type ExerciseType = 'quiz' | 'exam' | 'practice' | 'assessment';
+export type ExerciseType = 'quiz' | 'exam' | 'practice' | 'assessment' | 'flashcard' | 'matching';
 export type ExerciseStatus = 'draft' | 'published' | 'archived';
-export type ExerciseDifficulty = 'easy' | 'medium' | 'hard';
-export type QuestionType = 'multiple_choice' | 'true_false' | 'short_answer' | 'essay' | 'matching';
+export type ExerciseDifficulty = QuestionDifficulty;  // Alias for consistency
 
 export interface Pagination {
   page: number;
@@ -50,35 +62,43 @@ export interface UserRef {
 
 /**
  * Exercise Question
+ * Updated for monolithic Question design - supports multiple presentations
  */
 export interface ExerciseQuestion {
   id: string;
   questionText: string;
-  questionType: QuestionType;
+  questionTypes: QuestionType[];
   order: number;
   points: number;
   options?: string[];
-  correctAnswer?: string | string[];
+  correctAnswers: string[];
+  distractors?: string[];
   explanation?: string;
   difficulty: ExerciseDifficulty;
   tags?: string[];
+  flashcardData?: FlashcardData;
+  matchingData?: MatchingData;
   createdAt: string;
 }
 
 /**
  * Question Reference (for create/update)
+ * Updated for monolithic Question design
  */
 export interface QuestionReference {
-  questionId?: string; // Existing question from bank
-  questionText?: string; // New question text
-  questionType?: QuestionType;
+  questionId?: string;
+  questionText?: string;
+  questionTypes?: QuestionType[];
   options?: string[];
-  correctAnswer?: string | string[];
+  correctAnswers?: string[];
+  distractors?: string[];
   points?: number;
   order?: number;
   explanation?: string;
   difficulty?: ExerciseDifficulty;
   tags?: string[];
+  flashcardData?: FlashcardData;
+  matchingData?: MatchingData;
 }
 
 // =====================
@@ -326,16 +346,51 @@ export interface ExerciseFormData {
 /**
  * Question Form Data
  * Used for adding questions in forms
+ * Updated for monolithic Question design
  */
 export interface QuestionFormData {
   questionId?: string;
   questionText?: string;
-  questionType?: QuestionType;
+  questionTypes?: QuestionType[];
   options?: string[];
-  correctAnswer?: string | string[];
+  correctAnswers?: string[];
+  distractors?: string[];
   points?: number;
   order?: number;
   explanation?: string;
   difficulty?: ExerciseDifficulty;
   tags?: string[];
+  flashcardData?: FlashcardData;
+  matchingData?: MatchingData;
+  media?: MediaContent[];
+}
+
+// =====================
+// EXERCISE CONFIG TYPES
+// =====================
+
+/**
+ * Flashcard Exercise Configuration
+ * Exercise-level settings for flashcard-type exercises
+ */
+export interface FlashcardExerciseConfig {
+  /** Show front side first (default: true) */
+  showFrontFirst?: boolean;
+  /** Enable spaced repetition */
+  enableSpacedRepetition?: boolean;
+  /** Shuffle cards on each attempt */
+  shuffleCards?: boolean;
+}
+
+/**
+ * Matching Exercise Configuration
+ * Exercise-level settings for matching-type exercises
+ */
+export interface MatchingExerciseConfig {
+  /** Time limit per match in seconds (0 = unlimited) */
+  timeLimitPerMatch?: number;
+  /** Show all pairs at once vs sequential */
+  showAllPairs?: boolean;
+  /** Penalty for incorrect matches */
+  incorrectPenalty?: number;
 }

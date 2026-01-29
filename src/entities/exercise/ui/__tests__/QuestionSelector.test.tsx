@@ -604,7 +604,7 @@ describe('QuestionSelector', () => {
         />
       );
 
-      const correctAnswerText = screen.getByText(mockMultipleChoiceQuestion.correctAnswer as string);
+      const correctAnswerText = screen.getByText(mockMultipleChoiceQuestion.correctAnswers[0]);
       expect(correctAnswerText).toHaveClass('font-medium', 'text-green-700');
     });
 

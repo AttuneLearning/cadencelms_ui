@@ -876,7 +876,7 @@ describe('exerciseApi', () => {
 
       const result = await addExerciseQuestion(exerciseId, mcQuestion);
 
-      expect(result.question.questionType).toBe('multiple_choice');
+      expect(result.question.questionTypes[0]).toBe('multiple_choice');
       expect(result.question.options).toHaveLength(4);
     });
 
@@ -908,7 +908,7 @@ describe('exerciseApi', () => {
 
       const result = await addExerciseQuestion(exerciseId, tfQuestion);
 
-      expect(result.question.questionType).toBe('true_false');
+      expect(result.question.questionTypes[0]).toBe('true_false');
     });
 
     it('should handle validation error', async () => {

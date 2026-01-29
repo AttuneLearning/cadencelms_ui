@@ -12,7 +12,6 @@
 
 /**
  * Question Types
- * Updated to array format per API v1.1.0
  */
 export type QuestionType =
   | 'multiple_choice'
@@ -23,7 +22,6 @@ export type QuestionType =
   | 'matching'
   | 'flashcard'
   | 'fill_in_blank'
-  // Legacy aliases used across parts of the UI
   | 'essay'
   | 'fill_blank';
 
@@ -121,15 +119,12 @@ export interface MatchingData {
 export interface Question {
   id: string;
   departmentId: string;
-  // Legacy field used by older UI surfaces
   department?: string;
   questionBankId: string;
   questionText: string;
-  questionTypes: QuestionType[];  // Array of types - enables multi-presentation
-  // Legacy single type used by older UI surfaces
-  questionType?: QuestionType;
+  questionTypes: QuestionType[];
   options: AnswerOption[];
-  correctAnswer: string | string[];
+  correctAnswers: string[];
   /** Distractors for matching exercises (wrong answers in Column B) */
   distractors?: string[];
   points: number;
@@ -216,19 +211,15 @@ export interface CreateQuestionPayload {
   questionText: string;
   questionTypes: QuestionType[];
   options?: AnswerOption[];
-  correctAnswer?: string | string[];
+  correctAnswers?: string[];
   distractors?: string[];
   points: number;
   difficulty?: QuestionDifficulty;
   tags?: string[];
   explanation?: string;
-
-  // Adaptive learning fields (optional)
   knowledgeNodeId?: string;
   cognitiveDepth?: string;
   hierarchy?: Partial<QuestionHierarchy>;
-
-  // Monolithic design: type-specific extensions
   flashcardData?: FlashcardData;
   matchingData?: MatchingData;
 }
@@ -241,19 +232,15 @@ export interface UpdateQuestionPayload {
   questionText?: string;
   questionTypes?: QuestionType[];
   options?: AnswerOption[];
-  correctAnswer?: string | string[];
+  correctAnswers?: string[];
   distractors?: string[];
   points?: number;
   difficulty?: QuestionDifficulty;
   tags?: string[];
   explanation?: string;
-
-  // Adaptive learning fields (optional)
   knowledgeNodeId?: string;
   cognitiveDepth?: string;
   hierarchy?: Partial<QuestionHierarchy>;
-
-  // Monolithic design: type-specific extensions
   flashcardData?: FlashcardData;
   matchingData?: MatchingData;
 }
@@ -264,9 +251,9 @@ export interface UpdateQuestionPayload {
  */
 export interface BulkImportQuestionItem {
   questionText: string;
-  questionType: QuestionType;
+  questionTypes: QuestionType[];
   options?: AnswerOption[];
-  correctAnswer?: string | string[];
+  correctAnswers?: string[];
   points: number;
   difficulty?: QuestionDifficulty;
   tags?: string[];
@@ -316,15 +303,19 @@ export interface QuestionFilters extends QuestionListParams {
 /**
  * Question Form Data
  * Used for creating/updating questions in forms
+ * Updated for monolithic Question design per API v1.2.0
  */
 export interface QuestionFormData {
   questionText: string;
-  questionType: QuestionType;
+  questionTypes: QuestionType[];
   options: AnswerOption[];
-  correctAnswer: string | string[];
+  correctAnswers: string[];
+  distractors: string[];
   points: number;
   difficulty: QuestionDifficulty;
   tags: string[];
   explanation: string;
   department?: string;
+  flashcardData?: FlashcardData;
+  matchingData?: MatchingData;
 }
