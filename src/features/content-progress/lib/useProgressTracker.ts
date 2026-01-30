@@ -4,8 +4,10 @@
  */
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { progressApi } from '@/entities/progress/api/progressApi';
-import type { UpdateProgressRequest as ProgressUpdate } from '@/entities/progress/model/types';
+import {
+  progressApi,
+  type UpdateLessonProgressRequest,
+} from '@/entities/progress/api/progressApi';
 
 interface UseProgressTrackerOptions {
   courseId: string;
@@ -18,6 +20,12 @@ interface ProgressTrackerState {
   timeSpent: number; // in seconds
   lastPosition?: number;
   isTracking: boolean;
+}
+
+type LessonProgressData = UpdateLessonProgressRequest['progressData'];
+
+interface ProgressUpdateInput extends Partial<LessonProgressData> {
+  lastPosition?: number | string;
 }
 
 export const useProgressTracker = ({
@@ -33,8 +41,8 @@ export const useProgressTracker = ({
 
   const startTimeRef = useRef<number | null>(null);
   const accumulatedTimeRef = useRef(0);
-  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lastSavedDataRef = useRef<ProgressUpdate>({});
+  const autoSaveTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const lastSavedDataRef = useRef<Partial<LessonProgressData>>({});
 
   // Start tracking
   const startTracking = useCallback(() => {
@@ -44,7 +52,7 @@ export const useProgressTracker = ({
     setState((prev) => ({ ...prev, isTracking: true }));
 
     // Mark lesson as started
-    progressApi.startLesson(courseId, lessonId).catch((error) => {
+    progressApi.startLesson({ courseId, lessonId }).catch((error) => {
       console.error('Failed to mark lesson as started:', error);
     });
   }, [courseId, lessonId, enabled, state.isTracking]);
@@ -68,7 +76,7 @@ export const useProgressTracker = ({
 
   // Update progress
   const updateProgress = useCallback(
-    async (data: ProgressUpdate) => {
+    async (data: ProgressUpdateInput) => {
       try {
         // Calculate current time spent
         let currentTimeSpent = accumulatedTimeRef.current;
@@ -76,18 +84,29 @@ export const useProgressTracker = ({
           currentTimeSpent += Math.floor((Date.now() - startTimeRef.current) / 1000);
         }
 
-        const progressData: ProgressUpdate = {
+        const normalizedLastPosition =
+          data.lastPosition !== undefined ? Number(data.lastPosition) : undefined;
+
+        const progressData: LessonProgressData = {
           ...data,
+          lastPosition:
+            data.lastPosition !== undefined ? String(data.lastPosition) : undefined,
           timeSpent: currentTimeSpent,
         };
 
-        await progressApi.updateLessonProgress(courseId, lessonId, progressData);
+        await progressApi.updateLessonProgress({
+          courseId,
+          lessonId,
+          progressData,
+        });
         lastSavedDataRef.current = progressData;
 
         setState((prev) => ({
           ...prev,
           timeSpent: currentTimeSpent,
-          lastPosition: data.lastPosition,
+          lastPosition: Number.isFinite(normalizedLastPosition)
+            ? normalizedLastPosition
+            : prev.lastPosition,
         }));
       } catch (error) {
         console.error('Failed to update progress:', error);
@@ -103,9 +122,13 @@ export const useProgressTracker = ({
 
       try {
         const timeSpent = accumulatedTimeRef.current;
-        await progressApi.completeLesson(courseId, lessonId, {
-          ...data,
-          timeSpent,
+        await progressApi.completeLesson({
+          courseId,
+          lessonId,
+          completionData: {
+            ...data,
+            timeSpent,
+          },
         });
       } catch (error) {
         console.error('Failed to complete lesson:', error);
@@ -130,15 +153,20 @@ export const useProgressTracker = ({
       if (timeDiff < 5) return;
 
       try {
-        await progressApi.updateLessonProgress(courseId, lessonId, {
-          timeSpent: currentTimeSpent,
-          lastPosition: state.lastPosition,
-          status: 'in-progress',
+        await progressApi.updateLessonProgress({
+          courseId,
+          lessonId,
+          progressData: {
+            timeSpent: currentTimeSpent,
+            lastPosition:
+              state.lastPosition !== undefined ? String(state.lastPosition) : undefined,
+          },
         });
 
         lastSavedDataRef.current = {
           timeSpent: currentTimeSpent,
-          lastPosition: state.lastPosition,
+          lastPosition:
+            state.lastPosition !== undefined ? String(state.lastPosition) : undefined,
         };
       } catch (error) {
         console.error('Auto-save failed:', error);

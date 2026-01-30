@@ -50,7 +50,7 @@ function createWrapper() {
 }
 
 describe('Certificate Hooks', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   // Mock data
   const mockCertificate: Certificate = {

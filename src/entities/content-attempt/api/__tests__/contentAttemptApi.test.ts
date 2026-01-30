@@ -22,7 +22,7 @@ import type {
 } from '../../model/types';
 
 describe('contentAttemptApi', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   // Mock data
   const mockAttempt: ContentAttempt = {

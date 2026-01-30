@@ -146,6 +146,7 @@ export type DisabilityType =
   | 'visual'
   | 'hearing'
   | 'learning'
+  | 'psychiatric'
   | 'mental-health'
   | 'chronic-illness'
   | 'other';
@@ -181,8 +182,10 @@ export type IdType =
 export type InstitutionType =
   | 'high-school'
   | 'community-college'
+  | 'college'
   | 'university'
   | 'vocational'
+  | 'online'
   | 'other';
 
 export type EducationLevel =
@@ -340,18 +343,26 @@ export interface IPriorEducation {
   minor?: string;
   startDate?: string; // ISO date
   endDate?: string; // ISO date
+  graduationDate?: string; // ISO date
   gpa?: number;
   gpaScale?: number; // 4.0, 5.0, or 100
-  graduated: boolean;
+  graduated?: boolean;
+  creditsEarned?: number;
+  creditsTransferred?: number;
+  notes?: string;
   transcriptOnFile?: boolean; // Readonly
 }
 
 export interface IAccommodation {
   type: string;
+  accommodationType?: string;
+  disabilityType?: DisabilityType;
   description?: string;
   startDate?: string; // ISO date
   endDate?: string; // ISO date
   isActive: boolean;
+  status?: 'active' | 'pending' | 'expired' | 'denied' | string;
+  approvedBy?: string;
   documentationOnFile?: boolean; // Readonly
   instructorNotes?: string; // Readonly
 }
@@ -363,6 +374,7 @@ export interface ILearnerPersonExtended {
   expectedGraduationDate?: string; // ISO date
   actualGraduationDate?: string; // Readonly, ISO date
   transferCredits?: number; // Readonly
+  age?: number;
 
   // Emergency Contacts (min 1 required)
   emergencyContacts?: IEmergencyContact[];
@@ -382,10 +394,17 @@ export interface ILearnerPersonExtended {
   // Housing & Parking
   housingStatus?: HousingStatus;
   residenceHall?: string; // Show if on-campus
+  buildingName?: string;
   roomNumber?: string; // Show if on-campus
   vehicleOnCampus?: boolean;
   vehicleInfo?: string; // Show if vehicleOnCampus
   parkingPermit?: string; // Readonly
+  hasParkingPermit?: boolean;
+  parkingLotAssignment?: string;
+  parkingPermitNumber?: string;
+  vehicleMake?: string;
+  vehicleModel?: string;
+  vehicleLicensePlate?: string;
 }
 
 /**

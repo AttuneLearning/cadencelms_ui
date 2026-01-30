@@ -16,7 +16,7 @@ import {
 } from '@/test/mocks/data/users';
 
 describe('userApi', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();
@@ -36,7 +36,7 @@ describe('userApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         })
       );
@@ -58,7 +58,7 @@ describe('userApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, ({ request }) => {
+        http.get(`${baseUrl}/users/staff`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json(mockResponse);
         })
@@ -85,7 +85,7 @@ describe('userApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         })
       );
@@ -108,7 +108,7 @@ describe('userApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         })
       );
@@ -132,7 +132,7 @@ describe('userApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         })
       );
@@ -154,7 +154,7 @@ describe('userApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         })
       );
@@ -167,7 +167,7 @@ describe('userApi', () => {
 
     it('should handle API error', async () => {
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(
             { message: 'Internal server error' },
             { status: 500 }
@@ -184,7 +184,7 @@ describe('userApi', () => {
       const userId = 'user-1';
 
       server.use(
-        http.get(`${baseUrl}/admin/users/${userId}`, () => {
+        http.get(`${baseUrl}/users/staff/${userId}`, () => {
           return HttpResponse.json(mockFullUser);
         })
       );
@@ -199,7 +199,7 @@ describe('userApi', () => {
       const userId = 'non-existent';
 
       server.use(
-        http.get(`${baseUrl}/admin/users/${userId}`, () => {
+        http.get(`${baseUrl}/users/staff/${userId}`, () => {
           return HttpResponse.json(
             { message: 'User not found' },
             { status: 404 }
@@ -214,7 +214,7 @@ describe('userApi', () => {
       const userId = 'user-1';
 
       server.use(
-        http.get(`${baseUrl}/admin/users/${userId}`, () => {
+        http.get(`${baseUrl}/users/staff/${userId}`, () => {
           return HttpResponse.json(
             { message: 'Unauthorized' },
             { status: 401 }
@@ -237,7 +237,7 @@ describe('userApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.post(`${baseUrl}/admin/users`, async ({ request }) => {
+        http.post(`${baseUrl}/users/staff`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json(newUser, { status: 201 });
         })
@@ -261,7 +261,7 @@ describe('userApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/admin/users`, () => {
+        http.post(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(
             {
               message: 'Validation failed',
@@ -279,7 +279,7 @@ describe('userApi', () => {
 
     it('should handle duplicate email error', async () => {
       server.use(
-        http.post(`${baseUrl}/admin/users`, () => {
+        http.post(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(
             { message: 'Email already exists' },
             { status: 409 }
@@ -302,7 +302,7 @@ describe('userApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.put(`${baseUrl}/admin/users/${userId}`, async ({ request }) => {
+        http.put(`${baseUrl}/users/staff/${userId}`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json(updatedUser);
         })
@@ -320,7 +320,7 @@ describe('userApi', () => {
       const updatedUser = { ...mockFullUser, firstName: 'Updated' };
 
       server.use(
-        http.put(`${baseUrl}/admin/users/${userId}`, () => {
+        http.put(`${baseUrl}/users/staff/${userId}`, () => {
           return HttpResponse.json(updatedUser);
         })
       );
@@ -334,7 +334,7 @@ describe('userApi', () => {
       const userId = 'non-existent';
 
       server.use(
-        http.put(`${baseUrl}/admin/users/${userId}`, () => {
+        http.put(`${baseUrl}/users/staff/${userId}`, () => {
           return HttpResponse.json(
             { message: 'User not found' },
             { status: 404 }
@@ -352,7 +352,7 @@ describe('userApi', () => {
       let deleteCalled = false;
 
       server.use(
-        http.delete(`${baseUrl}/admin/users/${userId}`, () => {
+        http.delete(`${baseUrl}/users/staff/${userId}`, () => {
           deleteCalled = true;
           return HttpResponse.json({}, { status: 204 });
         })
@@ -367,7 +367,7 @@ describe('userApi', () => {
       const userId = 'non-existent';
 
       server.use(
-        http.delete(`${baseUrl}/admin/users/${userId}`, () => {
+        http.delete(`${baseUrl}/users/staff/${userId}`, () => {
           return HttpResponse.json(
             { message: 'User not found' },
             { status: 404 }
@@ -382,7 +382,7 @@ describe('userApi', () => {
       const userId = 'user-1';
 
       server.use(
-        http.delete(`${baseUrl}/admin/users/${userId}`, () => {
+        http.delete(`${baseUrl}/users/staff/${userId}`, () => {
           return HttpResponse.json(
             { message: 'Forbidden: Cannot delete this user' },
             { status: 403 }
@@ -400,7 +400,7 @@ describe('userApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.post(`${baseUrl}/admin/users/bulk-delete`, async ({ request }) => {
+        http.post(`${baseUrl}/users/staff/bulk-delete`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json({}, { status: 204 });
         })
@@ -415,7 +415,7 @@ describe('userApi', () => {
       let bulkDeleteCalled = false;
 
       server.use(
-        http.post(`${baseUrl}/admin/users/bulk-delete`, async ({ request }) => {
+        http.post(`${baseUrl}/users/staff/bulk-delete`, async ({ request }) => {
           bulkDeleteCalled = true;
           const body = await request.json() as { ids: string[] };
           expect(body?.ids).toHaveLength(0);
@@ -432,7 +432,7 @@ describe('userApi', () => {
       const userIds = ['user-1', 'non-existent'];
 
       server.use(
-        http.post(`${baseUrl}/admin/users/bulk-delete`, () => {
+        http.post(`${baseUrl}/users/staff/bulk-delete`, () => {
           return HttpResponse.json(
             {
               message: 'Some users could not be deleted',
@@ -451,7 +451,7 @@ describe('userApi', () => {
       const userIds = ['user-1', 'user-2'];
 
       server.use(
-        http.post(`${baseUrl}/admin/users/bulk-delete`, () => {
+        http.post(`${baseUrl}/users/staff/bulk-delete`, () => {
           return HttpResponse.json(
             { message: 'Internal server error' },
             { status: 500 }

@@ -11,7 +11,7 @@ import { switchDepartment } from '../authApi';
 import type { SwitchDepartmentResponse, SwitchDepartmentRequest } from '@/shared/types/auth';
 
 describe('authApi - switchDepartment', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
   const endpoint = `${baseUrl}/auth/switch-department`;
 
   beforeEach(() => {

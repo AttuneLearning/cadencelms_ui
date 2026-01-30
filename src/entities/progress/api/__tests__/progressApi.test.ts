@@ -28,7 +28,7 @@ import {
 } from '@/test/mocks/data/progress';
 
 describe('progressApi', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();

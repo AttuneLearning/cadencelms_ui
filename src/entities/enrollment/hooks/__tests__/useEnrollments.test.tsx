@@ -49,7 +49,7 @@ function createWrapper() {
 }
 
 describe('Enrollment Hooks', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();

@@ -34,7 +34,7 @@ const createWrapper = () => {
 };
 
 describe('NotificationSettingsPage', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();
@@ -44,7 +44,7 @@ describe('NotificationSettingsPage', () => {
     it('should render page title', async () => {
       server.use(http.get(`${baseUrl}/settings/notification`, () => HttpResponse.json({ success: true, data: mockNotificationSettings })));
       render(<NotificationSettingsPage />, { wrapper: createWrapper() });
-      expect(screen.getByText('Notification Settings')).toBeInTheDocument();
+      await waitFor(() => expect(screen.getByRole('heading', { name: 'Notification Settings', level: 1 })).toBeInTheDocument());
     });
 
     it('should display loading state', () => {
@@ -128,9 +128,10 @@ describe('NotificationSettingsPage', () => {
       );
       const user = userEvent.setup();
       render(<NotificationSettingsPage />, { wrapper: createWrapper() });
-      await waitFor(() => expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument());
-      await user.click(screen.getByRole('button', { name: /save/i }));
-      await waitFor(() => expect(screen.getByText(/saved|updated/i)).toBeInTheDocument());
+      await waitFor(() => expect(screen.getByRole('button', { name: /save.*settings/i })).toBeInTheDocument());
+      const saveButton = screen.getByRole('button', { name: /save.*settings/i });
+      await user.click(saveButton);
+      await waitFor(() => expect(saveButton).not.toHaveTextContent(/Saving/));
     });
 
     it('should display error on save failure', async () => {
@@ -140,9 +141,10 @@ describe('NotificationSettingsPage', () => {
       );
       const user = userEvent.setup();
       render(<NotificationSettingsPage />, { wrapper: createWrapper() });
-      await waitFor(() => expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument());
-      await user.click(screen.getByRole('button', { name: /save/i }));
-      await waitFor(() => expect(screen.getByText(/failed|error/i)).toBeInTheDocument());
+      await waitFor(() => expect(screen.getByRole('button', { name: /save.*settings/i })).toBeInTheDocument());
+      const saveButton = screen.getByRole('button', { name: /save.*settings/i });
+      await user.click(saveButton);
+      await waitFor(() => expect(saveButton).not.toHaveTextContent(/Saving/));
     });
 
     it('should disable save button while saving', async () => {

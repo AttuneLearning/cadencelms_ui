@@ -48,7 +48,7 @@ const createWrapper = () => {
 };
 
 describe('useExamAttempts hooks', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();

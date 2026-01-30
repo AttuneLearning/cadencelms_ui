@@ -33,7 +33,7 @@ function createWrapper() {
 }
 
 describe('useContentAttempts hooks', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   const mockAttempt: ContentAttempt = {
     id: 'attempt-1',

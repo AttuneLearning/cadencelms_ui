@@ -46,7 +46,7 @@ describe('CreateLearningActivityPage', () => {
       },
     });
 
-    expect(screen.getByText('Create Learning Activity')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /create learning activity/i })).toBeInTheDocument();
     expect(screen.getByText(/add a learning activity to this module/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/title/i)).toBeInTheDocument();
   });

@@ -19,7 +19,7 @@ import type {
 } from '../../model/types';
 
 describe('Audit Log Hooks', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();

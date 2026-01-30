@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -11,22 +12,22 @@ import { personApi } from '@/shared/api/personApi';
 import type { IPerson } from '@/shared/types/person';
 
 // Mock the personApi
-jest.mock('@/shared/api/personApi');
+vi.mock('@/shared/api/personApi');
 
 // Mock all form components
-jest.mock('@/features/profile/ui/BasicInfoForm', () => ({
+vi.mock('@/features/profile/ui/BasicInfoForm', () => ({
   BasicInfoForm: () => <div data-testid="basic-info-form">Basic Info Form</div>,
 }));
 
-jest.mock('@/features/profile/ui/ContactInfoForm', () => ({
+vi.mock('@/features/profile/ui/ContactInfoForm', () => ({
   ContactInfoForm: () => <div data-testid="contact-info-form">Contact Info Form</div>,
 }));
 
-jest.mock('@/features/profile/ui/PreferencesForm', () => ({
+vi.mock('@/features/profile/ui/PreferencesForm', () => ({
   PreferencesForm: () => <div data-testid="preferences-form">Preferences Form</div>,
 }));
 
-jest.mock('@/features/profile/ui/ConsentForm', () => ({
+vi.mock('@/features/profile/ui/ConsentForm', () => ({
   ConsentForm: () => <div data-testid="consent-form">Consent Form</div>,
 }));
 
@@ -96,11 +97,11 @@ const createWrapper = () => {
 
 describe('ProfilePageV2', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should render loading state', () => {
-    (personApi.getMyPerson as jest.Mock).mockImplementation(
+    vi.mocked(personApi.getMyPerson).mockImplementation(
       () => new Promise(() => {}) // Never resolves
     );
 
@@ -110,7 +111,7 @@ describe('ProfilePageV2', () => {
   });
 
   it('should render error state when API fails', async () => {
-    (personApi.getMyPerson as jest.Mock).mockRejectedValue(new Error('API Error'));
+    vi.mocked(personApi.getMyPerson).mockRejectedValue(new Error('API Error'));
 
     render(<ProfilePageV2 />, { wrapper: createWrapper() });
 
@@ -120,7 +121,7 @@ describe('ProfilePageV2', () => {
   });
 
   it('should render profile page with tabs', async () => {
-    (personApi.getMyPerson as jest.Mock).mockResolvedValue({
+    vi.mocked(personApi.getMyPerson).mockResolvedValue({
       success: true,
       data: mockPerson,
     });
@@ -138,7 +139,7 @@ describe('ProfilePageV2', () => {
   });
 
   it('should show basic info form by default', async () => {
-    (personApi.getMyPerson as jest.Mock).mockResolvedValue({
+    vi.mocked(personApi.getMyPerson).mockResolvedValue({
       success: true,
       data: mockPerson,
     });
@@ -151,7 +152,7 @@ describe('ProfilePageV2', () => {
   });
 
   it('should switch tabs', async () => {
-    (personApi.getMyPerson as jest.Mock).mockResolvedValue({
+    vi.mocked(personApi.getMyPerson).mockResolvedValue({
       success: true,
       data: mockPerson,
     });
@@ -189,7 +190,7 @@ describe('ProfilePageV2', () => {
   });
 
   it('should show auto-save help text', async () => {
-    (personApi.getMyPerson as jest.Mock).mockResolvedValue({
+    vi.mocked(personApi.getMyPerson).mockResolvedValue({
       success: true,
       data: mockPerson,
     });
@@ -206,7 +207,7 @@ describe('ProfilePageV2', () => {
   });
 
   it('should fetch person data on mount', async () => {
-    (personApi.getMyPerson as jest.Mock).mockResolvedValue({
+    vi.mocked(personApi.getMyPerson).mockResolvedValue({
       success: true,
       data: mockPerson,
     });
@@ -219,7 +220,7 @@ describe('ProfilePageV2', () => {
   });
 
   it('should update local state on save success', async () => {
-    (personApi.getMyPerson as jest.Mock).mockResolvedValue({
+    vi.mocked(personApi.getMyPerson).mockResolvedValue({
       success: true,
       data: mockPerson,
     });
@@ -235,7 +236,7 @@ describe('ProfilePageV2', () => {
   });
 
   it('should show page title and description', async () => {
-    (personApi.getMyPerson as jest.Mock).mockResolvedValue({
+    vi.mocked(personApi.getMyPerson).mockResolvedValue({
       success: true,
       data: mockPerson,
     });
@@ -252,7 +253,7 @@ describe('ProfilePageV2', () => {
   });
 
   it('should display tab icons', async () => {
-    (personApi.getMyPerson as jest.Mock).mockResolvedValue({
+    vi.mocked(personApi.getMyPerson).mockResolvedValue({
       success: true,
       data: mockPerson,
     });

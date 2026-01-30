@@ -109,6 +109,9 @@ export const ReportJobDetailPage: React.FC = () => {
     );
   }
 
+  const dateRangeStart = job.dateRange.start || job.dateRange.startDate;
+  const dateRangeEnd = job.dateRange.end || job.dateRange.endDate;
+
   const canDownload = job.state === 'ready' || job.state === 'downloaded';
   const canCancel = ['pending', 'queued', 'processing', 'rendering', 'uploading'].includes(job.state);
   const canRetry = job.state === 'failed';
@@ -263,8 +266,13 @@ export const ReportJobDetailPage: React.FC = () => {
             <div>
               <p className="text-sm text-muted-foreground">Date Range</p>
               <p className="font-medium">
-                {format(new Date(job.dateRange.start), 'MMM d, yyyy')} -{' '}
-                {format(new Date(job.dateRange.end), 'MMM d, yyyy')}
+                {dateRangeStart
+                  ? format(new Date(dateRangeStart), 'MMM d, yyyy')
+                  : '-'}{' '}
+                -{' '}
+                {dateRangeEnd
+                  ? format(new Date(dateRangeEnd), 'MMM d, yyyy')
+                  : '-'}
               </p>
             </div>
             <div>
@@ -397,7 +405,7 @@ export const ReportJobDetailPage: React.FC = () => {
         title="Delete Report Job"
         description="Are you sure you want to delete this report job? This action cannot be undone."
         confirmText="Delete"
-        variant="destructive"
+        isDestructive
       />
     </div>
   );

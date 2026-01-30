@@ -469,7 +469,17 @@ describe('ContentList', () => {
   describe('Pagination', () => {
     it('should display pagination info', async () => {
       vi.mocked(useContentModule.useContents).mockReturnValue({
-        data: mockContentListResponse,
+        data: {
+          ...mockContentListResponse,
+          pagination: {
+            page: 1,
+            limit: 20,
+            total: 50,
+            totalPages: 3,
+            hasNext: true,
+            hasPrev: false,
+          },
+        },
         isLoading: false,
         error: null,
       } as any);
@@ -531,7 +541,17 @@ describe('ContentList', () => {
 
     it('should display Next button', async () => {
       vi.mocked(useContentModule.useContents).mockReturnValue({
-        data: mockContentListResponse,
+        data: {
+          ...mockContentListResponse,
+          pagination: {
+            page: 1,
+            limit: 20,
+            total: 50,
+            totalPages: 3,
+            hasNext: true,
+            hasPrev: false,
+          },
+        },
         isLoading: false,
         error: null,
       } as any);

@@ -36,7 +36,7 @@ import type {
 } from '../../model/types';
 
 describe('examAttemptApi', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();

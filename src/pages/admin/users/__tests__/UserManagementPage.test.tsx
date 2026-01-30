@@ -57,7 +57,7 @@ const createWrapper = () => {
 };
 
 describe('UserManagementPage', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();
@@ -73,15 +73,15 @@ describe('UserManagementPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         })
       );
 
       render(<UserManagementPage />, { wrapper: createWrapper() });
 
-      expect(screen.getByText('User Management')).toBeInTheDocument();
-      expect(screen.getByText('Manage user accounts and permissions')).toBeInTheDocument();
+      expect(screen.getByText('Staff Management')).toBeInTheDocument();
+      expect(screen.getByText('Manage staff user accounts and permissions')).toBeInTheDocument();
     });
 
     it('should render Add User button', async () => {
@@ -93,7 +93,7 @@ describe('UserManagementPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         })
       );
@@ -101,13 +101,13 @@ describe('UserManagementPage', () => {
       render(<UserManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /add user/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /add staff/i })).toBeInTheDocument();
       });
     });
 
     it('should display loading state initially', () => {
       server.use(
-        http.get(`${baseUrl}/admin/users`, async () => {
+        http.get(`${baseUrl}/users/staff`, async () => {
           // Delay response to test loading state
           await new Promise(resolve => setTimeout(resolve, 100));
           return HttpResponse.json({ users: [], total: 0, page: 1, pageSize: 20 });
@@ -117,7 +117,7 @@ describe('UserManagementPage', () => {
       render(<UserManagementPage />, { wrapper: createWrapper() });
 
       // Page should render immediately even if data is loading
-      expect(screen.getByText('User Management')).toBeInTheDocument();
+      expect(screen.getByText('Staff Management')).toBeInTheDocument();
     });
   });
 
@@ -131,7 +131,7 @@ describe('UserManagementPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         })
       );
@@ -153,7 +153,7 @@ describe('UserManagementPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         })
       );
@@ -166,7 +166,7 @@ describe('UserManagementPage', () => {
       });
     });
 
-    it('should display user roles as badges', async () => {
+    it('should display departments column', async () => {
       const mockResponse: UserListResponse = {
         users: mockUsers,
         total: mockUsers.length,
@@ -175,7 +175,7 @@ describe('UserManagementPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         })
       );
@@ -183,9 +183,9 @@ describe('UserManagementPage', () => {
       render(<UserManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getAllByText('Staff').length).toBeGreaterThan(0);
-        expect(screen.getAllByText('Learner').length).toBeGreaterThan(0);
-        expect(screen.getAllByText('Admin').length).toBeGreaterThan(0);
+        // The mock users don't have departments, so they should show "No departments"
+        const noDeptElements = screen.getAllByText('No departments');
+        expect(noDeptElements.length).toBeGreaterThan(0);
       });
     });
 
@@ -198,7 +198,7 @@ describe('UserManagementPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         })
       );
@@ -220,7 +220,7 @@ describe('UserManagementPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         })
       );
@@ -242,7 +242,7 @@ describe('UserManagementPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         })
       );
@@ -267,14 +267,14 @@ describe('UserManagementPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         })
       );
 
       render(<UserManagementPage />, { wrapper: createWrapper() });
 
-      const addButton = await screen.findByRole('button', { name: /add user/i });
+      const addButton = await screen.findByRole('button', { name: /add staff/i });
       await user.click(addButton);
 
       await waitFor(() => {
@@ -293,7 +293,7 @@ describe('UserManagementPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         })
       );
@@ -322,7 +322,7 @@ describe('UserManagementPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         })
       );
@@ -355,24 +355,28 @@ describe('UserManagementPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         })
       );
 
       render(<UserManagementPage />, { wrapper: createWrapper() });
 
-      await waitFor(async () => {
-        const menuButtons = screen.getAllByRole('button', { name: /open menu/i });
-        await user.click(menuButtons[0]);
+      // Wait for table to load
+      await waitFor(() => {
+        expect(screen.getByText('John Doe')).toBeInTheDocument();
       });
+
+      // Click the menu button
+      const menuButtons = screen.getAllByRole('button', { name: /open menu/i });
+      await user.click(menuButtons[0]);
 
       const deleteButton = await screen.findByText('Delete User');
       await user.click(deleteButton);
 
       await waitFor(() => {
         expect(screen.getByTestId('confirm-dialog')).toBeInTheDocument();
-        expect(screen.getByText('Delete User')).toBeInTheDocument();
+        expect(screen.getByText('Delete Staff User')).toBeInTheDocument();
       });
     });
 
@@ -388,10 +392,10 @@ describe('UserManagementPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         }),
-        http.delete(`${baseUrl}/admin/users/user-1`, () => {
+        http.delete(`${baseUrl}/users/staff/user-1`, () => {
           deleteCallCount++;
           return HttpResponse.json({}, { status: 204 });
         })
@@ -399,10 +403,14 @@ describe('UserManagementPage', () => {
 
       render(<UserManagementPage />, { wrapper: createWrapper() });
 
-      await waitFor(async () => {
-        const menuButtons = screen.getAllByRole('button', { name: /open menu/i });
-        await user.click(menuButtons[0]);
+      // Wait for table to load
+      await waitFor(() => {
+        expect(screen.getByText('John Doe')).toBeInTheDocument();
       });
+
+      // Click the menu button
+      const menuButtons = screen.getAllByRole('button', { name: /open menu/i });
+      await user.click(menuButtons[0]);
 
       const deleteButton = await screen.findByText('Delete User');
       await user.click(deleteButton);
@@ -426,10 +434,10 @@ describe('UserManagementPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         }),
-        http.delete(`${baseUrl}/admin/users/user-1`, () => {
+        http.delete(`${baseUrl}/users/staff/user-1`, () => {
           return HttpResponse.json(
             { message: 'Failed to delete user' },
             { status: 500 }
@@ -439,10 +447,14 @@ describe('UserManagementPage', () => {
 
       render(<UserManagementPage />, { wrapper: createWrapper() });
 
-      await waitFor(async () => {
-        const menuButtons = screen.getAllByRole('button', { name: /open menu/i });
-        await user.click(menuButtons[0]);
+      // Wait for table to load
+      await waitFor(() => {
+        expect(screen.getByText('John Doe')).toBeInTheDocument();
       });
+
+      // Click the menu button
+      const menuButtons = screen.getAllByRole('button', { name: /open menu/i });
+      await user.click(menuButtons[0]);
 
       const deleteButton = await screen.findByText('Delete User');
       await user.click(deleteButton);
@@ -469,7 +481,7 @@ describe('UserManagementPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         })
       );
@@ -503,7 +515,7 @@ describe('UserManagementPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         })
       );
@@ -527,7 +539,7 @@ describe('UserManagementPage', () => {
           await user.click(deleteButton);
 
           await waitFor(() => {
-            expect(screen.queryByText('Delete Multiple Users')).toBeInTheDocument();
+            expect(screen.queryByText('Delete Multiple Staff Users')).toBeInTheDocument();
           });
         }
       }
@@ -535,7 +547,7 @@ describe('UserManagementPage', () => {
 
     it('should perform bulk delete when confirmed', async () => {
       const user = userEvent.setup();
-      let bulkDeleteCalled = false;
+      let deleteCallCount = 0;
 
       const mockResponse: UserListResponse = {
         users: mockUsers.slice(0, 2),
@@ -545,11 +557,12 @@ describe('UserManagementPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         }),
-        http.post(`${baseUrl}/admin/users/bulk-delete`, () => {
-          bulkDeleteCalled = true;
+        // Bulk delete actually makes individual DELETE calls for each user
+        http.delete(`${baseUrl}/users/staff/:userId`, () => {
+          deleteCallCount++;
           return HttpResponse.json({}, { status: 204 });
         })
       );
@@ -571,12 +584,12 @@ describe('UserManagementPage', () => {
         if (deleteButton) {
           await user.click(deleteButton);
 
-          const confirmButton = screen.queryByText(/delete all/i);
+          const confirmButton = screen.queryByRole('button', { name: /delete all/i });
           if (confirmButton) {
             await user.click(confirmButton);
 
             await waitFor(() => {
-              expect(bulkDeleteCalled).toBe(true);
+              expect(deleteCallCount).toBeGreaterThan(0);
             });
           }
         }
@@ -594,7 +607,7 @@ describe('UserManagementPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(mockResponse);
         })
       );
@@ -602,7 +615,7 @@ describe('UserManagementPage', () => {
       render(<UserManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByPlaceholderText(/search users/i)).toBeInTheDocument();
+        expect(screen.getByPlaceholderText(/search staff/i)).toBeInTheDocument();
       });
     });
   });
@@ -610,7 +623,7 @@ describe('UserManagementPage', () => {
   describe('Error Handling', () => {
     it('should handle API error when loading users', async () => {
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(
             { message: 'Internal server error' },
             { status: 500 }
@@ -622,13 +635,13 @@ describe('UserManagementPage', () => {
 
       // Component should handle error gracefully
       await waitFor(() => {
-        expect(screen.getByText('User Management')).toBeInTheDocument();
+        expect(screen.getByText('Staff Management')).toBeInTheDocument();
       });
     });
 
     it('should handle network errors', async () => {
       server.use(
-        http.get(`${baseUrl}/admin/users`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.error();
         })
       );
@@ -637,7 +650,7 @@ describe('UserManagementPage', () => {
 
       // Component should handle error gracefully
       await waitFor(() => {
-        expect(screen.getByText('User Management')).toBeInTheDocument();
+        expect(screen.getByText('Staff Management')).toBeInTheDocument();
       });
     });
   });

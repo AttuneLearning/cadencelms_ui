@@ -36,7 +36,7 @@ import {
 } from '@/test/mocks/data/enrollments';
 
 describe('enrollmentApi', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();

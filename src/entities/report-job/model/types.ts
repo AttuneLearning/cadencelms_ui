@@ -56,11 +56,14 @@ export type ReportJobPriority =
  */
 export interface ReportJobResult {
   fileUrl: string;
+  fileName?: string;
+  mimeType?: string;
   fileSize: number;
   rowCount: number;
   pageCount?: number;
   downloadCount: number;
   lastDownloadedAt?: string;
+  expiresAt?: string;
   checksum?: string;
 }
 
@@ -87,6 +90,9 @@ export interface ReportJobError {
  * Performance metrics for report job
  */
 export interface ReportJobMetrics {
+  progress?: number;
+  message?: string;
+  duration?: number;
   queueWaitTimeMs?: number;
   queryTimeMs?: number;
   renderTimeMs?: number;
@@ -218,6 +224,7 @@ export interface ReportJobStatusResponse {
   progress: number;
   estimatedTimeRemaining?: number;
   fileUrl?: string;
+  message?: string;
   error?: Pick<ReportJobError, 'code' | 'message'>;
 }
 

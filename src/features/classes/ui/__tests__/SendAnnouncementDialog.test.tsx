@@ -124,11 +124,24 @@ describe('SendAnnouncementDialog', () => {
       { wrapper: createWrapper() }
     );
 
-    const sendButton = screen.getByRole('button', { name: /^send$/i });
-    await user.click(sendButton);
+    // Initially the send button should be disabled (form is invalid)
+    const sendButton = screen.getByRole('button', { name: /send/i });
+    expect(sendButton).toBeDisabled();
 
+    // Fill in subject field
+    const subjectInput = screen.getByLabelText(/subject/i);
+    await user.type(subjectInput, 'Test Subject');
+
+    // Send button still disabled (message is empty)
+    expect(sendButton).toBeDisabled();
+
+    // Fill in message field
+    const messageInput = screen.getByLabelText(/message/i);
+    await user.type(messageInput, 'Test Message');
+
+    // Now send button should be enabled
     await waitFor(() => {
-      expect(screen.getByText(/subject is required/i)).toBeInTheDocument();
+      expect(sendButton).not.toBeDisabled();
     });
   });
 

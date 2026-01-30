@@ -45,7 +45,7 @@ const createWrapper = () => {
 };
 
 describe('AcademicYearManagementPage', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();
@@ -54,26 +54,32 @@ describe('AcademicYearManagementPage', () => {
   describe('Page Rendering', () => {
     it('should render page title and description', async () => {
       server.use(
-        http.get(`${baseUrl}/academic-years`, () =>
+        http.get(`${baseUrl}/calendar/years`, () =>
           HttpResponse.json({
-            years: [],
-            pagination: { page: 1, limit: 50, total: 0, totalPages: 0 },
+            success: true,
+            data: {
+              years: [],
+              pagination: { page: 1, limit: 50, total: 0, totalPages: 0 },
+            },
           })
         )
       );
 
       render(<AcademicYearManagementPage />, { wrapper: createWrapper() });
 
-      expect(screen.getByText('Academic Year Management')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /academic year management/i, level: 1 })).toBeInTheDocument();
       expect(screen.getByText(/manage academic years and terms/i)).toBeInTheDocument();
     });
 
     it('should render Add Academic Year button', async () => {
       server.use(
-        http.get(`${baseUrl}/academic-years`, () =>
+        http.get(`${baseUrl}/calendar/years`, () =>
           HttpResponse.json({
-            years: [],
-            pagination: { page: 1, limit: 50, total: 0, totalPages: 0 },
+            success: true,
+            data: {
+              years: [],
+              pagination: { page: 1, limit: 50, total: 0, totalPages: 0 },
+            },
           })
         )
       );
@@ -89,10 +95,13 @@ describe('AcademicYearManagementPage', () => {
   describe('Academic Year List Display', () => {
     it('should display list of academic years', async () => {
       server.use(
-        http.get(`${baseUrl}/academic-years`, () =>
+        http.get(`${baseUrl}/calendar/years`, () =>
           HttpResponse.json({
-            years: mockAcademicYears,
-            pagination: { page: 1, limit: 50, total: mockAcademicYears.length, totalPages: 1 },
+            success: true,
+            data: {
+              years: mockAcademicYears,
+              pagination: { page: 1, limit: 50, total: mockAcademicYears.length, totalPages: 1 },
+            },
           })
         )
       );
@@ -107,10 +116,13 @@ describe('AcademicYearManagementPage', () => {
 
     it('should display current academic year indicator', async () => {
       server.use(
-        http.get(`${baseUrl}/academic-years`, () =>
+        http.get(`${baseUrl}/calendar/years`, () =>
           HttpResponse.json({
-            years: mockAcademicYears,
-            pagination: { page: 1, limit: 50, total: mockAcademicYears.length, totalPages: 1 },
+            success: true,
+            data: {
+              years: mockAcademicYears,
+              pagination: { page: 1, limit: 50, total: mockAcademicYears.length, totalPages: 1 },
+            },
           })
         )
       );
@@ -124,10 +136,13 @@ describe('AcademicYearManagementPage', () => {
 
     it('should display class counts', async () => {
       server.use(
-        http.get(`${baseUrl}/academic-years`, () =>
+        http.get(`${baseUrl}/calendar/years`, () =>
           HttpResponse.json({
-            years: mockAcademicYears,
-            pagination: { page: 1, limit: 50, total: mockAcademicYears.length, totalPages: 1 },
+            success: true,
+            data: {
+              years: mockAcademicYears,
+              pagination: { page: 1, limit: 50, total: mockAcademicYears.length, totalPages: 1 },
+            },
           })
         )
       );
@@ -143,10 +158,13 @@ describe('AcademicYearManagementPage', () => {
   describe('CRUD Operations', () => {
     it('should open create dialog when Add Academic Year button is clicked', async () => {
       server.use(
-        http.get(`${baseUrl}/academic-years`, () =>
+        http.get(`${baseUrl}/calendar/years`, () =>
           HttpResponse.json({
-            years: [],
-            pagination: { page: 1, limit: 50, total: 0, totalPages: 0 },
+            success: true,
+            data: {
+              years: [],
+              pagination: { page: 1, limit: 50, total: 0, totalPages: 0 },
+            },
           })
         )
       );
@@ -158,16 +176,19 @@ describe('AcademicYearManagementPage', () => {
       await user.click(addButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/create new academic year|create academic year/i)).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: /create new academic year|create academic year/i })).toBeInTheDocument();
       });
     });
 
     it('should open edit dialog when Edit button is clicked', async () => {
       server.use(
-        http.get(`${baseUrl}/academic-years`, () =>
+        http.get(`${baseUrl}/calendar/years`, () =>
           HttpResponse.json({
-            years: mockAcademicYears,
-            pagination: { page: 1, limit: 50, total: mockAcademicYears.length, totalPages: 1 },
+            success: true,
+            data: {
+              years: mockAcademicYears,
+              pagination: { page: 1, limit: 50, total: mockAcademicYears.length, totalPages: 1 },
+            },
           })
         )
       );
@@ -190,14 +211,17 @@ describe('AcademicYearManagementPage', () => {
 
     it('should delete academic year', async () => {
       server.use(
-        http.get(`${baseUrl}/academic-years`, () =>
+        http.get(`${baseUrl}/calendar/years`, () =>
           HttpResponse.json({
-            years: mockAcademicYears,
-            pagination: { page: 1, limit: 50, total: mockAcademicYears.length, totalPages: 1 },
+            success: true,
+            data: {
+              years: mockAcademicYears,
+              pagination: { page: 1, limit: 50, total: mockAcademicYears.length, totalPages: 1 },
+            },
           })
         ),
-        http.delete(`${baseUrl}/academic-years/:id`, () =>
-          HttpResponse.json({ success: true })
+        http.delete(`${baseUrl}/calendar/years/:id`, () =>
+          HttpResponse.json({ success: true, data: null })
         )
       );
 
@@ -213,10 +237,13 @@ describe('AcademicYearManagementPage', () => {
   describe('Date Validation', () => {
     it('should validate end date is after start date', async () => {
       server.use(
-        http.get(`${baseUrl}/academic-years`, () =>
+        http.get(`${baseUrl}/calendar/years`, () =>
           HttpResponse.json({
-            years: [],
-            pagination: { page: 1, limit: 50, total: 0, totalPages: 0 },
+            success: true,
+            data: {
+              years: [],
+              pagination: { page: 1, limit: 50, total: 0, totalPages: 0 },
+            },
           })
         )
       );
@@ -227,7 +254,7 @@ describe('AcademicYearManagementPage', () => {
       await userEvent.setup().click(addButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/create new academic year|create academic year/i)).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: /create new academic year|create academic year/i })).toBeInTheDocument();
       });
     });
   });
@@ -235,10 +262,13 @@ describe('AcademicYearManagementPage', () => {
   describe('Current Year Management', () => {
     it('should only allow one current academic year', async () => {
       server.use(
-        http.get(`${baseUrl}/academic-years`, () =>
+        http.get(`${baseUrl}/calendar/years`, () =>
           HttpResponse.json({
-            years: mockAcademicYears,
-            pagination: { page: 1, limit: 50, total: mockAcademicYears.length, totalPages: 1 },
+            success: true,
+            data: {
+              years: mockAcademicYears,
+              pagination: { page: 1, limit: 50, total: mockAcademicYears.length, totalPages: 1 },
+            },
           })
         )
       );
@@ -254,9 +284,9 @@ describe('AcademicYearManagementPage', () => {
   describe('Error Handling', () => {
     it('should display error message on load failure', async () => {
       server.use(
-        http.get(`${baseUrl}/academic-years`, () =>
+        http.get(`${baseUrl}/calendar/years`, () =>
           HttpResponse.json(
-            { message: 'Failed to load academic years' },
+            { success: false, message: 'Failed to load academic years' },
             { status: 500 }
           )
         )
@@ -273,10 +303,13 @@ describe('AcademicYearManagementPage', () => {
   describe('Accessibility', () => {
     it('should have proper ARIA labels', async () => {
       server.use(
-        http.get(`${baseUrl}/academic-years`, () =>
+        http.get(`${baseUrl}/calendar/years`, () =>
           HttpResponse.json({
-            years: mockAcademicYears,
-            pagination: { page: 1, limit: 50, total: mockAcademicYears.length, totalPages: 1 },
+            success: true,
+            data: {
+              years: mockAcademicYears,
+              pagination: { page: 1, limit: 50, total: mockAcademicYears.length, totalPages: 1 },
+            },
           })
         )
       );
@@ -284,7 +317,7 @@ describe('AcademicYearManagementPage', () => {
       render(<AcademicYearManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        const heading = screen.getByRole('heading', { name: /academic year management/i });
+        const heading = screen.getByRole('heading', { name: /academic year management/i, level: 1 });
         expect(heading).toBeInTheDocument();
       });
     });

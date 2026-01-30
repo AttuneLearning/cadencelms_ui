@@ -44,7 +44,7 @@ import {
 } from '@/test/mocks/data/exercises';
 
 describe('exerciseApi', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();
@@ -898,7 +898,11 @@ describe('exerciseApi', () => {
               ...mockAddQuestionResponse,
               question: {
                 ...mockAddQuestionResponse.question,
-                ...tfQuestion,
+                questionText: tfQuestion.questionText,
+                questionTypes: ['true_false'],
+                correctAnswers: [tfQuestion.correctAnswer],
+                points: tfQuestion.points,
+                difficulty: tfQuestion.difficulty,
                 id: 'q-new',
               },
             },

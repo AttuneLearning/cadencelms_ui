@@ -17,6 +17,7 @@
  * - media replaces legacy video
  */
 export type LearningUnitType =
+  | 'video'
   | 'media'
   | 'document'
   | 'scorm'

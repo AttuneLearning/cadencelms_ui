@@ -24,7 +24,7 @@ import {
 import type { IPersonUpdateRequest } from '@/shared/types/person';
 
 describe('personApi', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();
@@ -37,7 +37,7 @@ describe('personApi', () => {
   describe('getMyPerson', () => {
     it('should fetch current user person data', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/users/me/person`, () => {
+        http.get(`${baseUrl}/users/me/person`, () => {
           return HttpResponse.json(mockPersonResponse);
         })
       );
@@ -58,7 +58,7 @@ describe('personApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/users/me/person`, () => {
+        http.get(`${baseUrl}/users/me/person`, () => {
           return HttpResponse.json(minimalResponse);
         })
       );
@@ -72,7 +72,7 @@ describe('personApi', () => {
 
     it('should handle 401 unauthorized error', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/users/me/person`, () => {
+        http.get(`${baseUrl}/users/me/person`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -89,7 +89,7 @@ describe('personApi', () => {
 
     it('should handle 404 person not found error', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/users/me/person`, () => {
+        http.get(`${baseUrl}/users/me/person`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -106,7 +106,7 @@ describe('personApi', () => {
 
     it('should handle network errors', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/users/me/person`, () => {
+        http.get(`${baseUrl}/users/me/person`, () => {
           return HttpResponse.error();
         })
       );
@@ -135,7 +135,7 @@ describe('personApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.put(`${baseUrl}/api/v2/users/me/person`, async ({ request }) => {
+        http.put(`${baseUrl}/users/me/person`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json(updatedResponse);
         })
@@ -163,7 +163,7 @@ describe('personApi', () => {
       };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/users/me/person`, () => {
+        http.put(`${baseUrl}/users/me/person`, () => {
           return HttpResponse.json(updatedResponse);
         })
       );
@@ -195,7 +195,7 @@ describe('personApi', () => {
       };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/users/me/person`, () => {
+        http.put(`${baseUrl}/users/me/person`, () => {
           return HttpResponse.json(updatedResponse);
         })
       );
@@ -212,7 +212,7 @@ describe('personApi', () => {
       };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/users/me/person`, () => {
+        http.put(`${baseUrl}/users/me/person`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -234,7 +234,7 @@ describe('personApi', () => {
       const updateData: IPersonUpdateRequest = { bio: 'Test' };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/users/me/person`, () => {
+        http.put(`${baseUrl}/users/me/person`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -259,7 +259,7 @@ describe('personApi', () => {
       };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/users/me/person`, () => {
+        http.put(`${baseUrl}/users/me/person`, () => {
           return HttpResponse.json(response);
         })
       );
@@ -273,7 +273,7 @@ describe('personApi', () => {
   describe('getMyPersonExtended', () => {
     it('should fetch learner extended person data', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/users/me/person/extended`, () => {
+        http.get(`${baseUrl}/users/me/person/extended`, () => {
           return HttpResponse.json(mockPersonExtendedLearnerResponse);
         })
       );
@@ -290,7 +290,7 @@ describe('personApi', () => {
 
     it('should fetch staff extended person data', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/users/me/person/extended`, () => {
+        http.get(`${baseUrl}/users/me/person/extended`, () => {
           return HttpResponse.json(mockPersonExtendedStaffResponse);
         })
       );
@@ -307,7 +307,7 @@ describe('personApi', () => {
 
     it('should handle 401 unauthorized error', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/users/me/person/extended`, () => {
+        http.get(`${baseUrl}/users/me/person/extended`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -324,7 +324,7 @@ describe('personApi', () => {
 
     it('should handle 404 extended data not found', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/users/me/person/extended`, () => {
+        http.get(`${baseUrl}/users/me/person/extended`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -364,7 +364,7 @@ describe('personApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.put(`${baseUrl}/api/v2/users/me/person/extended`, async ({ request }) => {
+        http.put(`${baseUrl}/users/me/person/extended`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json(updatedResponse);
         })
@@ -399,7 +399,7 @@ describe('personApi', () => {
       };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/users/me/person/extended`, () => {
+        http.put(`${baseUrl}/users/me/person/extended`, () => {
           return HttpResponse.json(updatedResponse);
         })
       );
@@ -419,7 +419,7 @@ describe('personApi', () => {
       };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/users/me/person/extended`, () => {
+        http.put(`${baseUrl}/users/me/person/extended`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -441,7 +441,7 @@ describe('personApi', () => {
       const updateData = { bio: 'Test' };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/users/me/person/extended`, () => {
+        http.put(`${baseUrl}/users/me/person/extended`, () => {
           return HttpResponse.json(
             {
               success: false,

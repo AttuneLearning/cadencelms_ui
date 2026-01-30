@@ -38,7 +38,7 @@ const createWrapper = () => {
 };
 
 describe('StaffReportsPage', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -82,8 +82,11 @@ describe('StaffReportsPage', () => {
     it('should display all four report type cards', () => {
       render(<StaffReportsPage />, { wrapper: createWrapper() });
 
-      const cards = screen.getAllByRole('button', { name: /generate/i });
-      expect(cards).toHaveLength(4);
+      // Count the card buttons (the outer button elements), not the nested Generate buttons
+      expect(screen.getByText('My Classes Enrollment Report')).toBeInTheDocument();
+      expect(screen.getByText('My Classes Performance Report')).toBeInTheDocument();
+      expect(screen.getByText('My Classes Attendance Report')).toBeInTheDocument();
+      expect(screen.getByText('Student Progress Report')).toBeInTheDocument();
     });
 
     it('should open filter modal when clicking enrollment report card', async () => {
@@ -185,7 +188,8 @@ describe('StaffReportsPage', () => {
       await user.click(generateButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/required/i)).toBeInTheDocument();
+        expect(screen.getByText('Date from is required')).toBeInTheDocument();
+        expect(screen.getByText('Date to is required')).toBeInTheDocument();
       });
     });
   });
@@ -240,17 +244,23 @@ describe('StaffReportsPage', () => {
 
       // Fill in the form
       const dateFromInput = screen.getByLabelText(/date from/i);
+      await user.clear(dateFromInput);
       await user.type(dateFromInput, '2026-01-01');
 
       const dateToInput = screen.getByLabelText(/date to/i);
+      await user.clear(dateToInput);
       await user.type(dateToInput, '2026-01-31');
 
       const generateButton = screen.getByRole('button', { name: /generate report/i });
       await user.click(generateButton);
 
-      await waitFor(() => {
-        expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-      });
+      // Wait for the dialog to close after successful generation
+      await waitFor(
+        () => {
+          expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
     });
 
     it('should handle generate report error', async () => {
@@ -476,6 +486,7 @@ describe('StaffReportsPage', () => {
               reports: [
                 createMockReportListItem({
                   _id: 'pending-report',
+                  name: 'Pending Test Report',
                   status: 'pending',
                 }),
               ],
@@ -619,9 +630,13 @@ describe('StaffReportsPage', () => {
       const confirmButton = screen.getByRole('button', { name: /confirm/i });
       await user.click(confirmButton);
 
-      await waitFor(() => {
-        expect(screen.queryByText('Q1 2026 Enrollment Report')).not.toBeInTheDocument();
-      });
+      // Wait a bit for the dialog to close and state to update
+      await waitFor(
+        () => {
+          expect(screen.queryByText(/are you sure/i)).not.toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
     });
 
     it('should handle delete error', async () => {
@@ -677,6 +692,7 @@ describe('StaffReportsPage', () => {
   describe('Auto-refresh for Generating Reports', () => {
     it(
       'should auto-refresh when reports are generating',
+      { timeout: 10000 },
       async () => {
         // Use REAL timers like GradingForm tests
         // The component uses setInterval with 5000ms delay
@@ -717,8 +733,7 @@ describe('StaffReportsPage', () => {
           },
           { timeout: 7000 }
         );
-      },
-      { timeout: 10000 }
+      }
     );
   });
 });

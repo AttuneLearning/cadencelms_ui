@@ -36,7 +36,7 @@ const createWrapper = () => {
 };
 
 describe('GradingPage', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -85,7 +85,7 @@ describe('GradingPage', () => {
       ];
 
       server.use(
-        http.get(`${baseUrl}/api/exam-attempts`, () => {
+        http.get(`${baseUrl}/exam-attempts`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -113,7 +113,7 @@ describe('GradingPage', () => {
 
     it('should display empty state when no submissions', async () => {
       server.use(
-        http.get(`${baseUrl}/api/exam-attempts`, () => {
+        http.get(`${baseUrl}/exam-attempts`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -140,7 +140,7 @@ describe('GradingPage', () => {
 
     it('should handle API errors gracefully', async () => {
       server.use(
-        http.get(`${baseUrl}/api/exam-attempts`, () => {
+        http.get(`${baseUrl}/exam-attempts`, () => {
           return HttpResponse.json(
             { success: false, error: 'Failed to fetch submissions' },
             { status: 500 }
@@ -161,7 +161,7 @@ describe('GradingPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/api/exam-attempts`, ({ request }) => {
+        http.get(`${baseUrl}/exam-attempts`, ({ request }) => {
           const url = new URL(request.url);
           const status = url.searchParams.get('status');
 
@@ -220,7 +220,7 @@ describe('GradingPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/api/exam-attempts`, ({ request }) => {
+        http.get(`${baseUrl}/exam-attempts`, ({ request }) => {
           const url = new URL(request.url);
           const search = url.searchParams.get('search');
 
@@ -284,7 +284,7 @@ describe('GradingPage', () => {
   describe('Pagination', () => {
     it('should display pagination controls', async () => {
       server.use(
-        http.get(`${baseUrl}/api/exam-attempts`, () => {
+        http.get(`${baseUrl}/exam-attempts`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -318,7 +318,7 @@ describe('GradingPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/api/exam-attempts`, ({ request }) => {
+        http.get(`${baseUrl}/exam-attempts`, ({ request }) => {
           const url = new URL(request.url);
           const page = parseInt(url.searchParams.get('page') || '1');
 
@@ -364,7 +364,7 @@ describe('GradingPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/api/exam-attempts`, () => {
+        http.get(`${baseUrl}/exam-attempts`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -372,6 +372,7 @@ describe('GradingPage', () => {
                 createMockExamAttempt({
                   id: 'attempt-1',
                   status: 'submitted',
+                  learnerName: 'John Doe',
                 }),
               ],
               pagination: {
@@ -389,12 +390,14 @@ describe('GradingPage', () => {
 
       render(<GradingPage />, { wrapper: createWrapper() });
 
+      // Wait for data to load and checkboxes to appear
       await waitFor(() => {
-        expect(screen.getByRole('checkbox', { name: /select/i })).toBeInTheDocument();
+        expect(screen.getByText('John Doe')).toBeInTheDocument();
       });
 
-      const checkbox = screen.getByRole('checkbox', { name: /select/i });
-      await user.click(checkbox);
+      const checkboxes = screen.getAllByRole('checkbox');
+      // First checkbox is the select-all checkbox
+      await user.click(checkboxes[0]);
 
       await waitFor(() => {
         expect(screen.getByText(/1 selected/i)).toBeInTheDocument();
@@ -408,7 +411,7 @@ describe('GradingPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/api/exam-attempts`, () => {
+        http.get(`${baseUrl}/exam-attempts`, () => {
           return HttpResponse.json({
             success: true,
             data: {

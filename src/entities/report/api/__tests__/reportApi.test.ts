@@ -30,7 +30,7 @@ import type {
 } from '../../model/types';
 
 describe('reportApi', () => {
-  const baseUrl = env.apiBaseUrl; // Already includes /api/v2
+  const baseUrl = env.apiFullUrl; // Already includes /api/v2
 
   // Mock data
   const mockReport: Report = {
@@ -761,7 +761,7 @@ describe('reportApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -789,7 +789,7 @@ describe('reportApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, ({ request }) => {
+        http.get(`${baseUrl}/reports/templates`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -818,7 +818,7 @@ describe('reportApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, ({ request }) => {
+        http.get(`${baseUrl}/reports/templates`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -847,7 +847,7 @@ describe('reportApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, ({ request }) => {
+        http.get(`${baseUrl}/reports/templates`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -864,7 +864,7 @@ describe('reportApi', () => {
 
     it('should handle API error', async () => {
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json(
             { success: false, message: 'Internal server error' },
             { status: 500 }
@@ -885,7 +885,7 @@ describe('reportApi', () => {
       const templateId = 'template-1';
 
       server.use(
-        http.get(`${baseUrl}/report-templates/${templateId}`, () => {
+        http.get(`${baseUrl}/reports/templates/${templateId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockTemplate,
@@ -903,7 +903,7 @@ describe('reportApi', () => {
       const templateId = 'non-existent';
 
       server.use(
-        http.get(`${baseUrl}/report-templates/${templateId}`, () => {
+        http.get(`${baseUrl}/reports/templates/${templateId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Template not found' },
             { status: 404 }
@@ -943,7 +943,7 @@ describe('reportApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.post(`${baseUrl}/report-templates`, async ({ request }) => {
+        http.post(`${baseUrl}/reports/templates`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json(
             {
@@ -982,7 +982,7 @@ describe('reportApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/report-templates`, () => {
+        http.post(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json(
             {
               success: true,
@@ -1009,7 +1009,7 @@ describe('reportApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/report-templates`, () => {
+        http.post(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -1034,7 +1034,7 @@ describe('reportApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/report-templates`, () => {
+        http.post(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -1072,7 +1072,7 @@ describe('reportApi', () => {
 
       server.use(
         http.patch(
-          `${baseUrl}/report-templates/${templateId}`,
+          `${baseUrl}/reports/templates/${templateId}`,
           async ({ request }) => {
             capturedRequestBody = await request.json();
             return HttpResponse.json({
@@ -1103,7 +1103,7 @@ describe('reportApi', () => {
       };
 
       server.use(
-        http.patch(`${baseUrl}/report-templates/${templateId}`, () => {
+        http.patch(`${baseUrl}/reports/templates/${templateId}`, () => {
           return HttpResponse.json({
             success: true,
             data: updatedTemplate,
@@ -1121,7 +1121,7 @@ describe('reportApi', () => {
       const payload = { name: 'Updated' };
 
       server.use(
-        http.patch(`${baseUrl}/report-templates/${templateId}`, () => {
+        http.patch(`${baseUrl}/reports/templates/${templateId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Template not found' },
             { status: 404 }
@@ -1142,7 +1142,7 @@ describe('reportApi', () => {
       const templateId = 'template-2';
 
       server.use(
-        http.delete(`${baseUrl}/report-templates/${templateId}`, () => {
+        http.delete(`${baseUrl}/reports/templates/${templateId}`, () => {
           return HttpResponse.json({
             success: true,
             message: 'Template deleted successfully',
@@ -1157,7 +1157,7 @@ describe('reportApi', () => {
       const templateId = 'non-existent';
 
       server.use(
-        http.delete(`${baseUrl}/report-templates/${templateId}`, () => {
+        http.delete(`${baseUrl}/reports/templates/${templateId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Template not found' },
             { status: 404 }
@@ -1172,7 +1172,7 @@ describe('reportApi', () => {
       const templateId = 'template-1';
 
       server.use(
-        http.delete(`${baseUrl}/report-templates/${templateId}`, () => {
+        http.delete(`${baseUrl}/reports/templates/${templateId}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -1191,7 +1191,7 @@ describe('reportApi', () => {
       const templateId = 'template-1';
 
       server.use(
-        http.delete(`${baseUrl}/report-templates/${templateId}`, () => {
+        http.delete(`${baseUrl}/reports/templates/${templateId}`, () => {
           return HttpResponse.json(
             {
               success: false,

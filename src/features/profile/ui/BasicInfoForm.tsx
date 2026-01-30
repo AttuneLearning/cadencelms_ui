@@ -50,11 +50,11 @@ export const BasicInfoForm: React.FC<BasicInfoFormProps> = ({ person, onSaveSucc
   const validate = useCallback((data: IPersonUpdateRequest): boolean => {
     const errors: Record<string, string> = {};
 
-    if (data.firstName && data.firstName.trim().length < 1) {
+    if (!data.firstName || data.firstName.trim().length < 1) {
       errors.firstName = 'First name is required';
     }
 
-    if (data.lastName && data.lastName.trim().length < 1) {
+    if (!data.lastName || data.lastName.trim().length < 1) {
       errors.lastName = 'Last name is required';
     }
 

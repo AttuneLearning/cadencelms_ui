@@ -23,7 +23,7 @@ import {
 } from '@/test/mocks/data/programs';
 
 describe('programApi', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();

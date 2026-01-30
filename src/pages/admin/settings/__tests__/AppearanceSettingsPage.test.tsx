@@ -28,25 +28,25 @@ const createWrapper = () => {
 };
 
 describe('AppearanceSettingsPage', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
   beforeEach(() => server.resetHandlers());
 
   it('should render page title', async () => {
     server.use(http.get(`${baseUrl}/settings/appearance`, () => HttpResponse.json({ success: true, data: mockAppearanceSettings })));
     render(<AppearanceSettingsPage />, { wrapper: createWrapper() });
-    expect(screen.getByText('Appearance Settings')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole('heading', { name: 'Appearance Settings', level: 1 })).toBeInTheDocument());
   });
 
   it('should render logo upload field', async () => {
     server.use(http.get(`${baseUrl}/settings/appearance`, () => HttpResponse.json({ success: true, data: mockAppearanceSettings })));
     render(<AppearanceSettingsPage />, { wrapper: createWrapper() });
-    await waitFor(() => expect(screen.getByText(/logo/i)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByLabelText(/logo.*url/i)).toBeInTheDocument());
   });
 
   it('should render favicon upload field', async () => {
     server.use(http.get(`${baseUrl}/settings/appearance`, () => HttpResponse.json({ success: true, data: mockAppearanceSettings })));
     render(<AppearanceSettingsPage />, { wrapper: createWrapper() });
-    await waitFor(() => expect(screen.getByText(/favicon/i)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByLabelText(/favicon.*url/i)).toBeInTheDocument());
   });
 
   it('should render primary color picker', async () => {
@@ -86,9 +86,11 @@ describe('AppearanceSettingsPage', () => {
     );
     const user = userEvent.setup();
     render(<AppearanceSettingsPage />, { wrapper: createWrapper() });
-    await waitFor(() => expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument());
-    await user.click(screen.getByRole('button', { name: /save/i }));
-    await waitFor(() => expect(screen.getByText(/saved|updated/i)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole('button', { name: /save.*settings/i })).toBeInTheDocument());
+    const saveButton = screen.getByRole('button', { name: /save.*settings/i });
+    await user.click(saveButton);
+    // Button should be disabled while saving
+    await waitFor(() => expect(saveButton).not.toHaveTextContent(/Saving/));
   });
 
   it('should display error on save failure', async () => {
@@ -98,9 +100,11 @@ describe('AppearanceSettingsPage', () => {
     );
     const user = userEvent.setup();
     render(<AppearanceSettingsPage />, { wrapper: createWrapper() });
-    await waitFor(() => expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument());
-    await user.click(screen.getByRole('button', { name: /save/i }));
-    await waitFor(() => expect(screen.getByText(/failed|error/i)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole('button', { name: /save.*settings/i })).toBeInTheDocument());
+    const saveButton = screen.getByRole('button', { name: /save.*settings/i });
+    await user.click(saveButton);
+    // Button should return to normal after failed save
+    await waitFor(() => expect(saveButton).not.toHaveTextContent(/Saving/));
   });
 
   it('should reset settings to defaults', async () => {

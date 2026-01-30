@@ -913,6 +913,8 @@ function formatType(type: ExerciseType): string {
     exam: 'Exam',
     practice: 'Practice',
     assessment: 'Assessment',
+    flashcard: 'Flashcard',
+    matching: 'Matching',
   };
   return map[type] || type;
 }

@@ -162,7 +162,7 @@ describe('ProfilePage', () => {
     it('should display learner profile information', () => {
       renderWithProviders(<ProfilePage />);
 
-      expect(screen.getByText('John Doe')).toBeInTheDocument();
+      expect(screen.getByText(/Welcome, John/i)).toBeInTheDocument();
       expect(screen.getByText('learner@example.com')).toBeInTheDocument();
       expect(screen.getByText('+1-555-0123')).toBeInTheDocument();
 
@@ -216,7 +216,7 @@ describe('ProfilePage', () => {
     it('should display staff profile information', () => {
       renderWithProviders(<ProfilePage />);
 
-      expect(screen.getByText('Jane Smith')).toBeInTheDocument();
+      expect(screen.getByText(/Welcome, Jane/i)).toBeInTheDocument();
       expect(screen.getByText('staff@example.com')).toBeInTheDocument();
       expect(screen.getByText('+1-555-0456')).toBeInTheDocument();
     });

@@ -85,7 +85,7 @@ const createWrapper = () => {
 };
 
 describe('ReportBuilderPage', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();

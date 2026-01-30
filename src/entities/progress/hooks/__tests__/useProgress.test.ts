@@ -30,7 +30,7 @@ import {
 } from '@/test/mocks/data/progress';
 
 describe('Progress Hooks', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();
@@ -49,7 +49,7 @@ describe('Progress Hooks', () => {
       const programId = '507f1f77bcf86cd799439015';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/program/${programId}`, () => {
+        http.get(`${baseUrl}/progress/program/${programId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockProgramProgress,
@@ -72,7 +72,7 @@ describe('Progress Hooks', () => {
       const learnerId = '507f1f77bcf86cd799439030';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/program/${programId}`, () => {
+        http.get(`${baseUrl}/progress/program/${programId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockProgramProgress,
@@ -100,7 +100,7 @@ describe('Progress Hooks', () => {
       const programId = 'non-existent';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/program/${programId}`, () => {
+        http.get(`${baseUrl}/progress/program/${programId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Program not found' },
             { status: 404 }
@@ -125,7 +125,7 @@ describe('Progress Hooks', () => {
       const courseId = '507f1f77bcf86cd799439018';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/course/${courseId}`, () => {
+        http.get(`${baseUrl}/progress/course/${courseId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockCourseProgress,
@@ -160,7 +160,7 @@ describe('Progress Hooks', () => {
       const classId = '507f1f77bcf86cd799439020';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/class/${classId}`, () => {
+        http.get(`${baseUrl}/progress/class/${classId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockClassProgress,
@@ -188,7 +188,7 @@ describe('Progress Hooks', () => {
       const learnerId = '507f1f77bcf86cd799439030';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/learner/${learnerId}`, () => {
+        http.get(`${baseUrl}/progress/learner/${learnerId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockLearnerProgress,
@@ -214,7 +214,7 @@ describe('Progress Hooks', () => {
       const programId = '507f1f77bcf86cd799439015';
 
       server.use(
-        http.get(`${baseUrl}/api/v2/progress/learner/${learnerId}/program/${programId}`, () => {
+        http.get(`${baseUrl}/progress/learner/${learnerId}/program/${programId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockProgramProgress,
@@ -249,7 +249,7 @@ describe('Progress Hooks', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/progress/update`, () => {
+        http.post(`${baseUrl}/progress/update`, () => {
           return HttpResponse.json({
             success: true,
             message: 'Progress updated successfully',
@@ -282,7 +282,7 @@ describe('Progress Hooks', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/progress/update`, () => {
+        http.post(`${baseUrl}/progress/update`, () => {
           return HttpResponse.json({
             success: true,
             message: 'Progress updated successfully',
@@ -319,7 +319,7 @@ describe('Progress Hooks', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/progress/update`, () => {
+        http.post(`${baseUrl}/progress/update`, () => {
           return HttpResponse.json({
             success: true,
             data: mockUpdateProgressResponse,
@@ -351,7 +351,7 @@ describe('Progress Hooks', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/api/v2/progress/update`, () => {
+        http.post(`${baseUrl}/progress/update`, () => {
           return HttpResponse.json(
             {
               success: false,

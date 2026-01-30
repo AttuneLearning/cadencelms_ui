@@ -35,15 +35,12 @@ describe('EnrollStudentsDialog', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     server.use(
-      http.get(`${env.apiBaseUrl}/admin/users`, () => {
+      http.get(`${env.apiFullUrl}/users/staff`, () => {
         return HttpResponse.json({
           users: learners,
-          pagination: {
-            total: learners.length,
-            page: 1,
-            limit: 20,
-            totalPages: 1,
-          },
+          total: learners.length,
+          page: 1,
+          pageSize: 20,
         });
       })
     );
@@ -187,15 +184,19 @@ describe('EnrollStudentsDialog', () => {
     });
 
     const checkboxes = screen.getAllByRole('checkbox');
-    await user.click(checkboxes[0]);
+    // Skip the "Select All" checkbox at index 0, click the first student checkbox
+    await user.click(checkboxes[1]);
 
-    expect(screen.getByText(/1.*selected/i)).toBeInTheDocument();
+    // Wait for the selected count text to appear
+    await waitFor(() => {
+      expect(screen.getByText('1 student selected')).toBeInTheDocument();
+    });
   });
 
   it('enrolls selected students when submit is clicked', async () => {
     const user = userEvent.setup();
     server.use(
-      http.post(`${env.apiBaseUrl}/classes/:classId/learners`, () => {
+      http.post(`${env.apiFullUrl}/classes/:classId/enrollments`, () => {
         return HttpResponse.json(mockEnrollmentResult);
       })
     );
@@ -248,7 +249,7 @@ describe('EnrollStudentsDialog', () => {
 
   it('shows already enrolled students as disabled', async () => {
     server.use(
-      http.get(`${env.apiBaseUrl}/classes/class-1/enrollments`, () => {
+      http.get(`${env.apiFullUrl}/classes/class-1/enrollments`, () => {
         return HttpResponse.json({
           success: true,
           data: {
@@ -256,7 +257,10 @@ describe('EnrollStudentsDialog', () => {
             enrollments: [
               {
                 id: 'enrollment-1',
-                learner: learners[0],
+                learner: {
+                  ...learners[0],
+                  id: learners[0]._id, // Use id field to match component expectation
+                },
                 status: 'active',
                 enrolledAt: '2026-01-01T00:00:00Z',
               },
@@ -285,8 +289,14 @@ describe('EnrollStudentsDialog', () => {
       { wrapper: createWrapper() }
     );
 
+    // Wait for both learners to load and for the already enrolled section to appear
+    // learners[0] is jane smith who is already enrolled
     await waitFor(() => {
-      expect(screen.getByText(/already enrolled/i)).toBeInTheDocument();
+      expect(screen.getByText(/jane smith/i)).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Already Enrolled')).toBeInTheDocument();
     });
   });
 
@@ -312,7 +322,7 @@ describe('EnrollStudentsDialog', () => {
   it('displays error message on enrollment failure', async () => {
     const user = userEvent.setup();
     server.use(
-      http.post(`${env.apiBaseUrl}/classes/:classId/learners`, () => {
+      http.post(`${env.apiFullUrl}/classes/:classId/enrollments`, () => {
         return HttpResponse.json(
           { message: 'Class is full' },
           { status: 400 }
@@ -389,7 +399,7 @@ describe('EnrollStudentsDialog', () => {
   it('displays loading state while enrolling', async () => {
     const user = userEvent.setup();
     server.use(
-      http.post(`${env.apiBaseUrl}/classes/:classId/learners`, async () => {
+      http.post(`${env.apiFullUrl}/classes/:classId/enrollments`, async () => {
         await new Promise((resolve) => setTimeout(resolve, 1000));
         return HttpResponse.json(mockEnrollmentResult);
       })

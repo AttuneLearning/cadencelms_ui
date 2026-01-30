@@ -26,6 +26,8 @@ const disabilityTypeLabels: Record<DisabilityType, string> = {
   'visual': 'Visual Impairment',
   'hearing': 'Hearing Impairment',
   'psychiatric': 'Psychiatric/Mental Health',
+  'mental-health': 'Mental Health',
+  'chronic-illness': 'Chronic Illness',
   'other': 'Other',
 };
 
@@ -77,18 +79,22 @@ export function AccommodationsSection({ data }: AccommodationsSectionProps) {
           <div className="space-y-3">
             <h4 className="font-semibold text-gray-900">Current Accommodations</h4>
             {accommodations.map((acc, index) => {
-              const StatusIcon = statusIcons[acc.status];
+              const statusKey =
+                (acc.status as keyof typeof statusIcons | undefined) || 'pending';
+              const StatusIcon = statusIcons[statusKey] || Clock;
               return (
                 <div key={index} className="border rounded-lg p-4 space-y-3 bg-gray-50">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <FileText className="h-5 w-5 text-gray-400" />
                       <Badge variant="outline">
-                        {disabilityTypeLabels[acc.disabilityType]}
+                        {acc.disabilityType
+                          ? disabilityTypeLabels[acc.disabilityType]
+                          : 'Unknown'}
                       </Badge>
-                      <Badge className={statusColors[acc.status]}>
+                      <Badge className={statusColors[statusKey] || statusColors.pending}>
                         <StatusIcon className="h-3 w-3 mr-1" />
-                        {acc.status.charAt(0).toUpperCase() + acc.status.slice(1)}
+                        {statusKey.charAt(0).toUpperCase() + statusKey.slice(1)}
                       </Badge>
                     </div>
                   </div>
@@ -127,7 +133,7 @@ export function AccommodationsSection({ data }: AccommodationsSectionProps) {
                         </div>
                       )}
                     </div>
-                    {acc.status === 'expired' && (
+                    {statusKey === 'expired' && (
                       <Alert className="border-amber-200 bg-amber-50/50 mt-2">
                         <Calendar className="h-4 w-4 text-amber-600" />
                         <AlertDescription className="text-sm text-amber-800">

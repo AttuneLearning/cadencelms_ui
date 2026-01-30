@@ -15,7 +15,7 @@ import {
 
 describe('API Client', () => {
   const testEndpoint = '/test';
-  const testUrl = `${env.apiBaseUrl}${testEndpoint}`;
+  const testUrl = `${env.apiFullUrl}${testEndpoint}`;
 
   beforeEach(() => {
     // Clear storage before each test
@@ -266,7 +266,7 @@ describe('API Client', () => {
 
     it('should not retry token refresh for auth endpoints', async () => {
       const authEndpoint = '/auth/login';
-      const authUrl = `${env.apiBaseUrl}${authEndpoint}`;
+      const authUrl = `${env.apiFullUrl}${authEndpoint}`;
 
       setAccessToken({
         value: 'test-token',

@@ -210,15 +210,15 @@ describe('ActivityTimeline', () => {
 
       render(<ActivityTimeline activities={manyActivities} limit={10} />);
 
-      // Should only show first 10
-      expect(screen.getByText('Activity 0')).toBeInTheDocument();
-      expect(screen.queryByText('Activity 15')).not.toBeInTheDocument();
+      // Activities are sorted by newest first, so Activity 19 appears first
+      expect(screen.getByText('Activity 19')).toBeInTheDocument();
+      expect(screen.queryByText('Activity 5')).not.toBeInTheDocument();
 
       const loadMoreButton = screen.getByRole('button', { name: /load more/i });
       await user.click(loadMoreButton);
 
-      // Should now show more activities
-      expect(screen.getByText('Activity 15')).toBeInTheDocument();
+      // Should now show more activities including Activity 5
+      expect(screen.getByText('Activity 5')).toBeInTheDocument();
     });
   });
 });

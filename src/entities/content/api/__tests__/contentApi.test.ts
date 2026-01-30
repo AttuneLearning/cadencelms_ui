@@ -34,7 +34,7 @@ import {
 } from '@/test/mocks/data/content';
 
 describe('contentApi', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();

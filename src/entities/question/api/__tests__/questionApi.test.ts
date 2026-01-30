@@ -28,7 +28,7 @@ import {
 } from '@/test/mocks/data/questions';
 
 describe('questionApi', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
   const departmentId = 'dept-123';
 
   beforeEach(() => {

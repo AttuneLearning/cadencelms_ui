@@ -47,12 +47,12 @@ describe('QuestionCard', () => {
     });
 
     it('should render with essay question', () => {
-      const question = mockQuestions[3]; // Essay
+      const question = mockQuestions[3]; // Long Answer (essay-like)
 
       render(<QuestionCard question={question} />);
 
       expect(screen.getByText(question.questionText)).toBeInTheDocument();
-      expect(screen.getByText('Essay')).toBeInTheDocument();
+      expect(screen.getByText('Long Answer')).toBeInTheDocument();
     });
 
     it('should render with fill in the blank question', () => {

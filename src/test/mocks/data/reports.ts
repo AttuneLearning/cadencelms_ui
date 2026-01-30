@@ -258,3 +258,19 @@ export const createMockReport = (overrides?: Partial<Report>): Report => ({
   rowCount: 100,
   ...overrides,
 });
+
+export const createMockReportListItem = (overrides?: Partial<Report>): Report => ({
+  id: `report-${Date.now()}`,
+  name: `Test Report ${Date.now()}`,
+  type: 'enrollment',
+  status: 'ready',
+  filters: {},
+  createdBy: 'user-1',
+  createdByName: 'Test User',
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+  generatedAt: new Date().toISOString(),
+  fileUrl: '/reports/test.pdf',
+  rowCount: 100,
+  ...overrides,
+});

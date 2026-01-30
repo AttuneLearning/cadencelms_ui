@@ -49,7 +49,7 @@ const createWrapper = () => {
 };
 
 describe('UserFormDialog', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
   const mockOnOpenChange = vi.fn();
 
   beforeEach(() => {
@@ -117,7 +117,7 @@ describe('UserFormDialog', () => {
       const newUser = createMockUser();
 
       server.use(
-        http.post(`${baseUrl}/admin/users`, async ({ request }) => {
+        http.post(`${baseUrl}/users/staff`, async ({ request }) => {
           createCalled = true;
           const body = await request.json();
           expect(body).toMatchObject({
@@ -147,7 +147,7 @@ describe('UserFormDialog', () => {
       const newUser = createMockUser();
 
       server.use(
-        http.post(`${baseUrl}/admin/users`, () => {
+        http.post(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(newUser, { status: 201 });
         })
       );
@@ -172,7 +172,7 @@ describe('UserFormDialog', () => {
       const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries');
 
       server.use(
-        http.post(`${baseUrl}/admin/users`, () => {
+        http.post(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(newUser, { status: 201 });
         })
       );
@@ -197,7 +197,7 @@ describe('UserFormDialog', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.post(`${baseUrl}/admin/users`, async () => {
+        http.post(`${baseUrl}/users/staff`, async () => {
           await new Promise(resolve => setTimeout(resolve, 100));
           return HttpResponse.json(createMockUser(), { status: 201 });
         })
@@ -220,7 +220,7 @@ describe('UserFormDialog', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.post(`${baseUrl}/admin/users`, () => {
+        http.post(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(
             { message: 'Email already exists' },
             { status: 409 }
@@ -247,7 +247,7 @@ describe('UserFormDialog', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.post(`${baseUrl}/admin/users`, () => {
+        http.post(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(
             {
               message: 'Validation failed',
@@ -283,7 +283,7 @@ describe('UserFormDialog', () => {
       let updateCalled = false;
 
       server.use(
-        http.put(`${baseUrl}/admin/users/${existingUser._id}`, async ({ request }) => {
+        http.put(`${baseUrl}/users/staff/${existingUser._id}`, async ({ request }) => {
           updateCalled = true;
           const body = await request.json() as Record<string, any>;
           return HttpResponse.json({ ...existingUser, ...body });
@@ -308,7 +308,7 @@ describe('UserFormDialog', () => {
       const existingUser = mockUsers[0];
 
       server.use(
-        http.put(`${baseUrl}/admin/users/${existingUser._id}`, () => {
+        http.put(`${baseUrl}/users/staff/${existingUser._id}`, () => {
           return HttpResponse.json(existingUser);
         })
       );
@@ -333,7 +333,7 @@ describe('UserFormDialog', () => {
       const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries');
 
       server.use(
-        http.put(`${baseUrl}/admin/users/${existingUser._id}`, () => {
+        http.put(`${baseUrl}/users/staff/${existingUser._id}`, () => {
           return HttpResponse.json(existingUser);
         })
       );
@@ -359,7 +359,7 @@ describe('UserFormDialog', () => {
       const existingUser = mockUsers[0];
 
       server.use(
-        http.put(`${baseUrl}/admin/users/${existingUser._id}`, async () => {
+        http.put(`${baseUrl}/users/staff/${existingUser._id}`, async () => {
           await new Promise(resolve => setTimeout(resolve, 100));
           return HttpResponse.json(existingUser);
         })
@@ -383,7 +383,7 @@ describe('UserFormDialog', () => {
       const existingUser = mockUsers[0];
 
       server.use(
-        http.put(`${baseUrl}/admin/users/${existingUser._id}`, () => {
+        http.put(`${baseUrl}/users/staff/${existingUser._id}`, () => {
           return HttpResponse.json(
             { message: 'User not found' },
             { status: 404 }
@@ -410,7 +410,7 @@ describe('UserFormDialog', () => {
       const existingUser = mockUsers[0];
 
       server.use(
-        http.put(`${baseUrl}/admin/users/${existingUser._id}`, () => {
+        http.put(`${baseUrl}/users/staff/${existingUser._id}`, () => {
           return HttpResponse.json(
             { message: 'Internal server error' },
             { status: 500 }
@@ -493,7 +493,7 @@ describe('UserFormDialog', () => {
       let capturedBody: any = null;
 
       server.use(
-        http.put(`${baseUrl}/admin/users/${existingUser._id}`, async ({ request }) => {
+        http.put(`${baseUrl}/users/staff/${existingUser._id}`, async ({ request }) => {
           capturedBody = await request.json();
           return HttpResponse.json(existingUser);
         })

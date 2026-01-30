@@ -9,7 +9,6 @@ exports[`ContentForm > Snapshot Tests > should match snapshot after success 1`] 
   >
     <label
       class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      for="file"
     >
       SCORM Package (ZIP)
     </label>
@@ -36,7 +35,6 @@ exports[`ContentForm > Snapshot Tests > should match snapshot after success 1`] 
   >
     <label
       class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      for="thumbnail"
     >
       Thumbnail (Optional)
     </label>
@@ -52,16 +50,18 @@ exports[`ContentForm > Snapshot Tests > should match snapshot after success 1`] 
   >
     <label
       class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      for="title"
+      for=":r64:-form-item"
     >
       Title 
       (Optional - uses manifest title if not provided)
     </label>
     <input
+      aria-describedby=":r64:-form-item-description"
+      aria-invalid="false"
       class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-      id="title"
-      name="title"
+      id=":r64:-form-item"
       placeholder="Override manifest title"
+      value=""
     />
   </div>
   <div
@@ -69,14 +69,15 @@ exports[`ContentForm > Snapshot Tests > should match snapshot after success 1`] 
   >
     <label
       class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      for="description"
+      for=":r65:-form-item"
     >
       Description (Optional)
     </label>
     <textarea
+      aria-describedby=":r65:-form-item-description"
+      aria-invalid="false"
       class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-      id="description"
-      name="description"
+      id=":r65:-form-item"
       placeholder="Enter description"
       rows="3"
     />
@@ -130,7 +131,6 @@ exports[`ContentForm > Snapshot Tests > should match snapshot during upload 1`] 
   >
     <label
       class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      for="file"
     >
       SCORM Package (ZIP)
     </label>
@@ -157,7 +157,6 @@ exports[`ContentForm > Snapshot Tests > should match snapshot during upload 1`] 
   >
     <label
       class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      for="thumbnail"
     >
       Thumbnail (Optional)
     </label>
@@ -173,16 +172,18 @@ exports[`ContentForm > Snapshot Tests > should match snapshot during upload 1`] 
   >
     <label
       class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      for="title"
+      for=":r62:-form-item"
     >
       Title 
       (Optional - uses manifest title if not provided)
     </label>
     <input
+      aria-describedby=":r62:-form-item-description"
+      aria-invalid="false"
       class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-      id="title"
-      name="title"
+      id=":r62:-form-item"
       placeholder="Override manifest title"
+      value=""
     />
   </div>
   <div
@@ -190,14 +191,15 @@ exports[`ContentForm > Snapshot Tests > should match snapshot during upload 1`] 
   >
     <label
       class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      for="description"
+      for=":r63:-form-item"
     >
       Description (Optional)
     </label>
     <textarea
+      aria-describedby=":r63:-form-item-description"
+      aria-invalid="false"
       class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-      id="description"
-      name="description"
+      id=":r63:-form-item"
       placeholder="Enter description"
       rows="3"
     />
@@ -251,7 +253,6 @@ exports[`ContentForm > Snapshot Tests > should match snapshot for SCORM form 1`]
   >
     <label
       class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      for="file"
     >
       SCORM Package (ZIP)
     </label>
@@ -278,7 +279,6 @@ exports[`ContentForm > Snapshot Tests > should match snapshot for SCORM form 1`]
   >
     <label
       class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      for="thumbnail"
     >
       Thumbnail (Optional)
     </label>
@@ -294,16 +294,18 @@ exports[`ContentForm > Snapshot Tests > should match snapshot for SCORM form 1`]
   >
     <label
       class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      for="title"
+      for=":r5m:-form-item"
     >
       Title 
       (Optional - uses manifest title if not provided)
     </label>
     <input
+      aria-describedby=":r5m:-form-item-description"
+      aria-invalid="false"
       class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-      id="title"
-      name="title"
+      id=":r5m:-form-item"
       placeholder="Override manifest title"
+      value=""
     />
   </div>
   <div
@@ -311,14 +313,15 @@ exports[`ContentForm > Snapshot Tests > should match snapshot for SCORM form 1`]
   >
     <label
       class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      for="description"
+      for=":r5n:-form-item"
     >
       Description (Optional)
     </label>
     <textarea
+      aria-describedby=":r5n:-form-item-description"
+      aria-invalid="false"
       class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-      id="description"
-      name="description"
+      id=":r5n:-form-item"
       placeholder="Enter description"
       rows="3"
     />
@@ -372,17 +375,20 @@ exports[`ContentForm > Snapshot Tests > should match snapshot for media form 1`]
   >
     <label
       class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      for="type"
+      for=":r5o:-form-item"
     >
       Media Type
     </label>
     <button
       aria-autocomplete="none"
-      aria-controls="radix-:r2b:"
+      aria-controls="radix-:r5p:"
+      aria-describedby=":r5o:-form-item-description"
       aria-expanded="false"
+      aria-invalid="false"
       class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
       data-state="closed"
       dir="ltr"
+      id=":r5o:-form-item"
       role="combobox"
       type="button"
     >
@@ -442,7 +448,6 @@ exports[`ContentForm > Snapshot Tests > should match snapshot for media form 1`]
   >
     <label
       class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      for="file"
     >
       Media File
     </label>
@@ -469,16 +474,18 @@ exports[`ContentForm > Snapshot Tests > should match snapshot for media form 1`]
   >
     <label
       class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      for="title"
+      for=":r5q:-form-item"
     >
       Title 
     </label>
     <input
+      aria-describedby=":r5q:-form-item-description"
+      aria-invalid="false"
       class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-      id="title"
-      name="title"
+      id=":r5q:-form-item"
       placeholder="Enter title"
       required=""
+      value=""
     />
   </div>
   <div
@@ -486,14 +493,15 @@ exports[`ContentForm > Snapshot Tests > should match snapshot for media form 1`]
   >
     <label
       class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      for="description"
+      for=":r5r:-form-item"
     >
       Description (Optional)
     </label>
     <textarea
+      aria-describedby=":r5r:-form-item-description"
+      aria-invalid="false"
       class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-      id="description"
-      name="description"
+      id=":r5r:-form-item"
       placeholder="Enter description"
       rows="3"
     />
@@ -547,7 +555,6 @@ exports[`ContentForm > Snapshot Tests > should match snapshot with cancel button
   >
     <label
       class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      for="file"
     >
       SCORM Package (ZIP)
     </label>
@@ -574,7 +581,6 @@ exports[`ContentForm > Snapshot Tests > should match snapshot with cancel button
   >
     <label
       class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      for="thumbnail"
     >
       Thumbnail (Optional)
     </label>
@@ -590,16 +596,18 @@ exports[`ContentForm > Snapshot Tests > should match snapshot with cancel button
   >
     <label
       class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      for="title"
+      for=":r60:-form-item"
     >
       Title 
       (Optional - uses manifest title if not provided)
     </label>
     <input
+      aria-describedby=":r60:-form-item-description"
+      aria-invalid="false"
       class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-      id="title"
-      name="title"
+      id=":r60:-form-item"
       placeholder="Override manifest title"
+      value=""
     />
   </div>
   <div
@@ -607,14 +615,15 @@ exports[`ContentForm > Snapshot Tests > should match snapshot with cancel button
   >
     <label
       class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      for="description"
+      for=":r61:-form-item"
     >
       Description (Optional)
     </label>
     <textarea
+      aria-describedby=":r61:-form-item-description"
+      aria-invalid="false"
       class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-      id="description"
-      name="description"
+      id=":r61:-form-item"
       placeholder="Enter description"
       rows="3"
     />

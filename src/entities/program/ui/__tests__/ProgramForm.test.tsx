@@ -387,7 +387,7 @@ describe('ProgramForm', () => {
       );
 
       const codeInput = screen.getByLabelText(/Program Code/i);
-      expect(codeInput).toHaveAttribute('pattern', '[A-Z0-9-]+');
+      expect(codeInput).toHaveAttribute('pattern', '(?:[A-Z0-9]|-)+');
     });
 
     it('should enforce minimum value for duration', () => {

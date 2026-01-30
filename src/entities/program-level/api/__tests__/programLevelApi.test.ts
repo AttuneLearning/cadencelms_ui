@@ -21,7 +21,7 @@ import {
 } from '@/test/mocks/data/programLevels';
 
 describe('programLevelApi', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();

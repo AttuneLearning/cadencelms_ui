@@ -56,7 +56,7 @@ const createWrapper = () => {
 };
 
 describe('StaffManagementPage', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();
@@ -65,26 +65,32 @@ describe('StaffManagementPage', () => {
   describe('Page Rendering', () => {
     it('should render page title and description', async () => {
       server.use(
-        http.get(`${baseUrl}/staff`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json({
-            staff: [],
-            pagination: { page: 1, limit: 50, total: 0, totalPages: 0 },
+            success: true,
+            data: {
+              data: [],
+              meta: { currentPage: 1, pageSize: 50, totalCount: 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false },
+            },
           });
         })
       );
 
       render(<StaffManagementPage />, { wrapper: createWrapper() });
 
-      expect(screen.getByText('Staff Management')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /staff management/i, level: 1 })).toBeInTheDocument();
       expect(screen.getByText(/manage staff accounts and roles/i)).toBeInTheDocument();
     });
 
     it('should render Add Staff button', async () => {
       server.use(
-        http.get(`${baseUrl}/staff`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json({
-            staff: [],
-            pagination: { page: 1, limit: 50, total: 0, totalPages: 0 },
+            success: true,
+            data: {
+              data: [],
+              meta: { currentPage: 1, pageSize: 50, totalCount: 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false },
+            },
           });
         })
       );
@@ -100,10 +106,13 @@ describe('StaffManagementPage', () => {
   describe('Staff List Display', () => {
     it('should display list of staff members', async () => {
       server.use(
-        http.get(`${baseUrl}/staff`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json({
-            staff: mockStaff,
-            pagination: { page: 1, limit: 50, total: mockStaff.length, totalPages: 1 },
+            success: true,
+            data: {
+              data: mockStaff,
+              meta: { currentPage: 1, pageSize: 50, totalCount: mockStaff.length, totalPages: 1, hasNextPage: false, hasPreviousPage: false },
+            },
           });
         })
       );
@@ -111,17 +120,20 @@ describe('StaffManagementPage', () => {
       render(<StaffManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByText('John Doe')).toBeInTheDocument();
+        expect(screen.getByText('john.doe@example.com')).toBeInTheDocument();
         expect(screen.getByText('jane.smith@example.com')).toBeInTheDocument();
       });
     });
 
     it('should display staff roles', async () => {
       server.use(
-        http.get(`${baseUrl}/staff`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json({
-            staff: mockStaff,
-            pagination: { page: 1, limit: 50, total: mockStaff.length, totalPages: 1 },
+            success: true,
+            data: {
+              data: mockStaff,
+              meta: { currentPage: 1, pageSize: 50, totalCount: mockStaff.length, totalPages: 1, hasNextPage: false, hasPreviousPage: false },
+            },
           });
         })
       );
@@ -129,16 +141,19 @@ describe('StaffManagementPage', () => {
       render(<StaffManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByText(/staff|admin/i)).toBeInTheDocument();
+        expect(screen.getByText('Staff')).toBeInTheDocument();
       });
     });
 
     it('should display department assignments', async () => {
       server.use(
-        http.get(`${baseUrl}/staff`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json({
-            staff: mockStaff,
-            pagination: { page: 1, limit: 50, total: mockStaff.length, totalPages: 1 },
+            success: true,
+            data: {
+              data: mockStaff,
+              meta: { currentPage: 1, pageSize: 50, totalCount: mockStaff.length, totalPages: 1, hasNextPage: false, hasPreviousPage: false },
+            },
           });
         })
       );
@@ -154,7 +169,7 @@ describe('StaffManagementPage', () => {
   describe('Search and Filter', () => {
     it('should search staff by name or email', async () => {
       server.use(
-        http.get(`${baseUrl}/staff`, ({ request }) => {
+        http.get(`${baseUrl}/users/staff`, ({ request }) => {
           const url = new URL(request.url);
           const search = url.searchParams.get('search');
           const filtered = search
@@ -166,8 +181,11 @@ describe('StaffManagementPage', () => {
             )
             : mockStaff;
           return HttpResponse.json({
-            staff: filtered,
-            pagination: { page: 1, limit: 50, total: filtered.length, totalPages: 1 },
+            success: true,
+            data: {
+              data: filtered,
+              meta: { currentPage: 1, pageSize: 50, totalCount: filtered.length, totalPages: 1, hasNextPage: false, hasPreviousPage: false },
+            },
           });
         })
       );
@@ -176,21 +194,24 @@ describe('StaffManagementPage', () => {
       render(<StaffManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByText('John Doe')).toBeInTheDocument();
+        expect(screen.getByText('john.doe@example.com')).toBeInTheDocument();
       });
     });
 
     it('should filter by department', async () => {
       server.use(
-        http.get(`${baseUrl}/staff`, ({ request }) => {
+        http.get(`${baseUrl}/users/staff`, ({ request }) => {
           const url = new URL(request.url);
           const department = url.searchParams.get('department');
           const filtered = department
             ? mockStaff.filter(s => s.departmentId === department)
             : mockStaff;
           return HttpResponse.json({
-            staff: filtered,
-            pagination: { page: 1, limit: 50, total: filtered.length, totalPages: 1 },
+            success: true,
+            data: {
+              data: filtered,
+              meta: { currentPage: 1, pageSize: 50, totalCount: filtered.length, totalPages: 1, hasNextPage: false, hasPreviousPage: false },
+            },
           });
         })
       );
@@ -198,21 +219,24 @@ describe('StaffManagementPage', () => {
       render(<StaffManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByText('John Doe')).toBeInTheDocument();
+        expect(screen.getByText('john.doe@example.com')).toBeInTheDocument();
       });
     });
 
     it('should filter by role', async () => {
       server.use(
-        http.get(`${baseUrl}/staff`, ({ request }) => {
+        http.get(`${baseUrl}/users/staff`, ({ request }) => {
           const url = new URL(request.url);
           const role = url.searchParams.get('role');
           const filtered = role
             ? mockStaff.filter(s => s.role === role)
             : mockStaff;
           return HttpResponse.json({
-            staff: filtered,
-            pagination: { page: 1, limit: 50, total: filtered.length, totalPages: 1 },
+            success: true,
+            data: {
+              data: filtered,
+              meta: { currentPage: 1, pageSize: 50, totalCount: filtered.length, totalPages: 1, hasNextPage: false, hasPreviousPage: false },
+            },
           });
         })
       );
@@ -220,21 +244,24 @@ describe('StaffManagementPage', () => {
       render(<StaffManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByText('John Doe')).toBeInTheDocument();
+        expect(screen.getByText('john.doe@example.com')).toBeInTheDocument();
       });
     });
 
     it('should filter by status', async () => {
       server.use(
-        http.get(`${baseUrl}/staff`, ({ request }) => {
+        http.get(`${baseUrl}/users/staff`, ({ request }) => {
           const url = new URL(request.url);
           const status = url.searchParams.get('status');
           const filtered = status
             ? mockStaff.filter(s => s.status === status)
             : mockStaff;
           return HttpResponse.json({
-            staff: filtered,
-            pagination: { page: 1, limit: 50, total: filtered.length, totalPages: 1 },
+            success: true,
+            data: {
+              data: filtered,
+              meta: { currentPage: 1, pageSize: 50, totalCount: filtered.length, totalPages: 1, hasNextPage: false, hasPreviousPage: false },
+            },
           });
         })
       );
@@ -242,7 +269,7 @@ describe('StaffManagementPage', () => {
       render(<StaffManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByText('John Doe')).toBeInTheDocument();
+        expect(screen.getByText('john.doe@example.com')).toBeInTheDocument();
       });
     });
   });
@@ -250,10 +277,13 @@ describe('StaffManagementPage', () => {
   describe('CRUD Operations', () => {
     it('should open create dialog when Add Staff button is clicked', async () => {
       server.use(
-        http.get(`${baseUrl}/staff`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json({
-            staff: [],
-            pagination: { page: 1, limit: 50, total: 0, totalPages: 0 },
+            success: true,
+            data: {
+              data: [],
+              meta: { currentPage: 1, pageSize: 50, totalCount: 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false },
+            },
           });
         })
       );
@@ -271,10 +301,13 @@ describe('StaffManagementPage', () => {
 
     it('should open edit dialog when Edit button is clicked', async () => {
       server.use(
-        http.get(`${baseUrl}/staff`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json({
-            staff: mockStaff,
-            pagination: { page: 1, limit: 50, total: mockStaff.length, totalPages: 1 },
+            success: true,
+            data: {
+              data: mockStaff,
+              meta: { currentPage: 1, pageSize: 50, totalCount: mockStaff.length, totalPages: 1, hasNextPage: false, hasPreviousPage: false },
+            },
           });
         })
       );
@@ -283,7 +316,7 @@ describe('StaffManagementPage', () => {
       render(<StaffManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByText('John Doe')).toBeInTheDocument();
+        expect(screen.getByText('john.doe@example.com')).toBeInTheDocument();
       });
 
       const buttons = screen.getAllByRole('button', { name: /open menu/i });
@@ -297,14 +330,17 @@ describe('StaffManagementPage', () => {
 
     it('should delete staff member', async () => {
       server.use(
-        http.get(`${baseUrl}/staff`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json({
-            staff: mockStaff,
-            pagination: { page: 1, limit: 50, total: mockStaff.length, totalPages: 1 },
+            success: true,
+            data: {
+              data: mockStaff,
+              meta: { currentPage: 1, pageSize: 50, totalCount: mockStaff.length, totalPages: 1, hasNextPage: false, hasPreviousPage: false },
+            },
           });
         }),
-        http.delete(`${baseUrl}/staff/:id`, () => {
-          return HttpResponse.json({ success: true });
+        http.delete(`${baseUrl}/users/staff/:id`, () => {
+          return HttpResponse.json({ success: true, data: null });
         })
       );
 
@@ -312,7 +348,7 @@ describe('StaffManagementPage', () => {
       render(<StaffManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByText('John Doe')).toBeInTheDocument();
+        expect(screen.getByText('john.doe@example.com')).toBeInTheDocument();
       });
 
       const buttons = screen.getAllByRole('button', { name: /open menu/i });
@@ -329,9 +365,9 @@ describe('StaffManagementPage', () => {
   describe('Error Handling', () => {
     it('should display error message on load failure', async () => {
       server.use(
-        http.get(`${baseUrl}/staff`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(
-            { message: 'Failed to load staff' },
+            { success: false, message: 'Failed to load staff' },
             { status: 500 }
           );
         })
@@ -348,10 +384,13 @@ describe('StaffManagementPage', () => {
   describe('Accessibility', () => {
     it('should have proper ARIA labels', async () => {
       server.use(
-        http.get(`${baseUrl}/staff`, () => {
+        http.get(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json({
-            staff: mockStaff,
-            pagination: { page: 1, limit: 50, total: mockStaff.length, totalPages: 1 },
+            success: true,
+            data: {
+              data: mockStaff,
+              meta: { currentPage: 1, pageSize: 50, totalCount: mockStaff.length, totalPages: 1, hasNextPage: false, hasPreviousPage: false },
+            },
           });
         })
       );
@@ -359,7 +398,7 @@ describe('StaffManagementPage', () => {
       render(<StaffManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        const heading = screen.getByRole('heading', { name: /staff management/i });
+        const heading = screen.getByRole('heading', { name: /staff management/i, level: 1 });
         expect(heading).toBeInTheDocument();
       });
     });

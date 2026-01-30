@@ -4,6 +4,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { LessonItem } from '../LessonItem';
 import type { LessonListItem } from '@/entities/course-module/model/lessonTypes';
 
@@ -50,7 +51,7 @@ describe('LessonItem', () => {
   });
 
   it('displays correct content type icon', () => {
-    render(
+    const { container } = render(
       <LessonItem
         lesson={mockLesson}
         onEdit={vi.fn()}
@@ -58,9 +59,9 @@ describe('LessonItem', () => {
       />
     );
 
-    // Video icon should be present
-    const icons = screen.getAllByRole('img', { hidden: true });
-    expect(icons.length).toBeGreaterThan(0);
+    // Video icon should be present (check for SVG with video icon class)
+    const videoIcon = container.querySelector('svg.lucide-circle-play');
+    expect(videoIcon).toBeInTheDocument();
   });
 
   it('shows Required badge when lesson is required', () => {
@@ -137,8 +138,9 @@ describe('LessonItem', () => {
     expect(screen.getByText('View 80%')).toBeInTheDocument();
   });
 
-  it('calls onEdit when Edit Settings is clicked', () => {
+  it('calls onEdit when Edit Settings is clicked', async () => {
     const onEdit = vi.fn();
+    const user = userEvent.setup();
 
     render(
       <LessonItem
@@ -150,17 +152,18 @@ describe('LessonItem', () => {
 
     // Open dropdown menu
     const menuButton = screen.getByRole('button', { name: /more options/i });
-    fireEvent.click(menuButton);
+    await user.click(menuButton);
 
     // Click Edit Settings
     const editButton = screen.getByText('Edit Settings');
-    fireEvent.click(editButton);
+    await user.click(editButton);
 
     expect(onEdit).toHaveBeenCalledWith(mockLesson);
   });
 
-  it('calls onRemove when Remove is clicked', () => {
+  it('calls onRemove when Remove is clicked', async () => {
     const onRemove = vi.fn();
+    const user = userEvent.setup();
 
     render(
       <LessonItem
@@ -172,17 +175,18 @@ describe('LessonItem', () => {
 
     // Open dropdown menu
     const menuButton = screen.getByRole('button', { name: /more options/i });
-    fireEvent.click(menuButton);
+    await user.click(menuButton);
 
     // Click Remove
     const removeButton = screen.getByText('Remove');
-    fireEvent.click(removeButton);
+    await user.click(removeButton);
 
     expect(onRemove).toHaveBeenCalledWith(mockLesson.id);
   });
 
-  it('calls onPreview when Preview is clicked', () => {
+  it('calls onPreview when Preview is clicked', async () => {
     const onPreview = vi.fn();
+    const user = userEvent.setup();
 
     render(
       <LessonItem
@@ -195,11 +199,11 @@ describe('LessonItem', () => {
 
     // Open dropdown menu
     const menuButton = screen.getByRole('button', { name: /more options/i });
-    fireEvent.click(menuButton);
+    await user.click(menuButton);
 
     // Click Preview
     const previewButton = screen.getByText('Preview');
-    fireEvent.click(previewButton);
+    await user.click(previewButton);
 
     expect(onPreview).toHaveBeenCalledWith(mockLesson);
   });

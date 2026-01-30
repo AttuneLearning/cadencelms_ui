@@ -33,16 +33,19 @@ const createWrapper = () => {
 describe('ClassManagementPage', () => {
   beforeEach(() => {
     server.use(
-      http.get(`${env.apiBaseUrl}/api/classes`, () => {
+      http.get(`${env.apiFullUrl}/classes`, () => {
         return HttpResponse.json({
-          classes: mockClasses,
-          pagination: {
-            page: 1,
-            limit: 20,
-            total: mockClasses.length,
-            totalPages: 1,
-            hasNext: false,
-            hasPrev: false,
+          success: true,
+          data: {
+            classes: mockClasses,
+            pagination: {
+              page: 1,
+              limit: 20,
+              total: mockClasses.length,
+              totalPages: 1,
+              hasNext: false,
+              hasPrev: false,
+            },
           },
         });
       })
@@ -94,16 +97,19 @@ describe('ClassManagementPage', () => {
     await user.type(searchInput, 'Database');
 
     server.use(
-      http.get(`${env.apiBaseUrl}/api/classes`, () => {
+      http.get(`${env.apiFullUrl}/classes`, () => {
         return HttpResponse.json({
-          classes: [mockClasses[1]],
-          pagination: {
-            page: 1,
-            limit: 20,
-            total: 1,
-            totalPages: 1,
-            hasNext: false,
-            hasPrev: false,
+          success: true,
+          data: {
+            classes: [mockClasses[1]],
+            pagination: {
+              page: 1,
+              limit: 20,
+              total: 1,
+              totalPages: 1,
+              hasNext: false,
+              hasPrev: false,
+            },
           },
         });
       })
@@ -123,16 +129,19 @@ describe('ClassManagementPage', () => {
     });
 
     server.use(
-      http.get(`${env.apiBaseUrl}/api/classes`, () => {
+      http.get(`${env.apiFullUrl}/classes`, () => {
         return HttpResponse.json({
-          classes: mockClasses.filter((c) => c.status === 'active'),
-          pagination: {
-            page: 1,
-            limit: 20,
-            total: 3,
-            totalPages: 1,
-            hasNext: false,
-            hasPrev: false,
+          success: true,
+          data: {
+            classes: mockClasses.filter((c) => c.status === 'active'),
+            pagination: {
+              page: 1,
+              limit: 20,
+              total: 3,
+              totalPages: 1,
+              hasNext: false,
+              hasPrev: false,
+            },
           },
         });
       })
@@ -186,9 +195,9 @@ describe('ClassManagementPage', () => {
 
   it('displays error message when fetch fails', async () => {
     server.use(
-      http.get(`${env.apiBaseUrl}/api/classes`, () => {
+      http.get(`${env.apiFullUrl}/classes`, () => {
         return HttpResponse.json(
-          { message: 'Failed to fetch classes' },
+          { success: false, message: 'Failed to fetch classes' },
           { status: 500 }
         );
       })
@@ -218,16 +227,19 @@ describe('ClassManagementPage', () => {
 
   it('displays empty state when no classes found', async () => {
     server.use(
-      http.get(`${env.apiBaseUrl}/api/classes`, () => {
+      http.get(`${env.apiFullUrl}/classes`, () => {
         return HttpResponse.json({
-          classes: [],
-          pagination: {
-            page: 1,
-            limit: 20,
-            total: 0,
-            totalPages: 0,
-            hasNext: false,
-            hasPrev: false,
+          success: true,
+          data: {
+            classes: [],
+            pagination: {
+              page: 1,
+              limit: 20,
+              total: 0,
+              totalPages: 0,
+              hasNext: false,
+              hasPrev: false,
+            },
           },
         });
       })
@@ -244,20 +256,20 @@ describe('ClassManagementPage', () => {
     render(<ClassManagementPage />, { wrapper: createWrapper() });
 
     await waitFor(() => {
-      expect(screen.getByText(/active/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/active/i).length).toBeGreaterThan(0);
     });
 
-    expect(screen.getByText(/upcoming/i)).toBeInTheDocument();
-    expect(screen.getByText(/completed/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/upcoming/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/completed/i).length).toBeGreaterThan(0);
   });
 
   it('shows instructor names for each class', async () => {
     render(<ClassManagementPage />, { wrapper: createWrapper() });
 
     await waitFor(() => {
-      expect(screen.getByText(/john smith/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/john smith/i).length).toBeGreaterThan(0);
     });
 
-    expect(screen.getByText(/sarah johnson/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/sarah johnson/i).length).toBeGreaterThan(0);
   });
 });

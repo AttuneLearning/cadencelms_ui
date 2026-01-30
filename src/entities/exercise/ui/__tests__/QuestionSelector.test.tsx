@@ -460,7 +460,7 @@ describe('QuestionSelector', () => {
         expect(mockOnAddQuestion).toHaveBeenCalledWith(
           expect.objectContaining({
             questionText: 'Test question',
-            correctAnswer: 'Test answer',
+            correctAnswers: ['Test answer'],
           })
         );
       });

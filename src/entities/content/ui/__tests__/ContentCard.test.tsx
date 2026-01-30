@@ -284,7 +284,9 @@ describe('ContentCard', () => {
       const mediaFile = createMockMediaFile({ duration: null });
       render(<ContentCard content={mediaFile} />);
 
-      expect(screen.queryByText(/h|m/)).not.toBeInTheDocument();
+      // Check that no time duration pattern is rendered (e.g., "30m", "1h 30m")
+      const durationElements = screen.queryAllByText(/^\d+[hm](\s+\d+m)?$/);
+      expect(durationElements).toHaveLength(0);
     });
   });
 

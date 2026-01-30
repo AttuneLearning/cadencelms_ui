@@ -49,7 +49,7 @@ const createWrapper = () => {
 };
 
 describe('AuditLogsPage', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();

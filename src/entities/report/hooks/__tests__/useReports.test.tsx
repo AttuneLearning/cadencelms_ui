@@ -49,7 +49,7 @@ function createWrapper() {
 }
 
 describe('Report Hooks', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   // Mock data
   const mockReport: Report = {
@@ -413,7 +413,7 @@ describe('Report Hooks', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -444,7 +444,7 @@ describe('Report Hooks', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -474,7 +474,7 @@ describe('Report Hooks', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -493,7 +493,7 @@ describe('Report Hooks', () => {
 
     it('should handle error', async () => {
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json(
             { success: false, message: 'Server error' },
             { status: 500 }
@@ -516,7 +516,7 @@ describe('Report Hooks', () => {
       const templateId = 'template-1';
 
       server.use(
-        http.get(`${baseUrl}/report-templates/${templateId}`, () => {
+        http.get(`${baseUrl}/reports/templates/${templateId}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockTemplate,
@@ -546,7 +546,7 @@ describe('Report Hooks', () => {
       const templateId = 'non-existent';
 
       server.use(
-        http.get(`${baseUrl}/report-templates/${templateId}`, () => {
+        http.get(`${baseUrl}/reports/templates/${templateId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Template not found' },
             { status: 404 }
@@ -758,7 +758,7 @@ describe('Report Hooks', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/report-templates`, () => {
+        http.post(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json(
             {
               success: true,
@@ -788,7 +788,7 @@ describe('Report Hooks', () => {
 
     it('should handle validation error', async () => {
       server.use(
-        http.post(`${baseUrl}/report-templates`, () => {
+        http.post(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -819,7 +819,7 @@ describe('Report Hooks', () => {
 
     it('should handle duplicate name error', async () => {
       server.use(
-        http.post(`${baseUrl}/report-templates`, () => {
+        http.post(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -859,7 +859,7 @@ describe('Report Hooks', () => {
       };
 
       server.use(
-        http.patch(`${baseUrl}/report-templates/${templateId}`, () => {
+        http.patch(`${baseUrl}/reports/templates/${templateId}`, () => {
           return HttpResponse.json({
             success: true,
             data: updatedTemplate,
@@ -893,7 +893,7 @@ describe('Report Hooks', () => {
       };
 
       server.use(
-        http.patch(`${baseUrl}/report-templates/${templateId}`, () => {
+        http.patch(`${baseUrl}/reports/templates/${templateId}`, () => {
           return HttpResponse.json({
             success: true,
             data: updatedTemplate,
@@ -921,7 +921,7 @@ describe('Report Hooks', () => {
       const templateId = 'non-existent';
 
       server.use(
-        http.patch(`${baseUrl}/report-templates/${templateId}`, () => {
+        http.patch(`${baseUrl}/reports/templates/${templateId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Template not found' },
             { status: 404 }
@@ -949,7 +949,7 @@ describe('Report Hooks', () => {
       const templateId = 'template-2';
 
       server.use(
-        http.delete(`${baseUrl}/report-templates/${templateId}`, () => {
+        http.delete(`${baseUrl}/reports/templates/${templateId}`, () => {
           return HttpResponse.json({
             success: true,
             message: 'Template deleted successfully',
@@ -970,7 +970,7 @@ describe('Report Hooks', () => {
       const templateId = 'non-existent';
 
       server.use(
-        http.delete(`${baseUrl}/report-templates/${templateId}`, () => {
+        http.delete(`${baseUrl}/reports/templates/${templateId}`, () => {
           return HttpResponse.json(
             { success: false, message: 'Template not found' },
             { status: 404 }
@@ -993,7 +993,7 @@ describe('Report Hooks', () => {
       const templateId = 'template-1';
 
       server.use(
-        http.delete(`${baseUrl}/report-templates/${templateId}`, () => {
+        http.delete(`${baseUrl}/reports/templates/${templateId}`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -1020,7 +1020,7 @@ describe('Report Hooks', () => {
       const templateId = 'template-1';
 
       server.use(
-        http.delete(`${baseUrl}/report-templates/${templateId}`, () => {
+        http.delete(`${baseUrl}/reports/templates/${templateId}`, () => {
           return HttpResponse.json(
             {
               success: false,

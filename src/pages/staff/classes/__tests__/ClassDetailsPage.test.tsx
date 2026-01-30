@@ -191,7 +191,7 @@ describe('ClassDetailsPage', () => {
 
   it('displays error message when fetch fails', async () => {
     server.use(
-      http.get(`${env.apiBaseUrl}/classes/:id`, () => {
+      http.get(`${env.apiFullUrl}/classes/:id`, () => {
         return HttpResponse.json(
           { message: 'Class not found' },
           { status: 404 }

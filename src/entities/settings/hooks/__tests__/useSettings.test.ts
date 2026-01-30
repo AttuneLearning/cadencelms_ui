@@ -29,7 +29,7 @@ import type {
 } from '../../model/types';
 
 describe('Settings Hooks', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();

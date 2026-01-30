@@ -13,7 +13,7 @@ import { mockAuditLogDetail, mockRelatedAuditLogs } from '@/test/mocks/data/audi
 import { renderWithProviders } from '@/test/utils';
 
 describe('AuditLogDetailPage', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();

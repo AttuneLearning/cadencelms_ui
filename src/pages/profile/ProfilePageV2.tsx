@@ -38,16 +38,19 @@ export const ProfilePageV2: React.FC = () => {
     isLoading,
     error,
     refetch,
-  } = useQuery({
+  } = useQuery<IPerson, Error, IPerson>({
     queryKey: ['person', 'me'],
     queryFn: async () => {
       const response = await personApi.getMyPerson();
       return response.data;
     },
-    onSuccess: (data) => {
-      setPerson(data);
-    },
   });
+
+  React.useEffect(() => {
+    if (personData) {
+      setPerson(personData);
+    }
+  }, [personData]);
 
   /**
    * Handle successful save - update local state
@@ -93,7 +96,7 @@ export const ProfilePageV2: React.FC = () => {
     );
   }
 
-  const currentPerson = person || personData;
+  const currentPerson = person ?? personData;
 
   return (
     <div className="container mx-auto py-8 space-y-6 max-w-5xl">

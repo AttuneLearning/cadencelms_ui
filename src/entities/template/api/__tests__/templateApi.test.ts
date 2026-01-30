@@ -39,7 +39,7 @@ import {
 } from '@/test/mocks/data/templates';
 
 describe('templateApi', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();

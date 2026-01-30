@@ -51,7 +51,7 @@ const createWrapper = () => {
 };
 
 describe('LearnerManagementPage', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();
@@ -60,26 +60,32 @@ describe('LearnerManagementPage', () => {
   describe('Page Rendering', () => {
     it('should render page title and description', async () => {
       server.use(
-        http.get(`${baseUrl}/learners`, () =>
+        http.get(`${baseUrl}/users/learners`, () =>
           HttpResponse.json({
-            learners: [],
-            pagination: { page: 1, limit: 50, total: 0, totalPages: 0 },
+            success: true,
+            data: {
+              data: [],
+              meta: { currentPage: 1, pageSize: 50, totalCount: 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false },
+            },
           })
         )
       );
 
       render(<LearnerManagementPage />, { wrapper: createWrapper() });
 
-      expect(screen.getByText('Learner Management')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /learner management/i, level: 1 })).toBeInTheDocument();
       expect(screen.getByText(/manage learner accounts/i)).toBeInTheDocument();
     });
 
     it('should render Add Learner button', async () => {
       server.use(
-        http.get(`${baseUrl}/learners`, () =>
+        http.get(`${baseUrl}/users/learners`, () =>
           HttpResponse.json({
-            learners: [],
-            pagination: { page: 1, limit: 50, total: 0, totalPages: 0 },
+            success: true,
+            data: {
+              data: [],
+              meta: { currentPage: 1, pageSize: 50, totalCount: 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false },
+            },
           })
         )
       );
@@ -95,10 +101,13 @@ describe('LearnerManagementPage', () => {
   describe('Learner List Display', () => {
     it('should display list of learners', async () => {
       server.use(
-        http.get(`${baseUrl}/learners`, () =>
+        http.get(`${baseUrl}/users/learners`, () =>
           HttpResponse.json({
-            learners: mockLearners,
-            pagination: { page: 1, limit: 50, total: mockLearners.length, totalPages: 1 },
+            success: true,
+            data: {
+              data: mockLearners,
+              meta: { currentPage: 1, pageSize: 50, totalCount: mockLearners.length, totalPages: 1, hasNextPage: false, hasPreviousPage: false },
+            },
           })
         )
       );
@@ -113,10 +122,13 @@ describe('LearnerManagementPage', () => {
 
     it('should display enrollment counts', async () => {
       server.use(
-        http.get(`${baseUrl}/learners`, () =>
+        http.get(`${baseUrl}/users/learners`, () =>
           HttpResponse.json({
-            learners: mockLearners,
-            pagination: { page: 1, limit: 50, total: mockLearners.length, totalPages: 1 },
+            success: true,
+            data: {
+              data: mockLearners,
+              meta: { currentPage: 1, pageSize: 50, totalCount: mockLearners.length, totalPages: 1, hasNextPage: false, hasPreviousPage: false },
+            },
           })
         )
       );
@@ -124,7 +136,8 @@ describe('LearnerManagementPage', () => {
       render(<LearnerManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByText(/alice/i)).toBeInTheDocument();
+        const allAliceElements = screen.getAllByText(/alice/i);
+        expect(allAliceElements[0]).toBeInTheDocument();
       });
     });
   });
@@ -132,7 +145,7 @@ describe('LearnerManagementPage', () => {
   describe('Search and Filter', () => {
     it('should search learners by name or email', async () => {
       server.use(
-        http.get(`${baseUrl}/learners`, ({ request }) => {
+        http.get(`${baseUrl}/users/learners`, ({ request }) => {
           const url = new URL(request.url);
           const search = url.searchParams.get('search');
           const filtered = search
@@ -143,8 +156,11 @@ describe('LearnerManagementPage', () => {
             )
             : mockLearners;
           return HttpResponse.json({
-            learners: filtered,
-            pagination: { page: 1, limit: 50, total: filtered.length, totalPages: 1 },
+            success: true,
+            data: {
+              data: filtered,
+              meta: { currentPage: 1, pageSize: 50, totalCount: filtered.length, totalPages: 1, hasNextPage: false, hasPreviousPage: false },
+            },
           });
         })
       );
@@ -153,21 +169,25 @@ describe('LearnerManagementPage', () => {
       render(<LearnerManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByText('Alice Johnson')).toBeInTheDocument();
+        const allElements = screen.getAllByText('Alice Johnson');
+        expect(allElements[0]).toBeInTheDocument();
       });
     });
 
     it('should filter by department', async () => {
       server.use(
-        http.get(`${baseUrl}/learners`, ({ request }) => {
+        http.get(`${baseUrl}/users/learners`, ({ request }) => {
           const url = new URL(request.url);
           const department = url.searchParams.get('department');
           const filtered = department
             ? mockLearners.filter(l => l.departmentId === department)
             : mockLearners;
           return HttpResponse.json({
-            learners: filtered,
-            pagination: { page: 1, limit: 50, total: filtered.length, totalPages: 1 },
+            success: true,
+            data: {
+              data: filtered,
+              meta: { currentPage: 1, pageSize: 50, totalCount: filtered.length, totalPages: 1, hasNextPage: false, hasPreviousPage: false },
+            },
           });
         })
       );
@@ -175,21 +195,25 @@ describe('LearnerManagementPage', () => {
       render(<LearnerManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByText('Alice Johnson')).toBeInTheDocument();
+        const allElements = screen.getAllByText('Alice Johnson');
+        expect(allElements[0]).toBeInTheDocument();
       });
     });
 
     it('should filter by status', async () => {
       server.use(
-        http.get(`${baseUrl}/learners`, ({ request }) => {
+        http.get(`${baseUrl}/users/learners`, ({ request }) => {
           const url = new URL(request.url);
           const status = url.searchParams.get('status');
           const filtered = status
             ? mockLearners.filter(l => l.status === status)
             : mockLearners;
           return HttpResponse.json({
-            learners: filtered,
-            pagination: { page: 1, limit: 50, total: filtered.length, totalPages: 1 },
+            success: true,
+            data: {
+              data: filtered,
+              meta: { currentPage: 1, pageSize: 50, totalCount: filtered.length, totalPages: 1, hasNextPage: false, hasPreviousPage: false },
+            },
           });
         })
       );
@@ -197,7 +221,8 @@ describe('LearnerManagementPage', () => {
       render(<LearnerManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByText('Alice Johnson')).toBeInTheDocument();
+        const allElements = screen.getAllByText('Alice Johnson');
+        expect(allElements[0]).toBeInTheDocument();
       });
     });
   });
@@ -205,10 +230,13 @@ describe('LearnerManagementPage', () => {
   describe('CRUD Operations', () => {
     it('should open create dialog when Add Learner button is clicked', async () => {
       server.use(
-        http.get(`${baseUrl}/learners`, () =>
+        http.get(`${baseUrl}/users/learners`, () =>
           HttpResponse.json({
-            learners: [],
-            pagination: { page: 1, limit: 50, total: 0, totalPages: 0 },
+            success: true,
+            data: {
+              data: [],
+              meta: { currentPage: 1, pageSize: 50, totalCount: 0, totalPages: 0, hasNextPage: false, hasPreviousPage: false },
+            },
           })
         )
       );
@@ -220,20 +248,23 @@ describe('LearnerManagementPage', () => {
       await user.click(addButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/create new learner|create learner/i)).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: /create new learner|create learner/i })).toBeInTheDocument();
       });
     });
 
     it('should delete learner', async () => {
       server.use(
-        http.get(`${baseUrl}/learners`, () =>
+        http.get(`${baseUrl}/users/learners`, () =>
           HttpResponse.json({
-            learners: mockLearners,
-            pagination: { page: 1, limit: 50, total: mockLearners.length, totalPages: 1 },
+            success: true,
+            data: {
+              data: mockLearners,
+              meta: { currentPage: 1, pageSize: 50, totalCount: mockLearners.length, totalPages: 1, hasNextPage: false, hasPreviousPage: false },
+            },
           })
         ),
-        http.delete(`${baseUrl}/learners/:id`, () =>
-          HttpResponse.json({ success: true })
+        http.delete(`${baseUrl}/users/learners/:id`, () =>
+          HttpResponse.json({ success: true, data: null })
         )
       );
 
@@ -241,7 +272,8 @@ describe('LearnerManagementPage', () => {
       render(<LearnerManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByText('Alice Johnson')).toBeInTheDocument();
+        const allElements = screen.getAllByText('Alice Johnson');
+        expect(allElements[0]).toBeInTheDocument();
       });
     });
   });
@@ -249,9 +281,9 @@ describe('LearnerManagementPage', () => {
   describe('Error Handling', () => {
     it('should display error message on load failure', async () => {
       server.use(
-        http.get(`${baseUrl}/learners`, () =>
+        http.get(`${baseUrl}/users/learners`, () =>
           HttpResponse.json(
-            { message: 'Failed to load learners' },
+            { success: false, message: 'Failed to load learners' },
             { status: 500 }
           )
         )
@@ -268,10 +300,13 @@ describe('LearnerManagementPage', () => {
   describe('Accessibility', () => {
     it('should have proper ARIA labels', async () => {
       server.use(
-        http.get(`${baseUrl}/learners`, () =>
+        http.get(`${baseUrl}/users/learners`, () =>
           HttpResponse.json({
-            learners: mockLearners,
-            pagination: { page: 1, limit: 50, total: mockLearners.length, totalPages: 1 },
+            success: true,
+            data: {
+              data: mockLearners,
+              meta: { currentPage: 1, pageSize: 50, totalCount: mockLearners.length, totalPages: 1, hasNextPage: false, hasPreviousPage: false },
+            },
           })
         )
       );
@@ -279,7 +314,7 @@ describe('LearnerManagementPage', () => {
       render(<LearnerManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        const heading = screen.getByRole('heading', { name: /learner management/i });
+        const heading = screen.getByRole('heading', { name: /learner management/i, level: 1 });
         expect(heading).toBeInTheDocument();
       });
     });

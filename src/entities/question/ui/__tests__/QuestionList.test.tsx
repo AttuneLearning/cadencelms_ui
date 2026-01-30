@@ -245,9 +245,10 @@ describe('QuestionList', () => {
       await user.type(searchInput, 'JavaScript');
       await user.click(searchButton);
 
-      // The hook should be called with search params
+      // The hook should be called with (departmentId, filters) - departmentId is '' when not provided
       await waitFor(() => {
         expect(useQuestions).toHaveBeenCalledWith(
+          '',
           expect.objectContaining({ search: 'JavaScript' })
         );
       });
@@ -263,6 +264,7 @@ describe('QuestionList', () => {
 
       await waitFor(() => {
         expect(useQuestions).toHaveBeenCalledWith(
+          '',
           expect.objectContaining({ search: 'JavaScript' })
         );
       });
@@ -304,6 +306,7 @@ describe('QuestionList', () => {
       });
 
       expect(useQuestions).toHaveBeenCalledWith(
+        '',
         expect.objectContaining({ questionType: 'multiple_choice' })
       );
     });
@@ -314,6 +317,7 @@ describe('QuestionList', () => {
       });
 
       expect(useQuestions).toHaveBeenCalledWith(
+        '',
         expect.objectContaining({ difficulty: 'easy' })
       );
     });
@@ -324,6 +328,7 @@ describe('QuestionList', () => {
       });
 
       expect(useQuestions).toHaveBeenCalledWith(
+        '',
         expect.objectContaining({ sort: 'createdAt' })
       );
     });
@@ -339,6 +344,7 @@ describe('QuestionList', () => {
 
       await waitFor(() => {
         expect(useQuestions).toHaveBeenCalledWith(
+          '',
           expect.objectContaining({ page: 1, search: 'test' })
         );
       });
@@ -507,7 +513,7 @@ describe('QuestionList', () => {
       await user.click(nextButton);
 
       await waitFor(() => {
-        expect(useQuestions).toHaveBeenCalledWith(expect.objectContaining({ page: 2 }));
+        expect(useQuestions).toHaveBeenCalledWith('', expect.objectContaining({ page: 2 }));
       });
     });
 
@@ -537,7 +543,7 @@ describe('QuestionList', () => {
       await user.click(prevButton);
 
       await waitFor(() => {
-        expect(useQuestions).toHaveBeenCalledWith(expect.objectContaining({ page: 1 }));
+        expect(useQuestions).toHaveBeenCalledWith('', expect.objectContaining({ page: 1 }));
       });
     });
 
@@ -595,8 +601,10 @@ describe('QuestionList', () => {
 
       render(<QuestionList departmentId={departmentId} />, { wrapper: createWrapper() });
 
+      // useQuestions is called with (departmentId, filters)
       expect(useQuestions).toHaveBeenCalledWith(
-        expect.objectContaining({ department: departmentId })
+        departmentId,
+        expect.any(Object)
       );
     });
 
@@ -611,11 +619,10 @@ describe('QuestionList', () => {
       await user.click(screen.getByRole('button', { name: /search/i }));
 
       await waitFor(() => {
+        // useQuestions is called with (departmentId, filters)
         expect(useQuestions).toHaveBeenCalledWith(
-          expect.objectContaining({
-            department: departmentId,
-            search: 'test',
-          })
+          departmentId,
+          expect.objectContaining({ search: 'test' })
         );
       });
     });

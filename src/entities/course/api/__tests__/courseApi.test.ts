@@ -40,7 +40,7 @@ import {
 } from '@/test/mocks/data/courses';
 
 describe('courseApi', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();

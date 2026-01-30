@@ -19,7 +19,7 @@ import {
 import type { IDemographicsUpdateRequest } from '@/shared/types/person';
 
 describe('demographicsApi', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();
@@ -32,7 +32,7 @@ describe('demographicsApi', () => {
   describe('getMyDemographics', () => {
     it('should fetch current user demographics data', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/users/me/demographics`, () => {
+        http.get(`${baseUrl}/users/me/demographics`, () => {
           return HttpResponse.json(mockDemographicsResponse);
         })
       );
@@ -52,7 +52,7 @@ describe('demographicsApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/users/me/demographics`, () => {
+        http.get(`${baseUrl}/users/me/demographics`, () => {
           return HttpResponse.json(minimalResponse);
         })
       );
@@ -76,7 +76,7 @@ describe('demographicsApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/api/v2/users/me/demographics`, () => {
+        http.get(`${baseUrl}/users/me/demographics`, () => {
           return HttpResponse.json(response);
         })
       );
@@ -89,7 +89,7 @@ describe('demographicsApi', () => {
 
     it('should handle 401 unauthorized error', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/users/me/demographics`, () => {
+        http.get(`${baseUrl}/users/me/demographics`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -106,7 +106,7 @@ describe('demographicsApi', () => {
 
     it('should handle 404 demographics not found', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/users/me/demographics`, () => {
+        http.get(`${baseUrl}/users/me/demographics`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -123,7 +123,7 @@ describe('demographicsApi', () => {
 
     it('should handle network errors', async () => {
       server.use(
-        http.get(`${baseUrl}/api/v2/users/me/demographics`, () => {
+        http.get(`${baseUrl}/users/me/demographics`, () => {
           return HttpResponse.error();
         })
       );
@@ -155,7 +155,7 @@ describe('demographicsApi', () => {
       let capturedRequestBody: any = null;
 
       server.use(
-        http.put(`${baseUrl}/api/v2/users/me/demographics`, async ({ request }) => {
+        http.put(`${baseUrl}/users/me/demographics`, async ({ request }) => {
           capturedRequestBody = await request.json();
           return HttpResponse.json(updatedResponse);
         })
@@ -184,7 +184,7 @@ describe('demographicsApi', () => {
       };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/users/me/demographics`, () => {
+        http.put(`${baseUrl}/users/me/demographics`, () => {
           return HttpResponse.json(updatedResponse);
         })
       );
@@ -213,7 +213,7 @@ describe('demographicsApi', () => {
       };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/users/me/demographics`, () => {
+        http.put(`${baseUrl}/users/me/demographics`, () => {
           return HttpResponse.json(updatedResponse);
         })
       );
@@ -242,7 +242,7 @@ describe('demographicsApi', () => {
       };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/users/me/demographics`, () => {
+        http.put(`${baseUrl}/users/me/demographics`, () => {
           return HttpResponse.json(updatedResponse);
         })
       );
@@ -260,7 +260,7 @@ describe('demographicsApi', () => {
       };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/users/me/demographics`, () => {
+        http.put(`${baseUrl}/users/me/demographics`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -282,7 +282,7 @@ describe('demographicsApi', () => {
       const updateData: IDemographicsUpdateRequest = { allowReporting: true };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/users/me/demographics`, () => {
+        http.put(`${baseUrl}/users/me/demographics`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -307,7 +307,7 @@ describe('demographicsApi', () => {
       };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/users/me/demographics`, () => {
+        http.put(`${baseUrl}/users/me/demographics`, () => {
           return HttpResponse.json(response);
         })
       );
@@ -334,7 +334,7 @@ describe('demographicsApi', () => {
       };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/users/me/demographics`, () => {
+        http.put(`${baseUrl}/users/me/demographics`, () => {
           return HttpResponse.json(updatedResponse);
         })
       );
@@ -363,7 +363,7 @@ describe('demographicsApi', () => {
       };
 
       server.use(
-        http.put(`${baseUrl}/api/v2/users/me/demographics`, () => {
+        http.put(`${baseUrl}/users/me/demographics`, () => {
           return HttpResponse.json(updatedResponse);
         })
       );

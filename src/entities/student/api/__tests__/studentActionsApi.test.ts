@@ -20,7 +20,7 @@ import {
 } from '../studentActionsApi';
 
 describe('studentActionsApi', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
   const studentId = 'student-1';
   const enrollmentId = 'enrollment-1';
   const examId = 'exam-1';

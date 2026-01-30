@@ -27,7 +27,7 @@ import type {
 } from '../../model/types';
 
 describe('settingsApi', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();

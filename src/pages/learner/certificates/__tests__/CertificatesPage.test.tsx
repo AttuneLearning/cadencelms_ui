@@ -8,14 +8,11 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { CertificatesPage } from '../CertificatesPage';
-import * as enrollmentModule from '@/entities/enrollment';
 
 // Mock hooks
-vi.mock('@/entities/enrollment', () => ({
-  useMyEnrollments: vi.fn(),
-}));
+vi.mock('@/entities/enrollment');
 
-const useMyEnrollments = enrollmentModule.useMyEnrollments as ReturnType<typeof vi.fn>;
+import { useMyEnrollments } from '@/entities/enrollment';
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
@@ -39,7 +36,7 @@ describe('CertificatesPage', () => {
 
   describe('Rendering', () => {
     it('should render page title and description', () => {
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: [], pagination: { page: 1, total: 0 } },
         isLoading: false,
         error: null,
@@ -52,7 +49,7 @@ describe('CertificatesPage', () => {
     });
 
     it('should render search input', () => {
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: [], pagination: { page: 1, total: 0 } },
         isLoading: false,
         error: null,
@@ -64,7 +61,7 @@ describe('CertificatesPage', () => {
     });
 
     it('should render sort dropdown', () => {
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: [], pagination: { page: 1, total: 0 } },
         isLoading: false,
         error: null,
@@ -78,7 +75,7 @@ describe('CertificatesPage', () => {
 
   describe('Loading State', () => {
     it('should show loading skeleton when data is loading', () => {
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: null,
         isLoading: true,
         error: null,
@@ -92,7 +89,7 @@ describe('CertificatesPage', () => {
 
   describe('Empty State', () => {
     it('should show empty state when no certificates', () => {
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: [], pagination: { page: 1, total: 0 } },
         isLoading: false,
         error: null,
@@ -104,7 +101,7 @@ describe('CertificatesPage', () => {
     });
 
     it('should show encouragement message in empty state', () => {
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: [], pagination: { page: 1, total: 0 } },
         isLoading: false,
         error: null,
@@ -116,7 +113,7 @@ describe('CertificatesPage', () => {
     });
 
     it('should show link to course catalog in empty state', () => {
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: [], pagination: { page: 1, total: 0 } },
         isLoading: false,
         error: null,
@@ -154,7 +151,7 @@ describe('CertificatesPage', () => {
         },
       ];
 
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: mockEnrollments, pagination: { page: 1, total: 2 } },
         isLoading: false,
         error: null,
@@ -180,7 +177,7 @@ describe('CertificatesPage', () => {
         },
       ];
 
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
         isLoading: false,
         error: null,
@@ -205,7 +202,7 @@ describe('CertificatesPage', () => {
         },
       ];
 
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
         isLoading: false,
         error: null,
@@ -231,7 +228,7 @@ describe('CertificatesPage', () => {
         },
       ];
 
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
         isLoading: false,
         error: null,
@@ -256,7 +253,7 @@ describe('CertificatesPage', () => {
         },
       ];
 
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
         isLoading: false,
         error: null,
@@ -283,7 +280,7 @@ describe('CertificatesPage', () => {
         },
       ];
 
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
         isLoading: false,
         error: null,
@@ -308,7 +305,7 @@ describe('CertificatesPage', () => {
         },
       ];
 
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
         isLoading: false,
         error: null,
@@ -347,7 +344,7 @@ describe('CertificatesPage', () => {
         },
       ];
 
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: mockEnrollments, pagination: { page: 1, total: 2 } },
         isLoading: false,
         error: null,
@@ -378,7 +375,7 @@ describe('CertificatesPage', () => {
         },
       ];
 
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
         isLoading: false,
         error: null,
@@ -397,7 +394,7 @@ describe('CertificatesPage', () => {
 
   describe('Sort Functionality', () => {
     it('should initialize with default sort (newest first)', () => {
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: [], pagination: { page: 1, total: 0 } },
         isLoading: false,
         error: null,
@@ -405,7 +402,7 @@ describe('CertificatesPage', () => {
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
-      expect(useMyEnrollments).toHaveBeenCalledWith(
+      expect(vi.mocked(useMyEnrollments)).toHaveBeenCalledWith(
         expect.objectContaining({
           sort: 'completedAt:desc',
         })
@@ -413,7 +410,7 @@ describe('CertificatesPage', () => {
     });
 
     it('should have sort options available', () => {
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: [], pagination: { page: 1, total: 0 } },
         isLoading: false,
         error: null,
@@ -426,7 +423,7 @@ describe('CertificatesPage', () => {
     });
 
     it('should display default sort value', () => {
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: [], pagination: { page: 1, total: 0 } },
         isLoading: false,
         error: null,
@@ -440,7 +437,7 @@ describe('CertificatesPage', () => {
 
   describe('Error Handling', () => {
     it('should display error message when fetch fails', () => {
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: null,
         isLoading: false,
         error: new Error('Failed to fetch certificates'),
@@ -448,11 +445,11 @@ describe('CertificatesPage', () => {
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
-      expect(screen.getByText(/error loading certificates/i)).toBeInTheDocument();
+      expect(screen.getByText(/unable to load certificates/i)).toBeInTheDocument();
     });
 
     it('should display error details in error state', () => {
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: null,
         isLoading: false,
         error: new Error('Network error'),
@@ -460,13 +457,15 @@ describe('CertificatesPage', () => {
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
-      expect(screen.getByText(/Network error/i)).toBeInTheDocument();
+      // Check that error panel is shown
+      expect(screen.getByText(/unable to load certificates/i)).toBeInTheDocument();
+      expect(screen.getByText(/problem loading your certificates/i)).toBeInTheDocument();
     });
   });
 
   describe('API Integration', () => {
     it('should fetch only completed enrollments', () => {
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: [], pagination: { page: 1, total: 0 } },
         isLoading: false,
         error: null,
@@ -474,7 +473,7 @@ describe('CertificatesPage', () => {
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
-      expect(useMyEnrollments).toHaveBeenCalledWith(
+      expect(vi.mocked(useMyEnrollments)).toHaveBeenCalledWith(
         expect.objectContaining({
           status: 'completed',
         })
@@ -482,7 +481,7 @@ describe('CertificatesPage', () => {
     });
 
     it('should pass correct type filter to API', () => {
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: [], pagination: { page: 1, total: 0 } },
         isLoading: false,
         error: null,
@@ -490,7 +489,7 @@ describe('CertificatesPage', () => {
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
-      expect(useMyEnrollments).toHaveBeenCalledWith(
+      expect(vi.mocked(useMyEnrollments)).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'course',
         })
@@ -513,7 +512,7 @@ describe('CertificatesPage', () => {
         },
       ];
 
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
         isLoading: false,
         error: null,
@@ -539,7 +538,7 @@ describe('CertificatesPage', () => {
         },
       ];
 
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
         isLoading: false,
         error: null,
@@ -567,7 +566,7 @@ describe('CertificatesPage', () => {
         },
       ];
 
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
         isLoading: false,
         error: null,
@@ -595,7 +594,7 @@ describe('CertificatesPage', () => {
         },
       ];
 
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
         isLoading: false,
         error: null,
@@ -612,7 +611,7 @@ describe('CertificatesPage', () => {
 
   describe('Date Range Filter', () => {
     it('should display date range filter inputs', () => {
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: [], pagination: { page: 1, total: 0 } },
         isLoading: false,
         error: null,
@@ -648,7 +647,7 @@ describe('CertificatesPage', () => {
         },
       ];
 
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: { enrollments: mockEnrollments, pagination: { page: 1, total: 2 } },
         isLoading: false,
         error: null,
@@ -671,7 +670,7 @@ describe('CertificatesPage', () => {
 
   describe('Pagination', () => {
     it('should display pagination when multiple pages exist', () => {
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: {
           enrollments: [
             {
@@ -706,7 +705,7 @@ describe('CertificatesPage', () => {
     });
 
     it('should disable Previous button on first page', () => {
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: {
           enrollments: [
             {
@@ -740,7 +739,7 @@ describe('CertificatesPage', () => {
     });
 
     it('should disable Next button on last page', () => {
-      useMyEnrollments.mockReturnValue({
+      vi.mocked(useMyEnrollments).mockReturnValue({
         data: {
           enrollments: [
             {

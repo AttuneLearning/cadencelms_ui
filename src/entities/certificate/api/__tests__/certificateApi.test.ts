@@ -31,7 +31,7 @@ import type {
 } from '../../model/types';
 
 describe('certificateApi', () => {
-  const baseUrl = env.apiBaseUrl; // Already includes /api/v2
+  const baseUrl = env.apiFullUrl; // Already includes /api/v2
 
   // Mock data
   const mockCertificate: Certificate = {

@@ -165,7 +165,14 @@ export interface IIdentification {
 
 // ==================== Prior Education ====================
 
-export type InstitutionType = 'high-school' | 'community-college' | 'university' | 'vocational' | 'other';
+export type InstitutionType =
+  | 'high-school'
+  | 'community-college'
+  | 'college'
+  | 'university'
+  | 'vocational'
+  | 'online'
+  | 'other';
 
 export interface IPriorEducation {
   institutionName: string;
@@ -175,9 +182,13 @@ export interface IPriorEducation {
   minor: string | null;
   startDate: Date | null;
   endDate: Date | null;
+  graduationDate?: Date | null;
   gpa: number | null;
   gpaScale: number | null;
   graduated: boolean;
+  creditsEarned?: number | null;
+  creditsTransferred?: number | null;
+  notes?: string | null;
   transcriptOnFile: boolean;
 }
 
@@ -187,6 +198,9 @@ export type AccommodationType = 'extended-time' | 'reduced-distraction' | 'assis
 
 export interface IAccommodation {
   type: AccommodationType;
+  accommodationType?: string;
+  disabilityType?: DisabilityType;
+  status?: 'active' | 'pending' | 'expired' | 'denied' | string;
   description: string;
   documentationOnFile: boolean;
   approved: boolean;
@@ -213,10 +227,17 @@ export interface ILearnerPersonExtended {
   actualGraduationDate: Date | null;
   housingStatus: HousingStatus | null;
   residenceHall: string | null;
+  buildingName?: string | null;
   roomNumber: string | null;
   vehicleOnCampus: boolean;
   vehicleInfo: string | null;
   parkingPermit: string | null;
+  hasParkingPermit?: boolean;
+  parkingLotAssignment?: string | null;
+  parkingPermitNumber?: string | null;
+  vehicleMake?: string | null;
+  vehicleModel?: string | null;
+  vehicleLicensePlate?: string | null;
   financialAidRecipient: boolean;
   workStudyParticipant: boolean;
 }
@@ -359,6 +380,7 @@ export type EducationLevel =
 
 export type DisabilityType =
   | 'physical'
+  | 'psychiatric'
   | 'learning'
   | 'mental-health'
   | 'visual'

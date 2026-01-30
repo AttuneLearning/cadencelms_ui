@@ -48,7 +48,7 @@ const createWrapper = () => {
 };
 
 describe('ReportTemplatesPage', () => {
-  const baseUrl = env.apiBaseUrl;
+  const baseUrl = env.apiFullUrl;
 
   beforeEach(() => {
     server.resetHandlers();
@@ -57,7 +57,7 @@ describe('ReportTemplatesPage', () => {
   describe('Page Rendering', () => {
     it('should render page title and description', async () => {
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
@@ -70,7 +70,7 @@ describe('ReportTemplatesPage', () => {
 
     it('should render Create Template button', async () => {
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
@@ -84,7 +84,7 @@ describe('ReportTemplatesPage', () => {
 
     it('should display loading state initially', () => {
       server.use(
-        http.get(`${baseUrl}/report-templates`, async () => {
+        http.get(`${baseUrl}/reports/templates`, async () => {
           await new Promise(resolve => setTimeout(resolve, 100));
           return HttpResponse.json(mockTemplatesListResponse);
         })
@@ -99,7 +99,7 @@ describe('ReportTemplatesPage', () => {
   describe('Templates List Display', () => {
     it('should display list of templates', async () => {
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
@@ -114,7 +114,7 @@ describe('ReportTemplatesPage', () => {
 
     it('should display template descriptions', async () => {
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
@@ -128,7 +128,7 @@ describe('ReportTemplatesPage', () => {
 
     it('should display report type badges', async () => {
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
@@ -144,7 +144,7 @@ describe('ReportTemplatesPage', () => {
 
     it('should display isDefault indicator', async () => {
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
@@ -159,7 +159,7 @@ describe('ReportTemplatesPage', () => {
 
     it('should display isShared indicator', async () => {
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
@@ -174,7 +174,7 @@ describe('ReportTemplatesPage', () => {
 
     it('should display created by information', async () => {
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
@@ -199,7 +199,7 @@ describe('ReportTemplatesPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: emptyResponse });
         })
       );
@@ -217,7 +217,7 @@ describe('ReportTemplatesPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
@@ -237,7 +237,7 @@ describe('ReportTemplatesPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
@@ -262,10 +262,10 @@ describe('ReportTemplatesPage', () => {
       let createCalled = false;
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         }),
-        http.post(`${baseUrl}/report-templates`, async () => {
+        http.post(`${baseUrl}/reports/templates`, async () => {
           createCalled = true;
           return HttpResponse.json({
             ...mockCreateTemplatePayload,
@@ -299,7 +299,7 @@ describe('ReportTemplatesPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
@@ -323,7 +323,7 @@ describe('ReportTemplatesPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
@@ -351,7 +351,7 @@ describe('ReportTemplatesPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
@@ -380,10 +380,10 @@ describe('ReportTemplatesPage', () => {
       let updateCalled = false;
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         }),
-        http.patch(`${baseUrl}/report-templates/template-1`, async () => {
+        http.patch(`${baseUrl}/reports/templates/template-1`, async () => {
           updateCalled = true;
           return HttpResponse.json({
             ...mockReportTemplates[0],
@@ -423,7 +423,7 @@ describe('ReportTemplatesPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
@@ -452,10 +452,10 @@ describe('ReportTemplatesPage', () => {
       let deleteCalled = false;
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         }),
-        http.delete(`${baseUrl}/report-templates/template-1`, () => {
+        http.delete(`${baseUrl}/reports/templates/template-1`, () => {
           deleteCalled = true;
           return HttpResponse.json({}, { status: 204 });
         })
@@ -486,10 +486,10 @@ describe('ReportTemplatesPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         }),
-        http.delete(`${baseUrl}/report-templates/template-1`, () => {
+        http.delete(`${baseUrl}/reports/templates/template-1`, () => {
           return HttpResponse.json(
             { message: 'Failed to delete template' },
             { status: 500 }
@@ -525,10 +525,10 @@ describe('ReportTemplatesPage', () => {
       let setDefaultCalled = false;
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         }),
-        http.post(`${baseUrl}/report-templates/template-2/set-default`, () => {
+        http.post(`${baseUrl}/reports/templates/template-2/set-default`, () => {
           setDefaultCalled = true;
           return HttpResponse.json({
             ...mockReportTemplates[1],
@@ -562,10 +562,10 @@ describe('ReportTemplatesPage', () => {
       let toggleCalled = false;
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         }),
-        http.post(`${baseUrl}/report-templates/template-3/toggle-shared`, () => {
+        http.post(`${baseUrl}/reports/templates/template-3/toggle-shared`, () => {
           toggleCalled = true;
           return HttpResponse.json({
             ...mockReportTemplates[2],
@@ -596,7 +596,7 @@ describe('ReportTemplatesPage', () => {
   describe('Search and Filter', () => {
     it('should display search input', async () => {
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
@@ -613,7 +613,7 @@ describe('ReportTemplatesPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
@@ -630,7 +630,7 @@ describe('ReportTemplatesPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
@@ -647,7 +647,7 @@ describe('ReportTemplatesPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
         })
       );
@@ -664,7 +664,7 @@ describe('ReportTemplatesPage', () => {
   describe('Error Handling', () => {
     it('should handle API error when loading templates', async () => {
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json(
             { success: false, message: 'Internal server error' },
             { status: 500 }
@@ -681,7 +681,7 @@ describe('ReportTemplatesPage', () => {
 
     it('should handle network errors', async () => {
       server.use(
-        http.get(`${baseUrl}/report-templates`, () => {
+        http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.error();
         })
       );

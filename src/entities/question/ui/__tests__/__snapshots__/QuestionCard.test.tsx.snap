@@ -53,7 +53,7 @@ exports[`QuestionCard > Snapshot Tests > should match snapshot for essay questio
         <p
           class="text-sm text-muted-foreground mt-2"
         >
-          Essay
+          Long Answer
         </p>
       </div>
       <div
