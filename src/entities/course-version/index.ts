@@ -34,8 +34,49 @@ export type {
   RequestAccessPayload,
 } from './model/types';
 
-// API (to be implemented)
-// export * from './api/courseVersionApi';
+// API
+export {
+  createVersion,
+  listVersions,
+  getVersion,
+  updateVersion,
+  publishVersion,
+  lockVersion,
+  listVersionModules,
+  addModuleToVersion,
+  reorderVersionModules,
+  updateVersionModule,
+  removeModuleFromVersion,
+  acquireModuleEditLock,
+  refreshModuleEditLock,
+  releaseModuleEditLock,
+  getModuleEditLockStatus,
+  forceReleaseModuleEditLock,
+} from './api/courseVersionApi';
 
-// Hooks (to be implemented)
-// export * from './hooks';
+// Query Keys
+export { courseVersionKeys, moduleEditLockKeys } from './model/courseVersionKeys';
+
+// Hooks
+export {
+  // Version queries
+  useCourseVersions,
+  useCourseVersion,
+  useCourseVersionModules,
+  // Version mutations
+  useCreateCourseVersion,
+  useUpdateCourseVersion,
+  usePublishCourseVersion,
+  useLockCourseVersion,
+  // Module mutations
+  useAddModuleToVersion,
+  useReorderVersionModules,
+  useUpdateVersionModule,
+  useRemoveModuleFromVersion,
+  // Edit lock hooks
+  useModuleEditLockStatus,
+  useAcquireModuleEditLock,
+  useRefreshModuleEditLock,
+  useReleaseModuleEditLock,
+  useForceReleaseModuleEditLock,
+} from './hooks/useCourseVersions';

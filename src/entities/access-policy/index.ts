@@ -42,8 +42,56 @@ export type {
 // Functions
 export { formatAccessDuration } from './model/types';
 
-// API (to be implemented)
-// export * from './api/accessPolicyApi';
+// API
+export {
+  // Department Access Policies
+  listDepartmentAccessPolicies,
+  getDepartmentAccessPolicy,
+  updateDepartmentAccessPolicy,
+  // Program Access Overrides
+  listProgramAccessOverrides,
+  getProgramAccessOverride,
+  upsertProgramAccessOverride,
+  deleteProgramAccessOverride,
+  // Program Enrollments
+  listProgramEnrollments,
+  getProgramEnrollment,
+  getLearnerProgramEnrollments,
+  extendProgramAccess,
+  // Access Extension Requests
+  listAccessExtensionRequests,
+  getAccessExtensionRequest,
+  requestAccessExtension,
+  reviewAccessExtensionRequest,
+} from './api/accessPolicyApi';
 
-// Hooks (to be implemented)
-// export * from './hooks';
+// Query Keys
+export {
+  departmentAccessPolicyKeys,
+  programAccessOverrideKeys,
+  programEnrollmentKeys,
+  accessExtensionRequestKeys,
+} from './model/accessPolicyKeys';
+
+// Hooks
+export {
+  // Department Access Policy hooks
+  useDepartmentAccessPolicies,
+  useDepartmentAccessPolicy,
+  useUpdateDepartmentAccessPolicy,
+  // Program Access Override hooks
+  useProgramAccessOverrides,
+  useProgramAccessOverride,
+  useUpsertProgramAccessOverride,
+  useDeleteProgramAccessOverride,
+  // Program Enrollment hooks
+  useProgramEnrollments,
+  useProgramEnrollment,
+  useLearnerProgramEnrollments,
+  useExtendProgramAccess,
+  // Access Extension Request hooks
+  useAccessExtensionRequests,
+  useAccessExtensionRequest,
+  useRequestAccessExtension,
+  useReviewAccessExtensionRequest,
+} from './hooks/useAccessPolicies';

@@ -47,8 +47,66 @@ export type {
   UpgradeCertificateResponse,
 } from './model/types';
 
-// API (to be implemented)
-// export * from './api/credentialApi';
+// API
+export {
+  // Credential Groups
+  listCredentialGroups,
+  getCredentialGroup,
+  createCredentialGroup,
+  updateCredentialGroup,
+  deleteCredentialGroup,
+  // Certificate Definitions
+  listCertificateDefinitions,
+  getCertificateDefinition,
+  createCertificateDefinition,
+  updateCertificateDefinition,
+  activateCertificateDefinition,
+  deprecateCertificateDefinition,
+  deleteCertificateDefinition,
+  // Certificate Issuances
+  listCertificateIssuances,
+  getCertificateIssuance,
+  issueCertificate,
+  revokeCertificate,
+  // Verification & Upgrades
+  verifyCertificate,
+  checkUpgradeEligibility,
+  initiateCertificateUpgrade,
+  getLearnerCertificates,
+} from './api/credentialApi';
 
-// Hooks (to be implemented)
-// export * from './hooks';
+// Query Keys
+export {
+  credentialGroupKeys,
+  certificateDefinitionKeys,
+  certificateIssuanceKeys,
+  certificateVerificationKeys,
+} from './model/credentialKeys';
+
+// Hooks
+export {
+  // Credential Group hooks
+  useCredentialGroups,
+  useCredentialGroup,
+  useCreateCredentialGroup,
+  useUpdateCredentialGroup,
+  useDeleteCredentialGroup,
+  // Certificate Definition hooks
+  useCertificateDefinitions,
+  useCertificateDefinition,
+  useCreateCertificateDefinition,
+  useUpdateCertificateDefinition,
+  useActivateCertificateDefinition,
+  useDeprecateCertificateDefinition,
+  useDeleteCertificateDefinition,
+  // Certificate Issuance hooks
+  useCertificateIssuances,
+  useCertificateIssuance,
+  useLearnerCertificates,
+  useIssueCertificate,
+  useRevokeCertificate,
+  // Verification & Upgrade hooks
+  useVerifyCertificate,
+  useUpgradeEligibility,
+  useInitiateCertificateUpgrade,
+} from './hooks/useCredentials';

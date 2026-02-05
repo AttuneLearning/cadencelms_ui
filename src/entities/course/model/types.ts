@@ -340,77 +340,8 @@ export interface CourseFiltersFormData extends CourseFilters {
 // =====================
 // VERSIONING TYPES
 // =====================
-
-/**
- * Create Course Version Payload
- * Used to create a new draft version from a published course
- */
-export interface CreateCourseVersionPayload {
-  changeNotes?: string;
-}
-
-/**
- * Create Course Version Response
- */
-export interface CreateCourseVersionResponse {
-  courseVersion: Course;
-  previousVersion: {
-    id: string;
-    version: number;
-    isLocked: boolean;
-  } | null;
-  message: string;
-}
-
-/**
- * Course Version List Item
- * Used when listing versions of a course
- */
-export interface CourseVersionListItem {
-  id: string;
-  canonicalCourseId: string;
-  version: number;
-  title: string;
-  status: CourseStatus;
-  isLocked: boolean;
-  isLatest: boolean;
-  moduleCount: number;
-  enrollmentCount: number;
-  createdAt: string;
-  publishedAt: string | null;
-  lockedAt: string | null;
-  lockedReason: LockReason | null;
-  changeNotes: string | null;
-}
-
-/**
- * Course Versions List Response
- */
-export interface CourseVersionsListResponse {
-  canonicalCourseId: string;
-  canonicalCourseCode: string;
-  versions: CourseVersionListItem[];
-  totalVersions: number;
-}
-
-/**
- * Publish Course Version Response
- * Includes information about auto-versioned certificates
- */
-export interface PublishCourseVersionResponse {
-  courseVersion: Course;
-  previousVersion: {
-    id: string;
-    version: number;
-    isLocked: boolean;
-  } | null;
-  affectedCertificates: {
-    id: string;
-    title: string;
-    newVersionCreated: boolean;
-  }[];
-  message: string;
-}
+// Note: Course versioning types (CreateCourseVersionPayload, CourseVersionListItem, etc.)
+// are defined in the course-version entity. Use @/entities/course-version for versioning operations.
 
 /**
  * Check if user can edit a course

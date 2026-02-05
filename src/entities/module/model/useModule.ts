@@ -10,8 +10,16 @@ import {
   updateModule,
   deleteModule,
   reorderModules,
+  listModuleLibrary,
+  getModuleFromLibrary,
+  getModuleUsage,
+  acquireEditLock,
+  refreshEditLock,
+  releaseEditLock,
+  getEditLockStatus,
+  forceReleaseEditLock,
 } from '../api/moduleApi';
-import { moduleKeys } from './moduleKeys';
+import { moduleKeys, moduleLibraryKeys, moduleEditLockKeys } from './moduleKeys';
 import type {
   Module,
   ModulesListResponse,
@@ -21,6 +29,11 @@ import type {
   ReorderModulesPayload,
   ReorderModulesResponse,
   DeleteModuleResponse,
+  ModuleLibraryItem,
+  ModuleLibraryResponse,
+  ModuleLibraryFilters,
+  ModuleUsage,
+  ModuleEditLockStatus,
 } from './types';
 
 // =====================
@@ -151,6 +164,172 @@ export function useReorderModules() {
     }): Promise<ReorderModulesResponse> => reorderModules(courseId, payload),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: moduleKeys.list(variables.courseId) });
+    },
+  });
+}
+
+// =====================
+// MODULE LIBRARY HOOKS (v2 API)
+// =====================
+
+/**
+ * Hook to browse the module library
+ */
+export function useModuleLibrary(
+  filters?: ModuleLibraryFilters,
+  options?: Omit<
+    UseQueryOptions<
+      ModuleLibraryResponse,
+      Error,
+      ModuleLibraryResponse,
+      ReturnType<typeof moduleLibraryKeys.list>
+    >,
+    'queryKey' | 'queryFn'
+  >
+) {
+  return useQuery({
+    queryKey: moduleLibraryKeys.list(filters),
+    queryFn: () => listModuleLibrary(filters),
+    staleTime: 5 * 60 * 1000,
+    ...options,
+  });
+}
+
+/**
+ * Hook to get module detail from library
+ */
+export function useModuleLibraryItem(
+  moduleId: string,
+  options?: Omit<
+    UseQueryOptions<
+      ModuleLibraryItem,
+      Error,
+      ModuleLibraryItem,
+      ReturnType<typeof moduleLibraryKeys.detail>
+    >,
+    'queryKey' | 'queryFn'
+  >
+) {
+  return useQuery({
+    queryKey: moduleLibraryKeys.detail(moduleId),
+    queryFn: () => getModuleFromLibrary(moduleId),
+    enabled: !!moduleId,
+    staleTime: 5 * 60 * 1000,
+    ...options,
+  });
+}
+
+/**
+ * Hook to get module usage (where it's used)
+ */
+export function useModuleUsage(
+  moduleId: string,
+  options?: Omit<
+    UseQueryOptions<
+      ModuleUsage,
+      Error,
+      ModuleUsage,
+      ReturnType<typeof moduleLibraryKeys.usage>
+    >,
+    'queryKey' | 'queryFn'
+  >
+) {
+  return useQuery({
+    queryKey: moduleLibraryKeys.usage(moduleId),
+    queryFn: () => getModuleUsage(moduleId),
+    enabled: !!moduleId,
+    staleTime: 2 * 60 * 1000, // 2 minutes - usage can change
+    ...options,
+  });
+}
+
+// =====================
+// MODULE EDIT LOCK HOOKS (v2 API)
+// =====================
+
+/**
+ * Hook to check module edit lock status
+ */
+export function useModuleEditLockStatus(
+  moduleId: string,
+  options?: Omit<
+    UseQueryOptions<
+      ModuleEditLockStatus,
+      Error,
+      ModuleEditLockStatus,
+      ReturnType<typeof moduleEditLockKeys.status>
+    >,
+    'queryKey' | 'queryFn'
+  >
+) {
+  return useQuery({
+    queryKey: moduleEditLockKeys.status(moduleId),
+    queryFn: () => getEditLockStatus(moduleId),
+    enabled: !!moduleId,
+    staleTime: 30 * 1000, // 30 seconds - lock status needs to be fresh
+    refetchInterval: 60 * 1000, // Poll every minute
+    ...options,
+  });
+}
+
+/**
+ * Hook to acquire module edit lock
+ */
+export function useAcquireEditLock() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (moduleId: string) => acquireEditLock(moduleId),
+    onSuccess: (data) => {
+      queryClient.setQueryData(moduleEditLockKeys.status(data.moduleId), data);
+    },
+  });
+}
+
+/**
+ * Hook to refresh module edit lock (heartbeat)
+ */
+export function useRefreshEditLock() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (moduleId: string) => refreshEditLock(moduleId),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: moduleEditLockKeys.status(data.moduleId),
+      });
+    },
+  });
+}
+
+/**
+ * Hook to release module edit lock
+ */
+export function useReleaseEditLock() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (moduleId: string) => releaseEditLock(moduleId),
+    onSuccess: (_, moduleId) => {
+      queryClient.invalidateQueries({
+        queryKey: moduleEditLockKeys.status(moduleId),
+      });
+    },
+  });
+}
+
+/**
+ * Hook to force release module edit lock (admin only)
+ */
+export function useForceReleaseEditLock() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (moduleId: string) => forceReleaseEditLock(moduleId),
+    onSuccess: (_, moduleId) => {
+      queryClient.invalidateQueries({
+        queryKey: moduleEditLockKeys.status(moduleId),
+      });
     },
   });
 }

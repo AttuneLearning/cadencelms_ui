@@ -29,12 +29,8 @@ export type {
   ExportFormat,
   CourseFormData,
   Pagination,
-  // Versioning types
-  CreateCourseVersionPayload,
-  CreateCourseVersionResponse,
-  CourseVersionListItem,
-  CourseVersionsListResponse,
-  PublishCourseVersionResponse,
+  // Note: Versioning types (CreateCourseVersionPayload, CourseVersionListItem, etc.)
+  // are now in @/entities/course-version - use that entity for versioning operations
 } from './model/types';
 
 // Functions

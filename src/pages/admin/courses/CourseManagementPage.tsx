@@ -54,6 +54,7 @@ import {
   type ExportFormat,
   type CourseFilters,
 } from '@/entities/course';
+import { useCreateCourseVersion } from '@/entities/course-version';
 import { useAuthStore } from '@/features/auth/model';
 import { usePrograms } from '@/entities/program';
 import {
@@ -139,6 +140,7 @@ export const CourseManagementPage: React.FC = () => {
   const unpublishMutation = useUnpublishCourse();
   const archiveMutation = useArchiveCourse();
   const duplicateMutation = useDuplicateCourse();
+  const createVersionMutation = useCreateCourseVersion();
 
   // Handlers
   const handleOpenDialog = (type: ActionDialogType, course?: CourseListItem) => {
@@ -327,16 +329,24 @@ export const CourseManagementPage: React.FC = () => {
   const handleCreateVersion = async () => {
     if (!courseToAction) return;
 
+    // The courseToAction has a canonicalCourseId property if using the new versioning model,
+    // otherwise fall back to the course id itself (for backward compatibility during transition)
+    const canonicalCourseId = (courseToAction as any).canonicalCourseId || courseToAction.id;
+
     try {
-      // TODO: Call createCourseVersion API when available
-      // For now, show mock success and navigate to edit
+      const result = await createVersionMutation.mutateAsync({
+        canonicalCourseId,
+        payload: versionChangeNotes ? { changeNotes: versionChangeNotes } : undefined,
+      });
+
       toast({
         title: 'New version created',
-        description: `Version ${courseToAction.version + 1} of "${courseToAction.title}" has been created as a draft.`,
+        description: `Version ${result.courseVersion.version} of "${courseToAction.title}" has been created as a draft.`,
       });
       handleCloseDialog();
-      // TODO: Navigate to the new version's edit page
-      // navigate(`/admin/courses/${newVersionId}/edit`);
+
+      // Navigate to the new version's edit page
+      navigate(`/admin/courses/${result.courseVersion.id}/edit`);
     } catch (error: any) {
       toast({
         title: 'Error',
@@ -992,9 +1002,9 @@ export const CourseManagementPage: React.FC = () => {
             <Button variant="outline" onClick={handleCloseDialog}>
               Cancel
             </Button>
-            <Button onClick={handleCreateVersion}>
+            <Button onClick={handleCreateVersion} disabled={createVersionMutation.isPending}>
               <Edit className="mr-2 h-4 w-4" />
-              Create Draft Version
+              {createVersionMutation.isPending ? 'Creating...' : 'Create Draft Version'}
             </Button>
           </div>
         </DialogContent>

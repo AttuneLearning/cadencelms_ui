@@ -39,11 +39,43 @@ export {
   NOTIFICATION_TEMPLATE_VARIABLES,
 } from './model/types';
 
-// API (to be implemented)
-// export * from './api/notificationApi';
+// API
+export {
+  // Notifications
+  listNotifications,
+  getNotificationSummary,
+  getNotification,
+  markNotificationsAsRead,
+  markAllNotificationsAsRead,
+  dismissNotifications,
+  deleteNotification,
+  // Notification Templates
+  listNotificationTemplates,
+  getNotificationTemplate,
+  updateNotificationTemplate,
+  createNotificationTemplateOverride,
+  deleteNotificationTemplate,
+  resetNotificationTemplate,
+} from './api/notificationApi';
 
-// Hooks (to be implemented)
-// export * from './hooks';
+// Query Keys
+export { notificationKeys, notificationTemplateKeys } from './model/notificationKeys';
 
-// UI Components (to be implemented)
-// export * from './ui';
+// Hooks
+export {
+  // Notification hooks
+  useNotifications,
+  useNotificationSummary,
+  useNotification,
+  useMarkNotificationsAsRead,
+  useMarkAllNotificationsAsRead,
+  useDismissNotifications,
+  useDeleteNotification,
+  // Notification Template hooks
+  useNotificationTemplates,
+  useNotificationTemplate,
+  useUpdateNotificationTemplate,
+  useCreateNotificationTemplateOverride,
+  useDeleteNotificationTemplate,
+  useResetNotificationTemplate,
+} from './hooks/useNotifications';
