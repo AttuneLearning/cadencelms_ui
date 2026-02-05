@@ -1,5 +1,14 @@
 # Project Instructions
 
+## Development Environment
+
+| Service | URL |
+|---------|-----|
+| UI (Vite dev server) | `http://localhost:5173` |
+| Backend API | `http://localhost:5150` |
+
+---
+
 ## Development Principles
 
 **Read:** `dev_communication/guidance/DEVELOPMENT_PRINCIPLES.md`

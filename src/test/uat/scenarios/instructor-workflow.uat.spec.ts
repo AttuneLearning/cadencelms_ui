@@ -24,6 +24,10 @@ import { QuestionBankPage } from '../utils/pages/QuestionBankPage';
 import { ExerciseBuilderPage } from '../utils/pages/ExerciseBuilderPage';
 import { waitForPageLoad, login } from '../utils/helpers';
 
+// Generate unique test run ID at the start of the test file (shared across all tests)
+const TEST_RUN_ID = Date.now().toString().slice(-6);
+const UNIQUE_COURSE_TITLE = `${instructorWorkflow.course.title} ${TEST_RUN_ID}`;
+
 // Store created IDs for use across tests
 let createdCourseId: string | null = null;
 let createdQuestionIds: string[] = [];
@@ -97,8 +101,10 @@ test.describe('User Story: Instructor Course Creation Workflow', () => {
       const courseData = instructorWorkflow.course;
       const uniqueCode = `UAT${Date.now().toString().slice(-6)}`;
       
+      console.log('Creating course with unique title:', UNIQUE_COURSE_TITLE);
+      
       await courseEditor.fillCourseDetails({
-        title: courseData.title,
+        title: UNIQUE_COURSE_TITLE,
         code: uniqueCode,
         description: courseData.description,
       });
@@ -144,6 +150,7 @@ test.describe('User Story: Instructor Course Creation Workflow', () => {
         const match = url.match(/\/courses\/([^/]+)/);
         if (match) {
           createdCourseId = match[1];
+          console.log('Stored course ID for subsequent tests:', createdCourseId);
         }
       } catch {
         // Check if we got a success toast instead
@@ -160,30 +167,15 @@ test.describe('User Story: Instructor Course Creation Workflow', () => {
     });
 
     test('Instructor can add first module', async ({ page }) => {
-      // Given: I am editing a course - find it from the courses list
-      await page.goto('/staff/courses');
-      await waitForPageLoad(page);
-      
-      // Find the course card by looking for the card title, then navigate up to the card
-      const courseTitle = instructorWorkflow.course.title;
-      
-      // Use the card footer's Edit button - find by going up from the title text
-      const courseTitleElement = page.getByRole('heading', { name: courseTitle, exact: false });
-      
-      if (await courseTitleElement.count() === 0) {
-        console.log('Course not found in list, available courses:');
-        const allHeadings = await page.locator('h3, h2, [class*="CardTitle"]').allTextContents();
-        console.log('Headings found:', allHeadings);
-        test.skip(); // Course not found, skip test
+      // Given: I am editing a course - use the stored course ID from creation
+      if (!createdCourseId) {
+        console.log('No course ID stored - course creation test may have failed or not run');
+        test.skip();
         return;
       }
       
-      // Get the parent card element and find the Edit button within it
-      // The Card component wraps the entire course card
-      const cardContainer = courseTitleElement.locator('xpath=ancestor::div[contains(@class, "rounded-lg")]').first();
-      const editButton = cardContainer.getByRole('button', { name: 'Edit' });
-      
-      await editButton.click();
+      console.log('Navigating directly to course edit page with ID:', createdCourseId);
+      await page.goto(`/staff/courses/${createdCourseId}/edit`);
       await waitForPageLoad(page);
       
       // Ensure we're on the edit page
@@ -210,23 +202,15 @@ test.describe('User Story: Instructor Course Creation Workflow', () => {
     });
 
     test('Instructor can add second module', async ({ page }) => {
-      // Given: I am editing a course - find it from the courses list
-      await page.goto('/staff/courses');
-      await waitForPageLoad(page);
-      
-      // Find the course card by title
-      const courseTitle = instructorWorkflow.course.title;
-      const courseTitleElement = page.getByRole('heading', { name: courseTitle, exact: false });
-      
-      if (await courseTitleElement.count() === 0) {
+      // Given: I am editing a course - use the stored course ID
+      if (!createdCourseId) {
+        console.log('No course ID stored - skipping test');
         test.skip();
         return;
       }
       
-      const cardContainer = courseTitleElement.locator('xpath=ancestor::div[contains(@class, "rounded-lg")]').first();
-      const editButton = cardContainer.getByRole('button', { name: 'Edit' });
-      
-      await editButton.click();
+      console.log('Navigating directly to course edit page with ID:', createdCourseId);
+      await page.goto(`/staff/courses/${createdCourseId}/edit`);
       await waitForPageLoad(page);
       
       const courseEditor = new CourseEditorPage(page);

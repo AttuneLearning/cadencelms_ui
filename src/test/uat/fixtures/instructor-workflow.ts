@@ -41,10 +41,11 @@ export interface UATQuiz {
 
 /**
  * Instructor workflow test data
+ * Note: Course title uses a placeholder that should be replaced with a unique value per test run
  */
 export const instructorWorkflow = {
   course: {
-    title: 'UAT Test Course - Instructor Workflow',
+    title: 'UAT Test Course', // Will be made unique in test
     code: 'UATCOURSE101',
     description: 'A test course created during UAT to validate the instructor workflow for creating courses, modules, questions, and quizzes.',
     department: '', // Will be selected from available departments
