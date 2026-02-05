@@ -55,16 +55,20 @@ export class QuestionBankPage {
     this.cancelButton = page.locator('[data-testid="cancel-button"], button:has-text("Cancel")');
   }
 
+  /**
+   * Navigate to question bank - admin route (requires global-admin + escalation)
+   */
   async goto(): Promise<void> {
-    // Try admin path first, then staff path
     await this.page.goto('/admin/questions');
-    await this.page.waitForLoadState('networkidle');
-    
-    // If redirected, try staff path
-    if (this.page.url().includes('unauthorized') || this.page.url().includes('login')) {
-      await this.page.goto('/staff/questions');
-      await this.page.waitForLoadState('networkidle');
-    }
+    await this.page.waitForLoadState('networkidle', { timeout: 30000 });
+  }
+
+  /**
+   * Navigate to staff question bank - department-scoped (requires content-admin or dept-admin)
+   */
+  async gotoStaff(): Promise<void> {
+    await this.page.goto('/staff/questions');
+    await this.page.waitForLoadState('networkidle', { timeout: 30000 });
   }
 
   async createQuestion(data: {

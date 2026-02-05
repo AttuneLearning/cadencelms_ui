@@ -9,6 +9,7 @@ export interface UATUser {
   id: string;
   email: string;
   password: string;
+  escalationPassword?: string;
   displayName: string;
   role: 'learner' | 'staff' | 'admin';
   expectedDashboard: string;

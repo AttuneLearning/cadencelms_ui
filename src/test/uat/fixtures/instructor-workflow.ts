@@ -139,3 +139,28 @@ export const instructorUser = {
   role: 'staff' as const,
   expectedDashboard: '/staff/dashboard',
 };
+
+/**
+ * System admin user for admin-only features
+ */
+export const adminUser = {
+  id: 'uat-admin-001',
+  email: 'admin@lms.edu',
+  password: 'Admin123!',
+  escalationPassword: 'Escalate123!',
+  displayName: 'System Admin',
+  role: 'admin' as const,
+  expectedDashboard: '/admin/dashboard',
+};
+
+/**
+ * Department admin user
+ */
+export const departmentAdminUser = {
+  id: 'uat-dept-admin-001',
+  email: 'sam.department@lms.edu',
+  password: 'Password123!',
+  displayName: 'Sam Department',
+  role: 'staff' as const,
+  expectedDashboard: '/staff/dashboard',
+};

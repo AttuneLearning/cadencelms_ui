@@ -153,8 +153,14 @@ export class CourseEditorPage {
   }
 
   async getModuleCount(): Promise<number> {
-    const modules = this.moduleList.locator('[data-testid^="module-item"], [data-testid^="module-card"], > div');
-    return modules.count();
+    // Wait for page to stabilize
+    await this.page.waitForTimeout(500);
+    
+    // Look for module items by heading level 4 which contain "Module" or module card elements
+    const moduleHeadings = this.page.locator('h4:has-text("Module"), [data-testid^="module-item"], [data-testid^="module-card"]');
+    const count = await moduleHeadings.count();
+    console.log('Module count found:', count);
+    return count;
   }
 
   async saveCourse(): Promise<void> {

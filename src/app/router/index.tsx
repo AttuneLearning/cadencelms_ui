@@ -39,6 +39,10 @@ import { ClassDetailsPage as StaffClassDetailsPage } from '@/pages/staff/classes
 import { GradingPage, GradingDetailPage } from '@/pages/staff/grading';
 import { StaffReportsPage } from '@/pages/staff/reports';
 import { StaffSettingsPage } from '@/pages/staff/settings';
+import { StaffQuestionBankPage } from '@/pages/staff/QuestionBankPage';
+import { FlashcardBuilderPage } from '@/pages/staff/FlashcardBuilderPage';
+import { MatchGameBuilderPage } from '@/pages/staff/MatchGameBuilderPage';
+import { QuizBuilderPage } from '@/pages/staff/QuizBuilderPage';
 
 // Department-scoped staff pages
 import { DepartmentCoursesPage, DepartmentCreateCoursePage, DepartmentClassesPage, DepartmentStudentsPage, DepartmentReportsPage, DepartmentSettingsPage, DepartmentProgramsPage } from '@/pages/staff/departments';
@@ -582,6 +586,62 @@ export function AppRouter() {
         element={
           <StaffOnlyRoute>
             <StaffReportsPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/questions"
+        element={
+          <StaffOnlyRoute>
+            <StaffQuestionBankPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/flashcards"
+        element={
+          <StaffOnlyRoute>
+            <FlashcardBuilderPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/flashcards/:flashcardId"
+        element={
+          <StaffOnlyRoute>
+            <FlashcardBuilderPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/quizzes"
+        element={
+          <StaffOnlyRoute>
+            <QuizBuilderPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/quizzes/:quizId"
+        element={
+          <StaffOnlyRoute>
+            <QuizBuilderPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/match-games"
+        element={
+          <StaffOnlyRoute>
+            <MatchGameBuilderPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/match-games/:matchGameId"
+        element={
+          <StaffOnlyRoute>
+            <MatchGameBuilderPage />
           </StaffOnlyRoute>
         }
       />
