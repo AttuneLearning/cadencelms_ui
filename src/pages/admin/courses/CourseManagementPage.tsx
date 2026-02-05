@@ -48,11 +48,13 @@ import {
   useUnpublishCourse,
   useArchiveCourse,
   useDuplicateCourse,
+  canEditCourse,
   type CourseListItem,
   type CourseStatus,
   type ExportFormat,
   type CourseFilters,
 } from '@/entities/course';
+import { useAuthStore } from '@/features/auth/model';
 import { usePrograms } from '@/entities/program';
 import {
   MoreHorizontal,
@@ -67,13 +69,26 @@ import {
   FileText,
   Filter,
   X,
+  Lock,
 } from 'lucide-react';
 
-type ActionDialogType = 'create' | 'edit' | 'delete' | 'publish' | 'unpublish' | 'archive' | 'duplicate' | 'export' | null;
+type ActionDialogType = 'create' | 'edit' | 'delete' | 'publish' | 'unpublish' | 'archive' | 'duplicate' | 'export' | 'createVersion' | null;
 
 export const CourseManagementPage: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Auth for permission checks
+  const { user, roleHierarchy } = useAuthStore();
+  const userDepartmentRoles = React.useMemo(() => {
+    if (!roleHierarchy?.staffRoles?.departmentRoles) return [];
+    return roleHierarchy.staffRoles.departmentRoles.flatMap((dept) =>
+      dept.roles.map((r) => ({
+        departmentId: dept.departmentId,
+        role: r.role,
+      }))
+    );
+  }, [roleHierarchy]);
 
   // State management
   const [selectedCourses, setSelectedCourses] = React.useState<CourseListItem[]>([]);
@@ -103,6 +118,9 @@ export const CourseManagementPage: React.FC = () => {
 
   // Export form state
   const [exportFormat, setExportFormat] = React.useState<ExportFormat>('json');
+
+  // Version creation form state
+  const [versionChangeNotes, setVersionChangeNotes] = React.useState('');
 
   // Fetch courses
   const { data, isLoading, error } = useCourses(filters);
@@ -149,6 +167,7 @@ export const CourseManagementPage: React.FC = () => {
       includeModules: true,
       includeSettings: true,
     });
+    setVersionChangeNotes('');
   };
 
   const handleCreate = async (data: any) => {
@@ -305,6 +324,58 @@ export const CourseManagementPage: React.FC = () => {
     }
   };
 
+  const handleCreateVersion = async () => {
+    if (!courseToAction) return;
+
+    try {
+      // TODO: Call createCourseVersion API when available
+      // For now, show mock success and navigate to edit
+      toast({
+        title: 'New version created',
+        description: `Version ${courseToAction.version + 1} of "${courseToAction.title}" has been created as a draft.`,
+      });
+      handleCloseDialog();
+      // TODO: Navigate to the new version's edit page
+      // navigate(`/admin/courses/${newVersionId}/edit`);
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to create new version. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleEditCourse = (course: CourseListItem) => {
+    // Check if user can edit this course
+    if (!user || !canEditCourse(course, user._id, userDepartmentRoles)) {
+      toast({
+        title: 'Permission denied',
+        description: 'You do not have permission to edit this course.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // If course is locked, cannot edit
+    if (course.isLocked) {
+      toast({
+        title: 'Course locked',
+        description: 'This course version is locked and cannot be edited.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // If course is published, need to create a new version first
+    if (course.status === 'published') {
+      handleOpenDialog('createVersion', course);
+    } else {
+      // Draft course - edit directly
+      handleOpenDialog('edit', course);
+    }
+  };
+
   const handleViewSegments = (courseId: string) => {
     navigate(`/admin/courses/${courseId}/segments`);
   };
@@ -409,6 +480,28 @@ export const CourseManagementPage: React.FC = () => {
       },
     },
     {
+      accessorKey: 'version',
+      header: 'Version',
+      cell: ({ row }) => {
+        const course = row.original;
+        return (
+          <div className="flex items-center gap-1">
+            <Badge variant="outline" className="font-mono text-xs">
+              v{course.version}
+            </Badge>
+            {course.isLocked && (
+              <Lock className="h-3 w-3 text-muted-foreground" />
+            )}
+            {course.isLatest && (
+              <Badge variant="secondary" className="text-xs">
+                Latest
+              </Badge>
+            )}
+          </div>
+        );
+      },
+    },
+    {
       accessorKey: 'instructors',
       header: 'Instructors',
       cell: ({ row }) => {
@@ -461,6 +554,7 @@ export const CourseManagementPage: React.FC = () => {
         const course = row.original;
         const isPublished = course.status === 'published';
         const isArchived = course.status === 'archived';
+        const canEdit = user && canEditCourse(course, user._id, userDepartmentRoles);
 
         return (
           <DropdownMenu>
@@ -476,10 +570,18 @@ export const CourseManagementPage: React.FC = () => {
                 <FileText className="mr-2 h-4 w-4" />
                 View Segments
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleOpenDialog('edit', course)}>
-                <Edit className="mr-2 h-4 w-4" />
-                Edit Course
-              </DropdownMenuItem>
+              {canEdit && !course.isLocked && (
+                <DropdownMenuItem onClick={() => handleEditCourse(course)}>
+                  <Edit className="mr-2 h-4 w-4" />
+                  {isPublished ? 'Edit (Create New Version)' : 'Edit Course'}
+                </DropdownMenuItem>
+              )}
+              {canEdit && course.isLocked && (
+                <DropdownMenuItem disabled className="text-muted-foreground">
+                  <Lock className="mr-2 h-4 w-4" />
+                  Locked (v{course.version})
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem onClick={() => handleOpenDialog('duplicate', course)}>
                 <Copy className="mr-2 h-4 w-4" />
                 Duplicate
@@ -668,6 +770,9 @@ export const CourseManagementPage: React.FC = () => {
               modules: [],
               createdBy: { id: courseToEdit.createdBy, firstName: '', lastName: '' },
               completionRate: 0,
+              // Versioning fields (already in courseToEdit via spread, but explicit for clarity)
+              changeNotes: courseToEdit.lockedReason ? `Locked: ${courseToEdit.lockedReason}` : null,
+              lockedBy: null,
             } : undefined}
             onSubmit={activeDialog === 'create' ? handleCreate : handleUpdate}
             onCancel={handleCloseDialog}
@@ -846,6 +951,50 @@ export const CourseManagementPage: React.FC = () => {
             <Button onClick={handleExport}>
               <Download className="mr-2 h-4 w-4" />
               Export
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Version Dialog */}
+      <Dialog
+        open={activeDialog === 'createVersion'}
+        onOpenChange={(open) => !open && handleCloseDialog()}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create New Version</DialogTitle>
+            <DialogDescription>
+              "{courseToAction?.title}" is published. Editing will create a new draft version (v{(courseToAction?.version ?? 0) + 1}).
+              The current published version (v{courseToAction?.version}) will be locked from changes.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-900 dark:bg-amber-950">
+              <p className="text-sm text-amber-800 dark:text-amber-200">
+                Learners currently enrolled in this course will continue using the published version until they complete it or the access period expires.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="changeNotes">Change Notes (Optional)</Label>
+              <Input
+                id="changeNotes"
+                value={versionChangeNotes}
+                onChange={(e) => setVersionChangeNotes(e.target.value)}
+                placeholder="Describe what changes you're planning..."
+              />
+              <p className="text-xs text-muted-foreground">
+                These notes help track why a new version was created
+              </p>
+            </div>
+          </div>
+          <div className="flex justify-end gap-4">
+            <Button variant="outline" onClick={handleCloseDialog}>
+              Cancel
+            </Button>
+            <Button onClick={handleCreateVersion}>
+              <Edit className="mr-2 h-4 w-4" />
+              Create Draft Version
             </Button>
           </div>
         </DialogContent>

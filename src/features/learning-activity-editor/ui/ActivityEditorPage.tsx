@@ -10,12 +10,16 @@ import { Button } from '@/shared/ui/button';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
 import { ConfirmDialog } from '@/shared/ui/confirm-dialog';
 import { useToast } from '@/shared/ui/use-toast';
-import { ArrowLeft, Save, Eye, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Save, Eye, AlertCircle, Loader2 } from 'lucide-react';
 import { EDITOR_CONFIGS } from '../model/editor-config';
 import { ExerciseEditor } from './page-editors/ExerciseEditor';
 import { AssessmentEditor } from './page-editors/AssessmentEditor';
 import { AssignmentEditor } from './page-editors/AssignmentEditor';
-import type { LearningUnitType } from '@/entities/learning-unit';
+import { useLearningUnit, type LearningUnitType } from '@/entities/learning-unit';
+import { MediaEditor } from './editors/MediaEditor';
+import { DocumentEditor } from './editors/DocumentEditor';
+import { SCORMEditor } from './editors/SCORMEditor';
+import { CustomEmbedEditor } from './editors/CustomEmbedEditor';
 import type { ActivityFormData } from '../model/types';
 import type {
   ExerciseFormData,
@@ -65,11 +69,30 @@ export function ActivityEditorPage() {
 
   const { courseId, moduleId, type, activityId } = params as unknown as ActivityEditorParams;
 
-  // Validate type
-  const validTypes: LearningUnitType[] = ['exercise', 'assessment', 'assignment'];
-  const isValidType = type && validTypes.includes(type);
+  const shouldResolveType = !!activityId && !type;
+  const {
+    data: learningUnit,
+    isLoading: isLearningUnitLoading,
+    error: learningUnitError,
+  } = useLearningUnit(activityId || '', {
+    enabled: shouldResolveType,
+  });
 
-  const config = isValidType ? EDITOR_CONFIGS[type] : null;
+  const resolvedType = (type || learningUnit?.type) as LearningUnitType | undefined;
+
+  // Validate type
+  const validTypes: LearningUnitType[] = [
+    'media',
+    'document',
+    'scorm',
+    'custom',
+    'exercise',
+    'assessment',
+    'assignment',
+  ];
+  const isValidType = resolvedType && validTypes.includes(resolvedType);
+
+  const config = isValidType && resolvedType ? EDITOR_CONFIGS[resolvedType] : null;
   const isEditMode = !!activityId;
 
   // Editor state
@@ -123,6 +146,38 @@ export function ActivityEditorPage() {
     });
   };
 
+  if (shouldResolveType && isLearningUnitLoading) {
+    return (
+      <div className="container mx-auto py-8">
+        <div className="flex items-center justify-center gap-2 text-muted-foreground">
+          <Loader2 className="h-5 w-5 animate-spin" />
+          <span>Loading activity...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (learningUnitError) {
+    return (
+      <div className="container mx-auto py-8">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Failed to load activity details. Please try again.
+          </AlertDescription>
+        </Alert>
+        <Button
+          variant="outline"
+          className="mt-4"
+          onClick={() => navigate(-1)}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Go Back
+        </Button>
+      </div>
+    );
+  }
+
   // Invalid type guard
   if (!isValidType || !config) {
     return (
@@ -155,13 +210,56 @@ export function ActivityEditorPage() {
       isLoading: isSubmitting,
       onDirtyChange: setIsDirty,
     };
+    const baseInitialData = learningUnit
+      ? {
+          title: learningUnit.title,
+          description: learningUnit.description || '',
+          category: learningUnit.category ?? undefined,
+          estimatedDuration: learningUnit.estimatedDuration ?? undefined,
+          isRequired: learningUnit.isRequired,
+          isReplayable: learningUnit.isReplayable,
+        }
+      : undefined;
 
-    switch (type) {
+    switch (resolvedType) {
+      case 'media':
+        return (
+          <MediaEditor
+            {...commonProps}
+            initialData={baseInitialData}
+            onSubmit={(data) => handleSubmit(data as ActivityFormData)}
+          />
+        );
+      case 'document':
+        return (
+          <DocumentEditor
+            {...commonProps}
+            initialData={baseInitialData}
+            onSubmit={(data) => handleSubmit(data as ActivityFormData)}
+          />
+        );
+      case 'scorm':
+        return (
+          <SCORMEditor
+            {...commonProps}
+            initialData={baseInitialData}
+            onSubmit={(data) => handleSubmit(data as ActivityFormData)}
+          />
+        );
+      case 'custom':
+        return (
+          <CustomEmbedEditor
+            {...commonProps}
+            initialData={baseInitialData}
+            onSubmit={(data) => handleSubmit(data as ActivityFormData)}
+          />
+        );
       case 'exercise':
         return (
           <ExerciseEditor
             {...commonProps}
             onSubmit={(data: ExerciseFormData) => handleSubmit(data as ActivityFormData)}
+            initialData={baseInitialData}
           />
         );
       case 'assessment':
@@ -169,6 +267,7 @@ export function ActivityEditorPage() {
           <AssessmentEditor
             {...commonProps}
             onSubmit={(data: AssessmentFormData) => handleSubmit(data as ActivityFormData)}
+            initialData={baseInitialData}
           />
         );
       case 'assignment':
@@ -176,6 +275,7 @@ export function ActivityEditorPage() {
           <AssignmentEditor
             {...commonProps}
             onSubmit={(data: AssignmentFormData) => handleSubmit(data as ActivityFormData)}
+            initialData={baseInitialData}
           />
         );
       default:
@@ -183,7 +283,7 @@ export function ActivityEditorPage() {
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              Editor for {type} is not available.
+              Editor for {resolvedType} is not available.
             </AlertDescription>
           </Alert>
         );

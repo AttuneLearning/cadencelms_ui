@@ -141,6 +141,42 @@ export const mockCourseListItems: CourseListItem[] = [
     createdBy: mockCreator.id,
     createdAt: '2025-08-15T10:00:00Z',
     updatedAt: '2025-09-01T10:00:00Z',
+    // Versioning fields
+    version: 2,
+    canonicalCourseId: 'canonical-web101',
+    isLocked: false,
+    isLatest: true,
+    parentVersionId: 'course-1-v1',
+    lockedAt: null,
+    lockedReason: null,
+  },
+  {
+    id: 'course-1-v1',
+    title: 'Introduction to Web Development',
+    code: 'WEB101',
+    description: 'Learn the fundamentals of web development including HTML, CSS, and JavaScript.',
+    department: mockDepartments[0],
+    program: mockPrograms[0],
+    credits: 3,
+    duration: 40,
+    status: 'published',
+    instructors: [mockInstructors[0]],
+    settings: mockCourseSettings,
+    moduleCount: 4,
+    enrollmentCount: 120,
+    publishedAt: '2025-06-01T00:00:00Z',
+    archivedAt: null,
+    createdBy: mockCreator.id,
+    createdAt: '2025-05-15T10:00:00Z',
+    updatedAt: '2025-06-01T10:00:00Z',
+    // Versioning fields - locked previous version
+    version: 1,
+    canonicalCourseId: 'canonical-web101',
+    isLocked: true,
+    isLatest: false,
+    parentVersionId: null,
+    lockedAt: '2025-09-01T00:00:00Z',
+    lockedReason: 'superseded',
   },
   {
     id: 'course-2',
@@ -161,6 +197,14 @@ export const mockCourseListItems: CourseListItem[] = [
     createdBy: mockCreator.id,
     createdAt: '2025-09-01T10:00:00Z',
     updatedAt: '2025-10-15T10:00:00Z',
+    // Versioning fields
+    version: 1,
+    canonicalCourseId: 'canonical-db301',
+    isLocked: false,
+    isLatest: true,
+    parentVersionId: null,
+    lockedAt: null,
+    lockedReason: null,
   },
   {
     id: 'course-3',
@@ -181,6 +225,14 @@ export const mockCourseListItems: CourseListItem[] = [
     createdBy: mockCreator.id,
     createdAt: '2025-11-01T10:00:00Z',
     updatedAt: '2025-11-15T10:00:00Z',
+    // Versioning fields - draft course
+    version: 1,
+    canonicalCourseId: 'canonical-bus201',
+    isLocked: false,
+    isLatest: true,
+    parentVersionId: null,
+    lockedAt: null,
+    lockedReason: null,
   },
   {
     id: 'course-4',
@@ -201,6 +253,14 @@ export const mockCourseListItems: CourseListItem[] = [
     createdBy: mockCreator.id,
     createdAt: '2023-12-01T10:00:00Z',
     updatedAt: '2025-06-01T10:00:00Z',
+    // Versioning fields - archived and locked
+    version: 1,
+    canonicalCourseId: 'canonical-old101',
+    isLocked: true,
+    isLatest: true,
+    parentVersionId: null,
+    lockedAt: '2025-06-01T00:00:00Z',
+    lockedReason: 'archived',
   },
 ];
 
@@ -228,6 +288,16 @@ export const mockPublishedCourse: Course = {
   createdBy: mockCreator,
   createdAt: '2025-08-15T10:00:00Z',
   updatedAt: '2025-09-01T10:00:00Z',
+  // Versioning fields
+  version: 2,
+  canonicalCourseId: 'canonical-web101',
+  isLocked: false,
+  isLatest: true,
+  parentVersionId: 'course-1-v1',
+  lockedAt: null,
+  lockedBy: null,
+  lockedReason: null,
+  changeNotes: 'Updated JavaScript section with ES2024 features',
 };
 
 export const mockDraftCourse: Course = {
@@ -250,6 +320,16 @@ export const mockDraftCourse: Course = {
   createdBy: mockCreator,
   createdAt: '2025-11-01T10:00:00Z',
   updatedAt: '2025-11-15T10:00:00Z',
+  // Versioning fields - draft course
+  version: 1,
+  canonicalCourseId: 'canonical-bus201',
+  isLocked: false,
+  isLatest: true,
+  parentVersionId: null,
+  lockedAt: null,
+  lockedBy: null,
+  lockedReason: null,
+  changeNotes: null,
 };
 
 export const mockArchivedCourse: Course = {
@@ -272,6 +352,16 @@ export const mockArchivedCourse: Course = {
   createdBy: mockCreator,
   createdAt: '2023-12-01T10:00:00Z',
   updatedAt: '2025-06-01T10:00:00Z',
+  // Versioning fields - archived and locked
+  version: 1,
+  canonicalCourseId: 'canonical-old101',
+  isLocked: true,
+  isLatest: true,
+  parentVersionId: null,
+  lockedAt: '2025-06-01T00:00:00Z',
+  lockedBy: mockCreator,
+  lockedReason: 'archived',
+  changeNotes: null,
 };
 
 // =====================
@@ -344,47 +434,71 @@ export const mockExportCourseResponse: ExportCourseResponse = {
 // FACTORY FUNCTIONS
 // =====================
 
-export const createMockCourse = (overrides?: Partial<Course>): Course => ({
-  id: `course-${Math.random().toString(36).substr(2, 9)}`,
-  title: 'Test Course',
-  code: `TST${Math.floor(100 + Math.random() * 900)}`,
-  description: 'A test course for unit testing.',
-  department: mockDepartments[0],
-  program: mockPrograms[0],
-  credits: 3,
-  duration: 40,
-  status: 'draft',
-  instructors: [mockInstructors[0]],
-  settings: mockCourseSettings,
-  modules: [],
-  enrollmentCount: 0,
-  completionRate: 0,
-  publishedAt: null,
-  archivedAt: null,
-  createdBy: mockCreator,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-  ...overrides,
-});
+export const createMockCourse = (overrides?: Partial<Course>): Course => {
+  const id = `course-${Math.random().toString(36).substr(2, 9)}`;
+  return {
+    id,
+    title: 'Test Course',
+    code: `TST${Math.floor(100 + Math.random() * 900)}`,
+    description: 'A test course for unit testing.',
+    department: mockDepartments[0],
+    program: mockPrograms[0],
+    credits: 3,
+    duration: 40,
+    status: 'draft',
+    instructors: [mockInstructors[0]],
+    settings: mockCourseSettings,
+    modules: [],
+    enrollmentCount: 0,
+    completionRate: 0,
+    publishedAt: null,
+    archivedAt: null,
+    createdBy: mockCreator,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    // Versioning fields
+    version: 1,
+    canonicalCourseId: `canonical-${id}`,
+    isLocked: false,
+    isLatest: true,
+    parentVersionId: null,
+    lockedAt: null,
+    lockedBy: null,
+    lockedReason: null,
+    changeNotes: null,
+    ...overrides,
+  };
+};
 
-export const createMockCourseListItem = (overrides?: Partial<CourseListItem>): CourseListItem => ({
-  id: `course-${Math.random().toString(36).substr(2, 9)}`,
-  title: 'Test Course',
-  code: `TST${Math.floor(100 + Math.random() * 900)}`,
-  description: 'A test course for unit testing.',
-  department: mockDepartments[0],
-  program: mockPrograms[0],
-  credits: 3,
-  duration: 40,
-  status: 'draft',
-  instructors: [mockInstructors[0]],
-  settings: mockCourseSettings,
-  moduleCount: 0,
-  enrollmentCount: 0,
-  publishedAt: null,
-  archivedAt: null,
-  createdBy: mockCreator.id,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-  ...overrides,
-});
+export const createMockCourseListItem = (overrides?: Partial<CourseListItem>): CourseListItem => {
+  const id = `course-${Math.random().toString(36).substr(2, 9)}`;
+  return {
+    id,
+    title: 'Test Course',
+    code: `TST${Math.floor(100 + Math.random() * 900)}`,
+    description: 'A test course for unit testing.',
+    department: mockDepartments[0],
+    program: mockPrograms[0],
+    credits: 3,
+    duration: 40,
+    status: 'draft',
+    instructors: [mockInstructors[0]],
+    settings: mockCourseSettings,
+    moduleCount: 0,
+    enrollmentCount: 0,
+    publishedAt: null,
+    archivedAt: null,
+    createdBy: mockCreator.id,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    // Versioning fields
+    version: 1,
+    canonicalCourseId: `canonical-${id}`,
+    isLocked: false,
+    isLatest: true,
+    parentVersionId: null,
+    lockedAt: null,
+    lockedReason: null,
+    ...overrides,
+  };
+};

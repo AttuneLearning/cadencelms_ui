@@ -456,6 +456,14 @@ export function AppRouter() {
           </StaffOnlyRoute>
         }
       />
+      <Route
+        path="/staff/courses/:courseId/modules/:moduleId/learning-activities/:activityId/edit"
+        element={
+          <StaffOnlyRoute>
+            <ActivityEditorPage />
+          </StaffOnlyRoute>
+        }
+      />
       {/* Activity Editor Page - for complex types (exercise, assessment, assignment) */}
       <Route
         path="/staff/courses/:courseId/modules/:moduleId/activities/new/:type"

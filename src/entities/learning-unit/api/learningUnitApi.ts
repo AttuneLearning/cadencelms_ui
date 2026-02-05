@@ -68,9 +68,14 @@ export async function createLearningUnit(
   moduleId: string,
   payload: CreateLearningUnitPayload
 ): Promise<LearningUnit> {
+  const requestPayload = {
+    ...payload,
+    // API validation expects contentType in some environments.
+    contentType: payload.type,
+  };
   const response = await client.post<ApiResponse<LearningUnit>>(
     `/modules/${moduleId}/learning-units`,
-    payload
+    requestPayload
   );
   return response.data.data;
 }
@@ -86,9 +91,16 @@ export async function updateLearningUnit(
   learningUnitId: string,
   payload: UpdateLearningUnitPayload
 ): Promise<LearningUnit> {
+  const requestPayload = payload.type
+    ? {
+        ...payload,
+        // Keep type + contentType aligned when updating.
+        contentType: payload.type,
+      }
+    : payload;
   const response = await client.put<ApiResponse<LearningUnit>>(
     `/learning-units/${learningUnitId}`,
-    payload
+    requestPayload
   );
   return response.data.data;
 }

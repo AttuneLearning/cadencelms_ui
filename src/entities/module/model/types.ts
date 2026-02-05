@@ -290,3 +290,150 @@ export const DEFAULT_PRESENTATION_RULES: ModulePresentationRules = {
   showAllAvailable: true,
   allowSkip: false,
 };
+
+// =====================
+// MODULE LIBRARY TYPES (for versioning system)
+// =====================
+
+/**
+ * Module library item - for browsing shared modules across courses
+ */
+export interface ModuleLibraryItem {
+  id: string;
+  title: string;
+  description: string | null;
+  estimatedDuration: number;
+  learningUnitCount: number;
+  isPublished: boolean;
+
+  // Ownership
+  ownerDepartment: {
+    id: string;
+    name: string;
+  };
+  createdBy: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
+
+  // Usage stats
+  usedInCourseVersionsCount: number;
+  totalEnrollments: number;
+  averageCompletionRate: number | null;
+
+  // Audit
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Module usage - where is this module used?
+ */
+export interface ModuleUsage {
+  moduleId: string;
+  moduleTitle: string;
+  usedInCourseVersions: {
+    courseVersionId: string;
+    canonicalCourseId: string;
+    courseCode: string;
+    courseTitle: string;
+    version: number;
+    status: 'draft' | 'published' | 'archived';
+    isLocked: boolean;
+  }[];
+  totalCourseVersions: number;
+  // For the warning message when editing
+  affectedPublishedCourses: number;
+  affectedDraftCourses: number;
+}
+
+/**
+ * Global module completion record.
+ * When a learner completes a module, it counts for ALL courses containing it.
+ */
+export interface ModuleCompletion {
+  id: string;
+  learnerId: string;
+  moduleId: string;
+
+  // Where completion happened
+  completedInCourseVersionId: string;
+  completedInEnrollmentId: string;
+
+  // Completion details
+  completedAt: string;
+  score: number | null;
+
+  // Always true - completion is global
+  isGlobalCompletion: boolean;
+}
+
+/**
+ * Module library filters
+ */
+export interface ModuleLibraryFilters {
+  departmentId?: string;
+  isPublished?: boolean;
+  search?: string;
+  minUsageCount?: number;
+  page?: number;
+  limit?: number;
+  sort?: string;
+}
+
+/**
+ * Module library response
+ */
+export interface ModuleLibraryResponse {
+  modules: ModuleLibraryItem[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+
+/**
+ * Add module to course version payload
+ */
+export interface AddModuleToCourseVersionPayload {
+  moduleId: string;
+  order?: number;
+  isRequired?: boolean;
+  availableFrom?: string;
+  availableUntil?: string;
+}
+
+/**
+ * Module edit lock (for concurrent editing prevention)
+ */
+export interface ModuleEditLock {
+  moduleId: string;
+  userId: string;
+  userName: string;
+  acquiredAt: string;
+  expiresAt: string;
+}
+
+/**
+ * Module edit lock status response
+ */
+export interface ModuleEditLockStatus {
+  moduleId: string;
+  isLocked: boolean;
+  lock: {
+    userId: string;
+    userName: string;
+    acquiredAt: string;
+    expiresAt: string;
+  } | null;
+  accessRequest: {
+    userId: string;
+    userName: string;
+    requestedAt: string;
+  } | null;
+}

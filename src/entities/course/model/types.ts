@@ -12,6 +12,11 @@
 export type CourseStatus = 'draft' | 'published' | 'archived';
 export type ModuleType = 'scorm' | 'custom' | 'exercise';
 
+/**
+ * Reason a course version was locked
+ */
+export type LockReason = 'superseded' | 'archived' | 'manual';
+
 export interface Pagination {
   page: number;
   limit: number;
@@ -84,6 +89,7 @@ export interface CourseModule {
 
 /**
  * Course - Full detail type
+ * Now includes versioning fields for the course versioning system
  */
 export interface Course {
   id: string;
@@ -105,10 +111,22 @@ export interface Course {
   createdBy: UserRef;
   createdAt: string;
   updatedAt: string;
+
+  // Versioning fields
+  version: number;
+  canonicalCourseId: string;
+  isLocked: boolean;
+  isLatest: boolean;
+  parentVersionId: string | null;
+  lockedAt: string | null;
+  lockedBy: UserRef | null;
+  lockedReason: LockReason | null;
+  changeNotes: string | null;
 }
 
 /**
  * Course List Item - Compact version for list views
+ * Now includes versioning fields for the course versioning system
  */
 export interface CourseListItem {
   id: string;
@@ -129,6 +147,15 @@ export interface CourseListItem {
   createdBy: string;
   createdAt: string;
   updatedAt: string;
+
+  // Versioning fields
+  version: number;
+  canonicalCourseId: string;
+  isLocked: boolean;
+  isLatest: boolean;
+  parentVersionId: string | null;
+  lockedAt: string | null;
+  lockedReason: LockReason | null;
 }
 
 /**
@@ -308,4 +335,109 @@ export interface CourseFormData {
  */
 export interface CourseFiltersFormData extends CourseFilters {
   // Extends CourseFilters, can add additional UI-specific filters here if needed
+}
+
+// =====================
+// VERSIONING TYPES
+// =====================
+
+/**
+ * Create Course Version Payload
+ * Used to create a new draft version from a published course
+ */
+export interface CreateCourseVersionPayload {
+  changeNotes?: string;
+}
+
+/**
+ * Create Course Version Response
+ */
+export interface CreateCourseVersionResponse {
+  courseVersion: Course;
+  previousVersion: {
+    id: string;
+    version: number;
+    isLocked: boolean;
+  } | null;
+  message: string;
+}
+
+/**
+ * Course Version List Item
+ * Used when listing versions of a course
+ */
+export interface CourseVersionListItem {
+  id: string;
+  canonicalCourseId: string;
+  version: number;
+  title: string;
+  status: CourseStatus;
+  isLocked: boolean;
+  isLatest: boolean;
+  moduleCount: number;
+  enrollmentCount: number;
+  createdAt: string;
+  publishedAt: string | null;
+  lockedAt: string | null;
+  lockedReason: LockReason | null;
+  changeNotes: string | null;
+}
+
+/**
+ * Course Versions List Response
+ */
+export interface CourseVersionsListResponse {
+  canonicalCourseId: string;
+  canonicalCourseCode: string;
+  versions: CourseVersionListItem[];
+  totalVersions: number;
+}
+
+/**
+ * Publish Course Version Response
+ * Includes information about auto-versioned certificates
+ */
+export interface PublishCourseVersionResponse {
+  courseVersion: Course;
+  previousVersion: {
+    id: string;
+    version: number;
+    isLocked: boolean;
+  } | null;
+  affectedCertificates: {
+    id: string;
+    title: string;
+    newVersionCreated: boolean;
+  }[];
+  message: string;
+}
+
+/**
+ * Check if user can edit a course
+ */
+export function canEditCourse(
+  course: CourseListItem | Course,
+  userId: string,
+  userDepartmentRoles?: { departmentId: string; role: string }[]
+): boolean {
+  // Cannot edit locked courses
+  if (course.isLocked) {
+    return false;
+  }
+
+  // Check if user is the author
+  const authorId = typeof course.createdBy === 'string'
+    ? course.createdBy
+    : course.createdBy.id;
+  if (authorId === userId) {
+    return true;
+  }
+
+  // Check if user has content-admin role for this department
+  const departmentId = course.department.id;
+  const isContentAdmin = userDepartmentRoles?.some(
+    (dr) => dr.departmentId === departmentId && dr.role === 'content-admin'
+  );
+
+  return isContentAdmin ?? false;
 }

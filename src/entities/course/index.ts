@@ -9,6 +9,7 @@ export type {
   CourseListItem,
   CourseStatus,
   ModuleType,
+  LockReason,
   CourseSettings,
   DepartmentRef,
   ProgramRef,
@@ -28,7 +29,16 @@ export type {
   ExportFormat,
   CourseFormData,
   Pagination,
+  // Versioning types
+  CreateCourseVersionPayload,
+  CreateCourseVersionResponse,
+  CourseVersionListItem,
+  CourseVersionsListResponse,
+  PublishCourseVersionResponse,
 } from './model/types';
+
+// Functions
+export { canEditCourse } from './model/types';
 
 // API
 export {
