@@ -34,6 +34,7 @@ import { ContentUploaderPage } from '@/pages/staff/courses/ContentUploaderPage';
 import { ExerciseBuilderPage } from '@/pages/staff/courses/ExerciseBuilderPage';
 import { ActivityEditorPage } from '@/features/learning-activity-editor';
 import { CoursePreviewPage } from '@/pages/staff/courses/CoursePreviewPage';
+import { FlashcardDeckPage } from '@/pages/staff/courses/FlashcardDeckPage';
 import { ClassManagementPage as StaffClassManagementPage } from '@/pages/staff/classes/ClassManagementPage';
 import { ClassDetailsPage as StaffClassDetailsPage } from '@/pages/staff/classes/ClassDetailsPage';
 import { GradingPage, GradingDetailPage } from '@/pages/staff/grading';
@@ -486,6 +487,15 @@ export function AppRouter() {
         element={
           <StaffOnlyRoute>
             <CreateLearningActivityPage />
+          </StaffOnlyRoute>
+        }
+      />
+      {/* Module-level Flashcard Deck Editor */}
+      <Route
+        path="/staff/courses/:courseId/modules/:moduleId/flashcards"
+        element={
+          <StaffOnlyRoute>
+            <FlashcardDeckPage />
           </StaffOnlyRoute>
         }
       />
