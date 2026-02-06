@@ -35,6 +35,7 @@ import { ExerciseBuilderPage } from '@/pages/staff/courses/ExerciseBuilderPage';
 import { ActivityEditorPage } from '@/features/learning-activity-editor';
 import { CoursePreviewPage } from '@/pages/staff/courses/CoursePreviewPage';
 import { FlashcardDeckPage } from '@/pages/staff/courses/FlashcardDeckPage';
+import { MatchingGamePage } from '@/pages/staff/courses/MatchingGamePage';
 import { ClassManagementPage as StaffClassManagementPage } from '@/pages/staff/classes/ClassManagementPage';
 import { ClassDetailsPage as StaffClassDetailsPage } from '@/pages/staff/classes/ClassDetailsPage';
 import { GradingPage, GradingDetailPage } from '@/pages/staff/grading';
@@ -496,6 +497,15 @@ export function AppRouter() {
         element={
           <StaffOnlyRoute>
             <FlashcardDeckPage />
+          </StaffOnlyRoute>
+        }
+      />
+      {/* Module-level Matching Game Editor */}
+      <Route
+        path="/staff/courses/:courseId/modules/:moduleId/matching"
+        element={
+          <StaffOnlyRoute>
+            <MatchingGamePage />
           </StaffOnlyRoute>
         }
       />
