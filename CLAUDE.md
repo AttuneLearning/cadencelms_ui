@@ -45,3 +45,48 @@
 
 1. New pattern established? `/adr suggest`
 2. Affects other team? `/comms send`
+
+---
+
+## Development Workflow (MANDATORY)
+
+**ADR:** `dev_communication/architecture/decisions/ADR-DEV-002-DEVELOPMENT-LIFECYCLE.md`
+**Config:** `memory/prompts/team-configs/development-lifecycle.md`
+
+| Action | Command |
+|--------|---------|
+| Process next issue | `/develop` |
+| Process specific issue | `/develop UI-ISS-082` |
+| Process all issues | `/develop all` |
+| Quick mode (trivial) | `/develop quick <file>` |
+
+### Lifecycle Phases (ALL MANDATORY)
+
+0. **Poll & Unblock** - Check `*-to-{team}/` inbox, unblock issues with responses
+1. **Context** - Check /comms, load /memory patterns, identify ADRs
+2. **Implementation** - Follow patterns, follow ADRs, update types
+3. **Verification** - `tsc --noEmit` (0 errors), unit tests, integration tests
+4. **Documentation** - Update /memory, /adr suggest if needed, /comms if cross-team
+5. **Completion** - Verify acceptance criteria, move issue, store session
+
+### Message Polling (Automatic)
+
+- **UI team** polls: `dev_communication/messaging/api-to-ui/`
+- **API team** polls: `dev_communication/messaging/ui-to-api/`
+- Responses automatically unblock matching BLOCKED issues
+- **Stops after:** 20 min inactivity OR issue completion
+
+### Verification Commands
+
+```bash
+# Type check (MUST pass before completing)
+npx tsc --noEmit
+
+# Unit tests
+npx vitest run
+
+# Integration tests
+npx vitest run --config vitest.integration.config.ts
+```
+
+**CRITICAL:** No issue can be marked complete until ALL verification steps pass.

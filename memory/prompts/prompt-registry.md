@@ -24,7 +24,8 @@ Central registry of all tracked prompts.
 
 | Name | Purpose | Link |
 |------|---------|------|
-| | | |
+| development-lifecycle | Mandatory development workflow enforcement | [[team-configs/development-lifecycle]] |
+| navigation-redesign | Navigation & Dashboard Redesign | [[team-configs/navigation-redesign]] |
 
 ---
 

@@ -2,7 +2,10 @@
 
 ## Index
 
-*No team-configs documented yet*
+| Name | Status | Purpose |
+|------|--------|---------|
+| [[development-lifecycle]] | Active | Mandatory development workflow enforcement |
+| [[navigation-redesign]] | Active | Navigation & Dashboard Redesign |
 
 ---
 
