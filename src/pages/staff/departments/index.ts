@@ -9,6 +9,7 @@ export { DepartmentCoursesPage } from './DepartmentCoursesPage';
 export { DepartmentCreateCoursePage } from './DepartmentCreateCoursePage';
 export { DepartmentClassesPage } from './DepartmentClassesPage';
 export { DepartmentStudentsPage } from './DepartmentStudentsPage';
+export { DepartmentEnrollmentPage } from './DepartmentEnrollmentPage';
 export { DepartmentReportsPage } from './DepartmentReportsPage';
 export { DepartmentSettingsPage } from './DepartmentSettingsPage';
 export { DepartmentProgramsPage } from './DepartmentProgramsPage';

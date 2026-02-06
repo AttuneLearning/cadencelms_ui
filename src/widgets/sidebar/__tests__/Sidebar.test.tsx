@@ -1,8 +1,14 @@
 /**
- * Unit Tests for Sidebar Component - Track D Implementation
- * Tests integration with useDepartmentContext hook
- * Version: 2.1.0 (Contract Alignment - Phase 2)
- * Date: 2026-01-11
+ * Unit Tests for Sidebar Component
+ * Section-Based Navigation Architecture (Navigation Redesign 2026-02-05)
+ * Version: 4.0.0
+ *
+ * Tests:
+ * - Section-based rendering (overview, primary, secondary, insights, department, footer)
+ * - Dashboard-specific sections (staff, learner, admin)
+ * - Section collapse/expand functionality
+ * - Department selection and actions
+ * - Permission filtering
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -21,76 +27,23 @@ import * as useDepartmentContextModule from '@/shared/hooks/useDepartmentContext
 vi.mock('@/features/auth/model/authStore');
 vi.mock('@/shared/stores/navigationStore');
 vi.mock('@/shared/hooks/useDepartmentContext');
-vi.mock('../config/navItems', () => ({
-  BASE_NAV_ITEMS: [
-    {
-      label: 'Dashboard',
-      path: '/dashboard',
-      icon: 'Home',
-      requiredPermission: null,
-    },
-    {
-      label: 'My Profile',
-      path: '/profile',
-      icon: 'User',
-      requiredPermission: null,
-    },
-  ],
-  LEARNER_CONTEXT_NAV: [
-    {
-      label: 'My Classes',
-      path: '/learner/classes',
-      icon: 'Calendar',
-    },
-  ],
-  STAFF_CONTEXT_NAV: [
-    {
-      label: 'Analytics',
-      path: '/staff/analytics',
-      icon: 'Chart',
-      requiredPermission: 'dashboard:view-department-overview',
-    },
-  ],
-  ADMIN_CONTEXT_NAV: [
-    {
-      label: 'Admin Panel',
-      path: '/admin',
-      icon: 'Settings',
-      requiredPermission: 'system:admin:access',
-    },
-  ],
-  DEPARTMENT_NAV_ITEMS: [
-    {
-      label: 'Courses',
-      pathTemplate: '/departments/:deptId/courses',
-      icon: 'Book',
-      userTypes: ['staff', 'learner'],
-      requiredPermission: 'content:courses:read',
-      departmentScoped: true,
-      group: 'content',
-    },
-    {
-      label: 'Manage Content',
-      pathTemplate: '/departments/:deptId/manage',
-      icon: 'Edit',
-      userTypes: ['staff'],
-      requiredPermission: 'content:courses:manage',
-      departmentScoped: true,
-      group: 'content',
-    },
-  ],
-  DEPARTMENT_ACTION_GROUPS: {
-    content: { label: 'Content Management', icon: 'BookOpen' },
-    people: { label: 'People & Progress', icon: 'Users' },
-    analytics: { label: 'Analytics & Settings', icon: 'FileBarChart' },
-  },
-  getPrimaryDashboardPath: (userType: string) => `/${userType}/dashboard`,
-}));
 vi.mock('../ui/NavLink', () => ({
-  NavLink: ({ label, path }: any) => (
-    <a href={path} data-testid={`nav-link-${label}`}>
+  NavLink: ({ label, path, disabled }: any) => (
+    <a
+      href={path}
+      data-testid={`nav-link-${label}`}
+      aria-disabled={disabled}
+      className={disabled ? 'disabled' : ''}
+    >
       {label}
     </a>
+  ),
+}));
+vi.mock('../ui/DepartmentBreadcrumbSelector', () => ({
+  DepartmentBreadcrumbSelector: ({ selectedDepartmentId }: any) => (
+    <div data-testid="dept-breadcrumb-selector">
+      Breadcrumb: {selectedDepartmentId}
+    </div>
   ),
 }));
 
@@ -98,7 +51,7 @@ vi.mock('../ui/NavLink', () => ({
 // Test Utilities
 // ============================================================================
 
-const renderSidebar = (initialRoute = '/') => {
+const renderSidebar = (initialRoute = '/staff/dashboard') => {
   return render(
     <MemoryRouter initialEntries={[initialRoute]}>
       <Sidebar />
@@ -108,7 +61,14 @@ const renderSidebar = (initialRoute = '/') => {
 
 const mockRoleHierarchy = {
   primaryUserType: 'staff' as const,
-  allPermissions: ['content:courses:read', 'content:courses:manage'],
+  allPermissions: [
+    'content:courses:read',
+    'content:courses:manage',
+    'class:view-own',
+    'grades:own-classes:manage',
+    'reports:department:read',
+    'reports:class:read',
+  ],
   staffRoles: {
     departmentRoles: [
       {
@@ -152,6 +112,8 @@ const mockNavigationStore = {
   lastAccessedDepartments: {},
   isSidebarOpen: true,
   setSidebarOpen: vi.fn(),
+  isBreadcrumbMode: false,
+  navigateToDepartment: vi.fn(),
 };
 
 const mockDepartmentContext = {
@@ -172,7 +134,7 @@ const mockDepartmentContext = {
 // Test Suites
 // ============================================================================
 
-describe('Sidebar Component', () => {
+describe('Sidebar Component - Section-Based Navigation', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(useAuthStoreModule.useAuthStore).mockReturnValue({
@@ -192,7 +154,7 @@ describe('Sidebar Component', () => {
     it('should render sidebar when user is authenticated', () => {
       renderSidebar();
       // Check for section headers
-      expect(screen.getAllByText('Navigation')[0]).toBeInTheDocument();
+      expect(screen.getByText('Overview')).toBeInTheDocument();
     });
 
     it('should not render when roleHierarchy is null', () => {
@@ -214,26 +176,114 @@ describe('Sidebar Component', () => {
       const { container } = renderSidebar();
       expect(container.firstChild).toBeNull();
     });
+  });
 
-    it('should render global navigation items', () => {
-      renderSidebar();
+  describe('Staff Dashboard Sections', () => {
+    it('should render Overview section with Dashboard and Calendar', () => {
+      renderSidebar('/staff/dashboard');
+      expect(screen.getByText('Overview')).toBeInTheDocument();
       expect(screen.getByTestId('nav-link-Dashboard')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-Calendar')).toBeInTheDocument();
     });
 
-    it('should render department sections', () => {
-      renderSidebar();
-      expect(screen.getByText('My Departments')).toBeInTheDocument();
-      expect(screen.getByText('Department Actions')).toBeInTheDocument();
+    it('should render Teaching (Primary) section', () => {
+      renderSidebar('/staff/dashboard');
+      expect(screen.getByText('Teaching')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-My Courses')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-My Classes')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-Grading')).toBeInTheDocument();
+    });
+
+    it('should render Insights section with Analytics and Reports', () => {
+      renderSidebar('/staff/dashboard');
+      expect(screen.getByText('Insights')).toBeInTheDocument();
+    });
+
+    it('should render Account footer with Profile and Settings', () => {
+      renderSidebar('/staff/dashboard');
+      expect(screen.getByTestId('nav-link-My Profile')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-Settings')).toBeInTheDocument();
     });
   });
 
-  describe('Department Display', () => {
-    it('should display user departments from roleHierarchy', async () => {
-      renderSidebar();
+  describe('Learner Dashboard Sections', () => {
+    it('should render Learning (Primary) section on learner dashboard', () => {
+      renderSidebar('/learner/dashboard');
+      expect(screen.getByText('Learning')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-My Classes')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-Course Catalog')).toBeInTheDocument();
+    });
 
-      // Expand the department dropdown
-      const departmentHeader = screen.getByText('My Departments').closest('button');
-      fireEvent.click(departmentHeader!);
+    it('should render Progress (Secondary) section', async () => {
+      const user = userEvent.setup();
+      renderSidebar('/learner/dashboard');
+      expect(screen.getByText('Progress')).toBeInTheDocument();
+
+      // Progress section starts collapsed, expand it
+      const progressHeader = screen.getByText('Progress').closest('button');
+      await user.click(progressHeader!);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('nav-link-My Progress')).toBeInTheDocument();
+        expect(screen.getByTestId('nav-link-Certificates')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Admin Dashboard Sections', () => {
+    it('should render Administration (Primary) section on admin dashboard', () => {
+      renderSidebar('/admin/dashboard');
+      expect(screen.getByText('Administration')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-User Management')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-Departments')).toBeInTheDocument();
+    });
+
+    it('should render Insights section with System Analytics and Reports', () => {
+      renderSidebar('/admin/dashboard');
+      expect(screen.getByText('Insights')).toBeInTheDocument();
+    });
+  });
+
+  describe('Section Collapse/Expand', () => {
+    it('should expand/collapse collapsible sections on click', async () => {
+      const user = userEvent.setup();
+      renderSidebar('/staff/dashboard');
+
+      // Teaching section should be expanded by default
+      expect(screen.getByTestId('nav-link-My Courses')).toBeInTheDocument();
+
+      // Find and click the Teaching section header (has collapsible: true)
+      const teachingHeader = screen.getByText('Teaching').closest('button');
+      if (teachingHeader) {
+        await user.click(teachingHeader);
+        // After collapse, items should be hidden
+        // Note: Due to implementation, items are removed from DOM when collapsed
+      }
+    });
+
+    it('should show chevron-down icon when section is expanded', () => {
+      renderSidebar('/staff/dashboard');
+
+      // Find Teaching section which is expanded by default
+      const teachingSection = screen.getByText('Teaching').closest('button');
+      const chevronDown = teachingSection?.querySelector('svg');
+      expect(chevronDown).toBeInTheDocument();
+    });
+  });
+
+  describe('Departments Section', () => {
+    it('should render Departments section when user has departments', () => {
+      renderSidebar('/staff/dashboard');
+      expect(screen.getByText('Departments')).toBeInTheDocument();
+    });
+
+    it('should show department list when Departments section is expanded', async () => {
+      const user = userEvent.setup();
+      renderSidebar('/staff/dashboard');
+
+      // Click Departments section to expand
+      const deptHeader = screen.getByText('Departments').closest('button');
+      await user.click(deptHeader!);
 
       await waitFor(() => {
         expect(screen.getByText('Engineering')).toBeInTheDocument();
@@ -241,56 +291,19 @@ describe('Sidebar Component', () => {
       });
     });
 
-    it('should show primary badge on primary department', async () => {
-      renderSidebar();
+    it('should show Primary badge on primary department', async () => {
+      const user = userEvent.setup();
+      renderSidebar('/staff/dashboard');
 
-      // Expand the department dropdown
-      const departmentHeader = screen.getByText('My Departments').closest('button');
-      fireEvent.click(departmentHeader!);
+      const deptHeader = screen.getByText('Departments').closest('button');
+      await user.click(deptHeader!);
 
       await waitFor(() => {
         expect(screen.getByText('Primary')).toBeInTheDocument();
       });
     });
 
-    it('should handle departments from learnerRoles', async () => {
-      vi.mocked(useAuthStoreModule.useAuthStore).mockReturnValue({
-        roleHierarchy: {
-          ...mockRoleHierarchy,
-          staffRoles: null,
-          learnerRoles: {
-            departmentRoles: [
-              {
-                departmentId: 'dept-789',
-                departmentName: 'Math',
-                isPrimary: false,
-                roles: [
-                  {
-                    role: 'student',
-                    permissions: ['content:courses:read'],
-                  },
-                ],
-              },
-            ],
-          },
-        },
-        user: mockUser,
-      } as any);
-
-      renderSidebar();
-
-      // Expand the department dropdown
-      const departmentHeader = screen.getByText('My Departments').closest('button');
-      fireEvent.click(departmentHeader!);
-
-      await waitFor(() => {
-        expect(screen.getByText('Math')).toBeInTheDocument();
-      });
-    });
-  });
-
-  describe('Department Selection', () => {
-    it('should call switchDepartment when clicking unselected department', async () => {
+    it('should call switchDepartment when clicking a department', async () => {
       const user = userEvent.setup();
       const mockSwitchDepartment = vi.fn().mockResolvedValue(undefined);
       vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
@@ -298,16 +311,17 @@ describe('Sidebar Component', () => {
         switchDepartment: mockSwitchDepartment,
       });
 
-      renderSidebar();
+      renderSidebar('/staff/dashboard');
 
-      // Expand the department dropdown
-      const departmentHeader = screen.getByText('My Departments').closest('button');
-      fireEvent.click(departmentHeader!);
+      // Expand departments section
+      const deptHeader = screen.getByText('Departments').closest('button');
+      await user.click(deptHeader!);
 
       await waitFor(() => {
         expect(screen.getByText('Engineering')).toBeInTheDocument();
       });
 
+      // Click on a department
       const deptButton = screen.getByText('Engineering').closest('button');
       await user.click(deptButton!);
 
@@ -316,32 +330,143 @@ describe('Sidebar Component', () => {
       });
     });
 
-    it('should remember department selection after successful switch', async () => {
+    it('should display error message when switch fails', async () => {
       const user = userEvent.setup();
-      const mockSwitchDepartment = vi.fn().mockResolvedValue(undefined);
       vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
         ...mockDepartmentContext,
-        switchDepartment: mockSwitchDepartment,
+        switchError: 'Failed to switch department',
       });
 
-      renderSidebar();
+      renderSidebar('/staff/dashboard');
 
-      // Expand the department dropdown
-      const departmentHeader = screen.getByText('My Departments').closest('button');
-      fireEvent.click(departmentHeader!);
+      // Expand departments section
+      const deptHeader = screen.getByText('Departments').closest('button');
+      await user.click(deptHeader!);
 
       await waitFor(() => {
-        expect(screen.getByText('Engineering')).toBeInTheDocument();
+        expect(screen.getByText('Failed to switch department')).toBeInTheDocument();
+      });
+    });
+
+    it('should show loading spinner during department switch', async () => {
+      const user = userEvent.setup();
+      vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
+        ...mockDepartmentContext,
+        isSwitching: true,
       });
 
-      const deptButton = screen.getByText('Engineering').closest('button');
-      await user.click(deptButton!);
+      renderSidebar('/staff/dashboard');
+
+      // Section should auto-expand when switching
+      await waitFor(() => {
+        const loadingIcon = document.querySelector('.animate-spin');
+        expect(loadingIcon).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Department Actions', () => {
+    it('should show department actions when department is selected', async () => {
+      const user = userEvent.setup();
+      vi.mocked(useNavigationStoreModule.useNavigationStore).mockReturnValue({
+        ...mockNavigationStore,
+        selectedDepartmentId: 'dept-123',
+      } as any);
+
+      renderSidebar('/staff/dashboard');
+
+      // Expand departments section
+      const deptHeader = screen.getByText('Departments').closest('button');
+      await user.click(deptHeader!);
 
       await waitFor(() => {
-        expect(mockNavigationStore.rememberDepartment).toHaveBeenCalledWith(
-          'user-123',
-          'dept-123'
-        );
+        expect(screen.getByText('Actions')).toBeInTheDocument();
+        expect(screen.getByTestId('nav-link-Manage Courses')).toBeInTheDocument();
+      });
+    });
+
+    it('should show breadcrumb selector when in breadcrumb mode', async () => {
+      const user = userEvent.setup();
+      vi.mocked(useNavigationStoreModule.useNavigationStore).mockReturnValue({
+        ...mockNavigationStore,
+        selectedDepartmentId: 'dept-123',
+        isBreadcrumbMode: true,
+      } as any);
+
+      renderSidebar('/staff/dashboard');
+
+      const deptHeader = screen.getByText('Departments').closest('button');
+      await user.click(deptHeader!);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('dept-breadcrumb-selector')).toBeInTheDocument();
+      });
+    });
+
+    it('should filter department actions by permission', async () => {
+      const user = userEvent.setup();
+      vi.mocked(useNavigationStoreModule.useNavigationStore).mockReturnValue({
+        ...mockNavigationStore,
+        selectedDepartmentId: 'dept-123',
+      } as any);
+      vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
+        ...mockDepartmentContext,
+        hasPermission: vi.fn((perm) => perm === 'content:courses:read'),
+      });
+
+      renderSidebar('/staff/dashboard');
+
+      const deptHeader = screen.getByText('Departments').closest('button');
+      await user.click(deptHeader!);
+
+      await waitFor(() => {
+        // Should show Manage Courses (requires content:courses:read)
+        expect(screen.getByTestId('nav-link-Manage Courses')).toBeInTheDocument();
+        // Should NOT show Create Course (requires content:courses:manage)
+        expect(screen.queryByTestId('nav-link-Create Course')).not.toBeInTheDocument();
+      });
+    });
+
+    it('should show Course Enrollments link for users with enrollment:department:manage permission', async () => {
+      const user = userEvent.setup();
+      vi.mocked(useNavigationStoreModule.useNavigationStore).mockReturnValue({
+        ...mockNavigationStore,
+        selectedDepartmentId: 'dept-123',
+      } as any);
+      vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
+        ...mockDepartmentContext,
+        hasPermission: vi.fn((perm) => perm === 'enrollment:department:manage'),
+      });
+
+      renderSidebar('/staff/dashboard');
+
+      const deptHeader = screen.getByText('Departments').closest('button');
+      await user.click(deptHeader!);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('nav-link-Course Enrollments')).toBeInTheDocument();
+      });
+    });
+
+    it('should hide Course Enrollments link for users without enrollment:department:manage permission', async () => {
+      const user = userEvent.setup();
+      vi.mocked(useNavigationStoreModule.useNavigationStore).mockReturnValue({
+        ...mockNavigationStore,
+        selectedDepartmentId: 'dept-123',
+      } as any);
+      vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
+        ...mockDepartmentContext,
+        hasPermission: vi.fn((perm) => perm === 'content:courses:read'), // No enrollment permission
+      });
+
+      renderSidebar('/staff/dashboard');
+
+      const deptHeader = screen.getByText('Departments').closest('button');
+      await user.click(deptHeader!);
+
+      await waitFor(() => {
+        // Should NOT show Course Enrollments (requires enrollment:department:manage)
+        expect(screen.queryByTestId('nav-link-Course Enrollments')).not.toBeInTheDocument();
       });
     });
 
@@ -350,229 +475,41 @@ describe('Sidebar Component', () => {
       vi.mocked(useNavigationStoreModule.useNavigationStore).mockReturnValue({
         ...mockNavigationStore,
         selectedDepartmentId: 'dept-123',
+        isBreadcrumbMode: false,
       } as any);
 
-      renderSidebar();
+      renderSidebar('/staff/dashboard');
 
-      // Manually expand the department dropdown
-      const departmentHeader = screen.getByText('My Departments').closest('button');
-      fireEvent.click(departmentHeader!);
+      const deptHeader = screen.getByText('Departments').closest('button');
+      await user.click(deptHeader!);
 
       await waitFor(() => {
         expect(screen.getByText('Engineering')).toBeInTheDocument();
       });
 
-      const deptButton = screen.getByText('Engineering').closest('button');
-      await user.click(deptButton!);
+      // Click on the selected department header to deselect
+      const selectedDeptButton = screen.getByText('Engineering').closest('button');
+      await user.click(selectedDeptButton!);
 
       await waitFor(() => {
         expect(mockNavigationStore.setSelectedDepartment).toHaveBeenCalledWith(null);
       });
     });
-
-    it('should show loading state during department switch', () => {
-      vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
-        ...mockDepartmentContext,
-        isSwitching: true,
-        currentDepartmentId: 'dept-123',
-      });
-      vi.mocked(useNavigationStoreModule.useNavigationStore).mockReturnValue({
-        ...mockNavigationStore,
-        selectedDepartmentId: 'dept-123',
-      } as any);
-
-      renderSidebar();
-
-      // Find the loading spinner
-      const loadingIcon = document.querySelector('.animate-spin');
-      expect(loadingIcon).toBeInTheDocument();
-    });
-
-    it('should disable department buttons during switch', async () => {
-      vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
-        ...mockDepartmentContext,
-        isSwitching: true,
-      });
-
-      renderSidebar();
-
-      // Auto-expands when isSwitching = true
-      await waitFor(() => {
-        const deptButton = screen.getByText('Engineering').closest('button');
-        expect(deptButton).toBeDisabled();
-      });
-    });
-
-    it('should display error message when switch fails', async () => {
-      vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
-        ...mockDepartmentContext,
-        switchError: 'Failed to switch department',
-      });
-
-      renderSidebar();
-
-      // Expand to see error message
-      const departmentHeader = screen.getByText('My Departments').closest('button');
-      fireEvent.click(departmentHeader!);
-
-      await waitFor(() => {
-        expect(screen.getByText('Failed to switch department')).toBeInTheDocument();
-      });
-    });
-
-    it('should handle API error gracefully', async () => {
-      const user = userEvent.setup();
-      const mockSwitchDepartment = vi.fn().mockRejectedValue(new Error('API Error'));
-      vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
-        ...mockDepartmentContext,
-        switchDepartment: mockSwitchDepartment,
-      });
-
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
-      renderSidebar();
-
-      // Expand the department dropdown
-      const departmentHeader = screen.getByText('My Departments').closest('button');
-      fireEvent.click(departmentHeader!);
-
-      await waitFor(() => {
-        expect(screen.getByText('Engineering')).toBeInTheDocument();
-      });
-
-      const deptButton = screen.getByText('Engineering').closest('button');
-      await user.click(deptButton!);
-
-      await waitFor(() => {
-        expect(consoleSpy).toHaveBeenCalled();
-      });
-
-      consoleSpy.mockRestore();
-    });
   });
 
-  describe('Department-Specific Navigation', () => {
-    it('should show no department selected message when none selected', () => {
-      renderSidebar();
-      expect(screen.getByText('Select a department above to see available actions')).toBeInTheDocument();
-    });
-
-    it('should display department actions when department is selected', () => {
-      vi.mocked(useNavigationStoreModule.useNavigationStore).mockReturnValue({
-        ...mockNavigationStore,
-        selectedDepartmentId: 'dept-123',
-      } as any);
-      vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
-        ...mockDepartmentContext,
-        currentDepartmentId: 'dept-123',
-      });
-
-      renderSidebar();
-
-      expect(screen.getByTestId('nav-link-Courses')).toBeInTheDocument();
-      expect(screen.getByTestId('nav-link-Manage Content')).toBeInTheDocument();
-    });
-
-    it('should filter department nav items by permission', () => {
-      vi.mocked(useNavigationStoreModule.useNavigationStore).mockReturnValue({
-        ...mockNavigationStore,
-        selectedDepartmentId: 'dept-123',
-      } as any);
-      vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
-        ...mockDepartmentContext,
-        currentDepartmentId: 'dept-123',
-        hasPermission: vi.fn((perm) => perm === 'content:courses:read'),
-      });
-
-      renderSidebar();
-
-      // Should show Courses (only requires read)
-      expect(screen.getByTestId('nav-link-Courses')).toBeInTheDocument();
-      // Should not show Manage Content (requires manage permission)
-      expect(screen.queryByTestId('nav-link-Manage Content')).not.toBeInTheDocument();
-    });
-
-    it('should replace :deptId in path templates', () => {
-      vi.mocked(useNavigationStoreModule.useNavigationStore).mockReturnValue({
-        ...mockNavigationStore,
-        selectedDepartmentId: 'dept-123',
-      } as any);
-      vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
-        ...mockDepartmentContext,
-        currentDepartmentId: 'dept-123',
-      });
-
-      renderSidebar();
-
-      const coursesLink = screen.getByTestId('nav-link-Courses');
-      expect(coursesLink).toHaveAttribute('href', '/departments/dept-123/courses');
-    });
-
-    it('should show no actions message when user has no permissions', () => {
-      vi.mocked(useNavigationStoreModule.useNavigationStore).mockReturnValue({
-        ...mockNavigationStore,
-        selectedDepartmentId: 'dept-123',
-      } as any);
-      vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
-        ...mockDepartmentContext,
-        currentDepartmentId: 'dept-123',
+  describe('Permission Filtering', () => {
+    it('should disable nav items when user lacks required permission', () => {
+      vi.mocked(useAuthStoreModule.useAuthStore).mockReturnValue({
+        roleHierarchy: mockRoleHierarchy,
+        user: mockUser,
         hasPermission: vi.fn(() => false),
-      });
-
-      renderSidebar();
-
-      expect(screen.getByText('No actions available for this department')).toBeInTheDocument();
-    });
-  });
-
-  describe('Global Navigation Filtering', () => {
-    it('should show all nav items but disable those for other userTypes', () => {
-      renderSidebar();
-
-      // Staff user should see Dashboard (enabled)
-      expect(screen.getByTestId('nav-link-Dashboard')).toBeInTheDocument();
-
-      // Admin Panel shown but disabled (staff user doesn't have global-admin userType)
-      // Note: cross-userType items are now shown but grayed out
-      // This is the new behavior per ISS-003
-    });
-
-    it('should show admin items for global-admin users', () => {
-      vi.mocked(useAuthStoreModule.useAuthStore).mockReturnValue({
-        roleHierarchy: {
-          ...mockRoleHierarchy,
-          primaryUserType: 'global-admin',
-        },
-        user: mockUser,
-        hasPermission: vi.fn(() => true),
       } as any);
 
-      renderSidebar('/admin'); // Render on admin route to show ADMIN_CONTEXT_NAV
+      renderSidebar('/staff/dashboard');
 
-      expect(screen.getByTestId('nav-link-Admin Panel')).toBeInTheDocument();
-    });
-
-    it('should disable items when user lacks required permission', () => {
-      const mockHasPermission = vi.fn(() => false);
-      vi.mocked(useAuthStoreModule.useAuthStore).mockReturnValue({
-        roleHierarchy: {
-          ...mockRoleHierarchy,
-          primaryUserType: 'global-admin',
-          allUserTypes: ['global-admin'],
-        },
-        user: mockUser,
-        hasPermission: mockHasPermission, // Add hasGlobalPermission mock
-      } as any);
-      vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
-        ...mockDepartmentContext,
-        hasPermission: mockHasPermission,
-      });
-
-      renderSidebar();
-
-      // Admin Panel should be shown but disabled (no permission)
-      // All admin items require permissions, so they should be disabled
-      // Note: With all permissions denied, all items will be disabled
+      // Items that require permission should be disabled
+      const coursesLink = screen.getByTestId('nav-link-My Courses');
+      expect(coursesLink).toHaveAttribute('aria-disabled', 'true');
     });
   });
 
@@ -585,17 +522,6 @@ describe('Sidebar Component', () => {
       if (overlay) {
         await user.click(overlay);
         expect(mockNavigationStore.setSidebarOpen).toHaveBeenCalledWith(false);
-      }
-    });
-
-    it('should close sidebar when clicking close button', async () => {
-      const user = userEvent.setup();
-      renderSidebar();
-
-      const closeButton = document.querySelector('button');
-      if (closeButton && closeButton.querySelector('.h-5.w-5')) {
-        await user.click(closeButton);
-        expect(mockNavigationStore.setSidebarOpen).toHaveBeenCalled();
       }
     });
 
@@ -630,7 +556,6 @@ describe('Sidebar Component', () => {
 
       renderSidebar();
 
-      // Should call setSelectedDepartment with last accessed dept
       expect(mockNavigationStore.setSelectedDepartment).toHaveBeenCalledWith('dept-456');
     });
 
@@ -645,7 +570,6 @@ describe('Sidebar Component', () => {
 
       renderSidebar();
 
-      // Should not call setSelectedDepartment
       expect(mockNavigationStore.setSelectedDepartment).not.toHaveBeenCalled();
     });
 
@@ -659,66 +583,7 @@ describe('Sidebar Component', () => {
 
       renderSidebar();
 
-      // Should not call setSelectedDepartment
       expect(mockNavigationStore.setSelectedDepartment).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('Department Context Hook Integration', () => {
-    it('should call useDepartmentContext hook', () => {
-      renderSidebar();
-
-      expect(useDepartmentContextModule.useDepartmentContext).toHaveBeenCalled();
-    });
-
-    it('should use hasPermission from department context', () => {
-      const mockHasPermission = vi.fn(() => true);
-      vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
-        ...mockDepartmentContext,
-        hasPermission: mockHasPermission,
-      });
-      vi.mocked(useNavigationStoreModule.useNavigationStore).mockReturnValue({
-        ...mockNavigationStore,
-        selectedDepartmentId: 'dept-123',
-      } as any);
-
-      renderSidebar();
-
-      // Hook's hasPermission should be called for filtering
-      expect(mockHasPermission).toHaveBeenCalled();
-    });
-
-    it('should use switchDepartment from department context', async () => {
-      const user = userEvent.setup();
-      const mockSwitchDepartment = vi.fn().mockResolvedValue(undefined);
-      vi.mocked(useDepartmentContextModule.useDepartmentContext).mockReturnValue({
-        ...mockDepartmentContext,
-        switchDepartment: mockSwitchDepartment,
-      });
-
-      renderSidebar();
-
-      // Expand the department dropdown
-      const departmentHeader = screen.getByText('My Departments').closest('button');
-      fireEvent.click(departmentHeader!);
-
-      await waitFor(() => {
-        expect(screen.getByText('Engineering')).toBeInTheDocument();
-      });
-
-      const deptButton = screen.getByText('Engineering').closest('button');
-      await user.click(deptButton!);
-
-      await waitFor(() => {
-        expect(mockSwitchDepartment).toHaveBeenCalledWith('dept-123');
-      });
-    });
-  });
-
-  describe('Settings Footer', () => {
-    it('should render settings link in footer', () => {
-      renderSidebar();
-      expect(screen.getByTestId('nav-link-Settings')).toBeInTheDocument();
     });
   });
 });

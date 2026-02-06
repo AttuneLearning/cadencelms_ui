@@ -27,7 +27,7 @@ export const uatUsers: Record<string, UATUser> = {
     role: 'learner',
     expectedDashboard: '/learner/dashboard',
   },
-  
+
   staff: {
     id: 'uat-staff-001',
     email: 'uat.staff@test.cadencelms.com',
@@ -36,7 +36,7 @@ export const uatUsers: Record<string, UATUser> = {
     role: 'staff',
     expectedDashboard: '/staff/dashboard',
   },
-  
+
   admin: {
     id: 'uat-admin-001',
     email: 'uat.admin@test.cadencelms.com',
@@ -44,6 +44,19 @@ export const uatUsers: Record<string, UATUser> = {
     displayName: 'UAT Administrator',
     role: 'admin',
     expectedDashboard: '/admin/dashboard',
+  },
+
+  /**
+   * Riley Instructor - Staff member with multiple department memberships
+   * Used for testing department switching functionality
+   */
+  rileyInstructor: {
+    id: 'riley-instructor',
+    email: 'riley.instructor@lms.edu',
+    password: 'Password123!',
+    displayName: 'Riley Instructor',
+    role: 'staff',
+    expectedDashboard: '/staff/dashboard',
   },
 };
 

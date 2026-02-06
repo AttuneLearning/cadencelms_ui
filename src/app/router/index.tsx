@@ -45,7 +45,10 @@ import { MatchGameBuilderPage } from '@/pages/staff/MatchGameBuilderPage';
 import { QuizBuilderPage } from '@/pages/staff/QuizBuilderPage';
 
 // Department-scoped staff pages
-import { DepartmentCoursesPage, DepartmentCreateCoursePage, DepartmentClassesPage, DepartmentStudentsPage, DepartmentReportsPage, DepartmentSettingsPage, DepartmentProgramsPage } from '@/pages/staff/departments';
+import { DepartmentCoursesPage, DepartmentCreateCoursePage, DepartmentClassesPage, DepartmentStudentsPage, DepartmentEnrollmentPage, DepartmentReportsPage, DepartmentSettingsPage, DepartmentProgramsPage } from '@/pages/staff/departments';
+
+// Department-scoped learner pages (Navigation Redesign Phase 5)
+import { LearnerDepartmentCoursesPage, LearnerDepartmentEnrollmentsPage, LearnerDepartmentProgressPage } from '@/pages/learner/departments';
 
 // Admin pages
 import { AdminDashboardPage } from '@/pages/admin/dashboard/AdminDashboardPage';
@@ -357,6 +360,32 @@ export function AppRouter() {
         element={
           <LearnerOnlyRoute>
             <LearnerTestPage />
+          </LearnerOnlyRoute>
+        }
+      />
+
+      {/* Learner department-scoped routes (Navigation Redesign Phase 5) */}
+      <Route
+        path="/learner/departments/:deptId/courses"
+        element={
+          <LearnerOnlyRoute>
+            <LearnerDepartmentCoursesPage />
+          </LearnerOnlyRoute>
+        }
+      />
+      <Route
+        path="/learner/departments/:deptId/enrollments"
+        element={
+          <LearnerOnlyRoute>
+            <LearnerDepartmentEnrollmentsPage />
+          </LearnerOnlyRoute>
+        }
+      />
+      <Route
+        path="/learner/departments/:deptId/progress"
+        element={
+          <LearnerOnlyRoute>
+            <LearnerDepartmentProgressPage />
           </LearnerOnlyRoute>
         }
       />
@@ -676,6 +705,14 @@ export function AppRouter() {
         element={
           <StaffOnlyRoute>
             <DepartmentStudentsPage />
+          </StaffOnlyRoute>
+        }
+      />
+      <Route
+        path="/staff/departments/:deptId/enrollments"
+        element={
+          <StaffOnlyRoute>
+            <DepartmentEnrollmentPage />
           </StaffOnlyRoute>
         }
       />
