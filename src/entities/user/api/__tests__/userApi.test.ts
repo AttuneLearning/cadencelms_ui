@@ -98,7 +98,7 @@ describe('userApi', () => {
     });
 
     it('should fetch users with role filter', async () => {
-      const filteredUsers = mockUsers.filter(u => u.roles?.includes('staff'));
+      const filteredUsers = mockUsers.filter(u => u.userTypes?.includes('staff'));
 
       const mockResponse: UserListResponse = {
         users: filteredUsers,
@@ -118,7 +118,7 @@ describe('userApi', () => {
       });
 
       expect(result.users).toHaveLength(filteredUsers.length);
-      expect(result.users.every(u => u.roles.includes('staff'))).toBe(true);
+      expect(result.users.every(u => u.userTypes?.includes('staff'))).toBe(true);
     });
 
     it('should fetch users with status filter', async () => {

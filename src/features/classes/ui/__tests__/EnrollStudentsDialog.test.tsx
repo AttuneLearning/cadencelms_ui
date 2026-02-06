@@ -30,7 +30,7 @@ describe('EnrollStudentsDialog', () => {
   const mockOnClose = vi.fn();
   const mockOnSuccess = vi.fn();
 
-  const learners = mockUsers.filter((u) => u.roles.includes('learner'));
+  const learners = mockUsers.filter((u) => u.userTypes?.includes('learner'));
 
   beforeEach(() => {
     vi.clearAllMocks();

@@ -74,7 +74,7 @@ export function EnrollStudentsDialog({
 
   const learners = useMemo(() => {
     if (!usersData?.users) return [];
-    return usersData.users.filter((user) => user.roles.includes('learner'));
+    return usersData.users.filter((user) => user.userTypes?.includes('learner'));
   }, [usersData]);
 
   const filteredLearners = useMemo(() => {

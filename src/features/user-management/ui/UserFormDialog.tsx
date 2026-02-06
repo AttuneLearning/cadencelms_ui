@@ -70,8 +70,10 @@ export const UserFormDialog: React.FC<UserFormDialogProps> = ({ open, onOpenChan
 
   const handleSubmit = (data: UserFormValues) => {
     // Remove password if empty (for updates)
+    // Map form's roles field to API's userTypes field
     const submitData: UserFormData = {
       ...data,
+      userTypes: data.roles,
       password: data.password || undefined,
     };
 

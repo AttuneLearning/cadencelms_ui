@@ -90,9 +90,9 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ user, classNam
             <span className="text-sm font-medium">Roles</span>
           </div>
           <div className="flex flex-wrap gap-2">
-            {user.roles.map((role) => (
-              <Badge key={role} variant="outline">
-                {role}
+            {user.userTypes?.map((userType) => (
+              <Badge key={userType} variant="outline">
+                {userType}
               </Badge>
             ))}
           </div>

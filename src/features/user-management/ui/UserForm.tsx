@@ -89,7 +89,7 @@ export const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, isLoading })
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
-          roles: user.roles,
+          roles: user.userTypes || [],
           status: user.status,
           password: '',
           staffDepartmentMemberships: initialStaffDepts,
