@@ -7,7 +7,8 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useBulkEnrollInCourse, useCourseEnrollments } from '@/entities/enrollment';
-import { userApi } from '@/entities/user/api/userApi';
+import { client } from '@/shared/api/client';
+import { endpoints } from '@/shared/api/endpoints';
 import {
   Dialog,
   DialogContent,
@@ -47,14 +48,17 @@ export function EnrollCourseDialog({
   const [enrollmentResult, setEnrollmentResult] = useState<BulkCourseEnrollmentResponse | null>(null);
 
   // Fetch learners (optionally filtered by department)
-  const { data: usersData, isLoading: isLoadingUsers } = useQuery({
-    queryKey: ['users', { role: 'learner', department: departmentId }],
-    queryFn: () => userApi.list({
-      filters: {
-        role: 'learner',
-        ...(departmentId && { department: departmentId }),
+  // Uses /users/learners endpoint which requires learner:department:read for department-scoped access
+  const { data: usersData, isLoading: isLoadingUsers, error: usersError } = useQuery({
+    queryKey: ['learners', { department: departmentId }],
+    queryFn: async () => {
+      const params: Record<string, string | number> = { limit: 500 };
+      if (departmentId) {
+        params.department = departmentId;
       }
-    }),
+      const response = await client.get(endpoints.admin.learners.list, { params });
+      return response.data.data || response.data;
+    },
     enabled: open,
   });
 
@@ -73,33 +77,59 @@ export function EnrollCourseDialog({
     );
   }, [enrollmentsData]);
 
-  const learners = useMemo(() => {
-    if (!usersData?.users) return [];
-    return usersData.users.filter((user) => user.roles?.includes('learner'));
+  // Normalize learner data to handle both old (users) and new (learners) API formats
+  interface NormalizedLearner {
+    id: string;
+    displayName: string;
+    idSuffix?: string;
+    email?: string;
+    isProgramEnrollee?: boolean;
+  }
+
+  const learners = useMemo((): NormalizedLearner[] => {
+    // New API format: { learners: [...] }
+    if (usersData?.learners) {
+      return usersData.learners.map((l: { id: string; displayName: string; idSuffix?: string; isProgramEnrollee?: boolean }) => ({
+        id: l.id,
+        displayName: l.displayName,
+        idSuffix: l.idSuffix,
+        isProgramEnrollee: l.isProgramEnrollee,
+      }));
+    }
+    // Old API format: { users: [...] }
+    if (usersData?.users) {
+      return usersData.users.map((u: { _id: string; firstName: string; lastName: string; email: string }) => ({
+        id: u._id,
+        displayName: `${u.lastName}, ${u.firstName[0]}.`,
+        email: u.email,
+      }));
+    }
+    return [];
   }, [usersData]);
 
   const filteredLearners = useMemo(() => {
     return learners.filter((learner) => {
-      const matchesSearch =
-        searchTerm === '' ||
-        learner.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        learner.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        learner.email.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesSearch;
+      if (searchTerm === '') return true;
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        learner.displayName.toLowerCase().includes(searchLower) ||
+        (learner.email?.toLowerCase().includes(searchLower) ?? false) ||
+        (learner.idSuffix?.includes(searchTerm) ?? false)
+      );
     });
   }, [learners, searchTerm]);
 
   const availableLearners = useMemo(() => {
-    return filteredLearners.filter((learner) => !enrolledLearnerIds.has(learner._id));
+    return filteredLearners.filter((learner) => !enrolledLearnerIds.has(learner.id));
   }, [filteredLearners, enrolledLearnerIds]);
 
   const alreadyEnrolledLearners = useMemo(() => {
-    return filteredLearners.filter((learner) => enrolledLearnerIds.has(learner._id));
+    return filteredLearners.filter((learner) => enrolledLearnerIds.has(learner.id));
   }, [filteredLearners, enrolledLearnerIds]);
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedLearners(availableLearners.map((l) => l._id));
+      setSelectedLearners(availableLearners.map((l) => l.id));
     } else {
       setSelectedLearners([]);
     }
@@ -214,6 +244,16 @@ export function EnrollCourseDialog({
           </Alert>
         )}
 
+        {usersError && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              {(usersError as Error & { response?: { data?: { message?: string } } })?.response?.data?.message ||
+                'Failed to load learners. You may not have permission to view learners in this department.'}
+            </AlertDescription>
+          </Alert>
+        )}
+
         <div className="space-y-4 flex-1 overflow-hidden flex flex-col">
           {/* Search */}
           <div className="relative">
@@ -264,30 +304,44 @@ export function EnrollCourseDialog({
                   {/* Available learners */}
                   {availableLearners.map((learner) => (
                     <div
-                      key={learner._id}
+                      key={learner.id}
                       className="flex items-center gap-3 p-3 rounded-md hover:bg-muted/50 transition-colors"
                     >
                       <Checkbox
-                        id={learner._id}
-                        checked={selectedLearners.includes(learner._id)}
+                        id={learner.id}
+                        checked={selectedLearners.includes(learner.id)}
                         onCheckedChange={(checked) =>
-                          handleSelectLearner(learner._id, checked as boolean)
+                          handleSelectLearner(learner.id, checked as boolean)
                         }
                       />
                       <Avatar className="h-8 w-8">
                         <AvatarImage src={undefined} />
                         <AvatarFallback>
-                          {learner.firstName[0]}
-                          {learner.lastName[0]}
+                          {learner.displayName.split(',')[0]?.[0] || '?'}
+                          {learner.displayName.split(' ')[1]?.[0] || '?'}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium">
-                          {learner.firstName} {learner.lastName}
-                        </p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {learner.email}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-medium">
+                            {learner.displayName}
+                          </p>
+                          {learner.idSuffix && (
+                            <span className="text-xs text-muted-foreground font-mono">
+                              ...{learner.idSuffix}
+                            </span>
+                          )}
+                          {learner.isProgramEnrollee && (
+                            <Badge variant="secondary" className="text-xs">
+                              Program
+                            </Badge>
+                          )}
+                        </div>
+                        {learner.email && (
+                          <p className="text-xs text-muted-foreground truncate">
+                            {learner.email}
+                          </p>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -301,24 +355,33 @@ export function EnrollCourseDialog({
                       </div>
                       {alreadyEnrolledLearners.map((learner) => (
                         <div
-                          key={learner._id}
+                          key={learner.id}
                           className="flex items-center gap-3 p-3 rounded-md opacity-50"
                         >
                           <Checkbox disabled checked />
                           <Avatar className="h-8 w-8">
                             <AvatarImage src={undefined} />
                             <AvatarFallback>
-                              {learner.firstName[0]}
-                              {learner.lastName[0]}
+                              {learner.displayName.split(',')[0]?.[0] || '?'}
+                              {learner.displayName.split(' ')[1]?.[0] || '?'}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium">
-                              {learner.firstName} {learner.lastName}
-                            </p>
-                            <p className="text-xs text-muted-foreground truncate">
-                              {learner.email}
-                            </p>
+                            <div className="flex items-center gap-2">
+                              <p className="text-sm font-medium">
+                                {learner.displayName}
+                              </p>
+                              {learner.idSuffix && (
+                                <span className="text-xs text-muted-foreground font-mono">
+                                  ...{learner.idSuffix}
+                                </span>
+                              )}
+                            </div>
+                            {learner.email && (
+                              <p className="text-xs text-muted-foreground truncate">
+                                {learner.email}
+                              </p>
+                            )}
                           </div>
                         </div>
                       ))}

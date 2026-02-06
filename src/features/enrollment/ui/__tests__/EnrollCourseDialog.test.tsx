@@ -11,7 +11,6 @@ import { http, HttpResponse } from 'msw';
 import { server } from '@/test/mocks/server';
 import { env } from '@/shared/config/env';
 import { EnrollCourseDialog } from '../EnrollCourseDialog';
-import { mockUsers } from '@/test/mocks/data/users';
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
@@ -31,19 +30,24 @@ describe('EnrollCourseDialog', () => {
   const mockOnSuccess = vi.fn();
   const baseUrl = env.apiFullUrl;
 
-  const learners = mockUsers.filter((u) => u.roles?.includes('learner'));
+  // Mock learners in new directory format
+  const mockLearnersDirectory = [
+    { id: 'learner-1', displayName: 'Smith, J.', idSuffix: '9011', status: 'active', isProgramEnrollee: true },
+    { id: 'learner-2', displayName: 'Johnson, M.', idSuffix: '0abc', status: 'active', isProgramEnrollee: false },
+    { id: 'learner-3', displayName: 'Williams, A.', idSuffix: '5xyz', status: 'active', isProgramEnrollee: true },
+  ];
 
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // Mock users endpoint
+    // Mock new learners endpoint (directory format)
     server.use(
-      http.get(`${baseUrl}/users/staff`, () => {
+      http.get(`${baseUrl}/users/learners`, () => {
         return HttpResponse.json({
-          users: learners,
-          total: learners.length,
-          page: 1,
-          pageSize: 20,
+          data: {
+            learners: mockLearnersDirectory,
+            pagination: { page: 1, limit: 50, total: 3, hasNext: false },
+          },
         });
       }),
       // Mock course enrollments (empty - no one enrolled yet)
@@ -268,5 +272,120 @@ describe('EnrollCourseDialog', () => {
         expect(screen.getByText(/1 learner.*skipped/i)).toBeInTheDocument();
       });
     }
+  });
+
+  it('displays learners in directory format (displayName with idSuffix)', async () => {
+    render(
+      <EnrollCourseDialog
+        open={true}
+        courseId="course-1"
+        courseName="Test Course"
+        onClose={mockOnClose}
+        onSuccess={mockOnSuccess}
+      />,
+      { wrapper: createWrapper() }
+    );
+
+    // Wait for learners to load
+    await waitFor(() => {
+      // Should display displayName
+      expect(screen.getByText('Smith, J.')).toBeInTheDocument();
+      expect(screen.getByText('Johnson, M.')).toBeInTheDocument();
+    });
+
+    // Should display idSuffix
+    expect(screen.getByText('...9011')).toBeInTheDocument();
+    expect(screen.getByText('...0abc')).toBeInTheDocument();
+  });
+
+  it('shows Program badge for program enrollees', async () => {
+    render(
+      <EnrollCourseDialog
+        open={true}
+        courseId="course-1"
+        courseName="Test Course"
+        onClose={mockOnClose}
+        onSuccess={mockOnSuccess}
+      />,
+      { wrapper: createWrapper() }
+    );
+
+    // Wait for learners to load
+    await waitFor(() => {
+      expect(screen.getByText('Smith, J.')).toBeInTheDocument();
+    });
+
+    // Should show Program badges for enrollees (Smith and Williams have isProgramEnrollee: true)
+    const programBadges = screen.getAllByText('Program');
+    expect(programBadges.length).toBe(2); // Smith and Williams
+  });
+
+  it('handles legacy API format (users array)', async () => {
+    // Override with legacy format
+    server.use(
+      http.get(`${baseUrl}/users/learners`, () => {
+        return HttpResponse.json({
+          data: {
+            users: [
+              { _id: 'user-1', firstName: 'John', lastName: 'Doe', email: 'john@test.com' },
+              { _id: 'user-2', firstName: 'Jane', lastName: 'Smith', email: 'jane@test.com' },
+            ],
+          },
+        });
+      })
+    );
+
+    render(
+      <EnrollCourseDialog
+        open={true}
+        courseId="course-1"
+        courseName="Test Course"
+        onClose={mockOnClose}
+        onSuccess={mockOnSuccess}
+      />,
+      { wrapper: createWrapper() }
+    );
+
+    // Wait for learners to load - should display in normalized format
+    await waitFor(() => {
+      // Legacy format gets normalized to "LastName, F."
+      expect(screen.getByText('Doe, J.')).toBeInTheDocument();
+      expect(screen.getByText('Smith, J.')).toBeInTheDocument();
+    });
+
+    // Should display email for legacy format
+    expect(screen.getByText('john@test.com')).toBeInTheDocument();
+  });
+
+  it('displays permission error when API returns 403', async () => {
+    // Override with error response
+    server.use(
+      http.get(`${baseUrl}/users/learners`, () => {
+        return HttpResponse.json(
+          {
+            status: 'error',
+            message: 'Insufficient permissions. Required: learner:directory:read',
+            code: 'AUTHORIZATION_DENIED',
+          },
+          { status: 403 }
+        );
+      })
+    );
+
+    render(
+      <EnrollCourseDialog
+        open={true}
+        courseId="course-1"
+        courseName="Test Course"
+        onClose={mockOnClose}
+        onSuccess={mockOnSuccess}
+      />,
+      { wrapper: createWrapper() }
+    );
+
+    // Should show error message
+    await waitFor(() => {
+      expect(screen.getByText(/failed to load learners|permission/i)).toBeInTheDocument();
+    });
   });
 });
