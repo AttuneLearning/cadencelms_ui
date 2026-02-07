@@ -132,12 +132,14 @@ Runs after Phase 1 (Context Loading), before Phase 2T. Determines which team pre
    - Check for cross-team dependencies in issue
 
 2. **Check existing context**
+   - Search `memory/team-configs/` for learned configs matching issue type
    - Search `memory/patterns/` for matching patterns
    - Search `memory/sessions/` for similar past issues
    - Read past session `## Team Review` sections for lessons learned
 
 3. **Select team preset**
-   - Match issue characteristics against `teamPresets.selectWhen` criteria
+   - If `memory/team-configs/` has a matching config with "excellent"/"good" rating, prefer it
+   - Otherwise match issue characteristics against `teamPresets.selectWhen` criteria
    - Check past team reviews: did similar issues recommend a different preset?
    - Default to `standard` if no strong signal
 
@@ -594,6 +596,12 @@ npm run test:integration
    This feeds back into Phase 1.5 (Team Selection) for future issues - the lead
    searches past session files for `## Team Review` sections when selecting presets.
 
+7. **Promote to learned config** (when team was effective)
+   - If effectiveness was "excellent" or "good", create a structured config in `memory/team-configs/`
+   - Use template from `memory/team-configs/_template.json`
+   - Name: `{issue-type}--{qualifier}.json` (e.g., `new-feature--cross-layer.json`)
+   - This makes the config directly searchable by Phase 1.5 without parsing session prose
+
 ---
 
 ### Phase 5: Completion (MANDATORY - BLOCKING)
@@ -761,10 +769,11 @@ dev_communication/
     └── dependencies.md  # Cross-team blockers
 
 memory/
-├── patterns/   # Development patterns (document new patterns here)
-├── entities/   # Component/entity docs
-├── context/    # Domain knowledge
-└── sessions/   # Session summaries (REQUIRED per issue)
+├── patterns/      # Development patterns (document new patterns here)
+├── entities/      # Component/entity docs
+├── context/       # Domain knowledge
+├── sessions/      # Session summaries (REQUIRED per issue)
+└── team-configs/  # Learned team compositions (promoted from Phase 4 reviews)
 
 dev_communication/architecture/
 ├── decisions/  # ADRs
@@ -812,3 +821,5 @@ issues     = dev_communication/issues/{team}/
 - **Agent Team Roles:** `.claude-workflow/team-configs/agent-team-roles.json`
 - **Agent Team Hooks:** `.claude/hooks/task-completed.sh`, `.claude/hooks/teammate-idle.sh`
 - **Hooks Guide:** `.claude-workflow/team-configs/agent-team-hooks-guide.md`
+- **Learned Team Configs:** `memory/team-configs/` (structured lookup for Phase 1.5)
+- **Legacy Configs:** `.claude/archive/` (superseded, reference only)
