@@ -21,6 +21,7 @@ import {
 } from '@/entities/content-attempt';
 import { useCourseModules } from '@/entities/course-module';
 import { useEnrollmentStatus } from '@/entities/enrollment';
+import { useCourseProgress } from '@/entities/progress';
 import { Loader2, AlertCircle } from 'lucide-react';
 
 export function CoursePlayerPage() {
@@ -39,6 +40,14 @@ export function CoursePlayerPage() {
     courseId || '',
     {},
     { enabled: !!courseId }
+  );
+
+  // Fetch course progress for completion/lock status
+  const { data: courseProgress } = useCourseProgress(courseId || '');
+
+  // Build progress lookup: moduleId → ModuleProgress
+  const progressMap = new Map(
+    courseProgress?.moduleProgress?.map((mp) => [mp.moduleId, mp]) || []
   );
 
   // Start content attempt
@@ -72,22 +81,37 @@ export function CoursePlayerPage() {
     navigate(`/learner/dashboard`);
   };
 
-  // Transform course segments to sidebar format
+  // Transform course segments to sidebar format with progress data
   const modules: CourseModule[] =
-    segmentsData?.modules.map((module) => ({
-      id: module.id,
-      title: module.title,
-      lessons: [
-        {
-          id: module.id,
-          title: module.title,
-          type: module.type as any,
-          isCompleted: false, // TODO: Get from progress
-          isLocked: false, // TODO: Check prerequisites
-          isCurrent: module.id === currentContentId,
-        },
-      ],
-    })) || [];
+    segmentsData?.modules.map((module, index) => {
+      const progress = progressMap.get(module.id);
+      const isCompleted = progress?.status === 'completed';
+
+      // A module is locked if any prior required module is not completed
+      const isLocked =
+        index > 0 &&
+        segmentsData.modules.slice(0, index).some((prev) => {
+          const prevProgress = progressMap.get(prev.id);
+          if (!prevProgress) return true;
+          if (!prevProgress.isRequired) return false;
+          return prevProgress.status !== 'completed';
+        });
+
+      return {
+        id: module.id,
+        title: module.title,
+        lessons: [
+          {
+            id: module.id,
+            title: module.title,
+            type: module.type as any,
+            isCompleted,
+            isLocked,
+            isCurrent: module.id === currentContentId,
+          },
+        ],
+      };
+    }) || [];
 
   // Handle lesson navigation
   const handleLessonClick = (_moduleId: string, lessonId: string) => {
@@ -242,7 +266,7 @@ export function CoursePlayerPage() {
             <PlayerSidebar
               courseTitle={segmentsData?.courseTitle || ''}
               modules={modules}
-              overallProgress={0}
+              overallProgress={courseProgress?.overallProgress.completionPercent ?? 0}
               onLessonClick={handleLessonClick}
             />
           </aside>
