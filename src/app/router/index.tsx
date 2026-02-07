@@ -92,6 +92,7 @@ import {
   AppearanceSettingsPage,
 } from '@/pages/admin/settings';
 import { AuditLogsPage, AuditLogDetailPage } from '@/pages/admin/audit-logs';
+import { EnrollmentManagementPage } from '@/pages/admin/enrollments';
 
 // Profile page
 import { ProfilePage } from '@/pages/profile/ProfilePage';
@@ -889,6 +890,14 @@ export function AppRouter() {
         element={
           <AdminOnlyRoute>
             <LearnerManagementPage />
+          </AdminOnlyRoute>
+        }
+      />
+      <Route
+        path="/admin/enrollments"
+        element={
+          <AdminOnlyRoute>
+            <EnrollmentManagementPage />
           </AdminOnlyRoute>
         }
       />
