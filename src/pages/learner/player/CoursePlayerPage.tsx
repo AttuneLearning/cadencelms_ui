@@ -20,7 +20,7 @@ import {
   useContentAttempt,
 } from '@/entities/content-attempt';
 import { useCourseModules } from '@/entities/course-module';
-import { useEnrollments } from '@/entities/enrollment';
+import { useEnrollmentStatus } from '@/entities/enrollment';
 import { Loader2, AlertCircle } from 'lucide-react';
 
 export function CoursePlayerPage() {
@@ -31,12 +31,8 @@ export function CoursePlayerPage() {
   const [currentContentId, setCurrentContentId] = useState<string | null>(contentId || null);
   const [currentAttemptId, setCurrentAttemptId] = useState<string | null>(null);
 
-  // Fetch enrollment
-  const { data: enrollmentsData, isLoading: enrollmentsLoading } = useEnrollments({
-    limit: 1,
-  });
-
-  const enrollment = enrollmentsData?.enrollments?.[0];
+  // Fetch enrollment for this specific course
+  const { data: enrollment, isLoading: enrollmentsLoading } = useEnrollmentStatus(courseId || '');
 
   // Fetch course structure
   const { data: segmentsData, isLoading: segmentsLoading } = useCourseModules(
