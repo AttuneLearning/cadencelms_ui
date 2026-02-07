@@ -36,28 +36,30 @@ Determine team from working directory path:
 ## Lifecycle Overview
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                     DEVELOPMENT LIFECYCLE                            │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                     │
-│  Phase 0: Poll & Unblock ──► Phase 1: Context ──► Phase 2: Implement│
-│                                                          │          │
-│                                                          ▼          │
-│  Phase 5: Complete ◄── Phase 4: Document ◄── Phase 3: Verify       │
-│       │                    │                      │                 │
-│       │                    │                      │                 │
-│       ▼                    ▼                      ▼                 │
-│  ┌─────────┐         ┌─────────┐           ┌─────────┐             │
-│  │  GATE   │         │  GATE   │           │  GATE   │             │
-│  │ Session │         │ Memory  │           │  Tests  │             │
-│  │  File   │         │  Files  │           │  Pass   │             │
-│  └─────────┘         └─────────┘           └─────────┘             │
-│                                                                     │
-│  ════════════════════════════════════════════════════════════════  │
-│                    CODE REVIEWER GATES (BLOCKING)                   │
-│  ════════════════════════════════════════════════════════════════  │
-│                                                                     │
-└─────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────┐
+│                        DEVELOPMENT LIFECYCLE                             │
+├──────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  Phase 0        Phase 1        Phase 1.5       Phase 2/2T                │
+│  Poll &    ──►  Context   ──►  Team       ──►  Implement                 │
+│  Unblock        Loading        Selection       (or Team Impl)            │
+│                                (team mode)          │                    │
+│                                                     │ ◄─ 2T Review       │
+│                                                     ▼    (mid-dev)       │
+│  Phase 5        Phase 4        Phase 3                                   │
+│  Complete  ◄──  Document  ◄──  Verify                                    │
+│       │              │              │                                    │
+│       ▼              ▼              ▼                                    │
+│  ┌─────────┐   ┌──────────┐   ┌─────────┐                               │
+│  │  GATE   │   │   GATE   │   │  GATE   │                               │
+│  │ Session │   │  Memory  │   │  Tests  │                               │
+│  │  File   │   │  + Team  │   │  Pass   │                               │
+│  └─────────┘   │  Review  │   └─────────┘                               │
+│                └──────────┘                                              │
+│  ════════════════════════════════════════════════════════════════════   │
+│                       CODE REVIEWER GATES (BLOCKING)                     │
+│  ════════════════════════════════════════════════════════════════════   │
+└──────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -67,16 +69,19 @@ Determine team from working directory path:
 When invoked with `team` keyword, `/develop` orchestrates parallel teammates for complex issues.
 Requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` (configured in `.claude/settings.json`).
 
-### When to Use Agent Teams
+### Team Presets
 
-| Condition | Use Agent Team? |
-|-----------|----------------|
-| Issue touches 3+ files across FSD layers | Yes |
-| Issue requires both implementation AND new tests | Yes |
-| Complex feature with multiple components | Yes |
-| Simple bug fix (1-2 files) | No - single agent |
-| Documentation only | No - single agent |
-| Quick mode change | No - single agent |
+Reference: `.claude-workflow/team-configs/agent-team-roles.json`
+
+| Preset | Teammates | Best For |
+|--------|-----------|----------|
+| `solo` | None (single agent) | Simple bug fixes, typos, 1-2 file changes |
+| `paired` | Implementer | Focused implementation, 2-4 files same layer |
+| `standard` | Implementer + Tester | New code + new tests, 3+ files (default) |
+| `research` | Researcher + Implementer + Tester | Unfamiliar codebase areas, architecture decisions |
+| `parallel-impl` | Implementer x2 + Tester | Multi-component features, parallel-safe |
+
+User can override: `/develop team:research UI-ISS-082`
 
 ### Team Structure
 
@@ -88,7 +93,7 @@ Requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` (configured in `.claude/settin
 │  ┌─────────────────────────────────────┐                     │
 │  │ LEAD (Opus 4.6 - Delegate Mode)    │                     │
 │  │ Role: Coordinator + Code Reviewer   │                     │
-│  │ Does: Phase 0, 1, 3-gate, 4, 5     │                     │
+│  │ Does: Phase 0, 1, 1.5, 3-gate, 4, 5│                     │
 │  │ Does NOT: Write code or tests       │                     │
 │  └────────────┬──────────┬─────────────┘                     │
 │               │          │                                   │
@@ -97,9 +102,13 @@ Requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` (configured in `.claude/settin
 │  ┌────────────────┐  ┌────────────────┐  ┌────────────────┐ │
 │  │ IMPLEMENTER    │  │ TESTER         │  │ RESEARCHER     │ │
 │  │ (Sonnet 4.5)   │  │ (Sonnet 4.5)  │  │ (Sonnet 4.5)  │ │
-│  │ Phase 2: Code  │  │ Phase 2: Tests │  │ Phase 1: Deep  │ │
+│  │ Phase 2T: Code │  │ Phase 2T: Test │  │ Phase 1: Deep  │ │
 │  │                │  │                │  │ investigation  │ │
 │  └────────────────┘  └────────────────┘  └────────────────┘ │
+│               │          │                                   │
+│          ┌────┴──────────┴────┐                              │
+│          │ 2T Review Checkpoint│ ◄─ Mid-dev team review      │
+│          └────────────────────┘                              │
 │               │          │                                   │
 │               ▼          ▼                                   │
 │  ┌─────────────────────────────────────┐                     │
@@ -111,7 +120,43 @@ Requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` (configured in `.claude/settin
 └──────────────────────────────────────────────────────────────┘
 ```
 
-### Phase 2T (Team Implementation)
+### Phase 1.5: Team Selection (Team Mode Only)
+
+Runs after Phase 1 (Context Loading), before Phase 2T. Determines which team preset to use.
+
+**Steps:**
+
+1. **Analyze issue scope**
+   - Count files likely to be created/modified
+   - Identify FSD layers involved (entity, feature, widget, page)
+   - Check for cross-team dependencies in issue
+
+2. **Check existing context**
+   - Search `memory/patterns/` for matching patterns
+   - Search `memory/sessions/` for similar past issues
+   - Read past session `## Team Review` sections for lessons learned
+
+3. **Select team preset**
+   - Match issue characteristics against `teamPresets.selectWhen` criteria
+   - Check past team reviews: did similar issues recommend a different preset?
+   - Default to `standard` if no strong signal
+
+4. **Log selection**
+   ```
+   ## Team Selection: {preset_name}
+   - Issue: {issue-id}
+   - Files estimated: {count}
+   - Layers: {entity, feature, widget, page}
+   - Similar past issue: {session-ref or "none"}
+   - Past recommendation: {preset or "N/A"}
+   - Rationale: {why this preset}
+   ```
+
+5. **User override check**
+   - If user specified `/develop team:{preset}`, use that preset
+   - Otherwise use the selected preset
+
+### Phase 2T: Team Implementation
 
 When agent teams are active, Phase 2 is replaced with parallel execution:
 
@@ -121,21 +166,46 @@ When agent teams are active, Phase 2 is replaced with parallel execution:
 - Create tasks with proper dependencies using the shared task list
 - Assign file ownership per teammate (no overlapping files)
 
-**Step 2: Lead spawns teammates**
+**Step 2: Lead spawns teammates per selected preset**
+- Spawn only the teammates defined in the preset
 - Use Sonnet 4.5 for all teammates
 - Provide spawn prompts from role definitions (teammates don't inherit lead context)
 - Enable delegate mode (`Shift+Tab`) to prevent lead from implementing
-- Max 3 teammates per coordination rules
 
 **Step 3: Teammates execute in parallel**
 - Implementer works on source code (FSD patterns, types, hooks)
 - Tester writes tests (may depend on implementer tasks completing)
-- Researcher investigates codebase (if needed, runs first with plan approval)
+- Researcher investigates codebase (if spawned, runs first with plan approval)
 - `TaskCompleted` hook enforces gate on each task completion
 - `TeammateIdle` hook prevents premature stopping
 
-**Step 4: Lead reviews and proceeds**
-- Wait for all teammates to complete
+**Step 4: Mid-Development Review Checkpoint**
+
+Triggers when ANY of these occur:
+- 50% of team tasks are marked complete
+- Any teammate blocked by hooks 2+ times consecutively
+- Teammate sends message indicating scope change
+- 30 minutes elapsed since team spawn
+
+**Review actions:**
+1. Assess progress - are tasks completing on track?
+2. Check scope - has the issue grown beyond original plan?
+3. Evaluate team - any teammate idle too long or repeatedly failing?
+4. **Decide and act:**
+
+| Situation | Action |
+|-----------|--------|
+| On track, no issues | Continue as-is |
+| Need more implementation capacity | Spawn additional implementer (if < max) |
+| Tester not needed yet, implementer struggling | Shut down tester, reassign tasks |
+| Scope expanded, needs research | Spawn researcher teammate |
+| Teammate failing repeatedly | Shut down, lead takes over their tasks |
+| Scope shrank significantly | Shut down extra teammates |
+
+5. Log review decision: `"Mid-dev review: {action taken} because {rationale}"`
+
+**Step 5: Lead reviews and proceeds**
+- Wait for all remaining teammates to complete
 - Shut down all teammates
 - Review implemented code against code-reviewer-config.json
 - Resolve any file conflicts
@@ -465,6 +535,15 @@ npm run test:integration
 ## Related
 - Related issue IDs
 - Related files/features
+
+## Team Review (if agent team used)
+- **Preset selected:** {preset_name}
+- **Preset ideal:** {same or different preset}
+- **Teammates spawned:** {list with roles}
+- **Mid-dev adjustments:** {none | added X | removed X | reassigned Y}
+- **Bottlenecks:** {description or none}
+- **Task timing:** {role: duration}
+- **Recommendation:** {preset recommendation for similar issues}
 ```
 
 #### Steps
@@ -494,6 +573,26 @@ npm run test:integration
    - Use `/comms send`
 
 5. **Update issue** with implementation notes (REQUIRED)
+
+6. **Team config review** (REQUIRED when agent team was used)
+   - Compare selected preset to what would have been ideal
+   - Record teammate effectiveness and bottlenecks
+   - Note any mid-dev review adjustments made
+   - Write `## Team Review` section in session file:
+
+   ```markdown
+   ## Team Review
+   - **Preset selected:** {preset_name}
+   - **Preset ideal:** {same or different preset}
+   - **Teammates spawned:** {list with roles}
+   - **Mid-dev adjustments:** {none | added X | removed X | reassigned Y}
+   - **Bottlenecks:** {description or none}
+   - **Task timing:** {role: duration for each teammate}
+   - **Recommendation:** {use same preset | try X preset} for similar issues
+   ```
+
+   This feeds back into Phase 1.5 (Team Selection) for future issues - the lead
+   searches past session files for `## Team Review` sections when selecting presets.
 
 ---
 
