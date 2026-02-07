@@ -1,7 +1,7 @@
 ---
 name: develop
 description: Mandatory development lifecycle - processes issues with full verification
-argument-hint: "[issue-id|all|quick <file>]"
+argument-hint: "[issue-id|all|quick <file>|team <issue-id>|team all]"
 ---
 
 # Development Lifecycle Skill
@@ -17,6 +17,8 @@ Enforces the mandatory development lifecycle for all code changes per ADR-DEV-00
 /develop UI-ISS-082         # Process specific issue
 /develop all                # Process all issues in queue
 /develop quick <file>       # Quick mode for trivial changes
+/develop team UI-ISS-082    # Process issue with agent team (parallel)
+/develop team all           # Process all issues with agent teams
 ```
 
 ## Team Detection (Portable)
@@ -57,6 +59,114 @@ Determine team from working directory path:
 │                                                                     │
 └─────────────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## Agent Team Mode (Optional)
+
+When invoked with `team` keyword, `/develop` orchestrates parallel teammates for complex issues.
+Requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` (configured in `.claude/settings.json`).
+
+### When to Use Agent Teams
+
+| Condition | Use Agent Team? |
+|-----------|----------------|
+| Issue touches 3+ files across FSD layers | Yes |
+| Issue requires both implementation AND new tests | Yes |
+| Complex feature with multiple components | Yes |
+| Simple bug fix (1-2 files) | No - single agent |
+| Documentation only | No - single agent |
+| Quick mode change | No - single agent |
+
+### Team Structure
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                    AGENT TEAM WORKFLOW                        │
+├──────────────────────────────────────────────────────────────┤
+│                                                              │
+│  ┌─────────────────────────────────────┐                     │
+│  │ LEAD (Opus 4.6 - Delegate Mode)    │                     │
+│  │ Role: Coordinator + Code Reviewer   │                     │
+│  │ Does: Phase 0, 1, 3-gate, 4, 5     │                     │
+│  │ Does NOT: Write code or tests       │                     │
+│  └────────────┬──────────┬─────────────┘                     │
+│               │          │                                   │
+│        spawn  │          │  spawn                            │
+│               ▼          ▼                                   │
+│  ┌────────────────┐  ┌────────────────┐  ┌────────────────┐ │
+│  │ IMPLEMENTER    │  │ TESTER         │  │ RESEARCHER     │ │
+│  │ (Sonnet 4.5)   │  │ (Sonnet 4.5)  │  │ (Sonnet 4.5)  │ │
+│  │ Phase 2: Code  │  │ Phase 2: Tests │  │ Phase 1: Deep  │ │
+│  │                │  │                │  │ investigation  │ │
+│  └────────────────┘  └────────────────┘  └────────────────┘ │
+│               │          │                                   │
+│               ▼          ▼                                   │
+│  ┌─────────────────────────────────────┐                     │
+│  │ HOOKS (Shell Scripts)               │                     │
+│  │ TaskCompleted → gate checks         │                     │
+│  │ TeammateIdle → verify clean state   │                     │
+│  └─────────────────────────────────────┘                     │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+```
+
+### Phase 2T (Team Implementation)
+
+When agent teams are active, Phase 2 is replaced with parallel execution:
+
+**Step 1: Lead creates task plan**
+- Read role definitions from `.claude-workflow/team-configs/agent-team-roles.json`
+- Select task dependency pattern (`newFeature`, `bugFix`, `complexFeature`)
+- Create tasks with proper dependencies using the shared task list
+- Assign file ownership per teammate (no overlapping files)
+
+**Step 2: Lead spawns teammates**
+- Use Sonnet 4.5 for all teammates
+- Provide spawn prompts from role definitions (teammates don't inherit lead context)
+- Enable delegate mode (`Shift+Tab`) to prevent lead from implementing
+- Max 3 teammates per coordination rules
+
+**Step 3: Teammates execute in parallel**
+- Implementer works on source code (FSD patterns, types, hooks)
+- Tester writes tests (may depend on implementer tasks completing)
+- Researcher investigates codebase (if needed, runs first with plan approval)
+- `TaskCompleted` hook enforces gate on each task completion
+- `TeammateIdle` hook prevents premature stopping
+
+**Step 4: Lead reviews and proceeds**
+- Wait for all teammates to complete
+- Shut down all teammates
+- Review implemented code against code-reviewer-config.json
+- Resolve any file conflicts
+- Proceed to Phase 3 (Verification) for full integration checks
+
+### Task Dependency Patterns
+
+Reference: `.claude-workflow/team-configs/agent-team-roles.json`
+
+**New Feature:**
+```
+researcher (optional) → implementer → tester
+```
+
+**Bug Fix (TDD):**
+```
+tester (failing test) → implementer (fix) → tester (verify)
+```
+
+**Complex Feature:**
+```
+researcher → implementer-A (component A) ─┐
+           → implementer-B (component B) ─┤→ tester (all tests)
+```
+
+### Fallback to Single-Agent
+
+If agent team encounters issues:
+- Teammate repeatedly blocked by hooks → Lead takes over that task directly
+- File conflicts between teammates → Lead resolves and assigns to one teammate
+- After 3 failed task completion attempts → Disable delegate mode, lead finishes
 
 ---
 
@@ -496,6 +606,15 @@ Full configuration in `.claude-workflow/team-configs/code-reviewer-config.json`.
 | Documentation | opus-4.6 | Extended | Pattern recognition |
 | Completion | opus-4.6 | Extended | Final quality assessment |
 
+### Agent Team Model Allocation
+
+| Agent | Model | Role |
+|-------|-------|------|
+| Lead (coordinator + reviewer) | opus-4.6 | Phases 0, 1, 3-gate, 4, 5 |
+| Implementer teammate | sonnet-4.5 | Phase 2T code |
+| Tester teammate | sonnet-4.5 | Phase 2T tests |
+| Researcher teammate | sonnet-4.5 | Phase 1 deep investigation |
+
 ### When to Use Extended Thinking
 
 - Reviewing architectural decisions
@@ -553,7 +672,15 @@ dev_communication/architecture/
 └── gaps/       # Known gaps
 
 .claude/
+├── hooks/task-completed.sh    # TaskCompleted quality gate hook
+├── hooks/teammate-idle.sh     # TeammateIdle quality gate hook
+├── settings.json              # Agent teams enabled + hook config
 └── skills/develop/SKILL.md    # This file
+
+.claude-workflow/team-configs/
+├── code-reviewer-config.json      # Code review gate configuration
+├── agent-team-roles.json          # Agent team role definitions
+└── agent-team-hooks-guide.md      # Hook setup documentation
 ```
 
 ## Portable Team Detection
@@ -583,3 +710,6 @@ issues     = dev_communication/issues/{team}/
 - **Config:** `memory/prompts/team-configs/development-lifecycle.md`
 - **Testing:** `dev_communication/architecture/decisions/ADR-DEV-001-TESTING-STRATEGY.md`
 - **Code Reviewer:** `.claude-workflow/team-configs/code-reviewer-config.json`
+- **Agent Team Roles:** `.claude-workflow/team-configs/agent-team-roles.json`
+- **Agent Team Hooks:** `.claude/hooks/task-completed.sh`, `.claude/hooks/teammate-idle.sh`
+- **Hooks Guide:** `.claude-workflow/team-configs/agent-team-hooks-guide.md`
