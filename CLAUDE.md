@@ -1,5 +1,11 @@
 # Project Instructions
 
+## Git Policy
+
+**Only push `cadencelms_ui`.** Do NOT push `cadencelms_api` from this repo's Claude session. The API repo is an additional working directory for reading `dev_communication/` (symlinked) — commits there are fine, but pushes must be done from the API repo's own session.
+
+---
+
 ## Development Environment
 
 | Service | URL |
