@@ -57,7 +57,7 @@ const server = setupServer(
   http.get('http://localhost:3000/api/v2/reports/jobs/:id/status', () => {
     return HttpResponse.json({
       success: true,
-      data: { jobId: 'job-123', state: 'ready', progress: 100 },
+      data: { id: 'job-123', state: 'ready', progress: 100 },
     });
   }),
   http.get('http://localhost:3000/api/v2/reports/jobs/:id/download', () => {

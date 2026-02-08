@@ -71,7 +71,7 @@ const server = setupServer(
     return HttpResponse.json({
       success: true,
       data: {
-        jobId: 'job-123',
+        id: 'job-123',
         state: 'ready',
         progress: 100,
         message: 'Report ready for download',

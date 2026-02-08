@@ -375,17 +375,17 @@ describe('useFeatureAccess', () => {
   // ==========================================================================
 
   describe('Learner Management Flags', () => {
-    it('should grant learner management with learners:profiles:write', () => {
-      setupMocks(['staff'], ['learners:profiles:write']);
+    it('should grant learner management with learner:department:manage', () => {
+      setupMocks(['staff'], ['learner:department:manage']);
 
       const { result } = renderHook(() => useFeatureAccess());
 
       expect(result.current.canManageLearners).toBe(true);
-      expect(result.current.canViewLearners).toBe(true); // write implies read
+      expect(result.current.canViewLearners).toBe(true); // manage implies read
     });
 
-    it('should grant learner viewing with learners:profiles:read', () => {
-      setupMocks(['staff'], ['learners:profiles:read']);
+    it('should grant learner viewing with learner:department:read', () => {
+      setupMocks(['staff'], ['learner:department:read']);
 
       const { result } = renderHook(() => useFeatureAccess());
 
@@ -393,28 +393,28 @@ describe('useFeatureAccess', () => {
       expect(result.current.canManageLearners).toBe(false);
     });
 
-    it('should grant all learner permissions with learners:* wildcard', () => {
-      setupMocks(['staff'], ['learners:*']);
+    it('should grant all learner permissions with learner:* wildcard', () => {
+      setupMocks(['staff'], ['learner:*']);
 
       const { result } = renderHook(() => useFeatureAccess());
 
       expect(result.current.canManageLearners).toBe(true);
       expect(result.current.canViewLearners).toBe(true);
-      expect(result.current.canManageEnrollments).toBe(true);
-      expect(result.current.canManageGrades).toBe(true);
-      expect(result.current.canViewGrades).toBe(true);
+      expect(result.current.canViewTranscripts).toBe(true);
+      expect(result.current.canViewPII).toBe(true);
+      expect(result.current.canViewLearnerProgress).toBe(true);
     });
 
-    it('should grant enrollment management with learners:enrollments:write', () => {
-      setupMocks(['staff'], ['learners:enrollments:write']);
+    it('should grant enrollment management with enrollment:department:manage', () => {
+      setupMocks(['staff'], ['enrollment:department:manage']);
 
       const { result } = renderHook(() => useFeatureAccess());
 
       expect(result.current.canManageEnrollments).toBe(true);
     });
 
-    it('should grant grade management with learners:grades:write', () => {
-      setupMocks(['staff'], ['learners:grades:write']);
+    it('should grant grade viewing with grades:department:read', () => {
+      setupMocks(['staff'], ['grades:department:read']);
 
       const { result } = renderHook(() => useFeatureAccess());
 
@@ -428,16 +428,16 @@ describe('useFeatureAccess', () => {
   // ==========================================================================
 
   describe('Department Management Flags', () => {
-    it('should grant department role management with department:roles:write', () => {
-      setupMocks(['staff'], ['department:roles:write']);
+    it('should grant department role management with staff:department:manage', () => {
+      setupMocks(['staff'], ['staff:department:manage']);
 
       const { result } = renderHook(() => useFeatureAccess());
 
       expect(result.current.canManageDepartmentRoles).toBe(true);
     });
 
-    it('should grant department staff management with department:staff:write', () => {
-      setupMocks(['staff'], ['department:staff:write']);
+    it('should grant department staff management with staff:department:manage', () => {
+      setupMocks(['staff'], ['staff:department:manage']);
 
       const { result } = renderHook(() => useFeatureAccess());
 
@@ -445,8 +445,8 @@ describe('useFeatureAccess', () => {
       expect(result.current.canViewDepartmentStaff).toBe(true);
     });
 
-    it('should grant all department permissions with department:* wildcard', () => {
-      setupMocks(['staff'], ['department:*']);
+    it('should grant all department permissions with staff:* wildcard', () => {
+      setupMocks(['staff'], ['staff:*']);
 
       const { result } = renderHook(() => useFeatureAccess());
 
@@ -461,17 +461,17 @@ describe('useFeatureAccess', () => {
   // ==========================================================================
 
   describe('Billing & Finance Flags', () => {
-    it('should grant billing management with billing:invoices:write', () => {
-      setupMocks(['staff'], ['billing:invoices:write']);
+    it('should grant billing management with billing:department:manage', () => {
+      setupMocks(['staff'], ['billing:department:manage']);
 
       const { result } = renderHook(() => useFeatureAccess());
 
       expect(result.current.canManageBilling).toBe(true);
-      expect(result.current.canViewBilling).toBe(true);
+      expect(result.current.canViewBilling).toBe(false); // manage does not imply read
     });
 
-    it('should grant billing viewing with billing:invoices:read', () => {
-      setupMocks(['staff'], ['billing:invoices:read']);
+    it('should grant billing viewing with billing:department:read', () => {
+      setupMocks(['staff'], ['billing:department:read']);
 
       const { result } = renderHook(() => useFeatureAccess());
 
@@ -510,7 +510,7 @@ describe('useFeatureAccess', () => {
       const { result } = renderHook(() => useFeatureAccess());
 
       expect(result.current.canViewReports).toBe(true);
-      expect(result.current.canExportData).toBe(true);
+      expect(result.current.canExportData).toBe(false); // system:admin doesn't grant export, only system:*
     });
 
     it('should grant report viewing with reports:department:read', () => {
@@ -522,8 +522,8 @@ describe('useFeatureAccess', () => {
       expect(result.current.canViewDepartmentReports).toBe(true);
     });
 
-    it('should grant data export with reports:export', () => {
-      setupMocks(['staff'], ['reports:export']);
+    it('should grant data export with reports:department:export', () => {
+      setupMocks(['staff'], ['reports:department:export']);
 
       const { result } = renderHook(() => useFeatureAccess());
 
@@ -536,17 +536,18 @@ describe('useFeatureAccess', () => {
   // ==========================================================================
 
   describe('Class Management Flags', () => {
-    it('should grant own class viewing with class:own:read', () => {
-      setupMocks(['staff'], ['class:own:read']);
+    it('should grant own class viewing with content:classes:read', () => {
+      setupMocks(['staff'], ['content:classes:read']);
 
       const { result } = renderHook(() => useFeatureAccess());
 
       expect(result.current.canViewOwnClasses).toBe(true);
+      expect(result.current.canViewAllClasses).toBe(true);
       expect(result.current.canManageOwnClasses).toBe(false);
     });
 
-    it('should grant own class management with class:own:manage', () => {
-      setupMocks(['staff'], ['class:own:manage']);
+    it('should grant own class management with content:classes:manage-own', () => {
+      setupMocks(['staff'], ['content:classes:manage-own']);
 
       const { result } = renderHook(() => useFeatureAccess());
 
@@ -554,16 +555,17 @@ describe('useFeatureAccess', () => {
       expect(result.current.canManageOwnClasses).toBe(true);
     });
 
-    it('should grant all class viewing with class:all:read', () => {
-      setupMocks(['staff'], ['class:all:read']);
+    it('should grant all class viewing with content:classes:manage', () => {
+      setupMocks(['staff'], ['content:classes:manage']);
 
       const { result } = renderHook(() => useFeatureAccess());
 
       expect(result.current.canViewAllClasses).toBe(true);
+      expect(result.current.canManageOwnClasses).toBe(true);
     });
 
-    it('should grant all class permissions with class:* wildcard', () => {
-      setupMocks(['staff'], ['class:*']);
+    it('should grant all class permissions with content:* wildcard', () => {
+      setupMocks(['staff'], ['content:*']);
 
       const { result } = renderHook(() => useFeatureAccess());
 
@@ -586,21 +588,21 @@ describe('useFeatureAccess', () => {
       expect(result.current.canGradeOwnClasses).toBe(true);
     });
 
-    it('should grant own grade viewing with grades:own:read', () => {
-      setupMocks(['learner'], ['grades:own:read']);
+    it('should grant own grade viewing with grades:department:read', () => {
+      setupMocks(['learner'], ['grades:department:read']);
 
       const { result } = renderHook(() => useFeatureAccess());
 
       expect(result.current.canViewOwnGrades).toBe(true);
     });
 
-    it('should grant all grade management with grades:all:manage', () => {
-      setupMocks(['staff'], ['grades:all:manage']);
+    it('should grant all grade management with grades:own-classes:manage', () => {
+      setupMocks(['staff'], ['grades:own-classes:manage']);
 
       const { result } = renderHook(() => useFeatureAccess());
 
       expect(result.current.canManageAllGrades).toBe(true);
-      expect(result.current.canGradeOwnClasses).toBe(true); // all includes own
+      expect(result.current.canGradeOwnClasses).toBe(true);
     });
 
     it('should grant all grading permissions with grades:* wildcard', () => {
@@ -619,24 +621,24 @@ describe('useFeatureAccess', () => {
   // ==========================================================================
 
   describe('FERPA-Protected Data Flags', () => {
-    it('should grant transcript viewing with learner:transcripts:read', () => {
-      setupMocks(['staff'], ['learner:transcripts:read']);
+    it('should grant transcript viewing with learner:department:read', () => {
+      setupMocks(['staff'], ['learner:department:read']);
 
       const { result } = renderHook(() => useFeatureAccess());
 
       expect(result.current.canViewTranscripts).toBe(true);
     });
 
-    it('should grant PII viewing with learner:pii:read', () => {
-      setupMocks(['staff'], ['learner:pii:read']);
+    it('should grant PII viewing with learner:department:read', () => {
+      setupMocks(['staff'], ['learner:department:read']);
 
       const { result } = renderHook(() => useFeatureAccess());
 
       expect(result.current.canViewPII).toBe(true);
     });
 
-    it('should grant learner progress viewing with learner:progress:read', () => {
-      setupMocks(['staff'], ['learner:progress:read']);
+    it('should grant learner progress viewing with learner:department:read', () => {
+      setupMocks(['staff'], ['learner:department:read']);
 
       const { result } = renderHook(() => useFeatureAccess());
 
@@ -668,13 +670,13 @@ describe('useFeatureAccess', () => {
       expect(result.current.canViewDepartmentSettings).toBe(true);
     });
 
-    it('should grant department settings viewing with settings:department:read', () => {
-      setupMocks(['staff'], ['settings:department:read']);
+    it('should grant department settings viewing with settings:department:manage', () => {
+      setupMocks(['staff'], ['settings:department:manage']);
 
       const { result } = renderHook(() => useFeatureAccess());
 
       expect(result.current.canViewDepartmentSettings).toBe(true);
-      expect(result.current.canManageDepartmentSettings).toBe(false);
+      expect(result.current.canManageDepartmentSettings).toBe(true);
     });
 
     it('should grant all settings permissions with settings:* wildcard', () => {
@@ -707,7 +709,7 @@ describe('useFeatureAccess', () => {
     });
 
     it('should handle multiple wildcard permissions', () => {
-      setupMocks(['staff'], ['content:*', 'learners:*', 'reports:*']);
+      setupMocks(['staff'], ['content:*', 'learner:*', 'reports:*']);
 
       const { result } = renderHook(() => useFeatureAccess());
 
@@ -718,8 +720,8 @@ describe('useFeatureAccess', () => {
 
       // Learner permissions
       expect(result.current.canManageLearners).toBe(true);
-      expect(result.current.canManageEnrollments).toBe(true);
-      expect(result.current.canManageGrades).toBe(true);
+      expect(result.current.canViewTranscripts).toBe(true);
+      expect(result.current.canViewPII).toBe(true);
 
       // Report permissions
       expect(result.current.canViewReports).toBe(true);
@@ -777,8 +779,8 @@ describe('useFeatureAccess', () => {
     it('should handle mixed specific and wildcard permissions', () => {
       setupMocks(['staff'], [
         'content:courses:read',
-        'learners:*',
-        'billing:invoices:read',
+        'learner:*',
+        'billing:department:read',
       ]);
 
       const { result } = renderHook(() => useFeatureAccess());

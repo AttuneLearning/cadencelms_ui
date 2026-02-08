@@ -23,7 +23,7 @@ describe('CourseList', () => {
       );
 
       mockCourseListItems.forEach((course) => {
-        expect(screen.getByText(course.title)).toBeInTheDocument();
+        expect(screen.getAllByText(course.title).length).toBeGreaterThanOrEqual(1);
       });
     });
 
@@ -56,10 +56,12 @@ describe('CourseList', () => {
         </RouterWrapper>
       );
 
-      expect(screen.getByText(mockCourseListItems[0].title)).toBeInTheDocument();
-      expect(screen.getByText(mockCourseListItems[1].title)).toBeInTheDocument();
+      // Note: course-1 and course-1-v1 have the same title, so we use getAllByText
+      expect(screen.getAllByText(mockCourseListItems[0].title).length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText(mockCourseListItems[1].title).length).toBeGreaterThanOrEqual(1);
       expect(screen.getByText(mockCourseListItems[2].title)).toBeInTheDocument();
       expect(screen.getByText(mockCourseListItems[3].title)).toBeInTheDocument();
+      expect(screen.getByText(mockCourseListItems[4].title)).toBeInTheDocument();
     });
 
     it('should render single course', () => {
@@ -246,7 +248,7 @@ describe('CourseList', () => {
       );
 
       publishedCourses.forEach((course) => {
-        expect(screen.getByText(course.title)).toBeInTheDocument();
+        expect(screen.getAllByText(course.title).length).toBeGreaterThanOrEqual(1);
       });
     });
 
@@ -386,7 +388,8 @@ describe('CourseList', () => {
         </RouterWrapper>
       );
 
-      const firstCourseLink = screen.getByText(mockCourseListItems[0].title).closest('a');
+      const firstCourseLinks = screen.getAllByText(mockCourseListItems[0].title);
+      const firstCourseLink = firstCourseLinks[0].closest('a');
       expect(firstCourseLink).toBeInTheDocument();
       expect(firstCourseLink).toHaveAttribute('href');
     });

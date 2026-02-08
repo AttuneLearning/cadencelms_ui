@@ -207,7 +207,7 @@ const mockCoursesData = {
       isLocked: true,
       parentVersionId: null,
       lockedAt: '2025-12-15T00:00:00Z',
-      lockedReason: 'superseded' as const,
+      lockedReason: 'new_version_created' as const,
     },
   ],
   pagination: {

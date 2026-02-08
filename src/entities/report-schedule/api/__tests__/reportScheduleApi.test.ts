@@ -57,10 +57,14 @@ const server = setupServer(
       success: true,
       data: {
         schedules: [mockSchedule],
-        totalCount: 1,
-        page: 1,
-        limit: 20,
-        totalPages: 1,
+        pagination: {
+          page: 1,
+          limit: 20,
+          total: 1,
+          totalPages: 1,
+          hasNext: false,
+          hasPrev: false,
+        },
       },
     });
   }),

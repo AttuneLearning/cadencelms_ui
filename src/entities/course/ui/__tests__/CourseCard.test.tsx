@@ -33,7 +33,7 @@ describe('CourseCard', () => {
     });
 
     it('should render with draft course', () => {
-      const draftCourse = mockCourseListItems[2]; // Draft course
+      const draftCourse = mockCourseListItems[3]; // Draft course
 
       render(
         <RouterWrapper>
@@ -46,7 +46,7 @@ describe('CourseCard', () => {
     });
 
     it('should render with archived course', () => {
-      const archivedCourse = mockCourseListItems[3]; // Archived course
+      const archivedCourse = mockCourseListItems[4]; // Archived course
 
       render(
         <RouterWrapper>
@@ -114,7 +114,7 @@ describe('CourseCard', () => {
     });
 
     it('should display draft status badge', () => {
-      const draftCourse = mockCourseListItems[2];
+      const draftCourse = mockCourseListItems[3];
 
       render(
         <RouterWrapper>
@@ -126,7 +126,7 @@ describe('CourseCard', () => {
     });
 
     it('should display archived status badge', () => {
-      const archivedCourse = mockCourseListItems[3];
+      const archivedCourse = mockCourseListItems[4];
 
       render(
         <RouterWrapper>
@@ -147,7 +147,7 @@ describe('CourseCard', () => {
 
       expect(screen.getByText('Published')).toBeInTheDocument();
 
-      const draftCourse = mockCourseListItems[2];
+      const draftCourse = mockCourseListItems[3];
       rerender(
         <RouterWrapper>
           <CourseCard course={draftCourse} />
@@ -186,7 +186,7 @@ describe('CourseCard', () => {
     });
 
     it('should not display program section when not assigned', () => {
-      const course = mockCourseListItems[3]; // No program
+      const course = mockCourseListItems[4]; // No program
 
       render(
         <RouterWrapper>
@@ -367,7 +367,7 @@ describe('CourseCard', () => {
     });
 
     it('should not display self-enrollment badge when disabled', () => {
-      const course = mockCourseListItems[1]; // allowSelfEnrollment: false
+      const course = mockCourseListItems[2]; // allowSelfEnrollment: false
 
       render(
         <RouterWrapper>
@@ -391,7 +391,7 @@ describe('CourseCard', () => {
     });
 
     it('should not display certificate badge when disabled', () => {
-      const course = mockCourseListItems[1]; // certificateEnabled: false
+      const course = mockCourseListItems[2]; // certificateEnabled: false
 
       render(
         <RouterWrapper>
@@ -567,7 +567,7 @@ describe('CourseCard', () => {
     });
 
     it('should match snapshot for draft course', () => {
-      const course = mockCourseListItems[2];
+      const course = mockCourseListItems[3];
 
       const { container } = render(
         <RouterWrapper>
@@ -579,7 +579,7 @@ describe('CourseCard', () => {
     });
 
     it('should match snapshot for archived course', () => {
-      const course = mockCourseListItems[3];
+      const course = mockCourseListItems[4];
 
       const { container } = render(
         <RouterWrapper>
