@@ -12,8 +12,10 @@ import { ArrowLeft, Edit, Loader2 } from 'lucide-react';
 import { PageHeader } from '@/shared/ui/page-header';
 import {
   useDepartment,
+  useDepartments,
   useDepartmentStats,
 } from '@/entities/department';
+import { SubdepartmentList } from '@/features/departments';
 import { DepartmentOverviewCard } from './components/DepartmentOverviewCard';
 import { DepartmentStatsCards } from './components/DepartmentStatsCards';
 import { DepartmentStaffSection } from './components/DepartmentStaffSection';
@@ -21,7 +23,7 @@ import { DepartmentStaffSection } from './components/DepartmentStaffSection';
 export const DepartmentDetailsPage: React.FC = () => {
   const { departmentId } = useParams<{ departmentId: string }>();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<string>('staff');
+  const [activeTab, setActiveTab] = useState<string>('subdepartments');
 
   // Fetch department data
   const { data: department, isLoading: isLoadingDepartment, error: departmentError } = useDepartment(
@@ -30,6 +32,12 @@ export const DepartmentDetailsPage: React.FC = () => {
   const { data: stats, isLoading: isLoadingStats } = useDepartmentStats(departmentId!, {
     includeChildDepartments: false,
   });
+
+  // Fetch all departments for parent selection dropdown (excluding current)
+  const { data: allDepts } = useDepartments({ limit: 200 });
+  const availableParents = (allDepts?.departments || [])
+    .filter((d) => d.id !== departmentId)
+    .map((d) => ({ id: d.id, name: d.name, code: d.code }));
 
   // Handle edit department
   const handleEdit = () => {
@@ -96,6 +104,9 @@ export const DepartmentDetailsPage: React.FC = () => {
       {/* Tabs Section */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList>
+          <TabsTrigger value="subdepartments">
+            Subdepartments {department.hasChildren ? `(${department.childCount ?? ''})` : ''}
+          </TabsTrigger>
           <TabsTrigger value="staff">
             Staff {stats && `(${stats.staff.total})`}
           </TabsTrigger>
@@ -106,6 +117,18 @@ export const DepartmentDetailsPage: React.FC = () => {
             Courses {stats && `(${stats.courses.total})`}
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="subdepartments" className="space-y-4">
+          <Card>
+            <CardContent className="p-6">
+              <SubdepartmentList
+                parentId={departmentId!}
+                parentName={department.name}
+                availableParents={availableParents}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="staff" className="space-y-4">
           <Card>
