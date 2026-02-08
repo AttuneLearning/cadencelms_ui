@@ -52,6 +52,7 @@ import {
   useUpdateStaff,
   useDeleteStaff,
   StaffForm,
+  type Staff,
   type StaffListItem,
   type StaffFilters,
 } from '@/entities/staff';
@@ -82,57 +83,9 @@ export const StaffManagementPage: React.FC = () => {
   const { data: departmentsData } = useDepartments({ limit: 1000 });
 
   // Mutations
-  const createMutation = useCreateStaff({
-    onSuccess: () => {
-      toast({
-        title: 'Staff created',
-        description: 'Staff member has been successfully created.',
-      });
-      setIsCreateDialogOpen(false);
-    },
-    onError: (error) => {
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to create staff member. Please try again.',
-        variant: 'destructive',
-      });
-    },
-  });
-
-  const updateMutation = useUpdateStaff({
-    onSuccess: () => {
-      toast({
-        title: 'Staff updated',
-        description: 'Staff member has been successfully updated.',
-      });
-      setStaffToEdit(null);
-    },
-    onError: (error) => {
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to update staff member. Please try again.',
-        variant: 'destructive',
-      });
-    },
-  });
-
-  const deleteMutation = useDeleteStaff({
-    onSuccess: () => {
-      toast({
-        title: 'Staff deleted',
-        description: 'Staff member has been successfully deleted.',
-      });
-      setIsDeleteConfirmOpen(false);
-      setStaffToDelete(null);
-    },
-    onError: (error) => {
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to delete staff member. Please try again.',
-        variant: 'destructive',
-      });
-    },
-  });
+  const createMutation = useCreateStaff();
+  const updateMutation = useUpdateStaff();
+  const deleteMutation = useDeleteStaff();
 
   // Action handlers
   const handleDelete = (id: string) => {
@@ -152,7 +105,7 @@ export const StaffManagementPage: React.FC = () => {
 
   const confirmBulkDelete = async () => {
     try {
-      await Promise.all(selectedStaff.map((s) => deleteMutation.mutateAsync(s.id)));
+      await Promise.all(selectedStaff.map((s) => deleteMutation.mutateAsync(s.id || s._id)));
       toast({
         title: 'Staff deleted',
         description: `${selectedStaff.length} staff member(s) have been successfully deleted.`,
@@ -233,8 +186,8 @@ export const StaffManagementPage: React.FC = () => {
         const staff = row.original;
         return (
           <div className="text-sm">
-            <div className="font-medium">{staff.department.name}</div>
-            <div className="text-muted-foreground">{staff.department.code}</div>
+            <div className="font-medium">{staff.department?.name}</div>
+            <div className="text-muted-foreground">{staff.department?.code}</div>
           </div>
         );
       },
@@ -307,7 +260,7 @@ export const StaffManagementPage: React.FC = () => {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={() => handleDelete(staff.id)}
+                onClick={() => handleDelete(staff.id || staff._id)}
                 className="text-destructive"
               >
                 <Trash className="mr-2 h-4 w-4" />
@@ -507,8 +460,8 @@ export const StaffManagementPage: React.FC = () => {
             </DialogDescription>
           </DialogHeader>
           <StaffForm
-            staff={staffToEdit}
-            onSuccess={handleFormSuccess}
+            staff={staffToEdit ? staffToEdit as unknown as Staff : undefined}
+            onSubmit={() => handleFormSuccess()}
             onCancel={() => {
               setIsCreateDialogOpen(false);
               setStaffToEdit(null);

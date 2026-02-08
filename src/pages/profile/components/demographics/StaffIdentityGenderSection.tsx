@@ -4,7 +4,7 @@
  * Voluntary with opt-out default (per ISS-010 Q5: default TRUE)
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { CollapsibleSection } from '../shared/CollapsibleSection';
 import { VoluntaryBadge } from '../shared/VoluntaryBadge';
 import { Input } from '@/shared/ui/input';

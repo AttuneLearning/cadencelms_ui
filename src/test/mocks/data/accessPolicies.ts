@@ -9,12 +9,11 @@ import type {
   ProgramAccessOverrideListItem,
   ProgramEnrollment,
   ProgramEnrollmentListItem,
-  ProgramEnrollmentDetail,
   AccessExtensionRequest,
   AccessExtensionRequestListItem,
   AccessDuration,
 } from '@/entities/access-policy';
-import { mockDepartments, mockPrograms } from './courses';
+import { mockDepartments } from './courses';
 
 // =====================
 // MOCK ACCESS DURATIONS

@@ -3,7 +3,7 @@
  * Array field with weekly schedule display
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { CollapsibleSection } from '../shared/CollapsibleSection';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';

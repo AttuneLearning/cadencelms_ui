@@ -142,8 +142,7 @@ export const ReportCanvas: React.FC<ReportCanvasProps> = ({
   onRemoveDimension,
   onAddMeasure,
   onRemoveMeasure,
-  onAddSlicer,
-  onRemoveSlicer,
+  onRemoveSlicer: _onRemoveSlicer,
   errors = [],
   className,
 }) => {
@@ -161,16 +160,6 @@ export const ReportCanvas: React.FC<ReportCanvasProps> = ({
       onAddMeasure({
         type: field.id as any,
         label: field.label,
-      });
-    }
-  };
-
-  const handleAddSlicer = (field: FieldItem) => {
-    if (onAddSlicer) {
-      onAddSlicer({
-        field: field.id,
-        label: field.label,
-        values: [],
       });
     }
   };

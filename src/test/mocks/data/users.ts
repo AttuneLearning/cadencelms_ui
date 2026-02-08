@@ -63,6 +63,53 @@ export const mockUsers: UserListItem[] = [
 export const mockFullUser: User = {
   _id: 'user-1',
   email: 'john.doe@example.com',
+  person: {
+    firstName: 'John',
+    middleName: null,
+    lastName: 'Doe',
+    suffix: null,
+    preferredFirstName: null,
+    preferredLastName: null,
+    pronouns: null,
+    emails: [{
+      email: 'john.doe@example.com',
+      type: 'personal',
+      isPrimary: true,
+      verified: true,
+      allowNotifications: true,
+      label: null
+    }],
+    phones: [],
+    addresses: [],
+    dateOfBirth: null,
+    last4SSN: null,
+    avatar: null,
+    bio: null,
+    timezone: 'America/New_York',
+    languagePreference: 'en',
+    locale: null,
+    communicationPreferences: {
+      preferredMethod: null,
+      allowEmail: true,
+      allowSMS: false,
+      allowPhoneCalls: false,
+      quietHoursStart: null,
+      quietHoursEnd: null,
+      notificationFrequency: 'daily-digest',
+    },
+    legalConsent: {
+      ferpaConsent: null,
+      ferpaConsentDate: null,
+      gdprConsent: null,
+      gdprConsentDate: null,
+      photoConsent: null,
+      photoConsentDate: null,
+      marketingConsent: null,
+      marketingConsentDate: null,
+      thirdPartyDataSharing: null,
+      thirdPartyDataSharingDate: null,
+    },
+  },
   firstName: 'John',
   lastName: 'Doe',
   userTypes: ['staff'], // V2
@@ -101,6 +148,13 @@ export const mockUpdateUserFormData: Partial<UserFormData> = {
 export const createMockUser = (overrides?: Partial<User>): User => ({
   _id: `user-${Math.random().toString(36).substr(2, 9)}`,
   email: `user-${Math.random().toString(36).substr(2, 5)}@example.com`,
+  person: {
+    firstName: 'Test',
+    lastName: 'User',
+    emails: [],
+    phones: [],
+    addresses: [],
+  },
   firstName: 'Test',
   lastName: 'User',
   userTypes: ['learner'], // V2
@@ -111,7 +165,7 @@ export const createMockUser = (overrides?: Partial<User>): User => ({
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
   ...overrides,
-});
+} as User);
 
 export const createMockUserListItem = (overrides?: Partial<UserListItem>): UserListItem => ({
   _id: `user-${Math.random().toString(36).substr(2, 9)}`,

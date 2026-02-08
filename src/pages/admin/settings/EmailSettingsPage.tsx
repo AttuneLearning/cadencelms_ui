@@ -10,7 +10,6 @@ import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { Switch } from '@/shared/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
-import { Badge } from '@/shared/ui/badge';
 import { useToast } from '@/shared/ui/use-toast';
 import { Loader2, Save, ArrowLeft, Mail, CheckCircle, XCircle, Send } from 'lucide-react';
 import { PageHeader } from '@/shared/ui/page-header';
@@ -41,7 +40,7 @@ export const EmailSettingsPage: React.FC = () => {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, _setShowPassword] = useState(false);
   const [testEmail, setTestEmail] = useState('');
   const [connectionStatus, setConnectionStatus] = useState<'unknown' | 'success' | 'error'>('unknown');
 

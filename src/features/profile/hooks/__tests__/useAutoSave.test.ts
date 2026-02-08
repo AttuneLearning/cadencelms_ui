@@ -109,7 +109,7 @@ describe('useAutoSave', () => {
   it.skip('should set status to saving during save', async () => {
     let resolveSave: any;
     const mockSave = vi.fn(
-      () =>
+      (): Promise<void> =>
         new Promise((resolve) => {
           resolveSave = resolve;
         })

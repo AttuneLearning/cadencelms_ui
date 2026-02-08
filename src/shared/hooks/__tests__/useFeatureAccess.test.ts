@@ -6,8 +6,8 @@
 import { renderHook } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { useFeatureAccess } from '../useFeatureAccess';
-import * as authStoreModule from '@/features/auth/model/authStore';
-import * as departmentContextModule from '../useDepartmentContext';
+import * as _authStoreModule from '@/features/auth/model/authStore';
+import * as _departmentContextModule from '../useDepartmentContext';
 
 // ============================================================================
 // Mock Setup

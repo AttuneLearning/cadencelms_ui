@@ -74,7 +74,7 @@ export const DepartmentManagementPage: React.FC = () => {
   const { data: departmentsData, isLoading, error } = useDepartments(filters);
 
   // Mutations
-  const createMutation = useCreateDepartment({
+  useCreateDepartment({
     onSuccess: () => {
       toast({
         title: 'Department created',
@@ -91,7 +91,7 @@ export const DepartmentManagementPage: React.FC = () => {
     },
   });
 
-  const updateMutation = useUpdateDepartment({
+  useUpdateDepartment({
     onSuccess: () => {
       toast({
         title: 'Department updated',

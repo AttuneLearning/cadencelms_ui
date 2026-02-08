@@ -48,7 +48,7 @@ export const StaffCard: React.FC<StaffCardProps> = ({ staff, person, className, 
             <UserAvatar
               firstName={person?.firstName || staff.firstName}
               lastName={person?.lastName || staff.lastName}
-              avatarUrl={person?.avatar}
+              avatar={person?.avatar ?? undefined}
               className="h-12 w-12"
             />
             <div className="flex-1 min-w-0">

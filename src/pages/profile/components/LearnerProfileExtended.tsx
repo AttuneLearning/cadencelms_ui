@@ -3,7 +3,6 @@
  * Demo: Integrates learner extended profile sections
  */
 
-import React from 'react';
 import { useLearnerExtended } from '@/entities/user-profile/model/useUserProfile';
 import { StudentInfoSection } from './learner/StudentInfoSection';
 import { EmergencyContactsSection } from './learner/EmergencyContactsSection';

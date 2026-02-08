@@ -3,11 +3,9 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ContactInfoForm } from '../ContactInfoForm';
-import { personApi } from '@/shared/api/personApi';
 import type { IPerson, IEmail, IPhone, IAddress } from '@/shared/types/person';
 import * as useAutoSaveModule from '../../hooks/useAutoSave';
 

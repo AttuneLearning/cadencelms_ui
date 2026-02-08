@@ -4,7 +4,7 @@
  * Per ISS-010 clarification Q3: Dept-Admins have full CRUD, learners can view and request
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { CollapsibleSection } from '../shared/CollapsibleSection';
 import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';

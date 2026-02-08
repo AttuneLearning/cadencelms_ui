@@ -18,7 +18,7 @@ import {
   useDeleteReportJob,
   useBulkDeleteReportJobs,
 } from '../useReportJobs';
-import type { ReportJob, ListReportJobsResponse } from '../../model/types';
+import type { ReportJob } from '../../model/types';
 
 // Mock data
 const mockJob: ReportJob = {
@@ -138,7 +138,7 @@ describe('Report Job Hooks', () => {
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-      expect(result.current.data?.jobId).toBe('job-123');
+      expect(result.current.data?.id).toBe('job-123');
       expect(result.current.data?.state).toBe('ready');
       expect(result.current.data?.progress).toBe(100);
     });

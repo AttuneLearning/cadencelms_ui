@@ -62,7 +62,7 @@ export const CreateReportJobDialog: React.FC<CreateReportJobDialogProps> = ({
   const [startDate, setStartDate] = React.useState('');
   const [endDate, setEndDate] = React.useState('');
   const [notificationEmail, setNotificationEmail] = React.useState('');
-  const [notifyMe, setNotifyMe] = React.useState(false);
+  const [_notifyMe, setNotifyMe] = React.useState(false);
 
   const { toast } = useToast();
   const createMutation = useCreateReportJob();

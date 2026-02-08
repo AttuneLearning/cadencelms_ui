@@ -34,7 +34,7 @@ import {
 import { useToast } from '@/shared/ui/use-toast';
 import { PageHeader } from '@/shared/ui/page-header';
 import { UserAvatar } from '@/entities/user';
-import { staffApi, type UserListItem, type Role, type UserStatus, type StaffListParams, type StaffDepartment } from '@/entities/user';
+import { staffApi, type UserListItem, type UserStatus, type StaffDepartment } from '@/entities/user';
 import { MoreHorizontal, Plus, Trash, Edit, UserCheck, UserX, ChevronDown, ChevronRight, Building2 } from 'lucide-react';
 import { UserFormDialog } from '@/features/user-management';
 import { ConfirmDialog } from '@/shared/ui/confirm-dialog';
@@ -452,20 +452,6 @@ export const UserManagementPage: React.FC = () => {
     </div>
   );
 };
-
-// Helper functions
-function formatRole(role: Role): string {
-  switch (role) {
-    case 'global-admin':
-      return 'Admin';
-    case 'staff':
-      return 'Staff';
-    case 'learner':
-      return 'Learner';
-    default:
-      return role;
-  }
-}
 
 function getStatusVariant(status: UserStatus): 'default' | 'secondary' | 'destructive' {
   switch (status) {

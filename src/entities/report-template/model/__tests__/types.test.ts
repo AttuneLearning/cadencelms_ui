@@ -26,6 +26,7 @@ describe('Report Template Types', () => {
           slicers: [],
           groups: [],
         },
+        defaultOutputFormat: 'pdf',
         version: 1,
         isLatest: true,
         visibility: 'organization',

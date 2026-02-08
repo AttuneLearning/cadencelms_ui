@@ -19,7 +19,7 @@
 
 import { test, expect } from '@playwright/test';
 import { instructorWorkflow, instructorUser, adminUser, departmentAdminUser } from '../fixtures/instructor-workflow';
-import { LoginPage, DashboardPage } from '../utils/pages';
+import { LoginPage } from '../utils/pages';
 import { CourseEditorPage } from '../utils/pages/CourseEditorPage';
 import { QuestionBankPage } from '../utils/pages/QuestionBankPage';
 import { ExerciseBuilderPage } from '../utils/pages/ExerciseBuilderPage';
@@ -31,8 +31,6 @@ const UNIQUE_COURSE_TITLE = `${instructorWorkflow.course.title} ${TEST_RUN_ID}`;
 
 // Store created IDs for use across tests
 let createdCourseId: string | null = null;
-let createdQuestionIds: string[] = [];
-let createdQuizIds: string[] = [];
 
 test.describe('User Story: Instructor Course Creation Workflow', () => {
   
@@ -477,10 +475,6 @@ test.describe('User Story: Instructor Course Creation Workflow', () => {
         await page.goto('/admin/exercises');
         await waitForPageLoad(page);
       }
-      
-      // Then: Both quizzes are visible
-      const quiz1 = page.locator(`text="${instructorWorkflow.quizzes[0].title}"`);
-      const quiz2 = page.locator(`text="${instructorWorkflow.quizzes[1].title}"`);
       
       // At least check that the page loaded and shows some exercises
       const exerciseList = page.locator(

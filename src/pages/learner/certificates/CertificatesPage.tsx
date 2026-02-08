@@ -19,10 +19,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/ui/select';
-import { Award, Search as SearchIcon, Printer, Download, Calendar, Hash, Share2, ShieldCheck, Eye, RefreshCw } from 'lucide-react';
+import { Award, Search as SearchIcon, Printer, Download, Calendar, Hash, Share2, ShieldCheck, Eye } from 'lucide-react';
 import { useToast } from '@/shared/ui/use-toast';
 import { ErrorPanel } from '@/shared/ui/error-panel';
-import { DataShapeWarning } from '@/shared/ui/data-shape-warning';
 import { PageHeader } from '@/shared/ui/page-header';
 import type { EnrollmentListItem } from '@/entities/enrollment';
 
@@ -205,9 +204,6 @@ export const CertificatesPage: React.FC = () => {
 
   const enrollments = data?.enrollments || [];
   const pagination = data?.pagination;
-  const warningDetails = data?.shapeWarning
-    ? { ...data.shapeWarning, component: 'CertificatesPage' }
-    : undefined;
 
   // Client-side filter for search and date range
   const filteredEnrollments = enrollments.filter((enrollment) => {
@@ -348,7 +344,6 @@ export const CertificatesPage: React.FC = () => {
           details={{
             endpoint: '/enrollments/my-courses',
             component: 'CertificatesPage',
-            params: { status: 'completed', type: 'course' },
           }}
           onRetry={() => refetch()}
           links={[
@@ -358,14 +353,6 @@ export const CertificatesPage: React.FC = () => {
         />
       )}
 
-      {/* Data Shape Warning */}
-      {warningDetails && (
-        <DataShapeWarning
-          title="Certificate data may be incomplete"
-          message="The enrollment response did not match the expected shape. Some certificates may not display correctly."
-          details={warningDetails}
-        />
-      )}
 
       {/* Loading State */}
       {isLoading && (

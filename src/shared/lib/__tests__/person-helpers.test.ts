@@ -12,7 +12,7 @@ import {
   getFullLegalName,
   formatPhoneNumber,
 } from '../person-helpers';
-import type { IPerson, IEmail, IPhone, IAddress } from '@/shared/types/person';
+import type { IPerson, IPhone } from '@/shared/types/person';
 import {
   mockPersonWithAllFields,
   mockPersonMinimal,

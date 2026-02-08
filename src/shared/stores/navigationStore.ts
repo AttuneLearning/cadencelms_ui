@@ -33,7 +33,7 @@ interface NavigationState {
   /** Mobile sidebar open state */
   isSidebarOpen: boolean;
 
-  // NEW: Cached department context from API
+  // Cached department context from API
   /** Roles in the currently selected department */
   currentDepartmentRoles: string[];
 
@@ -43,12 +43,19 @@ interface NavigationState {
   /** Name of the currently selected department */
   currentDepartmentName: string | null;
 
-  // NEW: Loading and error states
+  // Loading and error states
   /** Is department switch in progress? */
   isSwitchingDepartment: boolean;
 
   /** Error from last department switch attempt */
   switchDepartmentError: string | null;
+
+  // Breadcrumb navigation state (Phase 2 - Navigation Redesign 2026-02-05)
+  /** Stack of department IDs representing the current drill-down path */
+  departmentPath: string[];
+
+  /** Whether breadcrumb navigation mode is active */
+  isBreadcrumbMode: boolean;
 
   // Actions
   setSelectedDepartment: (deptId: string | null) => void;
@@ -57,8 +64,18 @@ interface NavigationState {
   toggleSidebar: () => void;
   setSidebarOpen: (open: boolean) => void;
 
-  // NEW: API-connected department switching
+  // API-connected department switching
   switchDepartment: (deptId: string) => Promise<void>;
+
+  // Breadcrumb navigation actions
+  /** Navigate to a department (updates path based on hierarchy) */
+  navigateToDepartment: (deptId: string, ancestors?: string[]) => void;
+  /** Go up one level in the breadcrumb path */
+  navigateUp: () => void;
+  /** Clear the department path */
+  clearDepartmentPath: () => void;
+  /** Toggle between list and breadcrumb mode */
+  toggleBreadcrumbMode: () => void;
 }
 
 // ============================================================================
@@ -76,14 +93,18 @@ export const useNavigationStore = create<NavigationState>()(
         lastAccessedDepartments: {},
         isSidebarOpen: false,
 
-        // NEW: Department context cache
+        // Department context cache
         currentDepartmentRoles: [],
         currentDepartmentAccessRights: [],
         currentDepartmentName: null,
 
-        // NEW: Loading and error states
+        // Loading and error states
         isSwitchingDepartment: false,
         switchDepartmentError: null,
+
+        // Breadcrumb navigation state
+        departmentPath: [],
+        isBreadcrumbMode: true, // Default to breadcrumb mode
 
         // ================================================================
         // Department Selection
@@ -204,13 +225,90 @@ export const useNavigationStore = create<NavigationState>()(
         setSidebarOpen: (open) => {
           set({ isSidebarOpen: open });
         },
+
+        // ================================================================
+        // Breadcrumb Navigation (Phase 2 - Navigation Redesign 2026-02-05)
+        // ================================================================
+
+        /**
+         * Navigate to a department and update the breadcrumb path
+         * If ancestors are provided, they're used to build the path
+         * Otherwise, the department is added to the current path
+         */
+        navigateToDepartment: (deptId, ancestors) => {
+          set((state) => {
+            if (ancestors) {
+              // Build path from ancestors + current
+              return {
+                selectedDepartmentId: deptId,
+                departmentPath: [...ancestors, deptId],
+              };
+            }
+
+            // Check if this department is already in the path (navigating up)
+            const existingIndex = state.departmentPath.indexOf(deptId);
+            if (existingIndex >= 0) {
+              // Truncate path to this department
+              return {
+                selectedDepartmentId: deptId,
+                departmentPath: state.departmentPath.slice(0, existingIndex + 1),
+              };
+            }
+
+            // Add to path (drilling down)
+            return {
+              selectedDepartmentId: deptId,
+              departmentPath: [...state.departmentPath, deptId],
+            };
+          });
+          console.log('[NavigationStore] Navigated to department:', deptId);
+        },
+
+        /**
+         * Navigate up one level in the breadcrumb path
+         */
+        navigateUp: () => {
+          set((state) => {
+            if (state.departmentPath.length <= 1) {
+              return state; // Can't go up from root
+            }
+
+            const newPath = state.departmentPath.slice(0, -1);
+            return {
+              selectedDepartmentId: newPath[newPath.length - 1] || null,
+              departmentPath: newPath,
+            };
+          });
+          console.log('[NavigationStore] Navigated up in department path');
+        },
+
+        /**
+         * Clear the department path (reset to root)
+         */
+        clearDepartmentPath: () => {
+          set({
+            selectedDepartmentId: null,
+            departmentPath: [],
+          });
+          console.log('[NavigationStore] Department path cleared');
+        },
+
+        /**
+         * Toggle between list and breadcrumb navigation modes
+         */
+        toggleBreadcrumbMode: () => {
+          set((state) => ({
+            isBreadcrumbMode: !state.isBreadcrumbMode,
+          }));
+        },
       }),
       {
         name: 'navigation-storage',
-        // Only persist department selections, not sidebar state
+        // Only persist department selections and preferences, not sidebar state
         // Sidebar state is UI-only and should reset on page load
         partialize: (state) => ({
           lastAccessedDepartments: state.lastAccessedDepartments,
+          isBreadcrumbMode: state.isBreadcrumbMode,
         }),
       }
     ),

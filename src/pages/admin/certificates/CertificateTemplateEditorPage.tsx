@@ -66,8 +66,7 @@ export const CertificateTemplateEditorPage: React.FC = () => {
 
   // Fetch template data
   const { data: template, isLoading: isLoadingTemplate } = useCertificateTemplateDetail(
-    templateId || '',
-    { enabled: !isNewTemplate }
+    isNewTemplate ? '' : (templateId || '')
   );
 
   // Mutations
@@ -125,7 +124,10 @@ export const CertificateTemplateEditorPage: React.FC = () => {
   const handleSave = async (data: TemplateFormData) => {
     try {
       if (isNewTemplate) {
-        await createTemplateMutation.mutateAsync(data);
+        await createTemplateMutation.mutateAsync({
+          ...data,
+          description: data.description || '',
+        });
         toast({
           title: 'Template created',
           description: 'Certificate template has been created successfully.',

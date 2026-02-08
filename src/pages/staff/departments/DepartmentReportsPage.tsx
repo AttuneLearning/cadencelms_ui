@@ -13,7 +13,7 @@
  * - Progress summaries
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { 
   ChevronRight,
@@ -121,11 +121,19 @@ export function DepartmentReportsPage() {
     isSwitching 
   } = useDepartmentContext();
 
+  // Track if this is initial mount to distinguish from user clearing selection
+  const isInitialMountRef = useRef(true);
+
   // Switch to the department from the URL if needed
   useEffect(() => {
     if (deptId && deptId !== currentDepartmentId && !isSwitching) {
+      // Don't auto-switch if user explicitly cleared selection (currentDepartmentId is null)
+      if (currentDepartmentId === null && !isInitialMountRef.current) {
+        return;
+      }
       switchDepartment(deptId);
     }
+    isInitialMountRef.current = false;
   }, [deptId, currentDepartmentId, switchDepartment, isSwitching]);
 
   // Fetch department details
@@ -154,10 +162,10 @@ export function DepartmentReportsPage() {
   // Tab state
   const [activeTab, setActiveTab] = useState('quick');
 
-  // Permission checks
-  const canViewReports = hasPermission('report:view-department');
-  const canCreateReports = hasPermission('report:create-department');
-  const canExportReports = hasPermission('report:export-department');
+  // Permission checks (API uses reports:department:read and reports:department:export)
+  const canViewReports = hasPermission('reports:department:read');
+  const canCreateReports = hasPermission('reports:department:read');
+  const canExportReports = hasPermission('reports:department:export');
 
   // Loading state
   if (isDeptLoading || isSwitching) {

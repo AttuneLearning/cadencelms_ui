@@ -2,7 +2,7 @@
  * Integration Tests for Report Viewer Page
  */
 
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
@@ -17,7 +17,6 @@ import {
   mockFailedReport,
   mockPendingReport,
 } from '@/test/mocks/data/reports';
-import type { Report } from '@/entities/report';
 
 // Mock the ConfirmDialog component
 vi.mock('@/shared/ui/confirm-dialog', () => ({

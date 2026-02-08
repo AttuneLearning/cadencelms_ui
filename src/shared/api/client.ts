@@ -185,8 +185,8 @@ client.interceptors.response.use(
     const requestId =
       responseHeaders?.['x-request-id'] ||
       responseHeaders?.['X-Request-Id'] ||
-      data?.requestId ||
-      data?.request_id;
+      (data as unknown as Record<string, unknown>)?.requestId as string | undefined ||
+      (data as unknown as Record<string, unknown>)?.request_id as string | undefined;
 
     // Handle 401 Unauthorized - attempt token refresh
     if (status === 401 && !originalRequest._retry) {

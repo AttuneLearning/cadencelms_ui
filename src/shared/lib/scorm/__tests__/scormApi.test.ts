@@ -4,13 +4,13 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { ScormAPI, ScormVersion } from '../scormApi';
+import { ScormAPI, type ScormAPIOptions } from '../scormApi';
 
 describe('ScormAPI', () => {
   let scormApi: ScormAPI;
-  let mockOnCommit: ReturnType<typeof vi.fn>;
-  let mockOnTerminate: ReturnType<typeof vi.fn>;
-  let mockOnError: ReturnType<typeof vi.fn>;
+  let mockOnCommit: ScormAPIOptions['onCommit'];
+  let mockOnTerminate: ScormAPIOptions['onTerminate'];
+  let mockOnError: ScormAPIOptions['onError'];
 
   beforeEach(() => {
     mockOnCommit = vi.fn();
@@ -295,7 +295,7 @@ describe('ScormAPI', () => {
       (window as any).API.LMSSetValue('cmi.core.lesson_status', 'completed');
       (window as any).API.LMSFinish('');
 
-      mockOnCommit.mockClear();
+      (mockOnCommit as ReturnType<typeof vi.fn>).mockClear();
 
       // Fast-forward 10 seconds after terminate
       vi.advanceTimersByTime(10000);

@@ -3,7 +3,7 @@
  * Primary language, English proficiency, and other languages
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { CollapsibleSection } from '../shared/CollapsibleSection';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';

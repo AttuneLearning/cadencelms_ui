@@ -13,6 +13,67 @@ import { CertificatesPage } from '../CertificatesPage';
 vi.mock('@/entities/enrollment');
 
 import { useMyEnrollments } from '@/entities/enrollment';
+import type { EnrollmentListItem, EnrollmentsListResponse } from '@/entities/enrollment';
+
+// Helper to create mock enrollment items with all required fields
+const createMockEnrollment = (partial: Omit<Partial<EnrollmentListItem>, 'target'> & { id: string; target: { id: string; name: string; code: string } }): EnrollmentListItem => {
+  const baseEnrollment: EnrollmentListItem = {
+    id: partial.id,
+    type: 'course' as const,
+    learner: { id: 'l1', firstName: 'John', lastName: 'Doe', email: 'john@example.com' },
+    target: { id: partial.target.id, name: partial.target.name, code: partial.target.code, type: 'course' as const },
+    status: 'completed' as const,
+    completedAt: '2024-01-15T10:30:00Z',
+    enrolledAt: '2024-01-01T00:00:00Z',
+    withdrawnAt: null,
+    expiresAt: null,
+    progress: { percentage: 100, completedItems: 10, totalItems: 10 },
+    grade: { score: 95, letter: 'A', passed: true },
+    department: { id: 'd1', name: 'Engineering' },
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-15T10:30:00Z',
+  };
+
+  const result: EnrollmentListItem = {
+    ...baseEnrollment,
+    ...partial,
+    target: {
+      id: partial.target.id,
+      name: partial.target.name,
+      code: partial.target.code,
+      type: 'course' as const
+    }
+  };
+  return result;
+};
+
+// Helper to create mock query result
+const createMockQueryResult = (data: EnrollmentsListResponse | undefined, isLoading: boolean, error: Error | null) => ({
+  data,
+  isLoading,
+  error,
+  isError: !!error,
+  isSuccess: !isLoading && !error && data !== undefined,
+  status: isLoading ? 'pending' as const : error ? 'error' as const : 'success' as const,
+  refetch: vi.fn(),
+  fetchStatus: 'idle' as const,
+  dataUpdatedAt: 0,
+  errorUpdatedAt: 0,
+  failureCount: 0,
+  failureReason: error,
+  errorUpdateCount: 0,
+  isFetched: true,
+  isFetchedAfterMount: true,
+  isFetching: false,
+  isInitialLoading: isLoading,
+  isLoadingError: false,
+  isPaused: false,
+  isPlaceholderData: false,
+  isPending: isLoading,
+  isRefetchError: false,
+  isRefetching: false,
+  isStale: false,
+}) as any;
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
@@ -36,11 +97,13 @@ describe('CertificatesPage', () => {
 
   describe('Rendering', () => {
     it('should render page title and description', () => {
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: [], pagination: { page: 1, total: 0 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: [], pagination: { page: 1, total: 0, limit: 12, totalPages: 0, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -49,11 +112,13 @@ describe('CertificatesPage', () => {
     });
 
     it('should render search input', () => {
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: [], pagination: { page: 1, total: 0 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: [], pagination: { page: 1, total: 0, limit: 12, totalPages: 0, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -61,11 +126,13 @@ describe('CertificatesPage', () => {
     });
 
     it('should render sort dropdown', () => {
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: [], pagination: { page: 1, total: 0 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: [], pagination: { page: 1, total: 0, limit: 12, totalPages: 0, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -75,11 +142,9 @@ describe('CertificatesPage', () => {
 
   describe('Loading State', () => {
     it('should show loading skeleton when data is loading', () => {
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: null,
-        isLoading: true,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(undefined, true, null)
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -89,11 +154,13 @@ describe('CertificatesPage', () => {
 
   describe('Empty State', () => {
     it('should show empty state when no certificates', () => {
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: [], pagination: { page: 1, total: 0 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: [], pagination: { page: 1, total: 0, limit: 12, totalPages: 0, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -101,11 +168,13 @@ describe('CertificatesPage', () => {
     });
 
     it('should show encouragement message in empty state', () => {
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: [], pagination: { page: 1, total: 0 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: [], pagination: { page: 1, total: 0, limit: 12, totalPages: 0, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -113,11 +182,13 @@ describe('CertificatesPage', () => {
     });
 
     it('should show link to course catalog in empty state', () => {
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: [], pagination: { page: 1, total: 0 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: [], pagination: { page: 1, total: 0, limit: 12, totalPages: 0, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -129,33 +200,32 @@ describe('CertificatesPage', () => {
   describe('Certificate Display', () => {
     it('should display completed courses as certificates', () => {
       const mockEnrollments = [
-        {
+        createMockEnrollment({
           id: 'enr-1',
-          type: 'course',
           target: { id: 'c1', name: 'React Fundamentals', code: 'CS101' },
-          status: 'completed',
           completedAt: '2024-01-15T10:30:00Z',
           enrolledAt: '2024-01-01T00:00:00Z',
           progress: { percentage: 100, completedItems: 10, totalItems: 10 },
           grade: { score: 95, letter: 'A', passed: true },
-        },
-        {
+        }),
+        createMockEnrollment({
           id: 'enr-2',
-          type: 'course',
           target: { id: 'c2', name: 'Advanced TypeScript', code: 'CS201' },
-          status: 'completed',
           completedAt: '2024-02-20T14:45:00Z',
           enrolledAt: '2024-02-01T00:00:00Z',
           progress: { percentage: 100, completedItems: 8, totalItems: 8 },
           grade: { score: 88, letter: 'B+', passed: true },
-        },
+          updatedAt: '2024-02-20T14:45:00Z',
+        }),
       ];
 
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: mockEnrollments, pagination: { page: 1, total: 2 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: mockEnrollments, pagination: { page: 1, total: 2, limit: 12, totalPages: 1, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -165,23 +235,21 @@ describe('CertificatesPage', () => {
 
     it('should display course code for each certificate', () => {
       const mockEnrollments = [
-        {
+        createMockEnrollment({
           id: 'enr-1',
-          type: 'course',
           target: { id: 'c1', name: 'Test Course', code: 'TEST101' },
-          status: 'completed',
-          completedAt: '2024-01-15T10:30:00Z',
-          enrolledAt: '2024-01-01T00:00:00Z',
           progress: { percentage: 100, completedItems: 5, totalItems: 5 },
           grade: { score: 90, letter: 'A-', passed: true },
-        },
+        }),
       ];
 
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: mockEnrollments, pagination: { page: 1, total: 1, limit: 12, totalPages: 1, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -190,23 +258,21 @@ describe('CertificatesPage', () => {
 
     it('should display completion date for each certificate', () => {
       const mockEnrollments = [
-        {
+        createMockEnrollment({
           id: 'enr-1',
-          type: 'course',
           target: { id: 'c1', name: 'Test Course', code: 'TEST' },
-          status: 'completed',
-          completedAt: '2024-01-15T10:30:00Z',
-          enrolledAt: '2024-01-01T00:00:00Z',
           progress: { percentage: 100, completedItems: 5, totalItems: 5 },
           grade: { score: 90, letter: 'A-', passed: true },
-        },
+        }),
       ];
 
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: mockEnrollments, pagination: { page: 1, total: 1, limit: 12, totalPages: 1, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -216,23 +282,21 @@ describe('CertificatesPage', () => {
 
     it('should display certificate ID for each certificate', () => {
       const mockEnrollments = [
-        {
+        createMockEnrollment({
           id: 'enr-123456',
-          type: 'course',
           target: { id: 'c1', name: 'Test Course', code: 'TEST' },
-          status: 'completed',
-          completedAt: '2024-01-15T10:30:00Z',
-          enrolledAt: '2024-01-01T00:00:00Z',
           progress: { percentage: 100, completedItems: 5, totalItems: 5 },
           grade: { score: 90, letter: 'A-', passed: true },
-        },
+        }),
       ];
 
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: mockEnrollments, pagination: { page: 1, total: 1, limit: 12, totalPages: 1, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -241,23 +305,21 @@ describe('CertificatesPage', () => {
 
     it('should display grade when available', () => {
       const mockEnrollments = [
-        {
+        createMockEnrollment({
           id: 'enr-1',
-          type: 'course',
           target: { id: 'c1', name: 'Test Course', code: 'TEST' },
-          status: 'completed',
-          completedAt: '2024-01-15T10:30:00Z',
-          enrolledAt: '2024-01-01T00:00:00Z',
           progress: { percentage: 100, completedItems: 5, totalItems: 5 },
           grade: { score: 95, letter: 'A', passed: true },
-        },
+        }),
       ];
 
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: mockEnrollments, pagination: { page: 1, total: 1, limit: 12, totalPages: 1, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -268,23 +330,21 @@ describe('CertificatesPage', () => {
 
     it('should display View Certificate button for each certificate', () => {
       const mockEnrollments = [
-        {
+        createMockEnrollment({
           id: 'enr-1',
-          type: 'course',
           target: { id: 'c1', name: 'Test Course', code: 'TEST' },
-          status: 'completed',
-          completedAt: '2024-01-15T10:30:00Z',
-          enrolledAt: '2024-01-01T00:00:00Z',
           progress: { percentage: 100, completedItems: 5, totalItems: 5 },
           grade: { score: 90, letter: 'A-', passed: true },
-        },
+        }),
       ];
 
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: mockEnrollments, pagination: { page: 1, total: 1, limit: 12, totalPages: 1, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -293,23 +353,21 @@ describe('CertificatesPage', () => {
 
     it('should display Print button for each certificate', () => {
       const mockEnrollments = [
-        {
+        createMockEnrollment({
           id: 'enr-1',
-          type: 'course',
           target: { id: 'c1', name: 'Test Course', code: 'TEST' },
-          status: 'completed',
-          completedAt: '2024-01-15T10:30:00Z',
-          enrolledAt: '2024-01-01T00:00:00Z',
           progress: { percentage: 100, completedItems: 5, totalItems: 5 },
           grade: { score: 90, letter: 'A-', passed: true },
-        },
+        }),
       ];
 
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: mockEnrollments, pagination: { page: 1, total: 1, limit: 12, totalPages: 1, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -322,33 +380,32 @@ describe('CertificatesPage', () => {
   describe('Search Functionality', () => {
     it('should filter certificates by course name', async () => {
       const mockEnrollments = [
-        {
+        createMockEnrollment({
           id: 'enr-1',
-          type: 'course',
           target: { id: 'c1', name: 'React Fundamentals', code: 'CS101' },
-          status: 'completed',
           completedAt: '2024-01-15T10:30:00Z',
           enrolledAt: '2024-01-01T00:00:00Z',
           progress: { percentage: 100, completedItems: 10, totalItems: 10 },
           grade: { score: 95, letter: 'A', passed: true },
-        },
-        {
+        }),
+        createMockEnrollment({
           id: 'enr-2',
-          type: 'course',
           target: { id: 'c2', name: 'Advanced TypeScript', code: 'CS201' },
-          status: 'completed',
           completedAt: '2024-02-20T14:45:00Z',
           enrolledAt: '2024-02-01T00:00:00Z',
           progress: { percentage: 100, completedItems: 8, totalItems: 8 },
           grade: { score: 88, letter: 'B+', passed: true },
-        },
+          updatedAt: '2024-02-20T14:45:00Z',
+        }),
       ];
 
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: mockEnrollments, pagination: { page: 1, total: 2 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: mockEnrollments, pagination: { page: 1, total: 2, limit: 12, totalPages: 1, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -363,23 +420,20 @@ describe('CertificatesPage', () => {
 
     it('should show empty result message when search has no matches', async () => {
       const mockEnrollments = [
-        {
+        createMockEnrollment({
           id: 'enr-1',
-          type: 'course',
           target: { id: 'c1', name: 'React Fundamentals', code: 'CS101' },
-          status: 'completed',
-          completedAt: '2024-01-15T10:30:00Z',
-          enrolledAt: '2024-01-01T00:00:00Z',
           progress: { percentage: 100, completedItems: 10, totalItems: 10 },
-          grade: { score: 95, letter: 'A', passed: true },
-        },
+        }),
       ];
 
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: mockEnrollments, pagination: { page: 1, total: 1, limit: 12, totalPages: 1, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -394,11 +448,13 @@ describe('CertificatesPage', () => {
 
   describe('Sort Functionality', () => {
     it('should initialize with default sort (newest first)', () => {
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: [], pagination: { page: 1, total: 0 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: [], pagination: { page: 1, total: 0, limit: 12, totalPages: 0, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -410,11 +466,13 @@ describe('CertificatesPage', () => {
     });
 
     it('should have sort options available', () => {
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: [], pagination: { page: 1, total: 0 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: [], pagination: { page: 1, total: 0, limit: 12, totalPages: 0, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -423,11 +481,13 @@ describe('CertificatesPage', () => {
     });
 
     it('should display default sort value', () => {
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: [], pagination: { page: 1, total: 0 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: [], pagination: { page: 1, total: 0, limit: 12, totalPages: 0, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -437,11 +497,9 @@ describe('CertificatesPage', () => {
 
   describe('Error Handling', () => {
     it('should display error message when fetch fails', () => {
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: null,
-        isLoading: false,
-        error: new Error('Failed to fetch certificates'),
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(undefined, false, new Error('Failed to fetch certificates'))
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -449,11 +507,9 @@ describe('CertificatesPage', () => {
     });
 
     it('should display error details in error state', () => {
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: null,
-        isLoading: false,
-        error: new Error('Network error'),
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(undefined, false, new Error('Network error'))
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -465,11 +521,13 @@ describe('CertificatesPage', () => {
 
   describe('API Integration', () => {
     it('should fetch only completed enrollments', () => {
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: [], pagination: { page: 1, total: 0 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: [], pagination: { page: 1, total: 0, limit: 12, totalPages: 0, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -481,11 +539,13 @@ describe('CertificatesPage', () => {
     });
 
     it('should pass correct type filter to API', () => {
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: [], pagination: { page: 1, total: 0 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: [], pagination: { page: 1, total: 0, limit: 12, totalPages: 0, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -500,23 +560,21 @@ describe('CertificatesPage', () => {
   describe('Certificate Actions', () => {
     it('should navigate to certificate view page when clicking View Certificate', () => {
       const mockEnrollments = [
-        {
+        createMockEnrollment({
           id: 'enr-1',
-          type: 'course',
           target: { id: 'c1', name: 'Test Course', code: 'TEST' },
-          status: 'completed',
-          completedAt: '2024-01-15T10:30:00Z',
-          enrolledAt: '2024-01-01T00:00:00Z',
           progress: { percentage: 100, completedItems: 5, totalItems: 5 },
           grade: { score: 90, letter: 'A-', passed: true },
-        },
+        }),
       ];
 
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: mockEnrollments, pagination: { page: 1, total: 1, limit: 12, totalPages: 1, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -526,23 +584,21 @@ describe('CertificatesPage', () => {
 
     it('should have download button for each certificate', () => {
       const mockEnrollments = [
-        {
+        createMockEnrollment({
           id: 'enr-1',
-          type: 'course',
           target: { id: 'c1', name: 'Test Course', code: 'TEST' },
-          status: 'completed',
-          completedAt: '2024-01-15T10:30:00Z',
-          enrolledAt: '2024-01-01T00:00:00Z',
           progress: { percentage: 100, completedItems: 5, totalItems: 5 },
           grade: { score: 90, letter: 'A-', passed: true },
-        },
+        }),
       ];
 
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: mockEnrollments, pagination: { page: 1, total: 1, limit: 12, totalPages: 1, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -554,23 +610,21 @@ describe('CertificatesPage', () => {
 
     it('should have share button for each certificate', () => {
       const mockEnrollments = [
-        {
+        createMockEnrollment({
           id: 'enr-1',
-          type: 'course',
           target: { id: 'c1', name: 'Test Course', code: 'TEST' },
-          status: 'completed',
-          completedAt: '2024-01-15T10:30:00Z',
-          enrolledAt: '2024-01-01T00:00:00Z',
           progress: { percentage: 100, completedItems: 5, totalItems: 5 },
           grade: { score: 90, letter: 'A-', passed: true },
-        },
+        }),
       ];
 
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: mockEnrollments, pagination: { page: 1, total: 1, limit: 12, totalPages: 1, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -582,23 +636,21 @@ describe('CertificatesPage', () => {
 
     it('should have verify button for each certificate', () => {
       const mockEnrollments = [
-        {
+        createMockEnrollment({
           id: 'enr-1',
-          type: 'course',
           target: { id: 'c1', name: 'Test Course', code: 'TEST' },
-          status: 'completed',
-          completedAt: '2024-01-15T10:30:00Z',
-          enrolledAt: '2024-01-01T00:00:00Z',
           progress: { percentage: 100, completedItems: 5, totalItems: 5 },
           grade: { score: 90, letter: 'A-', passed: true },
-        },
+        }),
       ];
 
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: mockEnrollments, pagination: { page: 1, total: 1 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: mockEnrollments, pagination: { page: 1, total: 1, limit: 12, totalPages: 1, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -611,11 +663,13 @@ describe('CertificatesPage', () => {
 
   describe('Date Range Filter', () => {
     it('should display date range filter inputs', () => {
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: [], pagination: { page: 1, total: 0 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: [], pagination: { page: 1, total: 0, limit: 12, totalPages: 0, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -625,33 +679,35 @@ describe('CertificatesPage', () => {
 
     it('should filter certificates by date range', async () => {
       const mockEnrollments = [
-        {
+        createMockEnrollment({
           id: 'enr-1',
-          type: 'course',
           target: { id: 'c1', name: 'Old Course', code: 'OLD' },
-          status: 'completed',
           completedAt: '2023-01-15T10:30:00Z',
           enrolledAt: '2023-01-01T00:00:00Z',
           progress: { percentage: 100, completedItems: 5, totalItems: 5 },
           grade: { score: 90, letter: 'A-', passed: true },
-        },
-        {
+          createdAt: '2023-01-01T00:00:00Z',
+          updatedAt: '2023-01-15T10:30:00Z',
+        }),
+        createMockEnrollment({
           id: 'enr-2',
-          type: 'course',
           target: { id: 'c2', name: 'New Course', code: 'NEW' },
-          status: 'completed',
           completedAt: '2024-06-15T10:30:00Z',
           enrolledAt: '2024-06-01T00:00:00Z',
           progress: { percentage: 100, completedItems: 5, totalItems: 5 },
           grade: { score: 95, letter: 'A', passed: true },
-        },
+          createdAt: '2024-06-01T00:00:00Z',
+          updatedAt: '2024-06-15T10:30:00Z',
+        }),
       ];
 
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: { enrollments: mockEnrollments, pagination: { page: 1, total: 2 } },
-        isLoading: false,
-        error: null,
-      });
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: mockEnrollments, pagination: { page: 1, total: 2, limit: 12, totalPages: 1, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -670,32 +726,30 @@ describe('CertificatesPage', () => {
 
   describe('Pagination', () => {
     it('should display pagination when multiple pages exist', () => {
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: {
-          enrollments: [
-            {
-              id: 'enr-1',
-              type: 'course',
-              target: { id: 'c1', name: 'Course 1', code: 'C1' },
-              status: 'completed',
-              completedAt: '2024-01-15T10:30:00Z',
-              enrolledAt: '2024-01-01T00:00:00Z',
-              progress: { percentage: 100, completedItems: 5, totalItems: 5 },
-              grade: { score: 90, letter: 'A-', passed: true },
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          {
+            enrollments: [
+              createMockEnrollment({
+                id: 'enr-1',
+                target: { id: 'c1', name: 'Course 1', code: 'C1' },
+                progress: { percentage: 100, completedItems: 5, totalItems: 5 },
+                grade: { score: 90, letter: 'A-', passed: true },
+              }),
+            ],
+            pagination: {
+              page: 1,
+              total: 25,
+              totalPages: 3,
+              hasNext: true,
+              hasPrev: false,
+              limit: 12,
             },
-          ],
-          pagination: {
-            page: 1,
-            total: 25,
-            totalPages: 3,
-            hasNext: true,
-            hasPrev: false,
-            limit: 12,
           },
-        },
-        isLoading: false,
-        error: null,
-      });
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -705,32 +759,30 @@ describe('CertificatesPage', () => {
     });
 
     it('should disable Previous button on first page', () => {
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: {
-          enrollments: [
-            {
-              id: 'enr-1',
-              type: 'course',
-              target: { id: 'c1', name: 'Course 1', code: 'C1' },
-              status: 'completed',
-              completedAt: '2024-01-15T10:30:00Z',
-              enrolledAt: '2024-01-01T00:00:00Z',
-              progress: { percentage: 100, completedItems: 5, totalItems: 5 },
-              grade: { score: 90, letter: 'A-', passed: true },
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          {
+            enrollments: [
+              createMockEnrollment({
+                id: 'enr-1',
+                target: { id: 'c1', name: 'Course 1', code: 'C1' },
+                progress: { percentage: 100, completedItems: 5, totalItems: 5 },
+                grade: { score: 90, letter: 'A-', passed: true },
+              }),
+            ],
+            pagination: {
+              page: 1,
+              total: 25,
+              totalPages: 3,
+              hasNext: true,
+              hasPrev: false,
+              limit: 12,
             },
-          ],
-          pagination: {
-            page: 1,
-            total: 25,
-            totalPages: 3,
-            hasNext: true,
-            hasPrev: false,
-            limit: 12,
           },
-        },
-        isLoading: false,
-        error: null,
-      });
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 
@@ -739,32 +791,30 @@ describe('CertificatesPage', () => {
     });
 
     it('should disable Next button on last page', () => {
-      vi.mocked(useMyEnrollments).mockReturnValue({
-        data: {
-          enrollments: [
-            {
-              id: 'enr-1',
-              type: 'course',
-              target: { id: 'c1', name: 'Course 1', code: 'C1' },
-              status: 'completed',
-              completedAt: '2024-01-15T10:30:00Z',
-              enrolledAt: '2024-01-01T00:00:00Z',
-              progress: { percentage: 100, completedItems: 5, totalItems: 5 },
-              grade: { score: 90, letter: 'A-', passed: true },
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          {
+            enrollments: [
+              createMockEnrollment({
+                id: 'enr-1',
+                target: { id: 'c1', name: 'Course 1', code: 'C1' },
+                progress: { percentage: 100, completedItems: 5, totalItems: 5 },
+                grade: { score: 90, letter: 'A-', passed: true },
+              }),
+            ],
+            pagination: {
+              page: 3,
+              total: 25,
+              totalPages: 3,
+              hasNext: false,
+              hasPrev: true,
+              limit: 12,
             },
-          ],
-          pagination: {
-            page: 3,
-            total: 25,
-            totalPages: 3,
-            hasNext: false,
-            hasPrev: true,
-            limit: 12,
           },
-        },
-        isLoading: false,
-        error: null,
-      });
+          false,
+          null
+        )
+      );
 
       render(<CertificatesPage />, { wrapper: createWrapper() });
 

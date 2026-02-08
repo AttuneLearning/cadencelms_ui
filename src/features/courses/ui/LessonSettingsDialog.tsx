@@ -38,7 +38,6 @@ import {
 import type {
   LessonListItem,
   LessonSettingsFormData,
-  CompletionCriteriaType,
 } from '@/entities/course-module/model/lessonTypes';
 
 interface LessonSettingsDialogProps {

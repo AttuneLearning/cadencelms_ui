@@ -610,8 +610,6 @@ describe('ReportTemplatesPage', () => {
     });
 
     it('should filter by report type', async () => {
-      const user = userEvent.setup();
-
       server.use(
         http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
@@ -627,8 +625,6 @@ describe('ReportTemplatesPage', () => {
     });
 
     it('should filter by default status', async () => {
-      const user = userEvent.setup();
-
       server.use(
         http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });
@@ -644,8 +640,6 @@ describe('ReportTemplatesPage', () => {
     });
 
     it('should filter by shared status', async () => {
-      const user = userEvent.setup();
-
       server.use(
         http.get(`${baseUrl}/reports/templates`, () => {
           return HttpResponse.json({ success: true, data: mockTemplatesListResponse });

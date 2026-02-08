@@ -520,7 +520,7 @@ describe('reportApi', () => {
       };
 
       server.use(
-        http.post(`${baseUrl}/reports`, async ({ request }) => {
+        http.post(`${baseUrl}/reports`, async () => {
           return HttpResponse.json(
             {
               success: true,

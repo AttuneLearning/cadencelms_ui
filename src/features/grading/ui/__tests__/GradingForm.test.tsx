@@ -387,8 +387,6 @@ describe('GradingForm', () => {
     });
 
     it('should disable submit button while submitting', async () => {
-      const user = userEvent.setup();
-
       render(
         <GradingForm
           attemptId="attempt-1"

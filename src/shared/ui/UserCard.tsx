@@ -13,8 +13,8 @@
  */
 
 import React from 'react';
-import { Mail, Phone, User as UserIcon } from 'lucide-react';
-import { Card, CardHeader, CardContent } from '@/shared/ui/card';
+import { Mail, Phone } from 'lucide-react';
+import { Card, CardContent } from '@/shared/ui/card';
 import { UserAvatar } from '@/entities/user/ui/UserAvatar';
 import { cn } from '@/shared/lib/utils';
 import { getDisplayName, getPrimaryEmail, getPrimaryPhone } from '@/shared/lib/person-helpers';

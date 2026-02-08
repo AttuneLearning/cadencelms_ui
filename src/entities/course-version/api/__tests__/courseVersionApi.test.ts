@@ -28,7 +28,6 @@ import {
 import {
   mockCourseVersionsListResponse,
   mockCourseVersionDetail,
-  mockCourseVersionListItems,
   mockModuleEditLockResponse,
   mockModuleEditLockResponseLocked,
 } from '@/test/mocks/data/courseVersions';

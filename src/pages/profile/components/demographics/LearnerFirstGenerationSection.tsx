@@ -3,7 +3,7 @@
  * Tracks first-generation status with parent education levels
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { CollapsibleSection } from '../shared/CollapsibleSection';
 import { Label } from '@/shared/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';

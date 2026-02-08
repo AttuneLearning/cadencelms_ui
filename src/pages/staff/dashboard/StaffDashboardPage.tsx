@@ -1,6 +1,7 @@
 /**
  * Staff Dashboard Page
  * Overview statistics, recent enrollments, course performance metrics, and quick actions
+ * Updated: 2026-02-05 - Navigation Redesign Phase 3
  */
 
 import React from 'react';
@@ -8,13 +9,13 @@ import { Link } from 'react-router-dom';
 import { StatCard, ProgressTable, LineChart } from '@/widgets/analytics';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
+import { QuickActionsCard } from '@/features/quick-actions';
 import {
   Users,
   BookOpen,
   TrendingUp,
   Award,
   ArrowRight,
-  FileText,
   BarChart3,
 } from 'lucide-react';
 import { PageHeader } from '@/shared/ui/page-header';
@@ -151,39 +152,12 @@ export const StaffDashboardPage: React.FC = () => {
           xAxisKey="name"
         />
 
-        {/* Quick Actions Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Common staff tasks and shortcuts</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Button variant="outline" className="w-full justify-start" asChild>
-              <Link to="/staff/analytics">
-                <BarChart3 className="mr-2 h-4 w-4" />
-                View Detailed Analytics
-              </Link>
-            </Button>
-            <Button variant="outline" className="w-full justify-start" asChild>
-              <Link to="/staff/students">
-                <Users className="mr-2 h-4 w-4" />
-                Manage Student Progress
-              </Link>
-            </Button>
-            <Button variant="outline" className="w-full justify-start" asChild>
-              <Link to="/admin">
-                <BookOpen className="mr-2 h-4 w-4" />
-                Manage Courses
-              </Link>
-            </Button>
-            <Button variant="outline" className="w-full justify-start" asChild>
-              <Link to="/staff/analytics">
-                <FileText className="mr-2 h-4 w-4" />
-                Export Reports
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
+        {/* Quick Actions Card - Contextual verb-based actions */}
+        <QuickActionsCard
+          role="staff"
+          title="Your Tasks"
+          description="Items requiring your attention"
+        />
       </div>
 
       {/* Recent Enrollments */}

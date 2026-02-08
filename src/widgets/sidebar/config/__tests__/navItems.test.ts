@@ -7,7 +7,6 @@ import { describe, it, expect } from 'vitest';
 import {
   DEPARTMENT_NAV_ITEMS,
   DEPARTMENT_ACTION_GROUPS,
-  type DepartmentNavItem,
 } from '../navItems';
 
 describe('navItems configuration', () => {

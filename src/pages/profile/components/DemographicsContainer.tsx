@@ -3,7 +3,6 @@
  * Demo: Integrates demographics sections (shared between staff/learner)
  */
 
-import React from 'react';
 import { useDemographics } from '@/entities/user-profile/model/useUserProfile';
 import { ReportingConsentSection } from './demographics/ReportingConsentSection';
 import { StaffIdentityGenderSection } from './demographics/StaffIdentityGenderSection';

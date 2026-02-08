@@ -14,7 +14,7 @@
  * - Integration configuration
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { 
   ChevronRight,
@@ -61,11 +61,19 @@ export function DepartmentSettingsPage() {
     isSwitching 
   } = useDepartmentContext();
 
+  // Track if this is initial mount to distinguish from user clearing selection
+  const isInitialMountRef = useRef(true);
+
   // Switch to the department from the URL if needed
   useEffect(() => {
     if (deptId && deptId !== currentDepartmentId && !isSwitching) {
+      // Don't auto-switch if user explicitly cleared selection (currentDepartmentId is null)
+      if (currentDepartmentId === null && !isInitialMountRef.current) {
+        return;
+      }
       switchDepartment(deptId);
     }
+    isInitialMountRef.current = false;
   }, [deptId, currentDepartmentId, switchDepartment, isSwitching]);
 
   // Fetch department details
@@ -82,9 +90,9 @@ export function DepartmentSettingsPage() {
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Permission checks
-  const canViewSettings = hasPermission('settings:view-department');
-  const canManageSettings = hasPermission('settings:manage-department');
+  // Permission checks (API uses settings:department:manage)
+  const canViewSettings = hasPermission('settings:department:manage');
+  const canManageSettings = hasPermission('settings:department:manage');
 
   // Loading state
   if (isDeptLoading || isSwitching) {

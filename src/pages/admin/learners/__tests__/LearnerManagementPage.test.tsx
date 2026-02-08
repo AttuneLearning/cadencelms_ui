@@ -165,7 +165,6 @@ describe('LearnerManagementPage', () => {
         })
       );
 
-      const user = userEvent.setup();
       render(<LearnerManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {
@@ -268,7 +267,6 @@ describe('LearnerManagementPage', () => {
         )
       );
 
-      const user = userEvent.setup();
       render(<LearnerManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {

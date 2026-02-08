@@ -12,7 +12,7 @@
 
 import { test, expect } from '@playwright/test';
 import { uatUsers } from '../fixtures';
-import { LoginPage, DashboardPage } from '../utils/pages';
+import { LoginPage } from '../utils/pages';
 import { waitForPageLoad } from '../utils/helpers';
 
 test.describe('User Story: User Authentication', () => {

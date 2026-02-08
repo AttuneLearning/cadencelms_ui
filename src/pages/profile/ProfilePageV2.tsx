@@ -37,7 +37,7 @@ export const ProfilePageV2: React.FC = () => {
     data: personData,
     isLoading,
     error,
-    refetch,
+    refetch: _refetch,
   } = useQuery<IPerson, Error, IPerson>({
     queryKey: ['person', 'me'],
     queryFn: async () => {

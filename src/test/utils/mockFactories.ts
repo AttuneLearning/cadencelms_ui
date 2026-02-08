@@ -43,7 +43,7 @@ export function createMockUser(overrides: MockUserOptions = {}): User {
     firstName: overrides.firstName ?? 'Test',
     lastName: overrides.lastName ?? 'User',
     userTypes: overrides.userTypes ?? ['staff'],
-    defaultDashboard: overrides.defaultDashboard ?? '/dashboard',
+    defaultDashboard: (overrides.defaultDashboard ?? 'staff') as 'learner' | 'staff' | 'admin',
     lastSelectedDepartment: overrides.lastSelectedDepartment ?? 'dept-123',
     isActive: overrides.isActive ?? true,
     createdAt: overrides.createdAt ?? '2024-01-01T00:00:00.000Z',
@@ -100,7 +100,7 @@ export function createMockRoleHierarchy(
   return {
     primaryUserType: overrides.primaryUserType ?? 'staff',
     allUserTypes: overrides.allUserTypes ?? ['staff'],
-    defaultDashboard: overrides.defaultDashboard ?? '/dashboard',
+    defaultDashboard: (overrides.defaultDashboard ?? 'staff') as 'learner' | 'staff' | 'admin',
     globalRoles: overrides.globalRoles ?? [],
     allPermissions: overrides.allPermissions ?? [
       'content:courses:read',
@@ -175,7 +175,7 @@ export function createMockRoleAssignment(
   return {
     role: overrides.role ?? 'instructor',
     displayName: overrides.displayName ?? 'Instructor',
-    scopeType: overrides.scopeType ?? 'department',
+    scopeType: (overrides.scopeType ?? 'department') as 'none' | 'department' | 'system-setting-group',
     scopeId: overrides.scopeId ?? 'dept-123',
     scopeName: overrides.scopeName ?? 'Engineering Department',
     permissions: overrides.permissions ?? [

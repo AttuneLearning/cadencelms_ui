@@ -32,7 +32,7 @@ import {
   useRelatedAuditLogs,
   useExportSingleAuditLog,
   type SeverityLevel,
-  type AuditLog,
+  type AuditLog as _AuditLog,
 } from '@/entities/audit-log';
 
 const severityColors: Record<SeverityLevel, string> = {

@@ -13,8 +13,6 @@ import {
 
 describe('exportUtils', () => {
   let createElementSpy: any;
-  let appendChildSpy: any;
-  let removeChildSpy: any;
   let clickSpy: any;
   let createObjectURLSpy: any;
   let revokeObjectURLSpy: any;
@@ -29,8 +27,8 @@ describe('exportUtils', () => {
     };
 
     createElementSpy = vi.spyOn(document, 'createElement').mockReturnValue(mockLink as any);
-    appendChildSpy = vi.spyOn(document.body, 'appendChild').mockImplementation(() => mockLink as any);
-    removeChildSpy = vi.spyOn(document.body, 'removeChild').mockImplementation(() => mockLink as any);
+    vi.spyOn(document.body, 'appendChild').mockImplementation(() => mockLink as any);
+    vi.spyOn(document.body, 'removeChild').mockImplementation(() => mockLink as any);
 
     // Create URL mock if it doesn't exist
     if (!global.URL.createObjectURL) {

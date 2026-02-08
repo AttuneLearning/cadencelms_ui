@@ -3,7 +3,6 @@
  * Toggle with explanation text for consent fields
  */
 
-import React from 'react';
 import { Switch } from '@/shared/ui/switch';
 import { Label } from '@/shared/ui/label';
 

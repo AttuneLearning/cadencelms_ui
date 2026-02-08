@@ -52,6 +52,7 @@ import {
   useUpdateLearner,
   useDeleteLearner,
   LearnerForm,
+  type Learner,
   type LearnerListItem,
   type LearnerFilters,
 } from '@/entities/learner';
@@ -82,57 +83,9 @@ export const LearnerManagementPage: React.FC = () => {
   const { data: departmentsData } = useDepartments({ limit: 1000 });
 
   // Mutations
-  const createMutation = useCreateLearner({
-    onSuccess: () => {
-      toast({
-        title: 'Learner created',
-        description: 'Learner has been successfully created.',
-      });
-      setIsCreateDialogOpen(false);
-    },
-    onError: (error) => {
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to create learner. Please try again.',
-        variant: 'destructive',
-      });
-    },
-  });
-
-  const updateMutation = useUpdateLearner({
-    onSuccess: () => {
-      toast({
-        title: 'Learner updated',
-        description: 'Learner has been successfully updated.',
-      });
-      setLearnerToEdit(null);
-    },
-    onError: (error) => {
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to update learner. Please try again.',
-        variant: 'destructive',
-      });
-    },
-  });
-
-  const deleteMutation = useDeleteLearner({
-    onSuccess: () => {
-      toast({
-        title: 'Learner deleted',
-        description: 'Learner has been successfully deleted.',
-      });
-      setIsDeleteConfirmOpen(false);
-      setLearnerToDelete(null);
-    },
-    onError: (error) => {
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to delete learner. Please try again.',
-        variant: 'destructive',
-      });
-    },
-  });
+  const createMutation = useCreateLearner();
+  const updateMutation = useUpdateLearner();
+  const deleteMutation = useDeleteLearner();
 
   // Action handlers
   const handleDelete = (id: string) => {
@@ -152,7 +105,7 @@ export const LearnerManagementPage: React.FC = () => {
 
   const confirmBulkDelete = async () => {
     try {
-      await Promise.all(selectedLearners.map((l) => deleteMutation.mutateAsync(l.id)));
+      await Promise.all(selectedLearners.map((l) => deleteMutation.mutateAsync(l.id || l._id)));
       toast({
         title: 'Learners deleted',
         description: `${selectedLearners.length} learner(s) have been successfully deleted.`,
@@ -243,7 +196,7 @@ export const LearnerManagementPage: React.FC = () => {
         const learner = row.original;
         return (
           <div className="text-sm">
-            <div className="font-medium">{learner.department.name}</div>
+            <div className="font-medium">{learner.department?.name}</div>
           </div>
         );
       },
@@ -255,7 +208,7 @@ export const LearnerManagementPage: React.FC = () => {
         const learner = row.original;
         let variant: 'default' | 'secondary' | 'destructive' = 'default';
         if (learner.status === 'inactive') variant = 'secondary';
-        if (learner.status === 'graduated') variant = 'outline';
+        if (learner.status === 'graduated') variant = 'secondary';
         return (
           <Badge variant={variant}>
             {learner.status === 'active' ? 'Active' : learner.status === 'inactive' ? 'Inactive' : 'Graduated'}
@@ -307,7 +260,7 @@ export const LearnerManagementPage: React.FC = () => {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={() => handleDelete(learner.id)}
+                onClick={() => handleDelete(learner.id || learner._id)}
                 className="text-destructive"
               >
                 <Trash className="mr-2 h-4 w-4" />
@@ -488,8 +441,8 @@ export const LearnerManagementPage: React.FC = () => {
             </DialogDescription>
           </DialogHeader>
           <LearnerForm
-            learner={learnerToEdit}
-            onSuccess={handleFormSuccess}
+            learner={learnerToEdit ? learnerToEdit as unknown as Learner : undefined}
+            onSubmit={() => handleFormSuccess()}
             onCancel={() => {
               setIsCreateDialogOpen(false);
               setLearnerToEdit(null);

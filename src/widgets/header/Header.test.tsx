@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { Header } from './Header';
 import { useAuthStore } from '@/features/auth/model/authStore';
@@ -47,9 +47,7 @@ describe('Header', () => {
     vi.mocked(navigationHook.useNavigation).mockReturnValue({
       toggleSidebar: mockToggleSidebar,
       isSidebarOpen: false,
-      closeSidebar: vi.fn(),
-      openSidebar: vi.fn(),
-    });
+    } as any);
   });
 
   describe('Unauthenticated State', () => {
@@ -243,6 +241,8 @@ describe('Header', () => {
         allPermissions: ['system:*'],
         userTypeDisplayMap: {
           'global-admin': 'System Administrator',
+          learner: 'Student',
+          staff: 'Staff Member',
         },
       };
 
@@ -288,6 +288,8 @@ describe('Header', () => {
         allPermissions: [],
         userTypeDisplayMap: {
           learner: 'Student',
+          staff: 'Staff Member',
+          'global-admin': 'System Administrator',
         },
       };
 

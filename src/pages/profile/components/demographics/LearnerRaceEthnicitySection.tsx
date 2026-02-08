@@ -4,7 +4,7 @@
  * Multi-select race with Hispanic/Latino flag and tribal affiliation
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { CollapsibleSection } from '../shared/CollapsibleSection';
 import { VoluntaryBadge } from '../shared/VoluntaryBadge';
 import { Input } from '@/shared/ui/input';

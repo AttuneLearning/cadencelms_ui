@@ -3,7 +3,7 @@
  * Demo: Consent toggles with explanations, default true (opt-out)
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { CollapsibleSection } from '../shared/CollapsibleSection';
 import { ConsentToggle } from '../shared/ConsentToggle';
 import { useUpdateDemographics } from '@/entities/user-profile/model/useUserProfile';

@@ -7,8 +7,6 @@ import type {
   ModuleUsage,
   ModuleLibraryResponse,
 } from '@/entities/module';
-import { mockDepartments } from './courses';
-
 // =====================
 // MOCK MODULE LIBRARY ITEMS
 // =====================

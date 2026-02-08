@@ -5,7 +5,7 @@
 
 import { useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useReportJobDownload } from '@/entities/report-job';
+import { getReportJobDownload } from '@/entities/report-job';
 import { reportJobKeys } from '@/entities/report-job/model/reportJobKeys';
 import {
   generateFilename,
@@ -32,7 +32,6 @@ export function useReportDownload({
   onError,
 }: UseReportDownloadOptions = {}): UseReportDownloadResult {
   const queryClient = useQueryClient();
-  const downloadMutation = useReportJobDownload();
 
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
@@ -59,16 +58,14 @@ export function useReportDownload({
       setError(null);
 
       try {
-        // Check if job already has a download URL
-        let downloadUrl = job.downloadUrl;
-        let isNewUrl = false;
+        // Check if job already has a download URL from result
+        let downloadUrl = job.result?.fileUrl;
 
         // If no URL or URL is expired, get a new one
         if (!downloadUrl || isUrlExpired(downloadUrl)) {
           setDownloadProgress(10);
-          const response = await downloadMutation.mutateAsync(job._id);
+          const response = await getReportJobDownload(job._id);
           downloadUrl = response.downloadUrl;
-          isNewUrl = true;
         }
 
         if (!downloadUrl) {
@@ -112,7 +109,7 @@ export function useReportDownload({
         setTimeout(() => setDownloadProgress(0), 1000);
       }
     },
-    [downloadMutation, queryClient, onSuccess, onError]
+    [queryClient, onSuccess, onError]
   );
 
   return {

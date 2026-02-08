@@ -299,7 +299,7 @@ describe('Settings Hooks', () => {
         })
       );
 
-      const { result, queryClient } = renderHook(() => useUpdateSettings('general'));
+      const { result } = renderHook(() => useUpdateSettings('general'));
 
       act(() => {
         result.current.mutate({ systemName: 'Updated LMS' });

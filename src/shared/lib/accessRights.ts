@@ -98,7 +98,7 @@ export function parseAccessRight(accessRight: string): {
 export function hasAccessRight(
   userRights: string[],
   required: string,
-  scope?: PermissionScope
+  _scope?: PermissionScope
 ): boolean {
   // Direct match
   if (userRights.includes(required)) {
@@ -279,8 +279,8 @@ export function getDomainsFromAccessRights(accessRights: string[]): string[] {
  * @returns True if access right applies to scope
  */
 export function accessRightAppliestoScope(
-  accessRight: string,
-  scope: PermissionScope
+  _accessRight: string,
+  _scope: PermissionScope
 ): boolean {
   // For now, all access rights apply to all scopes
   // In the future, we may add scope-specific logic

@@ -118,7 +118,7 @@ export const PermissionGate: React.FC<PermissionGateProps> = ({
 
   // Check single permission requirement
   if (hasAccess && requiredPermission) {
-    if (!hasPermission(requiredPermission, scope)) {
+    if (!hasPermission(requiredPermission, scope?.id)) {
       hasAccess = false;
     }
   }
@@ -126,8 +126,8 @@ export const PermissionGate: React.FC<PermissionGateProps> = ({
   // Check multiple permissions requirement
   if (hasAccess && requiredPermissions && requiredPermissions.length > 0) {
     const hasRequiredPermissions = requireAllPermissions
-      ? checkAllPermissions(requiredPermissions, scope)
-      : hasAnyPermission(requiredPermissions, scope);
+      ? checkAllPermissions(requiredPermissions, scope?.id)
+      : hasAnyPermission(requiredPermissions, scope?.id);
 
     if (!hasRequiredPermissions) {
       hasAccess = false;

@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -48,31 +48,6 @@ const mockReports = [
     updatedAt: '2024-01-17T09:00:00Z',
     filters: {},
   },
-];
-
-const mockPrograms = [
-  { id: 'prog-1', name: 'Computer Science', code: 'CS' },
-  { id: 'prog-2', name: 'Information Technology', code: 'IT' },
-];
-
-const mockCourses = [
-  { id: 'course-1', title: 'Introduction to Programming', code: 'CS101' },
-  { id: 'course-2', title: 'Data Structures', code: 'CS201' },
-];
-
-const mockDepartments = [
-  { id: 'dept-1', name: 'Computer Science Department' },
-  { id: 'dept-2', name: 'IT Department' },
-];
-
-const mockLearners = [
-  { id: 'learner-1', firstName: 'John', lastName: 'Doe', studentId: 'STU001' },
-  { id: 'learner-2', firstName: 'Jane', lastName: 'Smith', studentId: 'STU002' },
-];
-
-const mockAcademicYears = [
-  { id: 'ay-1', name: '2023-2024', startDate: '2023-09-01', endDate: '2024-08-31' },
-  { id: 'ay-2', name: '2024-2025', startDate: '2024-09-01', endDate: '2025-08-31' },
 ];
 
 const createWrapper = () => {
@@ -820,7 +795,6 @@ describe('ReportBuilderPage', () => {
         expect(screen.getByLabelText(/report name/i)).toBeInTheDocument();
       });
 
-      const nameInput = screen.getByLabelText(/report name/i);
       await user.tab();
 
       // Check that we can navigate through the form
@@ -845,8 +819,7 @@ describe('ReportBuilderPage', () => {
       const user = userEvent.setup();
       render(<ReportBuilderPage />, { wrapper: createWrapper() });
 
-      const nameInput = await screen.findByLabelText(/report name/i);
-      await user.type(nameInput, 'Test Report');
+      await screen.findByLabelText(/report name/i);
 
       const generateBtn = screen.getByRole('button', { name: /generate report/i });
       await user.click(generateBtn);

@@ -150,7 +150,7 @@ export const handlers = [
   // PUT /classes/:id - Update class
   http.put(`${baseUrl}/classes/:id`, async ({ params, request }) => {
     const { id } = params;
-    const body = await request.json();
+    const body = await request.json() as Record<string, unknown>;
 
     const updatedClass = {
       ...mockFullClass,
@@ -193,9 +193,8 @@ export const handlers = [
   }),
 
   // POST /classes/:id/enrollments - Add learners to class
-  http.post(`${baseUrl}/classes/:id/enrollments`, async ({ params, request }) => {
+  http.post(`${baseUrl}/classes/:id/enrollments`, async ({ params }) => {
     const { id } = params;
-    const body = await request.json();
 
     return HttpResponse.json({
       success: true,
@@ -406,7 +405,7 @@ export const handlers = [
   // PUT /content/scorm/:id - Update SCORM package
   http.put(`${baseUrl}/content/scorm/:id`, async ({ params, request }) => {
     const { id } = params;
-    const body = await request.json();
+    const body = await request.json() as Record<string, unknown>;
     const scormPackage = mockScormPackages.find((p) => p.id === id);
 
     if (scormPackage) {
@@ -428,15 +427,13 @@ export const handlers = [
   }),
 
   // DELETE /content/scorm/:id - Delete SCORM package
-  http.delete(`${baseUrl}/content/scorm/:id`, ({ params }) => {
-    const { id } = params;
-
+  http.delete(`${baseUrl}/content/scorm/:id`, () => {
     return HttpResponse.json({}, { status: 204 });
   }),
 
   // POST /content/scorm/:id/launch - Launch SCORM package
-  http.post(`${baseUrl}/content/scorm/:id/launch`, async ({ params, request }) => {
-    const { id } = params;
+  http.post(`${baseUrl}/content/scorm/:id/launch`, async ({ params }) => {
+    const { id: _id } = params;
 
     return HttpResponse.json({
       success: true,
@@ -445,7 +442,7 @@ export const handlers = [
   }),
 
   // POST /content/scorm/:id/publish - Publish SCORM package
-  http.post(`${baseUrl}/content/scorm/:id/publish`, async ({ params, request }) => {
+  http.post(`${baseUrl}/content/scorm/:id/publish`, async ({ params }) => {
     const { id } = params;
 
     return HttpResponse.json({
@@ -458,7 +455,7 @@ export const handlers = [
   }),
 
   // POST /content/scorm/:id/unpublish - Unpublish SCORM package
-  http.post(`${baseUrl}/content/scorm/:id/unpublish`, async ({ params, request }) => {
+  http.post(`${baseUrl}/content/scorm/:id/unpublish`, async ({ params }) => {
     const { id } = params;
 
     return HttpResponse.json({
@@ -545,7 +542,7 @@ export const handlers = [
   // PUT /content/media/:id - Update media file
   http.put(`${baseUrl}/content/media/:id`, async ({ params, request }) => {
     const { id } = params;
-    const body = await request.json();
+    const body = await request.json() as Record<string, unknown>;
     const mediaFile = mockMediaFiles.find((m) => m.id === id);
 
     if (mediaFile) {
@@ -568,7 +565,7 @@ export const handlers = [
 
   // DELETE /content/media/:id - Delete media file
   http.delete(`${baseUrl}/content/media/:id`, ({ params }) => {
-    const { id } = params;
+    const { id: _id } = params;
 
     return HttpResponse.json({}, { status: 204 });
   }),
@@ -635,7 +632,7 @@ export const handlers = [
     `${baseUrl}/courses/:courseId/modules/:moduleId`,
     async ({ params, request }) => {
       const { courseId, moduleId } = params;
-      const body = await request.json();
+      const body = await request.json() as Record<string, unknown>;
 
       const updatedSegment = {
         ...mockFullCourseModule,
@@ -652,7 +649,7 @@ export const handlers = [
 
   // DELETE /courses/:courseId/modules/:moduleId - Delete course segment
   http.delete(`${baseUrl}/courses/:courseId/modules/:moduleId`, ({ params }) => {
-    const { courseId, moduleId } = params;
+    const { courseId: _courseId, moduleId } = params;
 
     return HttpResponse.json({
       data: {
@@ -694,8 +691,8 @@ export const handlers = [
   http.post(
     `${baseUrl}/courses/:courseId/modules/:moduleId/link-content`,
     async ({ params, request }) => {
-      const { courseId, moduleId } = params;
-      const body = await request.json();
+      const { courseId: _courseId, moduleId } = params;
+      const body = await request.json() as Record<string, unknown>;
       const { contentId, contentType } = body as any;
 
       return HttpResponse.json({
@@ -719,7 +716,7 @@ export const handlers = [
 
   // PUT /users/me/person - Update person data
   http.put(`${baseUrl}/users/me/person`, async ({ request }) => {
-    const body = await request.json();
+    const body = await request.json() as Record<string, unknown>;
     return HttpResponse.json({
       success: true,
       message: 'Person data updated successfully',
@@ -737,7 +734,7 @@ export const handlers = [
 
   // PUT /users/me/person/extended - Update extended person data
   http.put(`${baseUrl}/users/me/person/extended`, async ({ request }) => {
-    const body = await request.json();
+    const body = await request.json() as Record<string, unknown>;
     return HttpResponse.json({
       success: true,
       message: 'Extended person data updated successfully',
@@ -759,7 +756,7 @@ export const handlers = [
 
   // PUT /users/me/demographics - Update demographics data
   http.put(`${baseUrl}/users/me/demographics`, async ({ request }) => {
-    const body = await request.json();
+    const body = await request.json() as Record<string, unknown>;
     return HttpResponse.json({
       success: true,
       message: 'Demographics data updated successfully',

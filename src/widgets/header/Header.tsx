@@ -173,16 +173,6 @@ export const Header: React.FC = () => {
     }));
   }, [roleHierarchy]);
 
-  // Detect which dashboard tab is currently active
-  const getActiveTab = (): UserType | null => {
-    const path = location.pathname;
-    for (const tab of dashboardTabs) {
-      if (path.startsWith(tab.basePath)) {
-        return tab.userType;
-      }
-    }
-    return null;
-  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -260,7 +250,7 @@ export const Header: React.FC = () => {
                       aria-label="User menu"
                     >
                       <UserAvatar
-                        person={person}
+                        person={person ?? undefined}
                         displayName={displayName}
                         size="md"
                         className="h-9 w-9"

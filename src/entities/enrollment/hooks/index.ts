@@ -13,6 +13,7 @@ export {
   useEnrollInProgram,
   useEnrollInCourse,
   useEnrollInClass,
+  useBulkEnrollInCourse,
   useUpdateEnrollmentStatus,
   useWithdraw,
 } from './useEnrollments';

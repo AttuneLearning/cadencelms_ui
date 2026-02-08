@@ -39,7 +39,7 @@ export const NotificationSettingsPage: React.FC = () => {
   const { toast } = useToast();
   const person = usePersonData();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, _setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   // Form state based on person communication preferences
@@ -146,7 +146,7 @@ export const NotificationSettingsPage: React.FC = () => {
                 <Label htmlFor="preferredMethod">Preferred Method</Label>
                 <Select
                   value={formData.preferredMethod || 'email'}
-                  onValueChange={handlePreferredMethodChange}
+                  onValueChange={handlePreferredMethodChange as (value: string) => void}
                 >
                   <SelectTrigger id="preferredMethod">
                     <SelectValue placeholder="Select method" />

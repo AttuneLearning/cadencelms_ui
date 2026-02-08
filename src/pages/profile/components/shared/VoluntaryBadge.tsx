@@ -3,7 +3,6 @@
  * Indicates that demographic fields are voluntary
  */
 
-import React from 'react';
 import { Badge } from '@/shared/ui/badge';
 
 interface VoluntaryBadgeProps {

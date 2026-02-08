@@ -225,7 +225,6 @@ describe('AcademicYearManagementPage', () => {
         )
       );
 
-      const user = userEvent.setup();
       render(<AcademicYearManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {

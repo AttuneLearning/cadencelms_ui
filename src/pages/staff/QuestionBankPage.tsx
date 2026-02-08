@@ -3,7 +3,7 @@
  * Department-scoped question bank management for staff with content-admin or department-admin roles
  * 
  * Per ADR-AUTH-001: Uses department context for permission checking
- * Required permission: question:manage-department
+ * Required permission: content:assessments:manage
  */
 
 import React from 'react';
@@ -77,7 +77,8 @@ export const StaffQuestionBankPage: React.FC = () => {
   } = useDepartmentContext();
 
   // Check if user has question management permission in current department
-  const canManageQuestions = hasPermission('question:manage-department');
+  // API permission: content:assessments:manage (covers question banks, quizzes, exams)
+  const canManageQuestions = hasPermission('content:assessments:manage');
 
   // State for selections and dialogs
   const [selectedQuestions, setSelectedQuestions] = React.useState<QuestionListItem[]>([]);

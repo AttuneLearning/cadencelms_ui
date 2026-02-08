@@ -5,7 +5,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { BrowserRouter, MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { NavLink } from '../NavLink';
 import { Home } from 'lucide-react';
 

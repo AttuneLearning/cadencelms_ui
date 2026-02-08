@@ -25,7 +25,7 @@ interface ProgressTrackerState {
 type LessonProgressData = UpdateLessonProgressRequest['progressData'];
 
 interface ProgressUpdateInput extends Partial<LessonProgressData> {
-  lastPosition?: number | string;
+  lastPosition?: string;
 }
 
 export const useProgressTracker = ({

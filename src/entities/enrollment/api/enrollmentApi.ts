@@ -23,6 +23,8 @@ import type {
   ProgramEnrollmentsResponse,
   CourseEnrollmentsResponse,
   ClassEnrollmentsResponse,
+  BulkCourseEnrollmentPayload,
+  BulkCourseEnrollmentResponse,
 } from '../model/types';
 
 interface ApiResponse<T> {
@@ -89,6 +91,20 @@ export async function enrollInClass(payload: EnrollClassPayload): Promise<ClassE
     payload
   );
   return response.data.data.enrollment;
+}
+
+/**
+ * POST /enrollments/course/bulk - Bulk enroll multiple learners in a course
+ * Max 500 learners per request
+ */
+export async function bulkEnrollInCourse(
+  payload: BulkCourseEnrollmentPayload
+): Promise<BulkCourseEnrollmentResponse> {
+  const response = await client.post<ApiResponse<BulkCourseEnrollmentResponse>>(
+    '/enrollments/course/bulk',
+    payload
+  );
+  return response.data.data;
 }
 
 /**

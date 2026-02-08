@@ -284,7 +284,6 @@ describe('DepartmentManagementPage', () => {
     });
 
     it('should create new department', async () => {
-      let createCalled = false;
       server.use(
         http.get(`${baseUrl}/departments`, () => {
           return HttpResponse.json({ success: true, data: {
@@ -293,8 +292,7 @@ describe('DepartmentManagementPage', () => {
           }});
         }),
         http.post(`${baseUrl}/departments`, async ({ request }) => {
-          createCalled = true;
-          const data = await request.json();
+          const data = await request.json() as Record<string, unknown>;
           return HttpResponse.json({ success: true, data: {
             id: 'new-dept',
             ...data,
@@ -318,7 +316,6 @@ describe('DepartmentManagementPage', () => {
     });
 
     it('should delete department', async () => {
-      let deleteCalled = false;
       server.use(
         http.get(`${baseUrl}/departments`, () => {
           return HttpResponse.json({ success: true, data: {
@@ -327,7 +324,6 @@ describe('DepartmentManagementPage', () => {
           }});
         }),
         http.delete(`${baseUrl}/departments/:id`, () => {
-          deleteCalled = true;
           return HttpResponse.json({ success: true });
         })
       );

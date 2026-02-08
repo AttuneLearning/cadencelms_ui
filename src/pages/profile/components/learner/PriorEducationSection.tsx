@@ -3,7 +3,7 @@
  * Array field for education history with GPA, dates, and institution details
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { CollapsibleSection } from '../shared/CollapsibleSection';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';

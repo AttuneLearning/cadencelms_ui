@@ -37,15 +37,13 @@ import {
 } from 'lucide-react';
 import { PageHeader } from '@/shared/ui/page-header';
 import { formatDistanceToNow } from 'date-fns';
-import { useAuthStore } from '@/features/auth/model/authStore';
 
 export const StaffCoursesPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuthStore();
 
   // Check if user is billing-admin (read-only access)
-  const isBillingAdmin = user?.roles?.includes('billing-admin');
-  const isReadOnly = isBillingAdmin && !user?.roles?.includes('content-admin');
+  // Note: billing-admin concept is deprecated in V2 role system
+  const isReadOnly = false;
 
   // State
   const [showFilters, setShowFilters] = React.useState(false);

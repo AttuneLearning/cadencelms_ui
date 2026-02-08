@@ -126,7 +126,7 @@ export const CustomReportBuilderPage: React.FC = () => {
             dimensions={builder.definition.dimensions}
             measures={builder.definition.measures}
             slicers={builder.definition.slicers}
-            groups={builder.definition.groups}
+            groups={builder.definition.groups?.map(g => typeof g === 'string' ? g : g.type)}
             onAddDimension={builder.addDimension}
             onRemoveDimension={builder.removeDimension}
             onAddMeasure={builder.addMeasure}

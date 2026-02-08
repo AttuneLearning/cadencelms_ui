@@ -485,7 +485,7 @@ describe('ExerciseTakingPage', () => {
       const user = userEvent.setup();
 
       // Setup the mock to call onSuccess callback
-      mockSubmitExam.mockImplementation((payload, options) => {
+      mockSubmitExam.mockImplementation((_payload, options) => {
         options?.onSuccess?.({ attemptId: 'attempt-1', status: 'graded' });
       });
 
@@ -512,7 +512,7 @@ describe('ExerciseTakingPage', () => {
       const user = userEvent.setup();
 
       // Setup the mock to call onSuccess callback
-      mockSubmitExam.mockImplementation((payload, options) => {
+      mockSubmitExam.mockImplementation((_payload, options) => {
         options?.onSuccess?.({ attemptId: 'attempt-1', status: 'graded' });
       });
 

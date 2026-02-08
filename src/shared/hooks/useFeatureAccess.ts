@@ -319,69 +319,72 @@ export function useFeatureAccess(): FeatureAccessFlags {
 
       // ============================================================
       // Learner Management
+      // API permissions: learner:department:read, learner:department:manage
       // ============================================================
       canManageLearners:
-        hasPermission('learners:profiles:write') ||
-        hasPermission('learners:*'),
+        hasPermission('learner:department:manage') ||
+        hasPermission('learner:*'),
 
       canViewLearners:
-        hasPermission('learners:profiles:read') ||
-        hasPermission('learners:profiles:write') ||
-        hasPermission('learners:*'),
+        hasPermission('learner:department:read') ||
+        hasPermission('learner:department:manage') ||
+        hasPermission('learner:*'),
 
       canManageEnrollments:
-        hasPermission('learners:enrollments:write') ||
-        hasPermission('learners:*'),
+        hasPermission('enrollment:department:manage') ||
+        hasPermission('enrollment:*'),
 
       canManageGrades:
-        hasPermission('learners:grades:write') ||
-        hasPermission('learners:*') ||
-        hasPermission('grades:all:manage'),
+        hasPermission('grades:own-classes:manage') ||
+        hasPermission('grades:department:read') ||
+        hasPermission('grades:*'),
 
       canViewGrades:
-        hasPermission('learners:grades:read') ||
-        hasPermission('learners:grades:write') ||
-        hasPermission('learners:*'),
+        hasPermission('grades:department:read') ||
+        hasPermission('grades:own-classes:manage') ||
+        hasPermission('grades:*'),
 
       // ============================================================
       // Department Management
+      // API permissions: staff:department:manage (department-admin)
       // ============================================================
       canManageDepartmentRoles:
-        hasPermission('department:roles:write') ||
-        hasPermission('department:*'),
+        hasPermission('staff:department:manage') ||
+        hasPermission('staff:*'),
 
       canManageDepartmentStaff:
-        hasPermission('department:staff:write') ||
-        hasPermission('department:*'),
+        hasPermission('staff:department:manage') ||
+        hasPermission('staff:*'),
 
       canViewDepartmentStaff:
-        hasPermission('department:staff:read') ||
-        hasPermission('department:staff:write') ||
-        hasPermission('department:*'),
+        hasPermission('staff:department:manage') ||
+        hasPermission('staff:*'),
 
       // ============================================================
       // Billing & Finance
+      // API permissions: billing:invoices:manage, billing:department:read/manage
       // ============================================================
       canManageBilling:
-        hasPermission('billing:invoices:write') ||
+        hasPermission('billing:invoices:manage') ||
+        hasPermission('billing:department:manage') ||
         hasPermission('billing:*'),
 
       canViewBilling:
-        hasPermission('billing:invoices:read') ||
-        hasPermission('billing:invoices:write') ||
+        hasPermission('billing:department:read') ||
+        hasPermission('billing:invoices:manage') ||
         hasPermission('billing:*'),
 
       // ============================================================
       // Reports & Analytics
+      // API permissions: reports:class:read/export, reports:department:read/export
       // ============================================================
       canViewReports:
         hasAnyPermission(['reports:*', 'system:admin', 'system:*']) ||
         hasPermission('reports:department:read') ||
-        hasPermission('reports:own-classes:read') ||
-        hasPermission('reports:own:read'),
+        hasPermission('reports:class:read'),
 
       canExportData:
-        hasAnyPermission(['reports:export', 'reports:*', 'system:admin', 'system:*']),
+        hasAnyPermission(['reports:department:export', 'reports:class:export', 'reports:*', 'system:*']),
 
       canViewDepartmentReports:
         hasPermission('reports:department:read') ||
@@ -390,65 +393,74 @@ export function useFeatureAccess(): FeatureAccessFlags {
 
       // ============================================================
       // Class Management
+      // API permissions: content:classes:read, content:classes:manage, content:classes:manage-own
       // ============================================================
       canViewOwnClasses:
-        hasPermission('class:own:read') ||
-        hasPermission('class:own:manage') ||
-        hasPermission('class:*'),
+        hasPermission('content:classes:read') ||
+        hasPermission('content:classes:manage-own') ||
+        hasPermission('content:classes:manage') ||
+        hasPermission('content:*'),
 
       canManageOwnClasses:
-        hasPermission('class:own:manage') ||
-        hasPermission('class:*'),
+        hasPermission('content:classes:manage-own') ||
+        hasPermission('content:classes:manage') ||
+        hasPermission('content:*'),
 
       canViewAllClasses:
-        hasPermission('class:all:read') ||
-        hasPermission('class:*'),
+        hasPermission('content:classes:read') ||
+        hasPermission('content:classes:manage') ||
+        hasPermission('content:*'),
 
       // ============================================================
       // Grading
+      // API permissions: grades:department:read, grades:own-classes:manage
       // ============================================================
       canGradeOwnClasses:
         hasPermission('grades:own-classes:manage') ||
-        hasPermission('grades:all:manage') ||
         hasPermission('grades:*'),
 
       canViewOwnGrades:
-        hasPermission('grades:own:read') ||
+        hasPermission('grades:department:read') ||
+        hasPermission('grades:own-classes:manage') ||
         hasPermission('grades:*'),
 
       canManageAllGrades:
-        hasPermission('grades:all:manage') ||
+        hasPermission('grades:own-classes:manage') ||
         hasPermission('grades:*'),
 
       canOverrideGrades:
-        hasPermission('academic:grades:override') ||
-        hasPermission('academic:*') ||
+        hasPermission('grades:department:manage') ||
         hasPermission('grades:*'),
 
       // ============================================================
       // FERPA-Protected Data
+      // API permissions: learner:department:read covers all learner data
+      // Future: May be split into granular permissions if API adds them
       // ============================================================
       canViewTranscripts:
-        hasPermission('learner:transcripts:read') ||
+        hasPermission('learner:department:read') ||
+        hasPermission('learner:department:manage') ||
         hasPermission('learner:*'),
 
       canViewPII:
-        hasPermission('learner:pii:read') ||
+        hasPermission('learner:department:read') ||
+        hasPermission('learner:department:manage') ||
         hasPermission('learner:*'),
 
       canViewLearnerProgress:
-        hasPermission('learner:progress:read') ||
+        hasPermission('learner:department:read') ||
+        hasPermission('learner:department:manage') ||
         hasPermission('learner:*'),
 
       // ============================================================
       // Settings
+      // API permissions: settings:department:manage (no read-only variant)
       // ============================================================
       canManageDepartmentSettings:
         hasPermission('settings:department:manage') ||
         hasPermission('settings:*'),
 
       canViewDepartmentSettings:
-        hasPermission('settings:department:read') ||
         hasPermission('settings:department:manage') ||
         hasPermission('settings:*'),
     };

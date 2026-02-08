@@ -9,7 +9,6 @@ import { server } from '@/test/mocks/server';
 import { env } from '@/shared/config/env';
 import {
   demographicsApi,
-  type DemographicsApiResponse,
 } from '../demographicsApi';
 import {
   mockDemographicsComplete,

@@ -49,7 +49,7 @@ export const StaffForm: React.FC<StaffFormProps> = ({
       ...formData,
       departmentMemberships: [
         ...formData.departmentMemberships,
-        { departmentId: '', roles: [], isPrimary: false },
+        { departmentId: '', departmentName: '', departmentSlug: '', roles: [], accessRights: [], isPrimary: false, isActive: true, joinedAt: new Date().toISOString() },
       ],
     });
   };

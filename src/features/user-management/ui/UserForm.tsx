@@ -24,7 +24,7 @@ import {
 import { Checkbox } from '@/shared/ui/checkbox';
 import { Briefcase, GraduationCap } from 'lucide-react';
 import { userFormSchema, STAFF_DEPARTMENT_ROLES, LEARNER_DEPARTMENT_ROLES, type UserFormValues } from '../model/validation';
-import type { UserListItem, Role, UserStatus } from '@/entities/user';
+import type { UserListItem, Role } from '@/entities/user';
 import { DepartmentMultiSelect, type DepartmentSelection } from './DepartmentMultiSelect';
 import {
   Form,
@@ -55,10 +55,10 @@ export const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, isLoading })
     const staffDepts: DepartmentSelection[] = [];
     const learnerDepts: DepartmentSelection[] = [];
     
-    user.departments.forEach((dept, index) => {
+    user.departments.forEach((dept) => {
       const allRoles = dept.rolesInDepartment || [];
-      const staffRolesInDept = allRoles.filter(r => staffRoleKeys.includes(r));
-      const learnerRolesInDept = allRoles.filter(r => learnerRoleKeys.includes(r));
+      const staffRolesInDept = allRoles.filter(r => (staffRoleKeys as readonly string[]).includes(r));
+      const learnerRolesInDept = allRoles.filter(r => (learnerRoleKeys as readonly string[]).includes(r));
       
       if (staffRolesInDept.length > 0) {
         staffDepts.push({
@@ -108,7 +108,6 @@ export const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, isLoading })
   });
 
   const selectedRoles = form.watch('roles');
-  const status = form.watch('status');
   const staffDepartmentMemberships = form.watch('staffDepartmentMemberships') || [];
   const learnerDepartmentMemberships = form.watch('learnerDepartmentMemberships') || [];
   

@@ -170,7 +170,7 @@ describe('reportScheduleApi', () => {
       const result = await reportScheduleApi.listReportSchedules();
 
       expect(result.schedules).toHaveLength(1);
-      expect(result.totalCount).toBe(1);
+      expect(result.pagination.total).toBe(1);
     });
 
     it('should list schedules with filters', async () => {

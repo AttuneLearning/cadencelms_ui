@@ -39,9 +39,9 @@ export const ReportTemplatesPageNew: React.FC = () => {
   });
 
   // Data fetching
-  const { data: allTemplates, isLoading: isLoadingAll } = useReportTemplates(filters);
-  const { data: myTemplates, isLoading: isLoadingMy } = useMyTemplates();
-  const { data: systemTemplates, isLoading: isLoadingSystem } = useSystemTemplates();
+  const { data: allTemplates } = useReportTemplates(filters);
+  const { data: myTemplates } = useMyTemplates();
+  const { data: systemTemplates } = useSystemTemplates();
 
   const handleUseTemplate = (template: ReportTemplate) => {
     setSelectedTemplate(template);

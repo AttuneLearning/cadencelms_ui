@@ -4,7 +4,7 @@
  * Multi-select race with Hispanic/Latino flag
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { CollapsibleSection } from '../shared/CollapsibleSection';
 import { VoluntaryBadge } from '../shared/VoluntaryBadge';
 import { Label } from '@/shared/ui/label';

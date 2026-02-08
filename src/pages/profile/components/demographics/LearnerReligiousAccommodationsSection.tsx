@@ -3,13 +3,12 @@
  * Religious affiliation and accommodations needs
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { CollapsibleSection } from '../shared/CollapsibleSection';
 import { VoluntaryBadge } from '../shared/VoluntaryBadge';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { Checkbox } from '@/shared/ui/checkbox';
-import { Textarea } from '@/shared/ui/textarea';
 import { useUpdateDemographics, useDemographics } from '@/entities/user-profile/model/useUserProfile';
 import { CheckCircle2, Loader2 } from 'lucide-react';
 

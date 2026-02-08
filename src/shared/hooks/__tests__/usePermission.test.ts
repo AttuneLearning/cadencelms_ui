@@ -10,9 +10,6 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { usePermission, useScopedPermission, usePermissions } from '../usePermission';
 import { useAuthStore } from '@/features/auth/model/authStore';
-import { useNavigationStore } from '@/shared/stores/navigationStore';
-import type { RoleHierarchy, UserType } from '@/shared/types/auth';
-
 // Mock dependencies
 vi.mock('@/features/auth/model/authStore');
 vi.mock('@/shared/stores/navigationStore');
@@ -207,7 +204,6 @@ describe('usePermission Hook', () => {
 
       const { rerender } = renderHook(() => usePermission('content:courses:read'));
 
-      const callCount = mockHasPermission.mock.calls.length;
       mockHasPermission.mockClear();
 
       // Rerender without changing inputs

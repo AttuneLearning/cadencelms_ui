@@ -17,7 +17,6 @@ import {
   useDeleteReportTemplate,
 } from '@/entities/report-template';
 import { UseTemplateDialog } from '@/features/report-templates';
-import { cn } from '@/shared/lib/utils';
 
 export const ReportTemplateDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();

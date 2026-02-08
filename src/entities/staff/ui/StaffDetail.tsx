@@ -35,8 +35,10 @@ export const StaffDetail: React.FC<StaffDetailProps> = ({ staff, person, isLoadi
 
   // Use person data if available, fallback to legacy staff data
   const displayName = person ? getDisplayName(person) : `${staff.firstName} ${staff.lastName}`;
-  const primaryEmail = person ? getPrimaryEmail(person) : { email: staff.email };
-  const primaryPhone = person ? getPrimaryPhone(person) : { number: staff.phoneNumber };
+  const primaryEmail = person ? getPrimaryEmail(person) : undefined;
+  const fallbackEmail = !person ? staff.email : undefined;
+  const primaryPhone = person ? getPrimaryPhone(person) : undefined;
+  const fallbackPhoneNumber = !person ? staff.phoneNumber : undefined;
   const pronouns = person?.pronouns;
   const avatar = person?.avatar;
 
@@ -49,7 +51,7 @@ export const StaffDetail: React.FC<StaffDetailProps> = ({ staff, person, isLoadi
             <UserAvatar
               firstName={person?.firstName || staff.firstName}
               lastName={person?.lastName || staff.lastName}
-              avatarUrl={avatar}
+              avatar={avatar ?? undefined}
               className="h-20 w-20"
             />
             <div className="flex-1 min-w-0">
@@ -75,33 +77,33 @@ export const StaffDetail: React.FC<StaffDetailProps> = ({ staff, person, isLoadi
         </CardHeader>
 
         <CardContent className="space-y-4">
-          {primaryEmail?.email && (
+          {(primaryEmail?.email || fallbackEmail) && (
             <div className="flex items-center gap-3">
               <Mail className="h-5 w-5 text-muted-foreground" />
               <div>
                 <div className="text-sm font-medium">
                   Email
-                  {person && primaryEmail.isPrimary && (
+                  {person && primaryEmail?.isPrimary && (
                     <Badge variant="outline" className="ml-2 text-xs">Primary</Badge>
                   )}
                 </div>
-                <div className="text-sm text-muted-foreground">{primaryEmail.email}</div>
+                <div className="text-sm text-muted-foreground">{primaryEmail?.email || fallbackEmail}</div>
               </div>
             </div>
           )}
 
-          {primaryPhone?.number && (
+          {(primaryPhone?.number || fallbackPhoneNumber) && (
             <div className="flex items-center gap-3">
               <Phone className="h-5 w-5 text-muted-foreground" />
               <div>
                 <div className="text-sm font-medium">
                   Phone
-                  {person && primaryPhone.isPrimary && (
+                  {person && primaryPhone?.isPrimary && (
                     <Badge variant="outline" className="ml-2 text-xs">Primary</Badge>
                   )}
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  {person ? formatPhoneNumber(primaryPhone) : primaryPhone.number}
+                  {primaryPhone ? formatPhoneNumber(primaryPhone) : fallbackPhoneNumber}
                 </div>
               </div>
             </div>

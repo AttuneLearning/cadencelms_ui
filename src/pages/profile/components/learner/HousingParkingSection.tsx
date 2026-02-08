@@ -4,7 +4,7 @@
  * Parking permit tracking
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { CollapsibleSection } from '../shared/CollapsibleSection';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
@@ -33,7 +33,7 @@ const housingStatusOptions: { value: HousingStatus; label: string }[] = [
   { value: 'on-campus', label: 'On-Campus Housing' },
   { value: 'off-campus', label: 'Off-Campus Housing' },
   { value: 'commuter', label: 'Commuter' },
-  { value: 'none', label: 'No Housing Needed' },
+  { value: 'other', label: 'No Housing Needed' },
 ];
 
 export function HousingParkingSection({ data }: HousingParkingSectionProps) {

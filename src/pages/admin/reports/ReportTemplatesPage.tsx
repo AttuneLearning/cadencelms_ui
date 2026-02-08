@@ -47,7 +47,6 @@ import {
   Edit,
   Check,
   Share2,
-  FileText,
   Filter,
 } from 'lucide-react';
 import {
@@ -88,12 +87,12 @@ export const ReportTemplatesPage: React.FC = () => {
   }, [searchQuery, typeFilter, defaultFilter, sharedFilter]);
 
   // Fetch templates
-  const { data, isLoading } = useReportTemplates(filters);
+  const { data } = useReportTemplates(filters);
   const templates = data?.templates || [];
 
   // Mutations
-  const createMutation = useCreateReportTemplate();
-  const updateMutation = useUpdateReportTemplate();
+  useCreateReportTemplate();
+  useUpdateReportTemplate();
   const deleteMutation = useDeleteReportTemplate();
 
   const setAsDefaultMutation = useMutation({

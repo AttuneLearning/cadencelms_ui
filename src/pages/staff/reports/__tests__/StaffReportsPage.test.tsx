@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -216,13 +216,13 @@ describe('StaffReportsPage', () => {
           });
         }),
         http.post(`${baseUrl}/reports`, async ({ request }) => {
-          const body = await request.json();
+          const body = await request.json() as Record<string, unknown>;
           return HttpResponse.json({
             success: true,
             data: createMockReportListItem({
-              _id: 'new-report',
-              name: body.name,
-              type: body.type,
+              id: 'new-report',
+              name: String(body.name ?? ''),
+              type: String(body.type ?? 'enrollment') as 'enrollment',
               status: 'pending',
             }),
           });
@@ -485,7 +485,7 @@ describe('StaffReportsPage', () => {
             data: {
               reports: [
                 createMockReportListItem({
-                  _id: 'pending-report',
+                  id: 'pending-report',
                   name: 'Pending Test Report',
                   status: 'pending',
                 }),

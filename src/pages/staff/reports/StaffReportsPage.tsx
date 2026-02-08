@@ -186,7 +186,7 @@ export function StaffReportsPage() {
     }
   };
 
-  const handleDownloadReport = async (reportId: string, reportName: string) => {
+  const handleDownloadReport = async (reportId: string) => {
     try {
       const result = await downloadReport(reportId, formData.exportFormat);
       // Open the download URL
@@ -211,7 +211,7 @@ export function StaffReportsPage() {
     const statusConfig = {
       pending: { label: 'Pending', variant: 'secondary' as const },
       generating: { label: 'Generating', variant: 'default' as const },
-      ready: { label: 'Ready', variant: 'success' as const },
+      ready: { label: 'Ready', variant: 'default' as const },
       failed: { label: 'Failed', variant: 'destructive' as const },
     };
 
@@ -323,7 +323,7 @@ export function StaffReportsPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleDownloadReport(report.id, report.name)}
+                            onClick={() => handleDownloadReport(report.id)}
                           >
                             <Download className="h-4 w-4" />
                             Download

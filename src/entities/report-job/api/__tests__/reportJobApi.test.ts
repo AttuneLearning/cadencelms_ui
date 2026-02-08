@@ -150,7 +150,7 @@ describe('reportJobApi', () => {
 
     it('should list report jobs with params', async () => {
       const params: ListReportJobsParams = {
-        state: ['ready'],
+        status: ['ready'],
         page: 1,
         limit: 20,
       };
@@ -175,7 +175,7 @@ describe('reportJobApi', () => {
     it('should get report job status', async () => {
       const result = await reportJobApi.getReportJobStatus('job-123');
 
-      expect(result.jobId).toBe('job-123');
+      expect(result.id).toBe('job-123');
       expect(result.state).toBe('ready');
       expect(result.progress).toBe(100);
     });
@@ -185,7 +185,6 @@ describe('reportJobApi', () => {
     it('should get report job download information', async () => {
       const result = await reportJobApi.getReportJobDownload('job-123');
 
-      expect(result.jobId).toBe('job-123');
       expect(result.downloadUrl).toContain('storage.example.com');
       expect(result.fileName).toBe('Q1_Enrollment_Report.pdf');
     });

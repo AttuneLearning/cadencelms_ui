@@ -201,11 +201,11 @@ export const GradeOverrideDialog: React.FC<GradeOverrideDialogProps> = ({
         payload.gradeLetter = formData.gradeLetter;
       }
 
-      if (formData.gradePercentage !== undefined && formData.gradePercentage !== '') {
+      if (formData.gradePercentage !== undefined) {
         payload.gradePercentage = formData.gradePercentage;
       }
 
-      if (formData.gradePoints !== undefined && formData.gradePoints !== '') {
+      if (formData.gradePoints !== undefined) {
         payload.gradePoints = formData.gradePoints;
       }
 

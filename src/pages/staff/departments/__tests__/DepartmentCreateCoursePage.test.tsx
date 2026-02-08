@@ -26,7 +26,7 @@ vi.mock('@/shared/hooks', async (importOriginal) => {
     useDepartmentContext: () => ({
       currentDepartmentId: 'dept-123',
       currentDepartmentRoles: ['instructor'],
-      currentDepartmentAccessRights: ['course:create-department'],
+      currentDepartmentAccessRights: ['content:courses:manage'],
       currentDepartmentName: 'Computer Science',
       hasPermission: () => true,
       hasAnyPermission: () => true,

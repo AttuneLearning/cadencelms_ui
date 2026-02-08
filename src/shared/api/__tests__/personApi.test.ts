@@ -9,8 +9,6 @@ import { server } from '@/test/mocks/server';
 import { env } from '@/shared/config/env';
 import {
   personApi,
-  type PersonApiResponse,
-  type PersonExtendedApiResponse,
 } from '../personApi';
 import {
   mockPersonWithAllFields,
@@ -355,7 +353,7 @@ describe('personApi', () => {
         data: {
           role: 'learner' as const,
           learner: {
-            ...mockPersonExtendedLearner.learner,
+            ...(mockPersonExtendedLearner as unknown as { role: 'learner'; learner: Record<string, unknown> }).learner,
             ...updateData,
           },
         },
@@ -392,7 +390,7 @@ describe('personApi', () => {
         data: {
           role: 'staff' as const,
           staff: {
-            ...mockPersonExtendedStaff.staff,
+            ...(mockPersonExtendedStaff as unknown as { role: 'staff'; staff: Record<string, unknown> }).staff,
             ...updateData,
           },
         },

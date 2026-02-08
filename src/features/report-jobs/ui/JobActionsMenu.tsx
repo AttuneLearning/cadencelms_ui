@@ -40,7 +40,6 @@ export const JobActionsMenu: React.FC<JobActionsMenuProps> = ({
     job.state
   );
   const canRetry = job.state === 'failed';
-  const canDelete = true; // Can always delete
 
   return (
     <DropdownMenu>

@@ -16,16 +16,17 @@ import {
   useDeleteReportSchedule,
 } from '@/entities/report-schedule';
 import { SchedulesList, CreateScheduleDialog } from '@/features/report-schedules';
-import { cn } from '@/shared/lib/utils';
+import type { ReportSchedule } from '@/entities/report-schedule';
 
 export const ReportSchedulesPage: React.FC = () => {
   const [createDialogOpen, setCreateDialogOpen] = React.useState(false);
   const { toast } = useToast();
 
-  const { data: schedules = [], isLoading, refetch } = useReportSchedules();
+  const { data: schedulesData, isLoading, refetch } = useReportSchedules();
+  const schedules: ReportSchedule[] = schedulesData ? schedulesData.schedules : [];
   const toggleMutation = useToggleReportSchedule();
   const triggerMutation = useTriggerReportSchedule();
-  const deleteMutation = useDeleteReportSchedule();
+  useDeleteReportSchedule();
 
   const handleTrigger = async (scheduleId: string) => {
     try {

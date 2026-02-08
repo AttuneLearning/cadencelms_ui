@@ -281,6 +281,39 @@ export interface WithdrawEnrollmentPayload {
 }
 
 /**
+ * Bulk Course Enrollment Payload
+ * POST /api/v2/enrollments/course/bulk
+ */
+export interface BulkCourseEnrollmentPayload {
+  courseId: string;
+  learnerIds: string[];
+  options?: {
+    startDate?: string;
+    expiresAt?: string;
+    sendNotification?: boolean;
+  };
+}
+
+/**
+ * Bulk Course Enrollment Response
+ */
+export interface BulkCourseEnrollmentResponse {
+  enrolled: Array<{
+    learnerId: string;
+    enrollmentId: string;
+  }>;
+  failed: Array<{
+    learnerId: string;
+    reason: string;
+  }>;
+  summary: {
+    total: number;
+    successful: number;
+    failed: number;
+  };
+}
+
+/**
  * Enrollment Query Filters
  */
 export interface EnrollmentFilters {

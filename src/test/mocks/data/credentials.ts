@@ -7,7 +7,6 @@ import type {
   CredentialGroupListItem,
   CertificateDefinition,
   CertificateDefinitionListItem,
-  CertificateDefinitionDetail,
   CertificateIssuance,
   CertificateIssuanceListItem,
   CertificateRequirementItem,

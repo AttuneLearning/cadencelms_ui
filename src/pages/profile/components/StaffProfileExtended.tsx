@@ -3,7 +3,6 @@
  * Demo: Integrates staff extended profile sections
  */
 
-import React from 'react';
 import { useStaffExtended } from '@/entities/user-profile/model/useUserProfile';
 import { ProfessionalInfoSection } from './staff/ProfessionalInfoSection';
 import { EmploymentSection } from './staff/EmploymentSection';

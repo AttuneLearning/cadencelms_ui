@@ -127,7 +127,7 @@ export function ScormPlayer({
     const handleBeforeUnload = () => {
       if (scormApiRef.current) {
         scormApiRef.current.updateSessionTime();
-        const data = scormApiRef.current.getAllData();
+        scormApiRef.current.getAllData();
 
         // Use sendBeacon for reliable data sending on unload
         if (navigator.sendBeacon && typeof navigator.sendBeacon === 'function') {

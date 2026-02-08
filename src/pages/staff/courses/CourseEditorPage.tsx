@@ -109,14 +109,14 @@ export const CourseEditorPage: React.FC<CourseEditorPageProps> = ({ defaultDepar
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user, roleHierarchy } = useAuthStore();
+  const { roleHierarchy } = useAuthStore();
   const isNewCourse = !courseId || courseId === 'new';
 
   // Get user's departments from roleHierarchy
   const userDepartments = React.useMemo(() => {
     const departments: Array<{ id: string; name: string; isChild?: boolean }> = [];
 
-    if (roleHierarchy.staffRoles) {
+    if (roleHierarchy?.staffRoles) {
       for (const deptGroup of roleHierarchy.staffRoles.departmentRoles) {
         departments.push({
           id: deptGroup.departmentId,
@@ -130,9 +130,7 @@ export const CourseEditorPage: React.FC<CourseEditorPageProps> = ({ defaultDepar
 
   // Fetch child departments for the current/default department
   const currentDeptId = defaultDepartmentId || userDepartments[0]?.id;
-  const { data: hierarchyData } = useDepartmentHierarchy(currentDeptId || '', {
-    enabled: !!currentDeptId,
-  });
+  const { data: hierarchyData } = useDepartmentHierarchy(currentDeptId || '');
 
   // Combine user departments with child departments
   const availableDepartments = React.useMemo(() => {
@@ -156,8 +154,8 @@ export const CourseEditorPage: React.FC<CourseEditorPageProps> = ({ defaultDepar
 
 
   // Check if user is billing-admin (read-only access)
-  const isBillingAdmin = user?.roles?.includes('billing-admin');
-  const isReadOnly = isBillingAdmin && !user?.roles?.includes('content-admin');
+  // Note: billing-admin concept is deprecated in V2 role system
+  const isReadOnly = false;
 
   // State
   const [moduleDialog, setModuleDialog] = React.useState<ModuleDialogState>({

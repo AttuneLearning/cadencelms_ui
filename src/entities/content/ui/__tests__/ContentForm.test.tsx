@@ -868,7 +868,7 @@ describe('ContentForm', () => {
     });
 
     it('should require title for media mode', async () => {
-      const { container } = render(<ContentForm mode="media" />, { wrapper: createWrapper() });
+      render(<ContentForm mode="media" />, { wrapper: createWrapper() });
 
       // Title input is required for media mode
       const titleInput = screen.getByPlaceholderText(/Enter title/i);

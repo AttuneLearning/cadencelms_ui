@@ -10,7 +10,6 @@ import { http, HttpResponse } from 'msw';
 import { server } from '@/test/mocks/server';
 import { env } from '@/shared/config/env';
 import { ClassDetailsPage } from '../ClassDetailsPage';
-import { mockFullClass, mockClassRoster, mockClassProgress } from '@/test/mocks/data/classes';
 import {
   renderWithProviders,
   createMockAuthStore,

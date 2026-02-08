@@ -10,7 +10,7 @@ import { format } from 'date-fns';
 import { DataTable } from '@/shared/ui/data-table';
 import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader } from '@/shared/ui/card';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import {
@@ -69,7 +69,7 @@ export const AuditLogsPage: React.FC = () => {
   const [ipAddressFilter, setIpAddressFilter] = React.useState('');
   const [dateFrom, setDateFrom] = React.useState('');
   const [dateTo, setDateTo] = React.useState('');
-  const [sortBy, setSortBy] = React.useState('-timestamp');
+  const [sortBy, _setSortBy] = React.useState('-timestamp');
   const [page, setPage] = React.useState(1);
   const [limit] = React.useState(20);
 

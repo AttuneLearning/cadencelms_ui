@@ -3,11 +3,7 @@
  * Tests for course versioning UI features per UI-ISS-001
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { describe, it, expect, vi } from 'vitest';
 import { canEditCourse, type CourseListItem } from '@/entities/course';
 
 // ============================================================================
@@ -28,8 +24,24 @@ describe('canEditCourse', () => {
     createdAt: '2026-01-01T00:00:00Z',
     updatedAt: '2026-01-01T00:00:00Z',
     version: 1,
-    isLatestVersion: true,
+    isLatest: true,
     isLocked: false,
+    canonicalCourseId: 'course-1',
+    parentVersionId: null,
+    lockedAt: null,
+    lockedReason: null,
+    program: null,
+    credits: 3,
+    duration: 40,
+    instructors: [],
+    settings: {
+      allowSelfEnrollment: false,
+      passingScore: 70,
+      maxAttempts: 3,
+      certificateEnabled: false,
+    },
+    publishedAt: null,
+    archivedAt: null,
   };
 
   describe('locked courses', () => {
@@ -53,9 +65,9 @@ describe('canEditCourse', () => {
     it('returns true when author is an object with id', () => {
       const courseWithAuthorObj = {
         ...baseCourse,
-        createdBy: { id: 'author-1', firstName: 'Test', lastName: 'Author' },
+        createdBy: 'author-1',
       };
-      expect(canEditCourse(courseWithAuthorObj as CourseListItem, 'author-1', [])).toBe(true);
+      expect(canEditCourse(courseWithAuthorObj, 'author-1', [])).toBe(true);
     });
 
     it('returns false when user is not the author and has no roles', () => {
@@ -106,51 +118,98 @@ const mockCoursesData = {
       title: 'Draft Course',
       code: 'DC101',
       description: 'A draft course',
-      status: 'draft',
+      status: 'draft' as const,
       department: { id: 'dept-1', name: 'Test Department' },
+      program: null,
+      credits: 3,
+      duration: 40,
+      instructors: [],
+      settings: {
+        allowSelfEnrollment: false,
+        passingScore: 70,
+        maxAttempts: 3,
+        certificateEnabled: false,
+      },
       enrollmentCount: 0,
       moduleCount: 3,
       createdBy: 'user-1',
       createdAt: '2026-01-01T00:00:00Z',
       updatedAt: '2026-01-01T00:00:00Z',
+      publishedAt: null,
+      archivedAt: null,
       version: 1,
-      isLatestVersion: true,
+      canonicalCourseId: 'course-draft',
+      isLatest: true,
       isLocked: false,
+      parentVersionId: null,
+      lockedAt: null,
+      lockedReason: null,
     },
     {
       id: 'course-published',
       title: 'Published Course',
       code: 'PC101',
       description: 'A published course',
-      status: 'published',
+      status: 'published' as const,
       department: { id: 'dept-1', name: 'Test Department' },
+      program: null,
+      credits: 3,
+      duration: 40,
+      instructors: [],
+      settings: {
+        allowSelfEnrollment: false,
+        passingScore: 70,
+        maxAttempts: 3,
+        certificateEnabled: false,
+      },
       enrollmentCount: 25,
       moduleCount: 5,
       createdBy: 'user-1',
       createdAt: '2026-01-01T00:00:00Z',
       updatedAt: '2026-01-02T00:00:00Z',
+      publishedAt: '2026-01-02T00:00:00Z',
+      archivedAt: null,
       version: 2,
-      isLatestVersion: true,
+      canonicalCourseId: 'course-published',
+      isLatest: true,
       isLocked: false,
+      parentVersionId: 'course-published-v1',
+      lockedAt: null,
+      lockedReason: null,
     },
     {
       id: 'course-locked',
       title: 'Locked Course',
       code: 'LC101',
       description: 'A locked course',
-      status: 'published',
+      status: 'published' as const,
       department: { id: 'dept-1', name: 'Test Department' },
+      program: null,
+      credits: 3,
+      duration: 40,
+      instructors: [],
+      settings: {
+        allowSelfEnrollment: false,
+        passingScore: 70,
+        maxAttempts: 3,
+        certificateEnabled: false,
+      },
       enrollmentCount: 50,
       moduleCount: 5,
       createdBy: 'user-1',
       createdAt: '2025-12-01T00:00:00Z',
       updatedAt: '2025-12-15T00:00:00Z',
+      publishedAt: '2025-12-15T00:00:00Z',
+      archivedAt: null,
       version: 1,
-      isLatestVersion: false,
+      canonicalCourseId: 'course-locked',
+      isLatest: false,
       isLocked: true,
-      lockReason: 'new_version_created',
+      parentVersionId: null,
+      lockedAt: '2025-12-15T00:00:00Z',
+      lockedReason: 'superseded' as const,
     },
-  ] as CourseListItem[],
+  ],
   pagination: {
     page: 1,
     limit: 10,
@@ -234,27 +293,6 @@ vi.mock('@/entities/department/model/useDepartment', () => ({
 }));
 
 // ============================================================================
-// Test Utilities
-// ============================================================================
-
-const createTestQueryClient = () =>
-  new QueryClient({
-    defaultOptions: {
-      queries: { retry: false },
-      mutations: { retry: false },
-    },
-  });
-
-const renderWithProviders = (component: React.ReactNode) => {
-  const queryClient = createTestQueryClient();
-  return render(
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter>{component}</MemoryRouter>
-    </QueryClientProvider>
-  );
-};
-
-// ============================================================================
 // Version Badge Display Tests
 // ============================================================================
 
@@ -271,16 +309,16 @@ describe('CourseManagementPage Version Badges', () => {
   });
 
   it('identifies latest version correctly', () => {
-    expect(mockCoursesData.courses[0].isLatestVersion).toBe(true); // Draft v1
-    expect(mockCoursesData.courses[1].isLatestVersion).toBe(true); // Published v2
-    expect(mockCoursesData.courses[2].isLatestVersion).toBe(false); // Locked v1 (not latest)
+    expect(mockCoursesData.courses[0].isLatest).toBe(true); // Draft v1
+    expect(mockCoursesData.courses[1].isLatest).toBe(true); // Published v2
+    expect(mockCoursesData.courses[2].isLatest).toBe(false); // Locked v1 (not latest)
   });
 
   it('identifies locked courses correctly', () => {
     expect(mockCoursesData.courses[0].isLocked).toBe(false);
     expect(mockCoursesData.courses[1].isLocked).toBe(false);
     expect(mockCoursesData.courses[2].isLocked).toBe(true);
-    expect(mockCoursesData.courses[2].lockReason).toBe('new_version_created');
+    expect(mockCoursesData.courses[2].lockedReason).toBe('new_version_created');
   });
 });
 
@@ -324,16 +362,16 @@ describe('Create Version Flow', () => {
     // After createVersion, the new version would be:
     // - status: 'draft'
     // - version: publishedCourse.version + 1
-    // - isLatestVersion: true
+    // - isLatest: true
     // And the old version becomes:
     // - isLocked: true
-    // - lockReason: 'new_version_created'
+    // - lockedReason: 'new_version_created'
   });
 
   it('previous version should be locked after new version created', () => {
     const lockedCourse = mockCoursesData.courses[2];
     expect(lockedCourse.isLocked).toBe(true);
-    expect(lockedCourse.lockReason).toBe('new_version_created');
-    expect(lockedCourse.isLatestVersion).toBe(false);
+    expect(lockedCourse.lockedReason).toBe('new_version_created');
+    expect(lockedCourse.isLatest).toBe(false);
   });
 });

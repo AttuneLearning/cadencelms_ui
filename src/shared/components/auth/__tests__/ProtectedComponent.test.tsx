@@ -7,7 +7,6 @@
  * Target: >85% coverage
  */
 
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
@@ -22,7 +21,12 @@ import {
 // ============================================================================
 
 // Mock useAuthStore
-const mockAuthStore = {
+const mockAuthStore: {
+  isAuthenticated: boolean;
+  roleHierarchy: { allUserTypes: string[]; primaryUserType: string; defaultDashboard: string; globalRoles: never[]; allPermissions: never[]; userTypeDisplayMap: Record<string, never>; roleDisplayMap: Record<string, never>; } | null;
+  isLoading: boolean;
+  isAdminSessionActive: boolean;
+} = {
   isAuthenticated: true,
   roleHierarchy: {
     allUserTypes: ['staff'],
@@ -42,7 +46,19 @@ vi.mock('@/features/auth/model/authStore', () => ({
 }));
 
 // Mock useDepartmentContext
-const mockDepartmentContext = {
+const mockDepartmentContext: {
+  currentDepartmentId: string | null;
+  currentDepartmentRoles: string[];
+  currentDepartmentAccessRights: string[];
+  currentDepartmentName: string | null;
+  hasPermission: ReturnType<typeof vi.fn>;
+  hasAnyPermission: ReturnType<typeof vi.fn>;
+  hasAllPermissions: ReturnType<typeof vi.fn>;
+  hasRole: ReturnType<typeof vi.fn>;
+  switchDepartment: ReturnType<typeof vi.fn>;
+  isSwitching: boolean;
+  switchError: string | null;
+} = {
   currentDepartmentId: 'dept-123',
   currentDepartmentRoles: ['instructor'],
   currentDepartmentAccessRights: ['content:courses:read', 'content:courses:manage'],
@@ -65,10 +81,6 @@ const mockDepartmentContext = {
 vi.mock('@/shared/hooks/useDepartmentContext', () => ({
   useDepartmentContext: vi.fn(() => mockDepartmentContext),
 }));
-
-// Import mocked hooks for type safety
-import { useAuthStore } from '@/features/auth/model/authStore';
-import { useDepartmentContext } from '@/shared/hooks/useDepartmentContext';
 
 // ============================================================================
 // Test Utilities

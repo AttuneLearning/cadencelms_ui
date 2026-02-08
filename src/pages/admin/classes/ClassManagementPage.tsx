@@ -279,7 +279,7 @@ export const ClassManagementPage: React.FC = () => {
         id: enrollmentClassId,
         payload: {
           learnerIds: selectedLearners,
-          enrollmentDate: new Date().toISOString(),
+          enrolledAt: new Date().toISOString(),
         },
       },
       {
@@ -818,11 +818,11 @@ export const ClassManagementPage: React.FC = () => {
                       <div
                         key={learner.id}
                         className="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer"
-                        onClick={() => handleLearnerToggle(learner.id)}
+                        onClick={() => handleLearnerToggle(learner.id || learner._id)}
                       >
                         <Checkbox
-                          checked={selectedLearners.includes(learner.id)}
-                          onCheckedChange={() => handleLearnerToggle(learner.id)}
+                          checked={selectedLearners.includes(learner.id || learner._id)}
+                          onCheckedChange={() => handleLearnerToggle(learner.id || learner._id)}
                         />
                         <div className="flex-1">
                           <p className="font-medium text-sm">

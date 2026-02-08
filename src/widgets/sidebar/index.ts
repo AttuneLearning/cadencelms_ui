@@ -1,9 +1,30 @@
 /**
  * Sidebar widget exports
- * Version: 3.1.0 (ISS-007, UI-ISS-042)
+ * Version: 4.0.0 (Navigation Redesign 2026-02-05)
  */
 
 export { Sidebar } from './Sidebar';
+
+// New section-based configuration (v4.0.0)
+export {
+  STAFF_SECTIONS,
+  LEARNER_SECTIONS,
+  ADMIN_SECTIONS,
+  DEPARTMENT_ACTIONS,
+  getSectionsForDashboard,
+  getDepartmentActionsForDashboard,
+  buildDepartmentActionPath,
+} from './config/sectionConfig';
+export type {
+  SectionId,
+  DashboardType,
+  NavItem,
+  NavSection,
+  DashboardSections,
+  DepartmentActionItem,
+} from './config/sectionConfig';
+
+// Legacy exports (v3.x) - kept for backward compatibility with other parts of codebase
 export {
   BASE_NAV_ITEMS,
   LEARNER_CONTEXT_NAV,
@@ -13,7 +34,7 @@ export {
   DEPARTMENT_ACTION_GROUPS,
   getCurrentDashboardPath,
   getDefaultDashboardPath,
-  getPrimaryDashboardPath, // @deprecated
+  getPrimaryDashboardPath,
 } from './config/navItems';
 export type {
   BaseNavItem,
@@ -21,4 +42,5 @@ export type {
   DepartmentNavItem,
   DepartmentActionGroup,
 } from './config/navItems';
+
 export { NavLink } from './ui/NavLink';

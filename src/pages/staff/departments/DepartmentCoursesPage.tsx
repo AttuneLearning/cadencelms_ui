@@ -9,7 +9,7 @@
  * - Create course button (pre-fills department)
  * 
  * Route: /staff/departments/:deptId/courses
- * Permission: course:view-department
+ * Permission: content:courses:read
  */
 
 import React from 'react';
@@ -51,6 +51,7 @@ import {
 import { PageHeader } from '@/shared/ui/page-header';
 import { formatDistanceToNow } from 'date-fns';
 import { useDepartmentContext } from '@/shared/hooks';
+import { CourseActionMenu } from '@/features/course-actions';
 
 export const DepartmentCoursesPage: React.FC = () => {
   const { deptId } = useParams<{ deptId: string }>();
@@ -71,16 +72,26 @@ export const DepartmentCoursesPage: React.FC = () => {
     error: deptError 
   } = useDepartment(deptId!);
 
+  // Track if this is initial mount to distinguish from user clearing selection
+  const isInitialMountRef = React.useRef(true);
+
   // Switch to this department when page loads (if different from current)
   React.useEffect(() => {
     if (deptId && currentDepartmentId !== deptId && !isSwitching) {
+      // Don't auto-switch if user explicitly cleared selection (currentDepartmentId is null)
+      // Only auto-switch on initial mount or when navigating to a different department
+      if (currentDepartmentId === null && !isInitialMountRef.current) {
+        // User cleared selection via sidebar - don't re-select, let them choose
+        return;
+      }
       switchDepartment(deptId);
     }
+    isInitialMountRef.current = false;
   }, [deptId, currentDepartmentId, switchDepartment, isSwitching]);
 
-  // Check permissions (will be correct after department switch completes)
-  const canCreateCourse = hasPermission('course:create-department');
-  const canEditCourses = hasPermission('course:edit-department');
+  // Check permissions (API uses content:courses:manage for create/edit)
+  const canCreateCourse = hasPermission('content:courses:manage');
+  const canEditCourses = hasPermission('content:courses:manage');
 
   // State
   const [showFilters, setShowFilters] = React.useState(false);
@@ -98,7 +109,7 @@ export const DepartmentCoursesPage: React.FC = () => {
   }, [deptId]);
 
   // Fetch courses for this department
-  const { data, isLoading, error } = useCourses(filters);
+  const { data, isLoading, error, refetch } = useCourses(filters);
 
   // Handlers
   const handleCreateCourse = () => {
@@ -304,6 +315,7 @@ export const DepartmentCoursesPage: React.FC = () => {
                   onEdit={() => handleEditCourse(course.id)}
                   onPreview={() => handlePreviewCourse(course.id)}
                   canEdit={canEditCourses}
+                  onActionComplete={() => refetch()}
                 />
               ))}
             </div>
@@ -361,19 +373,21 @@ interface DepartmentCourseCardProps {
   onEdit: () => void;
   onPreview: () => void;
   canEdit: boolean;
+  onActionComplete?: () => void;
 }
 
-const DepartmentCourseCard: React.FC<DepartmentCourseCardProps> = ({ 
-  course, 
-  onEdit, 
+const DepartmentCourseCard: React.FC<DepartmentCourseCardProps> = ({
+  course,
+  onEdit,
   onPreview,
   canEdit,
+  onActionComplete,
 }) => {
   return (
     <Card className="group transition-shadow hover:shadow-lg">
       <CardHeader>
         <div className="flex items-start justify-between">
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <div className="mb-1 flex items-center gap-2">
               <Badge variant={getStatusVariant(course.status)}>
                 {formatStatus(course.status)}
@@ -384,6 +398,12 @@ const DepartmentCourseCard: React.FC<DepartmentCourseCardProps> = ({
             </div>
             <CardTitle className="line-clamp-2">{course.title}</CardTitle>
           </div>
+          {/* Action Menu */}
+          <CourseActionMenu
+            course={course}
+            canEdit={canEdit}
+            onActionComplete={onActionComplete}
+          />
         </div>
         {course.description && (
           <CardDescription className="line-clamp-2">

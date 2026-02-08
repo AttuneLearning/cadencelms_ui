@@ -14,7 +14,7 @@
  * - Manage enrollment status (withdraw, suspend, complete)
  */
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { 
   Search, 
@@ -87,11 +87,19 @@ export function DepartmentStudentsPage() {
     isSwitching 
   } = useDepartmentContext();
 
+  // Track if this is initial mount to distinguish from user clearing selection
+  const isInitialMountRef = useRef(true);
+
   // Switch to the department from the URL if needed
   useEffect(() => {
     if (deptId && deptId !== currentDepartmentId && !isSwitching) {
+      // Don't auto-switch if user explicitly cleared selection (currentDepartmentId is null)
+      if (currentDepartmentId === null && !isInitialMountRef.current) {
+        return;
+      }
       switchDepartment(deptId);
     }
+    isInitialMountRef.current = false;
   }, [deptId, currentDepartmentId, switchDepartment, isSwitching]);
 
   // Fetch department details
@@ -141,10 +149,10 @@ export function DepartmentStudentsPage() {
     });
   }, [enrollmentsData?.enrollments, searchQuery]);
 
-  // Permission checks
-  const canViewEnrollments = hasPermission('enrollment:view-department');
-  const canManageEnrollments = hasPermission('enrollment:manage-department');
-  const canExport = hasPermission('enrollment:export-department');
+  // Permission checks (API uses enrollment:department:read and enrollment:department:manage)
+  const canViewEnrollments = hasPermission('enrollment:department:read');
+  const canManageEnrollments = hasPermission('enrollment:department:manage');
+  const canExport = hasPermission('enrollment:department:read');
 
   // Loading state
   if (isDeptLoading || isSwitching) {

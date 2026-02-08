@@ -86,16 +86,24 @@ export const DepartmentClassesPage: React.FC = () => {
     error: deptError 
   } = useDepartment(deptId!);
 
+  // Track if this is initial mount to distinguish from user clearing selection
+  const isInitialMountRef = React.useRef(true);
+
   // Switch to this department when page loads (if different from current)
   React.useEffect(() => {
     if (deptId && currentDepartmentId !== deptId && !isSwitching) {
+      // Don't auto-switch if user explicitly cleared selection (currentDepartmentId is null)
+      if (currentDepartmentId === null && !isInitialMountRef.current) {
+        return;
+      }
       switchDepartment(deptId);
     }
+    isInitialMountRef.current = false;
   }, [deptId, currentDepartmentId, switchDepartment, isSwitching]);
 
-  // Check permissions
-  const canCreateClass = hasPermission('class:create-department');
-  const canViewRoster = hasPermission('class:view-roster');
+  // Check permissions (API uses content:classes:manage)
+  const canCreateClass = hasPermission('content:classes:manage');
+  const canViewRoster = hasPermission('content:classes:read');
 
   // State
   const [showFilters, setShowFilters] = React.useState(false);

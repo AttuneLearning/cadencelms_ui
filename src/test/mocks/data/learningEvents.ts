@@ -4,7 +4,6 @@
 
 import type {
   LearningEvent,
-  LearningEventType,
   CreateLearningEventData,
   LearningEventsListResponse,
   LearnerActivityResponse,

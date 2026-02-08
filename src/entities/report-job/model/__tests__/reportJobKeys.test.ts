@@ -4,6 +4,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { reportJobKeys } from '../reportJobKeys';
+import type { ListReportJobsParams } from '../types';
 
 describe('reportJobKeys', () => {
   describe('all', () => {
@@ -25,7 +26,7 @@ describe('reportJobKeys', () => {
     });
 
     it('should return list key with params', () => {
-      const params = { status: ['ready'], page: 1, limit: 20 };
+      const params: ListReportJobsParams = { status: ['ready'], page: 1, limit: 20 };
       expect(reportJobKeys.list(params)).toEqual(['report-jobs', 'list', params]);
     });
   });

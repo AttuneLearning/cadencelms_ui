@@ -20,7 +20,6 @@ import {
   useRetryReportJob,
   useDeleteReportJob,
   useBulkDeleteReportJobs,
-  useReportJobDownload,
   type ListReportJobsParams,
 } from '@/entities/report-job';
 import {
@@ -40,7 +39,7 @@ export const ReportJobsPage: React.FC = () => {
   const [jobToShare, setJobToShare] = React.useState<string | null>(null);
 
   // Filters
-  const [filters, setFilters] = React.useState<ListReportJobsParams>({
+  const [filters, _setFilters] = React.useState<ListReportJobsParams>({
     page: 1,
     limit: 50,
   });
@@ -310,7 +309,7 @@ export const ReportJobsPage: React.FC = () => {
         title="Delete Report Job"
         description="Are you sure you want to delete this report job? This action cannot be undone."
         confirmText="Delete"
-        variant="destructive"
+        isDestructive
       />
 
       {/* Bulk Delete Confirmation */}
@@ -321,7 +320,7 @@ export const ReportJobsPage: React.FC = () => {
         title="Delete Multiple Jobs"
         description={`Are you sure you want to delete ${jobsToDelete.length} job(s)? This action cannot be undone.`}
         confirmText="Delete All"
-        variant="destructive"
+        isDestructive
       />
     </div>
   );

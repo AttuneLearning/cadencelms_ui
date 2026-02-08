@@ -269,7 +269,6 @@ export class ModuleBuilderPage {
 
     // Move up or down as needed
     const moveCount = currentIndex - newPosition;
-    const moveButton = moveCount > 0 ? this.moveUpButton : this.moveDownButton;
 
     for (let i = 0; i < Math.abs(moveCount); i++) {
       const rowButton = activityRow.locator(

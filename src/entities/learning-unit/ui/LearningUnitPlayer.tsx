@@ -135,10 +135,12 @@ function getTypeIcon(type: LearningUnitType): React.ComponentType<{ className?: 
 function getTypeLabel(type: LearningUnitType): string {
   const labels: Record<LearningUnitType, string> = {
     video: 'Video',
+    media: 'Media',
     document: 'Document',
     scorm: 'SCORM',
     exercise: 'Exercise',
     assessment: 'Assessment',
+    assignment: 'Assignment',
     custom: 'Custom',
   };
   return labels[type] || type;

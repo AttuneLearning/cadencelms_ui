@@ -27,7 +27,8 @@ export const ReportScheduleDetailPage: React.FC = () => {
   const { toast } = useToast();
 
   const { data: schedule, isLoading } = useReportSchedule(id!);
-  const { data: executions = [] } = useReportScheduleExecutions(id!);
+  const { data: executionsData } = useReportScheduleExecutions(id!);
+  const executions = executionsData?.jobs ?? [];
   const toggleMutation = useToggleReportSchedule();
   const triggerMutation = useTriggerReportSchedule();
   const deleteMutation = useDeleteReportSchedule();
@@ -282,12 +283,12 @@ export const ReportScheduleDetailPage: React.FC = () => {
             <div className="space-y-3">
               {executions.map((execution) => (
                 <div
-                  key={execution._id}
+                  key={execution.jobId}
                   className="flex items-center justify-between p-3 border rounded-lg"
                 >
                   <div>
                     <p className="font-medium">
-                      {format(new Date(execution.executedAt), 'PPP p')}
+                      {format(new Date(execution.triggeredAt), 'PPP p')}
                     </p>
                     {execution.jobId && (
                       <p className="text-sm text-muted-foreground">Job ID: {execution.jobId}</p>

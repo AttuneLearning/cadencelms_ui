@@ -10,12 +10,10 @@ import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Progress } from '@/shared/ui/progress';
-import { Separator } from '@/shared/ui/separator';
 import { useToast } from '@/shared/ui/use-toast';
 import { ConfirmDialog } from '@/shared/ui/confirm-dialog';
 import {
   ArrowLeft,
-  Download,
   FileText,
   Table,
   FileSpreadsheet,
@@ -31,7 +29,6 @@ import {
   useReport,
   useDeleteReport,
   useCreateReport,
-  type Report,
   type ReportStatus,
   type ExportFormat,
 } from '@/entities/report';
@@ -45,9 +42,10 @@ export const ReportViewerPage: React.FC = () => {
 
   // Fetch report with auto-refresh for generating status
   const { data: report, isLoading, error, refetch } = useReport(reportId!, {
-    refetchInterval: (data) => {
+    refetchInterval: (query) => {
       // Auto-refresh every 5 seconds if report is generating or pending
-      return data?.status === 'generating' || data?.status === 'pending' ? 5000 : false;
+      const status = query.state.data?.status;
+      return status === 'generating' || status === 'pending' ? 5000 : false;
     },
   });
 
@@ -118,7 +116,7 @@ export const ReportViewerPage: React.FC = () => {
           title: 'Report generated',
           description: 'A new report has been queued for generation.',
         });
-        navigate(`/admin/reports/${newReport.id}`);
+        navigate(`/admin/reports/${newReport.report.id}`);
       },
       onError: () => {
         toast({
@@ -472,7 +470,7 @@ const ReportStatusBadge: React.FC<ReportStatusBadgeProps> = ({ status }) => {
     },
   };
 
-  const { icon: Icon, label, variant, className } = config[status];
+  const { icon: Icon, label, variant, className } = config[status] as { icon: typeof CheckCircle2; label: string; variant: 'default' | 'secondary' | 'destructive'; className?: string };
 
   return (
     <Badge variant={variant} className="gap-1">

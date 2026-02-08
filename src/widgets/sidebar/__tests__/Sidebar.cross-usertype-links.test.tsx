@@ -1,11 +1,17 @@
 /**
- * Sidebar - Cross-UserType Link Tests (ISS-003)
- * Tests for graying out/enabling links based on user's available userTypes
+ * Sidebar - Cross-UserType Navigation Tests
+ * Navigation Redesign 2026-02-05
+ *
+ * In the new architecture:
+ * - Each dashboard type (staff, learner, admin) has its own sections
+ * - No disabled items for wrong user types - items only appear on their relevant dashboard
+ * - Dashboard detection is based on URL path
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import { Sidebar } from '../Sidebar';
 import * as authStore from '@/features/auth/model/authStore';
 import * as navigationStore from '@/shared/stores/navigationStore';
@@ -15,8 +21,20 @@ import * as departmentContext from '@/shared/hooks/useDepartmentContext';
 vi.mock('@/features/auth/model/authStore');
 vi.mock('@/shared/stores/navigationStore');
 vi.mock('@/shared/hooks/useDepartmentContext');
+vi.mock('../ui/NavLink', () => ({
+  NavLink: ({ label, path, disabled }: any) => (
+    <a
+      href={path}
+      data-testid={`nav-link-${label}`}
+      aria-disabled={disabled}
+      className={disabled ? 'opacity-50 cursor-not-allowed' : ''}
+    >
+      {label}
+    </a>
+  ),
+}));
 
-describe('Sidebar - Cross-UserType Links (ISS-003)', () => {
+describe('Sidebar - Dashboard-Specific Navigation', () => {
   const mockSetSelectedDepartment = vi.fn();
   const mockRememberDepartment = vi.fn();
   const mockSetSidebarOpen = vi.fn();
@@ -29,7 +47,6 @@ describe('Sidebar - Cross-UserType Links (ISS-003)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // Default mocks
     vi.mocked(navigationStore.useNavigationStore).mockReturnValue({
       selectedDepartmentId: null,
       setSelectedDepartment: mockSetSelectedDepartment,
@@ -37,6 +54,8 @@ describe('Sidebar - Cross-UserType Links (ISS-003)', () => {
       lastAccessedDepartments: {},
       isSidebarOpen: true,
       setSidebarOpen: mockSetSidebarOpen,
+      isBreadcrumbMode: false,
+      navigateToDepartment: vi.fn(),
     } as any);
 
     vi.mocked(departmentContext.useDepartmentContext).mockReturnValue({
@@ -54,18 +73,20 @@ describe('Sidebar - Cross-UserType Links (ISS-003)', () => {
     });
   });
 
-  describe('My Progress Link - Staff Dashboard', () => {
-    it('should show "My Progress" link grayed out when user does NOT have learner userType', () => {
-      // Staff-only user (no learner userType)
+  const renderSidebar = (route: string) =>
+    render(
+      <MemoryRouter initialEntries={[route]}>
+        <Sidebar />
+      </MemoryRouter>
+    );
+
+  describe('Staff Dashboard Navigation', () => {
+    it('should show Teaching section items on staff dashboard', () => {
       vi.mocked(authStore.useAuthStore).mockReturnValue({
         user: mockUser,
         roleHierarchy: {
           primaryUserType: 'staff',
-          allUserTypes: ['staff'], // No learner
-          allPermissions: ['dashboard:view-own'],
-          userTypeDisplayMap: {
-            staff: 'Staff',
-          },
+          allPermissions: ['content:courses:read', 'class:view-own', 'grades:own-classes:manage'],
           staffRoles: {
             departmentRoles: [
               {
@@ -80,37 +101,25 @@ describe('Sidebar - Cross-UserType Links (ISS-003)', () => {
         hasPermission: vi.fn(() => true),
       } as any);
 
-      render(
-        <BrowserRouter>
-          <Sidebar />
-        </BrowserRouter>
-      );
+      renderSidebar('/staff/dashboard');
 
-      // Link should be present
-      const progressLink = screen.getByText('My Progress');
-      expect(progressLink).toBeInTheDocument();
+      // Staff-specific items
+      expect(screen.getByText('Teaching')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-My Courses')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-My Classes')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-Grading')).toBeInTheDocument();
 
-      // Link should be disabled (not a link, or has disabled styling)
-      const linkElement = progressLink.closest('div') || progressLink.closest('button');
-      expect(linkElement).toHaveClass('opacity-50');
-      expect(linkElement).toHaveClass('cursor-not-allowed');
-
-      // Should not be clickable
-      expect(linkElement?.tagName).not.toBe('A');
+      // Should NOT show learner-specific items
+      expect(screen.queryByTestId('nav-link-Course Catalog')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('nav-link-Certificates')).not.toBeInTheDocument();
     });
 
-    it('should show "My Progress" link enabled when user HAS learner userType', () => {
-      // Multi-userType user (staff + learner)
+    it('should NOT show "My Progress" on staff dashboard (learner-only item)', () => {
       vi.mocked(authStore.useAuthStore).mockReturnValue({
         user: mockUser,
         roleHierarchy: {
           primaryUserType: 'staff',
-          allUserTypes: ['staff', 'learner'], // Has learner
-          allPermissions: ['dashboard:view-own', 'dashboard:view-my-progress'],
-          userTypeDisplayMap: {
-            staff: 'Staff',
-            learner: 'Learner',
-          },
+          allPermissions: ['content:courses:read'],
           staffRoles: {
             departmentRoles: [
               {
@@ -121,125 +130,27 @@ describe('Sidebar - Cross-UserType Links (ISS-003)', () => {
               },
             ],
           },
-          learnerRoles: {
-            departmentRoles: [
-              {
-                departmentId: 'dept-456',
-                departmentName: 'Math',
-                isPrimary: false,
-                roles: ['student'],
-              },
-            ],
-          },
         },
         hasPermission: vi.fn(() => true),
       } as any);
 
-      render(
-        <BrowserRouter>
-          <Sidebar />
-        </BrowserRouter>
-      );
+      renderSidebar('/staff/dashboard');
 
-      // Link should be present and enabled
-      const progressLink = screen.getByText('My Progress');
-      expect(progressLink).toBeInTheDocument();
-
-      // Should be an actual link
-      const linkElement = progressLink.closest('a');
-      expect(linkElement).toBeInTheDocument();
-      expect(linkElement).toHaveAttribute('href', '/learner/progress');
-
-      // Should NOT have disabled styling
-      expect(linkElement).not.toHaveClass('opacity-50');
-      expect(linkElement).not.toHaveClass('cursor-not-allowed');
+      // My Progress should NOT appear on staff dashboard at all
+      // (no disabled/grayed out items for wrong dashboard types)
+      expect(screen.queryByText('Progress')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('nav-link-My Progress')).not.toBeInTheDocument();
     });
   });
 
-  describe('My Progress Link - Admin Dashboard', () => {
-    it('should show "My Progress" link grayed out when admin does NOT have learner userType', () => {
-      // Admin-only user (no learner userType)
-      vi.mocked(authStore.useAuthStore).mockReturnValue({
-        user: mockUser,
-        roleHierarchy: {
-          primaryUserType: 'global-admin',
-          allUserTypes: ['global-admin'], // No learner
-          allPermissions: ['system:*'],
-          userTypeDisplayMap: {
-            'global-admin': 'Global Admin',
-          },
-        },
-        hasPermission: vi.fn(() => true),
-      } as any);
-
-      render(
-        <BrowserRouter>
-          <Sidebar />
-        </BrowserRouter>
-      );
-
-      // Link should be present but disabled
-      const progressLink = screen.getByText('My Progress');
-      expect(progressLink).toBeInTheDocument();
-
-      const linkElement = progressLink.closest('div') || progressLink.closest('button');
-      expect(linkElement).toHaveClass('opacity-50');
-      expect(linkElement).toHaveClass('cursor-not-allowed');
-    });
-
-    it('should show "My Progress" link enabled when admin HAS learner userType', () => {
-      // Multi-userType user (admin + learner)
-      vi.mocked(authStore.useAuthStore).mockReturnValue({
-        user: mockUser,
-        roleHierarchy: {
-          primaryUserType: 'global-admin',
-          allUserTypes: ['global-admin', 'learner'], // Has learner
-          allPermissions: ['system:*', 'dashboard:view-my-progress'],
-          userTypeDisplayMap: {
-            'global-admin': 'Global Admin',
-            learner: 'Learner',
-          },
-          learnerRoles: {
-            departmentRoles: [
-              {
-                departmentId: 'dept-789',
-                departmentName: 'Science',
-                isPrimary: false,
-                roles: ['student'],
-              },
-            ],
-          },
-        },
-        hasPermission: vi.fn(() => true),
-      } as any);
-
-      render(
-        <BrowserRouter>
-          <Sidebar />
-        </BrowserRouter>
-      );
-
-      // Link should be enabled
-      const progressLink = screen.getByText('My Progress');
-      expect(progressLink).toBeInTheDocument();
-
-      const linkElement = progressLink.closest('a');
-      expect(linkElement).toBeInTheDocument();
-      expect(linkElement).toHaveAttribute('href', '/learner/progress');
-    });
-  });
-
-  describe('My Progress Link - Learner Dashboard', () => {
-    it('should show "My Progress" link enabled on learner dashboard', () => {
+  describe('Learner Dashboard Navigation', () => {
+    it('should show Learning section items on learner dashboard', async () => {
+      const user = userEvent.setup();
       vi.mocked(authStore.useAuthStore).mockReturnValue({
         user: mockUser,
         roleHierarchy: {
           primaryUserType: 'learner',
-          allUserTypes: ['learner'],
-          allPermissions: ['dashboard:view-my-progress'],
-          userTypeDisplayMap: {
-            learner: 'Learner',
-          },
+          allPermissions: ['course:view-catalog', 'dashboard:view-my-progress'],
           learnerRoles: {
             departmentRoles: [
               {
@@ -254,33 +165,173 @@ describe('Sidebar - Cross-UserType Links (ISS-003)', () => {
         hasPermission: vi.fn(() => true),
       } as any);
 
-      render(
-        <BrowserRouter>
-          <Sidebar />
-        </BrowserRouter>
-      );
+      renderSidebar('/learner/dashboard');
 
-      const progressLink = screen.getByText('My Progress');
-      expect(progressLink).toBeInTheDocument();
+      // Learner-specific items
+      expect(screen.getByText('Learning')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-My Classes')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-Course Catalog')).toBeInTheDocument();
+      expect(screen.getByText('Progress')).toBeInTheDocument();
 
-      const linkElement = progressLink.closest('a');
-      expect(linkElement).toBeInTheDocument();
-      expect(linkElement).toHaveAttribute('href', '/learner/progress');
+      // Expand Progress section (starts collapsed)
+      const progressHeader = screen.getByText('Progress').closest('button');
+      await user.click(progressHeader!);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('nav-link-My Progress')).toBeInTheDocument();
+        expect(screen.getByTestId('nav-link-Certificates')).toBeInTheDocument();
+      });
+    });
+
+    it('should show "My Progress" enabled with proper permission', async () => {
+      const user = userEvent.setup();
+      vi.mocked(authStore.useAuthStore).mockReturnValue({
+        user: mockUser,
+        roleHierarchy: {
+          primaryUserType: 'learner',
+          allPermissions: ['dashboard:view-my-progress'],
+          learnerRoles: {
+            departmentRoles: [
+              {
+                departmentId: 'dept-789',
+                departmentName: 'Science',
+                isPrimary: true,
+                roles: ['student'],
+              },
+            ],
+          },
+        },
+        hasPermission: vi.fn(() => true),
+      } as any);
+
+      renderSidebar('/learner/dashboard');
+
+      // Expand Progress section
+      const progressHeader = screen.getByText('Progress').closest('button');
+      await user.click(progressHeader!);
+
+      await waitFor(() => {
+        const progressLink = screen.getByTestId('nav-link-My Progress');
+        expect(progressLink).toBeInTheDocument();
+        expect(progressLink).toHaveAttribute('href', '/learner/progress');
+        expect(progressLink).not.toHaveClass('opacity-50');
+      });
+    });
+
+    it('should show "My Progress" disabled when lacking permission', async () => {
+      const user = userEvent.setup();
+      vi.mocked(authStore.useAuthStore).mockReturnValue({
+        user: mockUser,
+        roleHierarchy: {
+          primaryUserType: 'learner',
+          allPermissions: [],
+          learnerRoles: {
+            departmentRoles: [
+              {
+                departmentId: 'dept-789',
+                departmentName: 'Science',
+                isPrimary: true,
+                roles: ['student'],
+              },
+            ],
+          },
+        },
+        hasPermission: vi.fn(() => false),
+      } as any);
+
+      renderSidebar('/learner/dashboard');
+
+      // Expand Progress section
+      const progressHeader = screen.getByText('Progress').closest('button');
+      await user.click(progressHeader!);
+
+      await waitFor(() => {
+        const progressLink = screen.getByTestId('nav-link-My Progress');
+        expect(progressLink).toBeInTheDocument();
+        expect(progressLink).toHaveAttribute('aria-disabled', 'true');
+      });
+    });
+
+    it('should NOT show staff-only items (Teaching, Grading) on learner dashboard', () => {
+      vi.mocked(authStore.useAuthStore).mockReturnValue({
+        user: mockUser,
+        roleHierarchy: {
+          primaryUserType: 'learner',
+          allPermissions: [],
+          learnerRoles: {
+            departmentRoles: [
+              {
+                departmentId: 'dept-789',
+                departmentName: 'Science',
+                isPrimary: true,
+                roles: ['student'],
+              },
+            ],
+          },
+        },
+        hasPermission: vi.fn(() => true),
+      } as any);
+
+      renderSidebar('/learner/dashboard');
+
+      expect(screen.queryByText('Teaching')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('nav-link-Grading')).not.toBeInTheDocument();
     });
   });
 
-  describe('Permission Checking', () => {
-    it('should gray out "My Progress" even if user has learner userType but lacks permission', () => {
+  describe('Admin Dashboard Navigation', () => {
+    it('should show Administration section items on admin dashboard', () => {
+      vi.mocked(authStore.useAuthStore).mockReturnValue({
+        user: mockUser,
+        roleHierarchy: {
+          primaryUserType: 'global-admin',
+          allPermissions: ['user:view', 'department:view'],
+          staffRoles: {
+            departmentRoles: [],
+          },
+        },
+        hasPermission: vi.fn(() => true),
+      } as any);
+
+      renderSidebar('/admin/dashboard');
+
+      // Admin-specific items
+      expect(screen.getByText('Administration')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-User Management')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-Departments')).toBeInTheDocument();
+    });
+
+    it('should NOT show Teaching or Learning sections on admin dashboard', () => {
+      vi.mocked(authStore.useAuthStore).mockReturnValue({
+        user: mockUser,
+        roleHierarchy: {
+          primaryUserType: 'global-admin',
+          allPermissions: ['system:*'],
+          staffRoles: {
+            departmentRoles: [],
+          },
+        },
+        hasPermission: vi.fn(() => true),
+      } as any);
+
+      renderSidebar('/admin/dashboard');
+
+      expect(screen.queryByText('Teaching')).not.toBeInTheDocument();
+      expect(screen.queryByText('Learning')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('nav-link-My Courses')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('nav-link-Course Catalog')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Multi-Role User Navigation', () => {
+    it('should show staff navigation on staff dashboard even for multi-role user', () => {
+      // User has both staff and learner roles
       vi.mocked(authStore.useAuthStore).mockReturnValue({
         user: mockUser,
         roleHierarchy: {
           primaryUserType: 'staff',
           allUserTypes: ['staff', 'learner'],
-          allPermissions: ['dashboard:view-own'], // Missing dashboard:view-my-progress
-          userTypeDisplayMap: {
-            staff: 'Staff',
-            learner: 'Learner',
-          },
+          allPermissions: ['content:courses:read', 'dashboard:view-my-progress'],
           staffRoles: {
             departmentRoles: [
               {
@@ -302,22 +353,68 @@ describe('Sidebar - Cross-UserType Links (ISS-003)', () => {
             ],
           },
         },
-        hasPermission: vi.fn((perm) => perm !== 'dashboard:view-my-progress'),
+        hasPermission: vi.fn(() => true),
       } as any);
 
-      render(
-        <BrowserRouter>
-          <Sidebar />
-        </BrowserRouter>
-      );
+      renderSidebar('/staff/dashboard');
 
-      const progressLink = screen.getByText('My Progress');
-      expect(progressLink).toBeInTheDocument();
+      // Staff navigation should be shown
+      expect(screen.getByText('Teaching')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-My Courses')).toBeInTheDocument();
 
-      // Should be disabled due to missing permission
-      const linkElement = progressLink.closest('div') || progressLink.closest('button');
-      expect(linkElement).toHaveClass('opacity-50');
-      expect(linkElement).toHaveClass('cursor-not-allowed');
+      // Learner-only items should NOT appear (no cross-dashboard pollution)
+      expect(screen.queryByText('Progress')).not.toBeInTheDocument();
+    });
+
+    it('should show learner navigation on learner dashboard for multi-role user', async () => {
+      const user = userEvent.setup();
+      // User has both staff and learner roles
+      vi.mocked(authStore.useAuthStore).mockReturnValue({
+        user: mockUser,
+        roleHierarchy: {
+          primaryUserType: 'staff',
+          allUserTypes: ['staff', 'learner'],
+          allPermissions: ['content:courses:read', 'dashboard:view-my-progress'],
+          staffRoles: {
+            departmentRoles: [
+              {
+                departmentId: 'dept-123',
+                departmentName: 'Engineering',
+                isPrimary: true,
+                roles: ['instructor'],
+              },
+            ],
+          },
+          learnerRoles: {
+            departmentRoles: [
+              {
+                departmentId: 'dept-456',
+                departmentName: 'Math',
+                isPrimary: false,
+                roles: ['student'],
+              },
+            ],
+          },
+        },
+        hasPermission: vi.fn(() => true),
+      } as any);
+
+      renderSidebar('/learner/dashboard');
+
+      // Learner navigation should be shown
+      expect(screen.getByText('Learning')).toBeInTheDocument();
+      expect(screen.getByText('Progress')).toBeInTheDocument();
+
+      // Expand Progress section
+      const progressHeader = screen.getByText('Progress').closest('button');
+      await user.click(progressHeader!);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('nav-link-My Progress')).toBeInTheDocument();
+      });
+
+      // Staff-only items should NOT appear
+      expect(screen.queryByText('Teaching')).not.toBeInTheDocument();
     });
   });
 });

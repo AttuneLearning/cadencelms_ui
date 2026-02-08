@@ -3,7 +3,6 @@
  */
 
 import type {
-  CourseVersion,
   CourseVersionListItem,
   CourseVersionDetail,
   CanonicalCourse,
@@ -11,7 +10,7 @@ import type {
   CourseVersionsListResponse,
   ModuleEditLockResponse,
 } from '@/entities/course-version';
-import { mockDepartments, mockPrograms, mockInstructors, mockCreator } from './courses';
+import { mockDepartments, mockPrograms, mockInstructors } from './courses';
 
 // =====================
 // MOCK CANONICAL COURSES

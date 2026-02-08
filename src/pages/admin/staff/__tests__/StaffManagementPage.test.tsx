@@ -3,7 +3,7 @@
  * TDD approach: Tests written first, implementation follows
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
@@ -190,7 +190,6 @@ describe('StaffManagementPage', () => {
         })
       );
 
-      const user = userEvent.setup();
       render(<StaffManagementPage />, { wrapper: createWrapper() });
 
       await waitFor(() => {

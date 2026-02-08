@@ -85,7 +85,7 @@ export class EventLogger {
    * Log a learning event
    * Non-blocking - adds to queue and returns immediately
    */
-  logEvent(event: CreateLearningEventData): void {
+  logEvent(event: CreateLearningEventData, _options?: LogEventOptions): void {
     if (this.isDestroyed) {
       console.warn('[EventLogger] Cannot log event - logger is destroyed');
       return;

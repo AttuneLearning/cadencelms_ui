@@ -114,7 +114,6 @@ describe('NotificationSettingsPage', () => {
   describe('Toggle Functionality', () => {
     it('should toggle notification settings', async () => {
       server.use(http.get(`${baseUrl}/settings/notification`, () => HttpResponse.json({ success: true, data: mockNotificationSettings })));
-      const user = userEvent.setup();
       render(<NotificationSettingsPage />, { wrapper: createWrapper() });
       await waitFor(() => expect(screen.getByText(/email.*notification/i)).toBeInTheDocument());
     });

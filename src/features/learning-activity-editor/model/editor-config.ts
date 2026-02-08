@@ -44,6 +44,19 @@ export interface EditorConfig {
  * Editor configurations for all learning unit types
  */
 export const EDITOR_CONFIGS: Record<LearningUnitType, EditorConfig> = {
+  video: {
+    type: 'video',
+    label: 'Video',
+    description: 'Video content (legacy)',
+    icon: '🎥',
+    uiPattern: 'drawer',
+    defaultCategory: 'topic',
+    hasQuestions: false,
+    hasFileUpload: true,
+    hasRubric: false,
+    acceptedFileTypes: ['.mp4', '.webm'],
+    maxFileSize: 500 * 1024 * 1024, // 500MB
+  },
   media: {
     type: 'media',
     label: 'Media',

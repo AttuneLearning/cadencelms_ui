@@ -186,11 +186,6 @@ export function DepartmentEnrollmentPage() {
       <PageHeader
         title="Course Enrollments"
         description={`Manage course enrollments for ${department?.name || 'this department'}`}
-        breadcrumbs={[
-          { label: 'Staff', href: '/staff' },
-          { label: department?.name || 'Department', href: `/staff/departments/${deptId}` },
-          { label: 'Enrollments' },
-        ]}
       />
 
       {/* Course Selection */}

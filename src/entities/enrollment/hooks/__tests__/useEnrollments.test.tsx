@@ -14,6 +14,7 @@ import {
   useEnrollInProgram,
   useEnrollInCourse,
   useEnrollInClass,
+  useBulkEnrollInCourse,
   useWithdraw,
   useUpdateEnrollmentStatus,
   useMyEnrollments,
@@ -605,6 +606,163 @@ describe('Enrollment Hooks', () => {
 
       result.current.mutate({
         id: enrollmentId,
+      });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+
+      expect(result.current.error).toBeDefined();
+    });
+  });
+
+  describe('useBulkEnrollInCourse', () => {
+    it('should bulk enroll multiple learners in a course', async () => {
+      const courseId = 'course-1';
+      const learnerIds = ['learner-1', 'learner-2', 'learner-3'];
+
+      const mockResponse = {
+        enrolled: [
+          { learnerId: 'learner-1', enrollmentId: 'enrollment-new-1' },
+          { learnerId: 'learner-2', enrollmentId: 'enrollment-new-2' },
+          { learnerId: 'learner-3', enrollmentId: 'enrollment-new-3' },
+        ],
+        failed: [],
+        summary: {
+          total: 3,
+          successful: 3,
+          failed: 0,
+        },
+      };
+
+      server.use(
+        http.post(`${baseUrl}/enrollments/course/bulk`, () => {
+          return HttpResponse.json(
+            {
+              success: true,
+              message: 'Bulk enrollment completed',
+              data: mockResponse,
+            },
+            { status: 201 }
+          );
+        })
+      );
+
+      const { result } = renderHook(() => useBulkEnrollInCourse(), {
+        wrapper: createWrapper(),
+      });
+
+      result.current.mutate({
+        courseId,
+        learnerIds,
+        options: { sendNotification: true },
+      });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+      expect(result.current.data?.summary.successful).toBe(3);
+      expect(result.current.data?.enrolled).toHaveLength(3);
+      expect(result.current.data?.failed).toHaveLength(0);
+    });
+
+    it('should handle partial success with some failures', async () => {
+      const courseId = 'course-1';
+      const learnerIds = ['learner-1', 'learner-2', 'learner-already-enrolled'];
+
+      const mockResponse = {
+        enrolled: [
+          { learnerId: 'learner-1', enrollmentId: 'enrollment-new-1' },
+          { learnerId: 'learner-2', enrollmentId: 'enrollment-new-2' },
+        ],
+        failed: [
+          { learnerId: 'learner-already-enrolled', reason: 'Already enrolled' },
+        ],
+        summary: {
+          total: 3,
+          successful: 2,
+          failed: 1,
+        },
+      };
+
+      server.use(
+        http.post(`${baseUrl}/enrollments/course/bulk`, () => {
+          return HttpResponse.json(
+            {
+              success: true,
+              message: 'Bulk enrollment completed',
+              data: mockResponse,
+            },
+            { status: 201 }
+          );
+        })
+      );
+
+      const { result } = renderHook(() => useBulkEnrollInCourse(), {
+        wrapper: createWrapper(),
+      });
+
+      result.current.mutate({
+        courseId,
+        learnerIds,
+      });
+
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+      expect(result.current.data?.summary.successful).toBe(2);
+      expect(result.current.data?.summary.failed).toBe(1);
+      expect(result.current.data?.failed[0].reason).toBe('Already enrolled');
+    });
+
+    it('should handle course not found error', async () => {
+      server.use(
+        http.post(`${baseUrl}/enrollments/course/bulk`, () => {
+          return HttpResponse.json(
+            {
+              success: false,
+              message: 'Course not found',
+              code: 'COURSE_NOT_FOUND',
+            },
+            { status: 404 }
+          );
+        })
+      );
+
+      const { result } = renderHook(() => useBulkEnrollInCourse(), {
+        wrapper: createWrapper(),
+      });
+
+      result.current.mutate({
+        courseId: 'non-existent-course',
+        learnerIds: ['learner-1'],
+      });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+
+      expect(result.current.error).toBeDefined();
+    });
+
+    it('should handle exceeding batch size limit', async () => {
+      server.use(
+        http.post(`${baseUrl}/enrollments/course/bulk`, () => {
+          return HttpResponse.json(
+            {
+              success: false,
+              message: 'Batch size exceeds maximum of 500 learners',
+              code: 'BATCH_SIZE_EXCEEDED',
+            },
+            { status: 400 }
+          );
+        })
+      );
+
+      const { result } = renderHook(() => useBulkEnrollInCourse(), {
+        wrapper: createWrapper(),
+      });
+
+      // Simulate >500 learners
+      const manyLearners = Array.from({ length: 501 }, (_, i) => `learner-${i}`);
+
+      result.current.mutate({
+        courseId: 'course-1',
+        learnerIds: manyLearners,
       });
 
       await waitFor(() => expect(result.current.isError).toBe(true));

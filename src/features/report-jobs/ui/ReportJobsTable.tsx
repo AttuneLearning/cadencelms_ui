@@ -12,7 +12,6 @@ import { format, isValid } from 'date-fns';
 import type { ReportJob } from '@/entities/report-job';
 import { JobStatusBadge } from './JobStatusBadge';
 import { JobActionsMenu } from './JobActionsMenu';
-import { cn } from '@/shared/lib/utils';
 
 interface ReportJobsTableProps {
   jobs: ReportJob[];
@@ -35,7 +34,7 @@ export const ReportJobsTable: React.FC<ReportJobsTableProps> = ({
   onViewDetails,
   onShare,
   onBulkDelete,
-  isLoading,
+  isLoading: _isLoading,
 }) => {
   const [selectedJobs, setSelectedJobs] = React.useState<ReportJob[]>([]);
 

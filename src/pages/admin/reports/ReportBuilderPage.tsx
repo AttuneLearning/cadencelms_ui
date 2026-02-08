@@ -16,8 +16,6 @@ import {
   Trash,
   Loader2,
   RotateCcw,
-  FileSpreadsheet,
-  FileText,
   ClipboardList,
 } from 'lucide-react';
 import { DataTable } from '@/shared/ui/data-table';

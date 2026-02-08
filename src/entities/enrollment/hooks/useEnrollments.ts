@@ -9,6 +9,7 @@ import {
   enrollInProgram,
   enrollInCourse,
   enrollInClass,
+  bulkEnrollInCourse,
   updateEnrollmentStatus,
   withdrawFromEnrollment,
   listProgramEnrollments,
@@ -23,6 +24,8 @@ import type {
   EnrollProgramPayload,
   EnrollCoursePayload,
   EnrollClassPayload,
+  BulkCourseEnrollmentPayload,
+  BulkCourseEnrollmentResponse,
   UpdateEnrollmentStatusPayload,
   ProgramEnrollmentsResponse,
   CourseEnrollmentsResponse,
@@ -234,6 +237,22 @@ export function useEnrollInClass() {
     mutationFn: (payload: EnrollClassPayload) => enrollInClass(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: enrollmentKeys.lists() });
+    },
+  });
+}
+
+/**
+ * Hook to bulk enroll multiple learners in a course
+ * Max 500 learners per request
+ */
+export function useBulkEnrollInCourse() {
+  const queryClient = useQueryClient();
+
+  return useMutation<BulkCourseEnrollmentResponse, Error, BulkCourseEnrollmentPayload>({
+    mutationFn: (payload) => bulkEnrollInCourse(payload),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: enrollmentKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: enrollmentKeys.courseEnrollments(variables.courseId) });
     },
   });
 }
