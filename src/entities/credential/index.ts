@@ -73,6 +73,7 @@ export {
   checkUpgradeEligibility,
   initiateCertificateUpgrade,
   getLearnerCertificates,
+  downloadCertificatePDF,
 } from './api/credentialApi';
 
 // Query Keys
@@ -105,6 +106,7 @@ export {
   useLearnerCertificates,
   useIssueCertificate,
   useRevokeCertificate,
+  useDownloadCertificatePDF,
   // Verification & Upgrade hooks
   useVerifyCertificate,
   useUpgradeEligibility,

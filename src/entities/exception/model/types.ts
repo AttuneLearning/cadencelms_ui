@@ -35,6 +35,7 @@ export interface GrantedByRef {
 
 export interface LearnerException {
   id: string;
+  enrollmentId: string;
   learnerId: string;
   learnerName: string;
   courseId: string;
@@ -49,6 +50,7 @@ export interface LearnerException {
 
 export interface LearnerExceptionListItem {
   id: string;
+  enrollmentId: string;
   learnerId: string;
   learnerName: string;
   courseId: string;
@@ -98,8 +100,7 @@ export interface ExcusedContentDetails {
 // =====================
 
 export interface GrantExceptionPayload {
-  learnerId: string;
-  courseId: string;
+  enrollmentId: string;
   type: ExceptionType;
   details: Record<string, unknown>;
   reason: string;
@@ -116,8 +117,6 @@ export interface UpdateExceptionPayload {
 export interface ExceptionFilters {
   page?: number;
   limit?: number;
-  learnerId?: string;
-  courseId?: string;
   type?: ExceptionType;
   isActive?: boolean;
   grantedBy?: string;

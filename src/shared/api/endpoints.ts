@@ -282,6 +282,17 @@ export const endpoints = {
     testEmail: '/settings/email/test',
   },
 
+  exceptions: {
+    byEnrollment: (enrollmentId: string) => `/enrollments/${enrollmentId}/exceptions`,
+    extraAttempts: (enrollmentId: string) => `/enrollments/${enrollmentId}/exceptions/attempts`,
+    extendedAccess: (enrollmentId: string) => `/enrollments/${enrollmentId}/exceptions/access`,
+    moduleUnlock: (enrollmentId: string) => `/enrollments/${enrollmentId}/exceptions/module-unlock`,
+    gradeOverride: (enrollmentId: string) => `/enrollments/${enrollmentId}/exceptions/grade`,
+    excusedContent: (enrollmentId: string) => `/enrollments/${enrollmentId}/exceptions/excuse`,
+    byId: (enrollmentId: string, exceptionId: string) =>
+      `/enrollments/${enrollmentId}/exceptions/${exceptionId}`,
+  },
+
   auditLogs: {
     list: '/audit-logs',
     byId: (id: string) => `/audit-logs/${id}`,

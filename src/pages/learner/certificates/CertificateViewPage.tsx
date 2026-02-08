@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { useLearnerCertificates, useCertificateIssuance } from '@/entities/credential/hooks/useCredentials';
+import { useLearnerCertificates, useCertificateIssuance, useDownloadCertificatePDF } from '@/entities/credential/hooks/useCredentials';
 import { useAuthStore } from '@/features/auth/model/authStore';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent } from '@/shared/ui/card';
@@ -23,6 +23,7 @@ import {
   GraduationCap,
   Clock,
   ExternalLink,
+  Loader2,
 } from 'lucide-react';
 import { useToast } from '@/shared/ui/use-toast';
 
@@ -57,6 +58,8 @@ export const CertificateViewPage: React.FC = () => {
     { enabled: !!certificateId }
   );
 
+  const downloadPDF = useDownloadCertificatePDF();
+
   const isLoading = isLoadingList || isLoadingFull;
   const error = errorList || errorFull;
   const issuance = listItem; // Use list item for display since it has nested objects
@@ -65,10 +68,18 @@ export const CertificateViewPage: React.FC = () => {
   const handleDownload = () => {
     if (pdfUrl) {
       window.open(pdfUrl, '_blank');
-    } else {
-      toast({
-        title: 'PDF Not Available',
-        description: 'Certificate PDF is being generated.',
+    } else if (certificateId) {
+      downloadPDF.mutate(certificateId, {
+        onSuccess: (data) => {
+          window.open(data.pdfUrl, '_blank');
+        },
+        onError: () => {
+          toast({
+            title: 'PDF Generation Failed',
+            description: 'Could not generate certificate PDF. Please try again.',
+            variant: 'destructive',
+          });
+        },
       });
     }
   };
@@ -321,17 +332,24 @@ export const CertificateViewPage: React.FC = () => {
 
                   {/* Action Buttons */}
                   <div className="space-y-2">
-                    {pdfUrl && (
-                      <Button
-                        onClick={handleDownload}
-                        className="w-full print:hidden"
-                        variant="default"
-                        disabled={isRevoked}
-                      >
-                        <Download className="h-4 w-4 mr-2" />
-                        Download PDF
-                      </Button>
-                    )}
+                    <Button
+                      onClick={handleDownload}
+                      className="w-full print:hidden"
+                      variant="default"
+                      disabled={isRevoked || downloadPDF.isPending}
+                    >
+                      {downloadPDF.isPending ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Download className="h-4 w-4 mr-2" />
+                          Download PDF
+                        </>
+                      )}
+                    </Button>
                     <Button
                       onClick={handlePrint}
                       className="w-full print:hidden"

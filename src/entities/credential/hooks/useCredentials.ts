@@ -24,6 +24,7 @@ import {
   checkUpgradeEligibility,
   initiateCertificateUpgrade,
   getLearnerCertificates,
+  downloadCertificatePDF,
 } from '../api/credentialApi';
 import {
   credentialGroupKeys,
@@ -419,6 +420,20 @@ export function useRevokeCertificate() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: certificateIssuanceKeys.detail(variables.id) });
       queryClient.invalidateQueries({ queryKey: certificateIssuanceKeys.lists() });
+    },
+  });
+}
+
+/**
+ * Hook to download/generate certificate PDF
+ */
+export function useDownloadCertificatePDF() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (issuanceId: string) => downloadCertificatePDF(issuanceId),
+    onSuccess: (_, issuanceId) => {
+      queryClient.invalidateQueries({ queryKey: certificateIssuanceKeys.detail(issuanceId) });
     },
   });
 }

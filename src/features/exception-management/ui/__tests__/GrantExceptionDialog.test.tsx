@@ -39,9 +39,8 @@ describe('GrantExceptionDialog', () => {
 
     render(
       <GrantExceptionDialog
-        learnerId="learner1"
+        enrollmentId="enrollment1"
         learnerName="John Doe"
-        courseId="course1"
       />,
       { wrapper: createWrapper() }
     );
@@ -55,9 +54,8 @@ describe('GrantExceptionDialog', () => {
 
     render(
       <GrantExceptionDialog
-        learnerId="learner1"
+        enrollmentId="enrollment1"
         learnerName="John Doe"
-        courseId="course1"
       />,
       { wrapper: createWrapper() }
     );
@@ -77,9 +75,8 @@ describe('GrantExceptionDialog', () => {
 
     render(
       <GrantExceptionDialog
-        learnerId="learner1"
+        enrollmentId="enrollment1"
         learnerName="John Doe"
-        courseId="course1"
       />,
       { wrapper: createWrapper() }
     );
@@ -97,9 +94,8 @@ describe('GrantExceptionDialog', () => {
 
     render(
       <GrantExceptionDialog
-        learnerId="learner1"
+        enrollmentId="enrollment1"
         learnerName="John Doe"
-        courseId="course1"
       />,
       { wrapper: createWrapper() }
     );
@@ -119,9 +115,8 @@ describe('GrantExceptionDialog', () => {
 
     render(
       <GrantExceptionDialog
-        learnerId="learner1"
+        enrollmentId="enrollment1"
         learnerName="John Doe"
-        courseId="course1"
       />,
       { wrapper: createWrapper() }
     );
@@ -146,9 +141,8 @@ describe('GrantExceptionDialog', () => {
 
     render(
       <GrantExceptionDialog
-        learnerId="learner1"
+        enrollmentId="enrollment1"
         learnerName="John Doe"
-        courseId="course1"
       />,
       { wrapper: createWrapper() }
     );
@@ -173,8 +167,7 @@ describe('GrantExceptionDialog', () => {
     await waitFor(() => {
       expect(mutateAsync).toHaveBeenCalledWith(
         expect.objectContaining({
-          learnerId: 'learner1',
-          courseId: 'course1',
+          enrollmentId: 'enrollment1',
           type: 'extra_attempts',
           reason: 'Student was sick',
         })

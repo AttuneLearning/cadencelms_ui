@@ -29,17 +29,15 @@ import {
 import { useToast } from '@/shared/ui/use-toast';
 
 export interface GrantExceptionDialogProps {
-  learnerId: string;
+  enrollmentId: string;
   learnerName: string;
-  courseId: string;
   trigger?: React.ReactNode;
   onSuccess?: () => void;
 }
 
 export const GrantExceptionDialog: React.FC<GrantExceptionDialogProps> = ({
-  learnerId,
+  enrollmentId,
   learnerName,
-  courseId,
   trigger,
   onSuccess,
 }) => {
@@ -154,8 +152,7 @@ export const GrantExceptionDialog: React.FC<GrantExceptionDialogProps> = ({
 
     try {
       await grantExceptionMutation.mutateAsync({
-        learnerId,
-        courseId,
+        enrollmentId,
         type: exceptionType,
         details: buildDetails(),
         reason,

@@ -1,10 +1,10 @@
 /**
  * ExceptionHistoryTable
- * Table listing all exceptions for a learner/course
+ * Table listing all exceptions for an enrollment
  */
 
 import React from 'react';
-import { useLearnerExceptions, useCourseExceptions } from '@/entities/exception';
+import { useEnrollmentExceptions } from '@/entities/exception';
 import type { LearnerExceptionListItem } from '@/entities/exception';
 import {
   Table,
@@ -20,8 +20,7 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import { format } from 'date-fns';
 
 export interface ExceptionHistoryTableProps {
-  learnerId?: string;
-  courseId?: string;
+  enrollmentId: string;
 }
 
 const getExceptionTypeLabel = (type: string): string => {
@@ -55,18 +54,9 @@ const formatExceptionDetails = (exception: LearnerExceptionListItem): string => 
 };
 
 export const ExceptionHistoryTable: React.FC<ExceptionHistoryTableProps> = ({
-  learnerId,
-  courseId,
+  enrollmentId,
 }) => {
-  const learnerQuery = useLearnerExceptions(learnerId!, undefined, {
-    enabled: !!learnerId && !courseId,
-  });
-
-  const courseQuery = useCourseExceptions(courseId!, undefined, {
-    enabled: !!courseId && !learnerId,
-  });
-
-  const { data, isLoading, error } = learnerId ? learnerQuery : courseQuery;
+  const { data, isLoading, error } = useEnrollmentExceptions(enrollmentId);
 
   const exceptions = data?.exceptions || [];
 

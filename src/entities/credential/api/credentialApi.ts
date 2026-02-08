@@ -288,6 +288,18 @@ export async function initiateCertificateUpgrade(
 }
 
 /**
+ * GET /api/v2/certificate-issuances/:issuanceId/pdf - Download/generate certificate PDF
+ */
+export async function downloadCertificatePDF(
+  issuanceId: string
+): Promise<{ pdfUrl: string }> {
+  const response = await client.get<ApiResponse<{ pdfUrl: string }>>(
+    `/api/v2/certificate-issuances/${issuanceId}/pdf`
+  );
+  return response.data.data;
+}
+
+/**
  * GET /api/v2/learners/:learnerId/certificates - Get learner's certificates
  */
 export async function getLearnerCertificates(

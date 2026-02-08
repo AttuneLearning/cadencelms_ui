@@ -13,7 +13,7 @@ import { CertificateViewPage } from '../CertificateViewPage';
 vi.mock('@/entities/credential/hooks/useCredentials');
 vi.mock('@/features/auth/model/authStore');
 
-import { useLearnerCertificates, useCertificateIssuance } from '@/entities/credential/hooks/useCredentials';
+import { useLearnerCertificates, useCertificateIssuance, useDownloadCertificatePDF } from '@/entities/credential/hooks/useCredentials';
 import { useAuthStore } from '@/features/auth/model/authStore';
 import type { CertificateIssuanceListItem } from '@/entities/credential';
 
@@ -74,6 +74,8 @@ const createMockIssuance = (id: string, overrides?: Partial<CertificateIssuanceL
 });
 
 describe('CertificateViewPage', () => {
+  const mockMutate = vi.fn();
+
   beforeEach(() => {
     vi.clearAllMocks();
 
@@ -84,6 +86,12 @@ describe('CertificateViewPage', () => {
       };
       return selector ? selector(state) : state;
     });
+
+    // Mock useDownloadCertificatePDF
+    vi.mocked(useDownloadCertificatePDF).mockReturnValue({
+      mutate: mockMutate,
+      isPending: false,
+    } as any);
   });
 
   const setupMocks = (
@@ -300,6 +308,50 @@ describe('CertificateViewPage', () => {
 
       const backLink = screen.getByRole('link', { name: /Back to Certificates/i });
       expect(backLink).toHaveAttribute('href', '/learner/certificates');
+    });
+
+    it('should call mutation when pdfUrl is null and download is clicked', () => {
+      const cert = createMockIssuance('cert-1');
+      setupMocks([cert], false, null, { pdfUrl: null });
+
+      const Wrapper = createRouterWrapper();
+      render(<CertificateViewPage />, { wrapper: Wrapper });
+
+      const downloadButton = screen.getByRole('button', { name: /Download PDF/i });
+      fireEvent.click(downloadButton);
+
+      expect(mockMutate).toHaveBeenCalledWith('cert-1', expect.objectContaining({
+        onSuccess: expect.any(Function),
+        onError: expect.any(Function),
+      }));
+    });
+
+    it('should show loading state during PDF generation', () => {
+      const cert = createMockIssuance('cert-1');
+      setupMocks([cert], false, null, { pdfUrl: null });
+
+      vi.mocked(useDownloadCertificatePDF).mockReturnValue({
+        mutate: mockMutate,
+        isPending: true,
+      } as any);
+
+      const Wrapper = createRouterWrapper();
+      render(<CertificateViewPage />, { wrapper: Wrapper });
+
+      expect(screen.getByRole('button', { name: /Generating.../i })).toBeDisabled();
+    });
+
+    it('should not call mutation when pdfUrl exists', () => {
+      const windowOpen = vi.spyOn(window, 'open').mockImplementation(() => null);
+      const Wrapper = setupWithCert();
+      render(<CertificateViewPage />, { wrapper: Wrapper });
+
+      const downloadButton = screen.getByRole('button', { name: /Download PDF/i });
+      fireEvent.click(downloadButton);
+
+      expect(mockMutate).not.toHaveBeenCalled();
+      expect(windowOpen).toHaveBeenCalledWith('https://example.com/cert.pdf', '_blank');
+      windowOpen.mockRestore();
     });
   });
 

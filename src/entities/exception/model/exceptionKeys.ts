@@ -16,11 +16,7 @@ export const exceptionKeys = {
   details: () => [...exceptionKeys.all, 'detail'] as const,
   detail: (id: string) => [...exceptionKeys.details(), id] as const,
 
-  // Learner exceptions
-  learnerExceptions: (learnerId: string, filters?: ExceptionFilters) =>
-    [...exceptionKeys.all, 'learner', learnerId, filters] as const,
-
-  // Course exceptions
-  courseExceptions: (courseId: string, filters?: ExceptionFilters) =>
-    [...exceptionKeys.all, 'course', courseId, filters] as const,
+  // Enrollment exceptions
+  enrollmentExceptions: (enrollmentId: string, filters?: ExceptionFilters) =>
+    [...exceptionKeys.all, 'enrollment', enrollmentId, filters] as const,
 };

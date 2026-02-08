@@ -4,7 +4,7 @@
 
 import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import {
-  listExceptions,
+  getEnrollmentExceptions,
   getException,
   grantException,
   updateException,
@@ -24,23 +24,25 @@ import type {
 // =====================
 
 /**
- * Hook to fetch list of exceptions
+ * Hook to fetch exceptions for an enrollment
  */
-export function useExceptions(
+export function useEnrollmentExceptions(
+  enrollmentId: string,
   filters?: ExceptionFilters,
   options?: Omit<
     UseQueryOptions<
       ExceptionsListResponse,
       Error,
       ExceptionsListResponse,
-      ReturnType<typeof exceptionKeys.list>
+      ReturnType<typeof exceptionKeys.enrollmentExceptions>
     >,
     'queryKey' | 'queryFn'
   >
 ) {
   return useQuery({
-    queryKey: exceptionKeys.list(filters),
-    queryFn: () => listExceptions(filters),
+    queryKey: exceptionKeys.enrollmentExceptions(enrollmentId, filters),
+    queryFn: () => getEnrollmentExceptions(enrollmentId, filters),
+    enabled: !!enrollmentId,
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
   });
@@ -50,6 +52,7 @@ export function useExceptions(
  * Hook to fetch single exception
  */
 export function useException(
+  enrollmentId: string,
   id: string,
   options?: Omit<
     UseQueryOptions<
@@ -63,58 +66,8 @@ export function useException(
 ) {
   return useQuery({
     queryKey: exceptionKeys.detail(id),
-    queryFn: () => getException(id),
-    enabled: !!id,
-    staleTime: 5 * 60 * 1000,
-    ...options,
-  });
-}
-
-/**
- * Hook to fetch exceptions for a learner
- */
-export function useLearnerExceptions(
-  learnerId: string,
-  filters?: ExceptionFilters,
-  options?: Omit<
-    UseQueryOptions<
-      ExceptionsListResponse,
-      Error,
-      ExceptionsListResponse,
-      ReturnType<typeof exceptionKeys.learnerExceptions>
-    >,
-    'queryKey' | 'queryFn'
-  >
-) {
-  return useQuery({
-    queryKey: exceptionKeys.learnerExceptions(learnerId, filters),
-    queryFn: () => listExceptions({ ...filters, learnerId }),
-    enabled: !!learnerId,
-    staleTime: 5 * 60 * 1000,
-    ...options,
-  });
-}
-
-/**
- * Hook to fetch exceptions for a course
- */
-export function useCourseExceptions(
-  courseId: string,
-  filters?: ExceptionFilters,
-  options?: Omit<
-    UseQueryOptions<
-      ExceptionsListResponse,
-      Error,
-      ExceptionsListResponse,
-      ReturnType<typeof exceptionKeys.courseExceptions>
-    >,
-    'queryKey' | 'queryFn'
-  >
-) {
-  return useQuery({
-    queryKey: exceptionKeys.courseExceptions(courseId, filters),
-    queryFn: () => listExceptions({ ...filters, courseId }),
-    enabled: !!courseId,
+    queryFn: () => getException(enrollmentId, id),
+    enabled: !!enrollmentId && !!id,
     staleTime: 5 * 60 * 1000,
     ...options,
   });
@@ -134,8 +87,9 @@ export function useGrantException() {
     mutationFn: (payload: GrantExceptionPayload) => grantException(payload),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: exceptionKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: exceptionKeys.learnerExceptions(data.learnerId) });
-      queryClient.invalidateQueries({ queryKey: exceptionKeys.courseExceptions(data.courseId) });
+      queryClient.invalidateQueries({
+        queryKey: exceptionKeys.enrollmentExceptions(data.enrollmentId),
+      });
     },
   });
 }
@@ -147,13 +101,21 @@ export function useUpdateException() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: UpdateExceptionPayload }) =>
-      updateException(id, payload),
+    mutationFn: ({
+      enrollmentId,
+      id,
+      payload,
+    }: {
+      enrollmentId: string;
+      id: string;
+      payload: UpdateExceptionPayload;
+    }) => updateException(enrollmentId, id, payload),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: exceptionKeys.detail(data.id) });
       queryClient.invalidateQueries({ queryKey: exceptionKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: exceptionKeys.learnerExceptions(data.learnerId) });
-      queryClient.invalidateQueries({ queryKey: exceptionKeys.courseExceptions(data.courseId) });
+      queryClient.invalidateQueries({
+        queryKey: exceptionKeys.enrollmentExceptions(data.enrollmentId),
+      });
     },
   });
 }
@@ -165,9 +127,9 @@ export function useRevokeException() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => revokeException(id),
+    mutationFn: ({ enrollmentId, id }: { enrollmentId: string; id: string }) =>
+      revokeException(enrollmentId, id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: exceptionKeys.lists() });
       queryClient.invalidateQueries({ queryKey: exceptionKeys.all });
     },
   });
