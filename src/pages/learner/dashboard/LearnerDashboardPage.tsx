@@ -13,6 +13,7 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import { QuickActionsCard } from '@/features/quick-actions';
 import { useMyEnrollments } from '@/entities/enrollment/hooks/useEnrollments';
 import { useCertificates } from '@/entities/certificate/hooks/useCertificates';
+import { useLearnerProgress } from '@/entities/progress';
 import {
   BookOpen,
   Award,
@@ -283,6 +284,9 @@ export const LearnerDashboardPage: React.FC = () => {
     isLoading: isLoadingCertificates,
   } = useCertificates({ limit: 1 }); // Just need the total count
 
+  // Fetch learner progress for hours studied
+  const { data: learnerProgress } = useLearnerProgress(user?._id || '');
+
   // Calculate stats from enrollment data
   const stats = React.useMemo(() => {
     if (!enrollmentsData) {
@@ -311,10 +315,12 @@ export const LearnerDashboardPage: React.FC = () => {
     return {
       activeCourses: inProgress.length,
       completedCourses: completed.length,
-      hoursStudied: 0, // TODO: Get from progress summary when available
+      hoursStudied: learnerProgress?.summary.totalTimeSpent
+        ? Math.round(learnerProgress.summary.totalTimeSpent / 3600 * 10) / 10
+        : 0,
       averageProgress,
     };
-  }, [enrollmentsData]);
+  }, [enrollmentsData, learnerProgress]);
 
   const isLoading = isLoadingEnrollments || isLoadingCertificates;
 
@@ -361,9 +367,9 @@ export const LearnerDashboardPage: React.FC = () => {
           isLoading={isLoadingCertificates}
         />
         <StatCard
-          title="Average Progress"
-          value={`${stats.averageProgress}%`}
-          description="Across all courses"
+          title="Hours Studied"
+          value={stats.hoursStudied}
+          description={stats.hoursStudied === 0 ? 'Start learning!' : 'Total time invested'}
           icon={TrendingUp}
           isLoading={isLoading}
         />
