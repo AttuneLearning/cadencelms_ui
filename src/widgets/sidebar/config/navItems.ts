@@ -34,6 +34,7 @@ import {
   Search,
   CheckSquare,
   FileBarChart,
+  GraduationCap,
 } from 'lucide-react';
 import type { UserType } from '@/shared/types/auth';
 
@@ -178,6 +179,11 @@ export const BASE_NAV_ITEMS: BaseNavItem[] = [
 // ============================================================================
 
 export const LEARNER_CONTEXT_NAV: ContextNavItem[] = [
+  {
+    label: 'My Courses',
+    path: '/learner/courses',
+    icon: GraduationCap,
+  },
   {
     label: 'My Classes',
     path: '/learner/classes',
