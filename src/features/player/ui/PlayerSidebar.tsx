@@ -20,6 +20,7 @@ export interface Lesson {
   id: string;
   title: string;
   type: 'scorm' | 'video' | 'document' | 'exercise';
+  contentId?: string;
   isCompleted: boolean;
   isLocked: boolean;
   isCurrent: boolean;

@@ -15,7 +15,7 @@ export type ModuleType = 'scorm' | 'custom' | 'exercise';
 /**
  * Reason a course version was locked
  */
-export type LockReason = 'superseded' | 'archived' | 'manual';
+export type LockReason = 'superseded' | 'archived' | 'manual' | 'new_version_created';
 
 export interface Pagination {
   page: number;

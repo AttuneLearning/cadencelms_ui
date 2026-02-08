@@ -14,6 +14,7 @@ export * from './hooks/useExamAttempts';
 export { EXAM_ATTEMPT_KEYS } from './hooks/useExamAttempts';
 
 // UI Components
+export * from './ui/AttemptHistory';
 export * from './ui/AttemptTimer';
 export * from './ui/ExamAttemptCard';
 export * from './ui/ExamAttemptHistory';

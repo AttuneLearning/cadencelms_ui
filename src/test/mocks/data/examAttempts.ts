@@ -331,6 +331,8 @@ export const mockExamResult: ExamResult = {
   gradedAt: '2026-01-09T09:30:00.000Z',
   timeSpent: 1500,
   timeLimit: 1800,
+  maxAttempts: 3,
+  attemptsUsed: 2,
   summary: {
     totalQuestions: 10,
     answeredCount: 10,

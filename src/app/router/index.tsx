@@ -309,6 +309,14 @@ export function AppRouter() {
         }
       />
       <Route
+        path="/learner/courses/:courseId/player/:moduleId/:lessonId"
+        element={
+          <LearnerOnlyRoute>
+            <CoursePlayerPage />
+          </LearnerOnlyRoute>
+        }
+      />
+      <Route
         path="/learner/exercises/:exerciseId/take"
         element={
           <LearnerOnlyRoute>

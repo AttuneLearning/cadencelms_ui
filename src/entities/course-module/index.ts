@@ -7,6 +7,7 @@
 export type {
   CourseModule,
   CourseModuleListItem,
+  CourseModuleLessonItem,
   CourseModuleType,
   CourseModuleSettings,
   CreateCourseModulePayload,

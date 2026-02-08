@@ -41,6 +41,16 @@ export interface CourseModule {
   };
 }
 
+export interface CourseModuleLessonItem {
+  id: string;
+  contentId: string | null;
+  order: number;
+  title: string;
+  type: CourseModuleType;
+  duration: number | null;
+  isPublished: boolean;
+}
+
 export interface CourseModuleListItem {
   id: string;
   title: string;
@@ -48,6 +58,7 @@ export interface CourseModuleListItem {
   order: number;
   type: CourseModuleType;
   contentId: string | null;
+  lessons?: CourseModuleLessonItem[];
   settings: CourseModuleSettings;
   isPublished: boolean;
   passingScore: number | null;

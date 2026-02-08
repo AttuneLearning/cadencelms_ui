@@ -65,7 +65,7 @@ export type CourseVersionStatus = 'draft' | 'published' | 'archived';
 /**
  * Reason a version was locked
  */
-export type LockReason = 'superseded' | 'archived' | 'manual';
+export type LockReason = 'superseded' | 'archived' | 'manual' | 'new_version_created';
 
 /**
  * CourseVersion - An immutable snapshot of a course at a point in time.

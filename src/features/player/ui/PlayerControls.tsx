@@ -3,7 +3,7 @@
  * Navigation controls for course player
  */
 
-import { ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle, Trophy } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 
 export interface PlayerControlsProps {
@@ -12,10 +12,12 @@ export interface PlayerControlsProps {
   hasPrevious: boolean;
   hasNext: boolean;
   isNextLocked: boolean;
+  isOnFinalLesson?: boolean;
   timeSpent?: number;
   onPrevious: () => void;
   onNext: () => void;
   onMarkComplete?: () => void;
+  onCompleteCourse?: () => void;
 }
 
 export function PlayerControls({
@@ -24,10 +26,12 @@ export function PlayerControls({
   hasPrevious,
   hasNext,
   isNextLocked,
+  isOnFinalLesson = false,
   timeSpent = 0,
   onPrevious,
   onNext,
   onMarkComplete,
+  onCompleteCourse,
 }: PlayerControlsProps) {
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
@@ -74,14 +78,24 @@ export function PlayerControls({
             Mark Complete
           </Button>
         )}
-        <Button
-          onClick={onNext}
-          disabled={!hasNext || isNextLocked}
-          className="min-w-[120px]"
-        >
-          Next
-          <ChevronRight className="ml-2 h-4 w-4" />
-        </Button>
+        {isOnFinalLesson && onCompleteCourse ? (
+          <Button
+            onClick={onCompleteCourse}
+            className="min-w-[120px] bg-green-600 hover:bg-green-700"
+          >
+            <Trophy className="mr-2 h-4 w-4" />
+            Complete Course
+          </Button>
+        ) : (
+          <Button
+            onClick={onNext}
+            disabled={!hasNext || isNextLocked}
+            className="min-w-[120px]"
+          >
+            Next
+            <ChevronRight className="ml-2 h-4 w-4" />
+          </Button>
+        )}
       </div>
     </div>
   );

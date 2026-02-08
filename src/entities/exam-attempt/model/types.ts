@@ -160,6 +160,8 @@ export interface ExamResult {
   gradedAt: string;
   timeSpent: number;
   timeLimit: number;
+  maxAttempts: number | null;
+  attemptsUsed: number;
   summary: ExamAttemptSummary;
   questionResults: ExamQuestion[];
   overallFeedback: string | null;

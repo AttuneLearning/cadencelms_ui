@@ -1,13 +1,19 @@
 /**
  * Exercise Results Page
- * Displays detailed exam results with scores and feedback
+ * Displays detailed exam results with scores, feedback, retry capability, and attempt history
  */
 
 import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useExamAttemptResult } from '@/entities/exam-attempt/hooks/useExamAttempts';
+import {
+  useExamAttemptResult,
+  useExamAttemptHistory,
+  useStartExamAttempt,
+} from '@/entities/exam-attempt/hooks/useExamAttempts';
 import { ExamResultViewer } from '@/entities/exam-attempt/ui/ExamResultViewer';
+import { AttemptHistory } from '@/entities/exam-attempt/ui/AttemptHistory';
 import { Button } from '@/shared/ui/button';
+import { Badge } from '@/shared/ui/badge';
 import { useNavigation } from '@/shared/lib/navigation/useNavigation';
 
 export function ExerciseResultsPage() {
@@ -16,6 +22,8 @@ export function ExerciseResultsPage() {
   const { updateBreadcrumbs } = useNavigation();
 
   const { data: result, isLoading, error } = useExamAttemptResult(attemptId || '');
+  const { data: historyData } = useExamAttemptHistory(exerciseId || '');
+  const startAttemptMutation = useStartExamAttempt();
 
   useEffect(() => {
     if (result) {
@@ -28,6 +36,31 @@ export function ExerciseResultsPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [result]);
+
+  const handleRetry = () => {
+    if (!exerciseId) return;
+
+    startAttemptMutation.mutate(
+      { examId: exerciseId },
+      {
+        onSuccess: () => {
+          navigate(`/learner/exercises/${exerciseId}/take`);
+        },
+      }
+    );
+  };
+
+  // Derive retry eligibility from result
+  const canRetry = result
+    ? !result.passed &&
+      (result.maxAttempts === null || result.attemptsUsed < result.maxAttempts)
+    : false;
+
+  const attemptsExhausted = result
+    ? !result.passed &&
+      result.maxAttempts !== null &&
+      result.attemptsUsed >= result.maxAttempts
+    : false;
 
   // Loading state
   if (isLoading) {
@@ -70,8 +103,33 @@ export function ExerciseResultsPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Attempt Badge */}
+        <div className="mb-4 flex items-center gap-3">
+          <Badge
+            variant="secondary"
+            data-testid="attempt-badge"
+          >
+            {result.maxAttempts !== null
+              ? `Attempt ${result.attemptNumber} of ${result.maxAttempts}`
+              : `Attempt ${result.attemptNumber} — Unlimited`}
+          </Badge>
+        </div>
+
         {/* Results Viewer */}
         <ExamResultViewer result={result} className="mb-6" />
+
+        {/* Attempts Exhausted Warning */}
+        {attemptsExhausted && (
+          <div
+            className="mb-6 bg-amber-50 border border-amber-200 rounded-lg p-4 text-amber-800"
+            data-testid="no-attempts-remaining"
+          >
+            <p className="font-medium">No attempts remaining</p>
+            <p className="text-sm mt-1">
+              You have used all {result.maxAttempts} attempts for this exam. Please contact your instructor if you need additional attempts.
+            </p>
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="flex items-center justify-between bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -84,10 +142,16 @@ export function ExerciseResultsPage() {
             </Button>
           </div>
           <div className="flex gap-3">
-            {/* TODO: Add retry logic if attempts remaining */}
-            {/* <Button variant="outline">
-              Retry Exam
-            </Button> */}
+            {canRetry && (
+              <Button
+                variant="outline"
+                onClick={handleRetry}
+                disabled={startAttemptMutation.isPending}
+                data-testid="retry-exam-button"
+              >
+                {startAttemptMutation.isPending ? 'Starting...' : 'Retry Exam'}
+              </Button>
+            )}
             <Button
               onClick={() => navigate(`/learner/courses/${exerciseId}`)}
               variant="default"
@@ -96,6 +160,13 @@ export function ExerciseResultsPage() {
             </Button>
           </div>
         </div>
+
+        {/* Attempt History */}
+        {historyData && historyData.attempts.length > 0 && (
+          <div className="mt-6">
+            <AttemptHistory attempts={historyData.attempts} />
+          </div>
+        )}
       </div>
     </div>
   );
