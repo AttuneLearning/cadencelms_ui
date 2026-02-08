@@ -169,13 +169,13 @@ export async function enrollProgram(programId: string): Promise<{ enrollmentId: 
 }
 
 /**
- * GET /program-enrollments/:enrollmentId/progress - Get program enrollment progress
+ * GET /enrollments/:enrollmentId/progress - Get program enrollment progress
  */
 export async function getProgramEnrollmentProgress(
   enrollmentId: string
 ): Promise<ProgramEnrollmentProgress> {
   const response = await client.get<ApiResponse<ProgramEnrollmentProgress>>(
-    `/program-enrollments/${enrollmentId}/progress`
+    `/enrollments/${enrollmentId}/progress`
   );
   return response.data.data;
 }

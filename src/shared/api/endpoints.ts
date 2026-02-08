@@ -186,7 +186,7 @@ export const endpoints = {
   },
 
   exercises: {
-    attempts: (exerciseId: string) => `/exercises/${exerciseId}/attempts`,
+    attempts: (exerciseId: string) => `/content/exercises/${exerciseId}/attempts`,
   },
 
   examAttempts: {
