@@ -85,7 +85,7 @@ export const ExercisePreview: React.FC<ExercisePreviewProps> = ({
                 key={idx}
                 className={cn(
                   'flex items-center space-x-3 p-3 rounded-md border',
-                  showAnswers && question.correctAnswers.includes(option) && 'bg-green-50 border-green-200'
+                  showAnswers && question.correctAnswers.includes(option) && 'bg-emerald-500/10 border-emerald-500/20'
                 )}
               >
                 <RadioGroupItem value={option} id={`option-${idx}`} disabled />
@@ -93,12 +93,12 @@ export const ExercisePreview: React.FC<ExercisePreviewProps> = ({
                   htmlFor={`option-${idx}`}
                   className={cn(
                     'flex-1 cursor-pointer',
-                    showAnswers && question.correctAnswers.includes(option) && 'font-medium text-green-700'
+                    showAnswers && question.correctAnswers.includes(option) && 'font-medium text-emerald-700 dark:text-emerald-400'
                   )}
                 >
                   {option}
                   {showAnswers && question.correctAnswers.includes(option) && (
-                    <CheckCircle2 className="inline-block ml-2 h-4 w-4 text-green-600" />
+                    <CheckCircle2 className="inline-block ml-2 h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                   )}
                 </Label>
               </div>
@@ -116,7 +116,7 @@ export const ExercisePreview: React.FC<ExercisePreviewProps> = ({
                   'flex items-center space-x-3 p-3 rounded-md border',
                   showAnswers &&
                     option.toLowerCase() === String(question.correctAnswers[0]).toLowerCase() &&
-                    'bg-green-50 border-green-200'
+                    'bg-emerald-500/10 border-emerald-500/20'
                 )}
               >
                 <RadioGroupItem value={option} id={`tf-${option}`} disabled />
@@ -126,13 +126,13 @@ export const ExercisePreview: React.FC<ExercisePreviewProps> = ({
                     'flex-1 cursor-pointer',
                     showAnswers &&
                       option.toLowerCase() === String(question.correctAnswers[0]).toLowerCase() &&
-                      'font-medium text-green-700'
+                      'font-medium text-emerald-700 dark:text-emerald-400'
                   )}
                 >
                   {option}
                   {showAnswers &&
                     option.toLowerCase() === String(question.correctAnswers[0]).toLowerCase() && (
-                      <CheckCircle2 className="inline-block ml-2 h-4 w-4 text-green-600" />
+                      <CheckCircle2 className="inline-block ml-2 h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                     )}
                 </Label>
               </div>
@@ -164,7 +164,7 @@ export const ExercisePreview: React.FC<ExercisePreviewProps> = ({
             />
             {showAnswers && question.correctAnswers.length > 0 && (
               <Alert>
-                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                 <AlertDescription>
                   <span className="font-medium">Expected answer:</span>{' '}
                   {String(question.correctAnswers[0])}

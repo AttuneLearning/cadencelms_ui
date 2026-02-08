@@ -31,9 +31,6 @@ if (!(window as any).__loopBreaker) {
 }
 
 export const App: React.FC = () => {
-  const renderCount = React.useRef(0);
-  renderCount.current++;
-  console.log(`[App] Render #${renderCount.current}`);
 
   // EMERGENCY: Detect page reload loops (use both storage AND global variable)
   // BUT ONLY CHECK ON MOUNT, NOT EVERY RENDER
@@ -42,8 +39,6 @@ export const App: React.FC = () => {
   React.useEffect(() => {
     const globalBreaker = (window as any).__loopBreaker;
     const timeSince = Date.now() - globalBreaker.time;
-
-    console.log(`[App] useEffect - loop check:`, { count: globalBreaker.count, timeSince });
 
     // Reset if more than 1 second passed
     if (timeSince > 1000) {

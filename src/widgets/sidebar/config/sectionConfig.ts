@@ -38,6 +38,7 @@ import {
   Building2,
   UserPlus,
   Inbox,
+  GraduationCap,
 } from 'lucide-react';
 
 // ============================================================================
@@ -219,12 +220,6 @@ export const LEARNER_SECTIONS: DashboardSections = {
         path: dashboardPath('learner'),
         icon: Home,
       },
-      {
-        id: 'learner-calendar',
-        label: 'Calendar',
-        path: calendarPath('learner'),
-        icon: CalendarDays,
-      },
     ],
   },
   primary: {
@@ -234,23 +229,35 @@ export const LEARNER_SECTIONS: DashboardSections = {
     defaultExpanded: true,
     items: [
       {
-        id: 'learner-inbox',
-        label: 'Inbox',
-        path: '/learner/inbox',
-        icon: Inbox,
+        id: 'learner-courses',
+        label: 'My Courses',
+        path: '/learner/courses',
+        icon: GraduationCap,
       },
       {
-        id: 'learner-classes',
-        label: 'My Classes',
-        path: '/learner/classes',
-        icon: Calendar,
+        id: 'learner-programs',
+        label: 'My Programs',
+        path: '/learner/programs',
+        icon: Award,
+      },
+      {
+        id: 'learner-learning',
+        label: 'My Learning',
+        path: '/learner/learning',
+        icon: BookOpen,
       },
       {
         id: 'learner-catalog',
         label: 'Course Catalog',
         path: '/learner/catalog',
-        icon: BookOpen,
+        icon: Search,
         requiredPermission: 'course:view-catalog',
+      },
+      {
+        id: 'learner-inbox',
+        label: 'Inbox',
+        path: '/learner/inbox',
+        icon: Inbox,
       },
     ],
   },
@@ -293,12 +300,6 @@ export const LEARNER_SECTIONS: DashboardSections = {
         label: 'My Profile',
         path: profilePath('learner'),
         icon: User,
-      },
-      {
-        id: 'learner-settings',
-        label: 'Settings',
-        path: settingsPath('learner'),
-        icon: Settings,
       },
     ],
   },

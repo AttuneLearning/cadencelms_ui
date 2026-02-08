@@ -10,6 +10,7 @@ import { Button } from '@/shared/ui/button';
 import { useEnrollInCourse } from '@/entities/enrollment';
 import { AlertCircle, CheckCircle, PlayCircle, UserPlus } from 'lucide-react';
 import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { useToast } from '@/shared/ui/use-toast';
 import type { Course } from '@/entities/course';
 import { useAuth } from '@/features/auth/model/useAuth';
 
@@ -25,13 +26,31 @@ export const EnrollmentSection: React.FC<EnrollmentSectionProps> = ({
   const navigate = useNavigate();
   const { user } = useAuth();
   const { mutate: enrollInCourse, isPending: isEnrolling } = useEnrollInCourse();
+  const { toast } = useToast();
 
   const handleEnroll = () => {
     if (!user?._id) return;
-    enrollInCourse({
-      learnerId: user._id,
-      courseId: course.id,
-    });
+    enrollInCourse(
+      {
+        learnerId: user._id,
+        courseId: course.id,
+      },
+      {
+        onSuccess: () => {
+          toast({
+            title: 'Enrolled successfully',
+            description: `You have been enrolled in ${course.title}.`,
+          });
+        },
+        onError: () => {
+          toast({
+            title: 'Enrollment failed',
+            description: 'Unable to enroll in this course. Please try again.',
+            variant: 'destructive',
+          });
+        },
+      }
+    );
   };
 
   const handleContinueLearning = () => {

@@ -27,17 +27,6 @@ interface AuthInitializerProps {
  * </AuthInitializer>
  */
 export const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
-  const mountId = React.useRef(Math.random().toString(36).substr(2, 9));
-  console.log(`[AuthInitializer] Component ${mountId.current} rendering`);
-
-  // Track mount/unmount
-  React.useEffect(() => {
-    console.log(`[AuthInitializer] Component ${mountId.current} MOUNTED`);
-    return () => {
-      console.log(`[AuthInitializer] Component ${mountId.current} UNMOUNTING!`);
-    };
-  }, []);
-
   const { initializeAuth } = useAuthStore();
   const [isInitializing, setIsInitializing] = React.useState(true);
 
@@ -48,7 +37,7 @@ export const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) =>
 
   // If we've initialized more than 5 times in 2 seconds, we're in a loop - STOP
   if (timeSince < 2000 && count > 5) {
-    console.error(`[AuthInitializer ${mountId.current}] EMERGENCY: Initialization loop detected! Breaking circuit.`);
+    console.error('[AuthInitializer] EMERGENCY: Initialization loop detected! Breaking circuit.');
     sessionStorage.clear();
     localStorage.clear();
 
@@ -66,7 +55,6 @@ export const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) =>
           <div className="flex gap-3 justify-center">
             <button
               onClick={() => {
-                console.log('[AuthInitializer] Clearing loop counter, staying on page');
                 sessionStorage.removeItem('auth_init_loop_check');
                 window.location.reload();
               }}
@@ -101,17 +89,14 @@ export const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) =>
   React.useEffect(() => {
     // Prevent multiple initializations
     if (hasInitialized.current) {
-      console.log('[AuthInitializer] Already initialized, skipping');
       return;
     }
 
     const initialize = async () => {
-      console.log('[AuthInitializer] Starting auth initialization...');
       hasInitialized.current = true;
 
       try {
         await initializeAuth();
-        console.log('[AuthInitializer] Auth initialization complete');
         // Clear loop counter on success
         sessionStorage.removeItem('auth_init_loop_check');
       } catch (error) {

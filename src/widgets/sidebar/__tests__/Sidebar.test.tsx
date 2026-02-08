@@ -213,7 +213,9 @@ describe('Sidebar Component - Section-Based Navigation', () => {
     it('should render Learning (Primary) section on learner dashboard', () => {
       renderSidebar('/learner/dashboard');
       expect(screen.getByText('Learning')).toBeInTheDocument();
-      expect(screen.getByTestId('nav-link-My Classes')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-My Courses')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-My Programs')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-My Learning')).toBeInTheDocument();
       expect(screen.getByTestId('nav-link-Course Catalog')).toBeInTheDocument();
     });
 

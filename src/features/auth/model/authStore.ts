@@ -169,7 +169,6 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null });
 
         try {
-          console.log('[AuthStore] Starting login...');
           const response: LoginResponse = await apiLogin(credentials);
 
           if (!response.success || !response.data) {
@@ -178,23 +177,13 @@ export const useAuthStore = create<AuthState>()(
 
           const { data } = response;
 
-          // DEBUG: Log raw API response userTypes
-          console.log('[AuthStore] Raw userTypes from API:', data.userTypes);
-          console.log('[AuthStore] departmentMemberships:', data.departmentMemberships);
-
           // V2.1: Extract UserType keys from UserTypeObject[]
           const userTypeKeys: UserType[] = extractUserTypeKeys(data.userTypes);
-          console.log('[AuthStore] Extracted userTypeKeys:', userTypeKeys);
 
           // V2.1: Build display maps from server-provided displayAs values
           const userTypeDisplayMap = buildUserTypeDisplayMap(data.userTypes);
           const roleObjects = extractRolesFromMemberships(data.departmentMemberships);
           const roleDisplayMap = buildRoleDisplayMap(roleObjects);
-
-          console.log('[AuthStore] Display maps built:', {
-            userTypeDisplayMap,
-            roleDisplayMap,
-          });
 
           // Build User object from response
           const user: User = {
@@ -343,19 +332,6 @@ export const useAuthStore = create<AuthState>()(
             permissionVersion,
           });
 
-          console.log('[AuthStore] Login successful:', {
-            userId: user._id,
-            userTypes: user.userTypes,
-            defaultDashboard: user.defaultDashboard,
-            globalRights,
-            departmentRights,
-            departmentMemberships: data.departmentMemberships?.map((m: any) => ({
-              id: m.departmentId,
-              name: m.departmentName,
-              rights: m.accessRights?.length || 0,
-            })),
-            permissionVersion,
-          });
         } catch (error: any) {
           console.error('[AuthStore] Login failed:', error);
           set({
@@ -373,7 +349,6 @@ export const useAuthStore = create<AuthState>()(
         if (import.meta.env?.DEV) {
           console.trace('[AuthStore] Logout trace');
         }
-        console.log('[AuthStore] Starting logout...');
 
         try {
           await apiLogout();
@@ -406,8 +381,6 @@ export const useAuthStore = create<AuthState>()(
 
         // Clear navigation store department state
         useNavigationStore.getState().clearDepartmentSelection();
-
-        console.log('[AuthStore] Logout complete');
       },
 
       // ================================================================
@@ -434,8 +407,6 @@ export const useAuthStore = create<AuthState>()(
           throw new Error('Escalation password is required');
         }
 
-        console.log('[AuthStore] Starting admin escalation...');
-
         try {
           // Call API to verify password and get admin token
           const response = await apiEscalateToAdmin({ escalationPassword: password });
@@ -455,7 +426,6 @@ export const useAuthStore = create<AuthState>()(
             adminSessionExpiry: getAdminTokenExpiry(),
           });
 
-          console.log('[AuthStore] Escalated to admin session');
         } catch (error: any) {
           console.error('[AuthStore] Admin escalation failed:', error);
           throw error; // Re-throw to let modal handle specific error messages
@@ -468,8 +438,6 @@ export const useAuthStore = create<AuthState>()(
        * Clears the admin token from memory and returns to normal user session.
        */
       deEscalateFromAdmin: () => {
-        console.log('[AuthStore] De-escalating from admin session...');
-
         // Clear admin token from memory
         clearAdminToken();
 
@@ -478,8 +446,6 @@ export const useAuthStore = create<AuthState>()(
           isAdminSessionActive: false,
           adminSessionExpiry: null,
         });
-
-        console.log('[AuthStore] De-escalated from admin session');
       },
 
       /**
@@ -511,7 +477,6 @@ export const useAuthStore = create<AuthState>()(
         }
 
         try {
-          console.log('[AuthStore] Refreshing access token...');
           const response = await apiRefresh({ refreshToken: refreshToken.value });
 
           if (!response.success || !response.data) {
@@ -534,7 +499,6 @@ export const useAuthStore = create<AuthState>()(
             roleHierarchy: response.data.roleHierarchy,
           });
 
-          console.log('[AuthStore] Token refreshed successfully');
         } catch (error) {
           console.error('[AuthStore] Token refresh failed:', error);
 
@@ -551,11 +515,8 @@ export const useAuthStore = create<AuthState>()(
         const accessToken = getAccessToken();
 
         if (!accessToken) {
-          console.log('[AuthStore] No stored token found');
           return;
         }
-
-        console.log('[AuthStore] Stored token found, restoring session...');
 
         try {
           set({ isLoading: true });
@@ -692,11 +653,6 @@ export const useAuthStore = create<AuthState>()(
             permissionVersion,
           });
 
-          console.log('[AuthStore] Session restored from token', {
-            globalRights: globalRights.length,
-            departmentRightsKeys: Object.keys(departmentRights),
-            permissionVersion,
-          });
         } catch (error) {
           console.error('[AuthStore] Failed to restore session:', error);
 
@@ -709,7 +665,6 @@ export const useAuthStore = create<AuthState>()(
             if (response.success && response.data) {
               // Same logic as above - rebuild user and roleHierarchy
               // (For brevity, this would be the same code)
-              console.log('[AuthStore] Session restored after token refresh');
             } else {
               // Refresh succeeded but user data invalid - clear state
               throw new Error('Invalid user data after token refresh');

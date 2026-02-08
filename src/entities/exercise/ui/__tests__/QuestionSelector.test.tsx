@@ -605,7 +605,7 @@ describe('QuestionSelector', () => {
       );
 
       const correctAnswerText = screen.getByText(mockMultipleChoiceQuestion.correctAnswers[0]);
-      expect(correctAnswerText).toHaveClass('font-medium', 'text-green-700');
+      expect(correctAnswerText).toHaveClass('font-medium', 'text-emerald-700');
     });
 
     it('should display explanation when present', () => {

@@ -60,7 +60,7 @@ exports[`QuestionCard > Snapshot Tests > should match snapshot for essay questio
         class="flex flex-col gap-2"
       >
         <div
-          class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-red-500/10 text-red-500 border-red-500/20"
+          class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-destructive/10 text-destructive border-destructive/20"
         >
           hard
         </div>
@@ -287,7 +287,7 @@ exports[`QuestionCard > Snapshot Tests > should match snapshot for multiple choi
         class="flex flex-col gap-2"
       >
         <div
-          class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-green-500/10 text-green-500 border-green-500/20"
+          class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
         >
           easy
         </div>
@@ -385,7 +385,7 @@ exports[`QuestionCard > Snapshot Tests > should match snapshot for multiple choi
             class="flex items-center gap-2 text-sm p-2 rounded-md bg-muted/50"
           >
             <svg
-              class="lucide lucide-circle-check h-3 w-3 text-green-500 flex-shrink-0"
+              class="lucide lucide-circle-check h-3 w-3 text-emerald-500 flex-shrink-0"
               fill="none"
               height="24"
               stroke="currentColor"
@@ -610,7 +610,7 @@ exports[`QuestionCard > Snapshot Tests > should match snapshot for true/false qu
         class="flex flex-col gap-2"
       >
         <div
-          class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-green-500/10 text-green-500 border-green-500/20"
+          class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
         >
           easy
         </div>
@@ -681,7 +681,7 @@ exports[`QuestionCard > Snapshot Tests > should match snapshot for true/false qu
             class="flex items-center gap-2 text-sm p-2 rounded-md bg-muted/50"
           >
             <svg
-              class="lucide lucide-circle-check h-3 w-3 text-green-500 flex-shrink-0"
+              class="lucide lucide-circle-check h-3 w-3 text-emerald-500 flex-shrink-0"
               fill="none"
               height="24"
               stroke="currentColor"
@@ -902,7 +902,7 @@ exports[`QuestionCard > Snapshot Tests > should match snapshot with usage statis
         class="flex flex-col gap-2"
       >
         <div
-          class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-green-500/10 text-green-500 border-green-500/20"
+          class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
         >
           easy
         </div>
@@ -1000,7 +1000,7 @@ exports[`QuestionCard > Snapshot Tests > should match snapshot with usage statis
             class="flex items-center gap-2 text-sm p-2 rounded-md bg-muted/50"
           >
             <svg
-              class="lucide lucide-circle-check h-3 w-3 text-green-500 flex-shrink-0"
+              class="lucide lucide-circle-check h-3 w-3 text-emerald-500 flex-shrink-0"
               fill="none"
               height="24"
               stroke="currentColor"

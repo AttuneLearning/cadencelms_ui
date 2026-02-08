@@ -105,7 +105,7 @@ export function useReportNotifications({
 
   // Request email notification (would call API in real implementation)
   const requestEmailNotification = useCallback(
-    async (job: ReportJob, type: 'complete' | 'failed') => {
+    async (_job: ReportJob, type: 'complete' | 'failed') => {
       const shouldEmail =
         (type === 'complete' && preferences.emailOnComplete) ||
         (type === 'failed' && preferences.emailOnFailure);
@@ -115,7 +115,7 @@ export function useReportNotifications({
       // In real implementation, would call API endpoint
       // await api.post('/api/v2/reports/notifications/email', { jobId: job._id, type });
 
-      console.log(`Email notification requested for job ${job._id} (${type})`);
+      // TODO: Replace with actual API call to send email notification
     },
     [preferences.emailOnComplete, preferences.emailOnFailure]
   );

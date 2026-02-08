@@ -33,7 +33,7 @@ function MediaRenderer({ media }: { media?: MediaContent }) {
           className="max-w-full h-auto rounded-lg mx-auto"
         />
         {attachment.caption && (
-          <p className="text-sm text-gray-500 text-center mt-2">{attachment.caption}</p>
+          <p className="text-sm text-muted-foreground text-center mt-2">{attachment.caption}</p>
         )}
       </div>
     );
@@ -49,7 +49,7 @@ function MediaRenderer({ media }: { media?: MediaContent }) {
           aria-label={attachment.altText || 'Flashcard video'}
         />
         {attachment.caption && (
-          <p className="text-sm text-gray-500 text-center mt-2">{attachment.caption}</p>
+          <p className="text-sm text-muted-foreground text-center mt-2">{attachment.caption}</p>
         )}
       </div>
     );
@@ -65,7 +65,7 @@ function MediaRenderer({ media }: { media?: MediaContent }) {
           aria-label={attachment.altText || 'Flashcard audio'}
         />
         {attachment.caption && (
-          <p className="text-sm text-gray-500 text-center mt-2">{attachment.caption}</p>
+          <p className="text-sm text-muted-foreground text-center mt-2">{attachment.caption}</p>
         )}
       </div>
     );
@@ -121,16 +121,16 @@ export function FlashcardQuestion({
       <div className={`space-y-4 ${className}`}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Front Side */}
-          <div className="p-6 bg-white border-2 border-blue-200 rounded-xl shadow-sm">
-            <div className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-3">
+          <div className="p-6 bg-card border-2 border-primary/30 rounded-xl shadow-sm">
+            <div className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">
               Front
             </div>
             <MediaRenderer media={flashcardData?.frontMedia} />
-            <div className="text-lg text-gray-900">{frontText}</div>
+            <div className="text-lg text-foreground">{frontText}</div>
             {flashcardData?.prompts && flashcardData.prompts.length > 0 && (
               <div className="mt-3 space-y-1">
                 {flashcardData.prompts.map((prompt, idx) => (
-                  <p key={idx} className="text-sm text-gray-500 italic">
+                  <p key={idx} className="text-sm text-muted-foreground italic">
                     {prompt}
                   </p>
                 ))}
@@ -139,12 +139,12 @@ export function FlashcardQuestion({
           </div>
 
           {/* Back Side */}
-          <div className="p-6 bg-white border-2 border-green-200 rounded-xl shadow-sm">
-            <div className="text-xs font-semibold text-green-600 uppercase tracking-wider mb-3">
+          <div className="p-6 bg-card border-2 border-emerald-500/30 rounded-xl shadow-sm">
+            <div className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-3">
               Back
             </div>
             <MediaRenderer media={flashcardData?.backMedia} />
-            <div className="text-lg text-gray-900">{backText}</div>
+            <div className="text-lg text-foreground">{backText}</div>
           </div>
         </div>
 
@@ -154,8 +154,8 @@ export function FlashcardQuestion({
             <div
               className={`px-4 py-2 rounded-full text-sm font-medium ${
                 selfAssessment === 'got_it'
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-amber-100 text-amber-700'
+                  ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
+                  : 'bg-amber-500/10 text-amber-700 dark:text-amber-400'
               }`}
             >
               {selfAssessment === 'got_it' ? 'Marked: Got it!' : 'Marked: Need review'}
@@ -188,43 +188,43 @@ export function FlashcardQuestion({
         >
           {/* Front of card */}
           <div
-            className="absolute inset-0 backface-hidden p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-300 rounded-xl shadow-lg"
+            className="absolute inset-0 backface-hidden p-6 bg-gradient-to-br from-primary/10 to-primary/20 border-2 border-primary/30 rounded-xl shadow-lg"
             style={{ backfaceVisibility: 'hidden' }}
           >
-            <div className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-3">
+            <div className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">
               Front
             </div>
             <MediaRenderer media={flashcardData?.frontMedia} />
-            <div className="text-xl text-gray-900 font-medium">{frontText}</div>
+            <div className="text-xl text-foreground font-medium">{frontText}</div>
             {flashcardData?.prompts && flashcardData.prompts.length > 0 && (
               <div className="mt-4 space-y-1">
                 {flashcardData.prompts.map((prompt, idx) => (
-                  <p key={idx} className="text-sm text-gray-500 italic">
+                  <p key={idx} className="text-sm text-muted-foreground italic">
                     Hint: {prompt}
                   </p>
                 ))}
               </div>
             )}
             <div className="absolute bottom-4 left-0 right-0 text-center">
-              <span className="text-sm text-blue-500">Click to flip</span>
+              <span className="text-sm text-primary/70">Click to flip</span>
             </div>
           </div>
 
           {/* Back of card */}
           <div
-            className="absolute inset-0 backface-hidden p-6 bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-300 rounded-xl shadow-lg"
+            className="absolute inset-0 backface-hidden p-6 bg-gradient-to-br from-emerald-500/10 to-emerald-500/20 border-2 border-emerald-500/30 rounded-xl shadow-lg"
             style={{
               backfaceVisibility: 'hidden',
               transform: 'rotateY(180deg)',
             }}
           >
-            <div className="text-xs font-semibold text-green-600 uppercase tracking-wider mb-3">
+            <div className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-3">
               Back
             </div>
             <MediaRenderer media={flashcardData?.backMedia} />
-            <div className="text-xl text-gray-900 font-medium">{backText}</div>
+            <div className="text-xl text-foreground font-medium">{backText}</div>
             <div className="absolute bottom-4 left-0 right-0 text-center">
-              <span className="text-sm text-green-500">Click to flip back</span>
+              <span className="text-sm text-emerald-500 dark:text-emerald-400">Click to flip back</span>
             </div>
           </div>
         </div>
@@ -238,8 +238,8 @@ export function FlashcardQuestion({
           disabled={isReview}
           className={`px-6 py-3 rounded-lg font-medium transition-all ${
             selfAssessment === 'got_it'
-              ? 'bg-green-600 text-white shadow-md'
-              : 'bg-green-100 text-green-700 hover:bg-green-200'
+              ? 'bg-emerald-600 text-white shadow-md'
+              : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/20'
           } disabled:opacity-50 disabled:cursor-not-allowed`}
           aria-pressed={selfAssessment === 'got_it'}
         >

@@ -369,7 +369,7 @@ exports[`QuestionSelector > Snapshot Tests > should match snapshot with question
                 class="flex items-center gap-2 text-sm"
               >
                 <svg
-                  class="lucide lucide-circle-check h-4 w-4 text-green-600"
+                  class="lucide lucide-circle-check h-4 w-4 text-emerald-600 dark:text-emerald-400"
                   fill="none"
                   height="24"
                   stroke="currentColor"
@@ -390,7 +390,7 @@ exports[`QuestionSelector > Snapshot Tests > should match snapshot with question
                   />
                 </svg>
                 <span
-                  class="font-medium text-green-700"
+                  class="font-medium text-emerald-700 dark:text-emerald-400"
                 >
                   All of the above
                 </span>

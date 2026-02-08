@@ -462,11 +462,11 @@ export const QuestionBankSelector: React.FC<QuestionBankSelectorProps> = ({
                         key={idx}
                         className={cn(
                           'flex items-center gap-2 p-2 rounded-md border',
-                          option.isCorrect && 'bg-green-50 border-green-200'
+                          option.isCorrect && 'bg-emerald-500/10 border-emerald-500/20'
                         )}
                       >
                         {option.isCorrect ? (
-                          <CheckCircle2 className="h-4 w-4 text-green-600" />
+                          <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                         ) : (
                           <XCircle className="h-4 w-4 text-muted-foreground" />
                         )}

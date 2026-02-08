@@ -17,6 +17,7 @@ import {
   ChevronRight,
   CheckCircle,
   Settings,
+  Download,
 } from 'lucide-react';
 import type { LearningUnit, LearningUnitType } from '../model/types';
 import { cn } from '@/shared/lib/utils';
@@ -195,24 +196,56 @@ const VideoContent: React.FC<ContentProps> = ({ unit }) => (
   </div>
 );
 
-const DocumentContent: React.FC<ContentProps> = ({ unit }) => (
-  <div className="space-y-4">
-    <div className="flex items-center justify-center rounded-lg border border-dashed p-8">
-      <div className="text-center">
-        <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-        <p className="mt-2 font-medium">{unit.title}</p>
-        {unit.contentId && (
-          <p className="mt-1 text-sm text-muted-foreground">
-            Document ID: {unit.contentId}
-          </p>
-        )}
+const DocumentContent: React.FC<ContentProps> = ({ unit }) => {
+  const documentUrl = unit.contentId ? `/api/content/${unit.contentId}/file` : '';
+  const isPdf = documentUrl.toLowerCase().endsWith('.pdf') || unit.type === 'document';
+
+  if (!documentUrl) {
+    return (
+      <div className="flex items-center justify-center rounded-lg border border-dashed p-8">
+        <div className="text-center">
+          <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
+          <p className="mt-2 font-medium">Document not available</p>
+        </div>
       </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="relative min-h-[500px] w-full rounded-lg border bg-muted/5">
+        {isPdf ? (
+          <iframe
+            src={documentUrl}
+            title={unit.title}
+            className="h-[500px] w-full rounded-lg border-0"
+          />
+        ) : (
+          <div className="flex h-[500px] items-center justify-center p-8">
+            <img
+              src={documentUrl}
+              alt={unit.title}
+              className="max-h-full max-w-full object-contain"
+            />
+          </div>
+        )}
+        <div className="absolute right-3 top-3">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => window.open(documentUrl, '_blank')}
+          >
+            <Download className="mr-2 h-4 w-4" />
+            Download
+          </Button>
+        </div>
+      </div>
+      {unit.description && (
+        <p className="text-muted-foreground">{unit.description}</p>
+      )}
     </div>
-    {unit.description && (
-      <p className="text-muted-foreground">{unit.description}</p>
-    )}
-  </div>
-);
+  );
+};
 
 const ScormContent: React.FC<ContentProps> = ({ unit }) => (
   <div className="space-y-4">

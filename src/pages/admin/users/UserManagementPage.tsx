@@ -144,32 +144,11 @@ export const UserManagementPage: React.FC = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  // Debug: Log when component mounts
-  React.useEffect(() => {
-    console.log('[UserManagementPage] Component mounted');
-  }, []);
-
   // Fetch staff users
-  const { data, isLoading, error, isError, refetch, isFetching, status, fetchStatus } = useQuery({
+  const { data, error, refetch } = useQuery({
     queryKey: ['admin', 'staff'],
-    queryFn: () => {
-      console.log('[UserManagementPage] queryFn CALLED - Fetching staff users...');
-      return staffApi.list();
-    },
+    queryFn: () => staffApi.list(),
   });
-
-  // Debug logging
-  React.useEffect(() => {
-    console.log('[UserManagementPage] Query state:', { 
-      data, 
-      isLoading, 
-      isFetching,
-      status,
-      fetchStatus,
-      isError, 
-      error 
-    });
-  }, [data, isLoading, isFetching, status, fetchStatus, isError, error]);
 
   if (error) {
     return (

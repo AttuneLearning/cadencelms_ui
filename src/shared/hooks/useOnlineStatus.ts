@@ -116,7 +116,6 @@ export function useOnlineStatus(options: UseOnlineStatusOptions = {}): OnlineSta
    * Handle online event
    */
   const handleOnline = useCallback(() => {
-    console.log('[useOnlineStatus] Device is online');
     setIsOnline(true);
     setWasOffline(true);
     setLastChanged(Date.now());
@@ -132,7 +131,6 @@ export function useOnlineStatus(options: UseOnlineStatusOptions = {}): OnlineSta
    * Handle offline event
    */
   const handleOffline = useCallback(() => {
-    console.log('[useOnlineStatus] Device is offline');
     setIsOnline(false);
     setWasOffline(false);
     setLastChanged(Date.now());

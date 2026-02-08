@@ -50,7 +50,7 @@ export function AttemptCard({
 
   return (
     <article
-      className={`attempt-card rounded-lg border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow ${
+      className={`attempt-card rounded-lg border border-border bg-card p-4 shadow-sm hover:shadow-md transition-shadow ${
         onClick ? 'cursor-pointer' : ''
       }`}
       onClick={handleClick}
@@ -58,24 +58,24 @@ export function AttemptCard({
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-900">
+          <h3 className="text-lg font-semibold text-foreground">
             {attempt.content?.title || 'Content'}
           </h3>
-          <p className="text-sm text-gray-600">Attempt #{attempt.attemptNumber}</p>
+          <p className="text-sm text-muted-foreground">Attempt #{attempt.attemptNumber}</p>
         </div>
 
         {/* Status Badge */}
         <span
           className={`px-3 py-1 rounded-full text-xs font-medium ${
             statusColor === 'green'
-              ? 'bg-green-100 text-green-800'
+              ? 'bg-emerald-500/10 text-emerald-800 dark:text-emerald-300'
               : statusColor === 'blue'
-                ? 'bg-blue-100 text-blue-800'
+                ? 'bg-primary/10 text-primary'
                 : statusColor === 'red'
-                  ? 'bg-red-100 text-red-800'
+                  ? 'bg-destructive/10 text-destructive'
                   : statusColor === 'yellow'
-                    ? 'bg-yellow-100 text-yellow-800'
-                    : 'bg-gray-100 text-gray-800'
+                    ? 'bg-yellow-500/10 text-yellow-800 dark:text-yellow-300'
+                    : 'bg-muted text-muted-foreground'
           }`}
         >
           {statusLabel}
@@ -95,15 +95,15 @@ export function AttemptCard({
         {/* Score */}
         {attempt.score !== null && attempt.score !== undefined && (
           <div>
-            <span className="text-gray-600">Score: </span>
-            <span className="font-medium text-gray-900">{attempt.score}%</span>
+            <span className="text-muted-foreground">Score: </span>
+            <span className="font-medium text-foreground">{attempt.score}%</span>
           </div>
         )}
 
         {/* Time Spent */}
         <div>
-          <span className="text-gray-600">Time Spent: </span>
-          <span className="font-medium text-gray-900">
+          <span className="text-muted-foreground">Time Spent: </span>
+          <span className="font-medium text-foreground">
             {formatAttemptDuration(attempt.timeSpentSeconds)}
           </span>
         </div>
@@ -111,8 +111,8 @@ export function AttemptCard({
         {/* Started At */}
         {attempt.startedAt && (
           <div>
-            <span className="text-gray-600">Started: </span>
-            <span className="font-medium text-gray-900">
+            <span className="text-muted-foreground">Started: </span>
+            <span className="font-medium text-foreground">
               {new Date(attempt.startedAt).toLocaleDateString()}
             </span>
           </div>
@@ -121,8 +121,8 @@ export function AttemptCard({
         {/* Completed At */}
         {attempt.completedAt && (
           <div>
-            <span className="text-gray-600">Completed: </span>
-            <span className="font-medium text-gray-900">
+            <span className="text-muted-foreground">Completed: </span>
+            <span className="font-medium text-foreground">
               {new Date(attempt.completedAt).toLocaleDateString()}
             </span>
           </div>
@@ -131,11 +131,11 @@ export function AttemptCard({
 
       {/* Actions */}
       {showActions && (canResume || canContinue) && (
-        <div className="flex gap-2 pt-3 border-t border-gray-200">
+        <div className="flex gap-2 pt-3 border-t border-border">
           {canResume && (
             <button
               onClick={handleResume}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
             >
               Resume
             </button>
@@ -143,7 +143,7 @@ export function AttemptCard({
           {canContinue && (
             <button
               onClick={handleContinue}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
             >
               Continue
             </button>

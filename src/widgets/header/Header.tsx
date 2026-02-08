@@ -107,10 +107,11 @@ export const Header: React.FC = () => {
   };
 
   // Handle notification click - navigate to relevant page or mark as read
-  const handleNotificationClick = (notificationId: string) => {
-    // Mark as read when clicked
+  const handleNotificationClick = (notificationId: string, actionUrl?: string | null) => {
     markAsReadMutation.mutate({ notificationIds: [notificationId] });
-    // TODO: Navigate based on notification type/actionUrl
+    if (actionUrl) {
+      navigate(actionUrl);
+    }
   };
 
   // Handle mark single notification as read
@@ -120,14 +121,12 @@ export const Header: React.FC = () => {
 
   // Handle view all notifications
   const handleViewAllNotifications = () => {
-    // Navigate to notifications list page (to be created)
-    // For now, navigate to notification settings as placeholder
-    navigate('/settings/notifications');
+    navigate('/learner/inbox');
   };
 
   // Handle notification settings
   const handleNotificationSettings = () => {
-    navigate('/settings/notifications');
+    navigate('/learner/inbox');
   };
 
   // ISS-013: Handle admin tab click with escalation modal
@@ -347,7 +346,7 @@ export const Header: React.FC = () => {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link to="/courses" className="cursor-pointer">
+                      <Link to="/learner/courses" className="cursor-pointer">
                         <BookOpen className="mr-2 h-4 w-4" />
                         <span>My Courses</span>
                       </Link>

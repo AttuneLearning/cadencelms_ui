@@ -48,33 +48,33 @@ export function SubmitConfirmDialog({
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+          <div className="bg-muted p-4 rounded-lg space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Total Questions:</span>
-              <span className="font-semibold text-gray-900">{totalQuestions}</span>
+              <span className="text-muted-foreground">Total Questions:</span>
+              <span className="font-semibold text-foreground">{totalQuestions}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Answered:</span>
-              <span className="font-semibold text-green-600">{answeredCount}</span>
+              <span className="text-muted-foreground">Answered:</span>
+              <span className="font-semibold text-emerald-600 dark:text-emerald-400">{answeredCount}</span>
             </div>
             {hasUnanswered && (
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Unanswered Questions:</span>
-                <span className="font-semibold text-red-600">{unansweredCount}</span>
+                <span className="text-muted-foreground">Unanswered Questions:</span>
+                <span className="font-semibold text-destructive">{unansweredCount}</span>
               </div>
             )}
             {hasMarkedReview && (
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Marked for Review:</span>
-                <span className="font-semibold text-yellow-600">{markedForReviewCount}</span>
+                <span className="text-muted-foreground">Marked for Review:</span>
+                <span className="font-semibold text-yellow-600 dark:text-yellow-400">{markedForReviewCount}</span>
               </div>
             )}
           </div>
 
           {hasUnanswered && (
-            <div className="flex gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
               <svg
-                className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5"
+                className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -85,8 +85,8 @@ export function SubmitConfirmDialog({
                 />
               </svg>
               <div className="text-sm">
-                <p className="font-medium text-red-800">Warning</p>
-                <p className="text-red-700">
+                <p className="font-medium text-destructive">Warning</p>
+                <p className="text-destructive/80">
                   You have {unansweredCount} unanswered question{unansweredCount > 1 ? 's' : ''}. These will receive zero points.
                 </p>
               </div>
@@ -94,17 +94,17 @@ export function SubmitConfirmDialog({
           )}
 
           {hasMarkedReview && (
-            <div className="flex gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="flex gap-2 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
               <svg
-                className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5"
+                className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
                 <path d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" />
               </svg>
               <div className="text-sm">
-                <p className="font-medium text-yellow-800">Reminder</p>
-                <p className="text-yellow-700">
+                <p className="font-medium text-yellow-800 dark:text-yellow-300">Reminder</p>
+                <p className="text-yellow-700 dark:text-yellow-400">
                   You have {markedForReviewCount} question{markedForReviewCount > 1 ? 's' : ''} marked for review.
                 </p>
               </div>
@@ -125,7 +125,7 @@ export function SubmitConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={isSubmitting}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-primary hover:bg-primary/90"
           >
             {isSubmitting ? 'Submitting...' : 'Confirm Submit'}
           </Button>

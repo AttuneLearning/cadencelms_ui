@@ -78,10 +78,7 @@ export function setAdminToken(token: string, expiresIn: number = 900): void {
   // Set auto-clear timeout
   adminTokenTimeout = setTimeout(() => {
     clearAdminToken();
-    console.log('[AdminTokenStorage] Admin token auto-expired');
   }, expiresIn * 1000);
-
-  console.log('[AdminTokenStorage] Admin token set with expiry:', adminTokenExpiry.toISOString());
 }
 
 /**
@@ -110,7 +107,6 @@ export function getAdminToken(): string | null {
   // Check expiration
   if (adminTokenExpiry && new Date() > adminTokenExpiry) {
     clearAdminToken();
-    console.log('[AdminTokenStorage] Admin token expired');
     return null;
   }
 
@@ -139,8 +135,6 @@ export function clearAdminToken(): void {
     clearTimeout(adminTokenTimeout);
     adminTokenTimeout = null;
   }
-
-  console.log('[AdminTokenStorage] Admin token cleared');
 }
 
 /**

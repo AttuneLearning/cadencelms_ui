@@ -12,26 +12,8 @@ export const authApi = {
    * Login with email and password
    */
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    console.log('[authApi] Login request:', {
-      endpoint: endpoints.auth.login,
-      email: credentials.email,
-      passwordLength: credentials.password.length,
-    });
-    try {
-      const response = await client.post(endpoints.auth.login, credentials);
-      console.log('[authApi] Login response:', {
-        status: response.status,
-        data: response.data,
-      });
-      return response.data;
-    } catch (error: any) {
-      console.error('[authApi] Login error:', {
-        message: error?.message,
-        status: error?.status,
-        response: error?.response?.data,
-      });
-      throw error;
-    }
+    const response = await client.post(endpoints.auth.login, credentials);
+    return response.data;
   },
 
   /**

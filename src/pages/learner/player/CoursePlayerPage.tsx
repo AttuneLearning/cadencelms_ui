@@ -24,6 +24,7 @@ import {
   useStartContentAttempt,
   useContentAttempt,
 } from '@/entities/content-attempt';
+import { useCourse } from '@/entities/course';
 import { useCourseModules } from '@/entities/course-module';
 import { useEnrollmentStatus } from '@/entities/enrollment';
 import { useCourseProgress } from '@/entities/progress';
@@ -51,6 +52,9 @@ export function CoursePlayerPage() {
   const [currentLessonId, setCurrentLessonId] = useState<string | null>(urlLessonId || null);
   const [currentAttemptId, setCurrentAttemptId] = useState<string | null>(null);
   const [showCompletion, setShowCompletion] = useState(false);
+
+  // Fetch course metadata (for certificateEnabled check)
+  const { data: course } = useCourse(courseId || '');
 
   // Fetch enrollment for this specific course
   const { data: enrollment, isLoading: enrollmentsLoading } = useEnrollmentStatus(courseId || '');
@@ -301,6 +305,11 @@ export function CoursePlayerPage() {
               handleLessonClick(flatLessons[0].moduleId, flatLessons[0].lessonId);
             }
           }}
+          onViewCertificate={
+            course?.settings?.certificateEnabled
+              ? () => navigate('/learner/certificates')
+              : undefined
+          }
         />
       );
     }
@@ -361,6 +370,7 @@ export function CoursePlayerPage() {
           attemptId={currentAttempt.id}
           documentUrl={url}
           documentType={isPdf ? 'pdf' : 'image'}
+          onViewed={handleContentComplete}
         />
       );
     }

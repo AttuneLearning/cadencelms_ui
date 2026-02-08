@@ -56,9 +56,8 @@ export function GradingDetailPage() {
     }
   };
 
-  const handleSaveDraft = (gradeData: any) => {
-    // In a real implementation, this would save a draft to the server
-    console.log('Saving draft:', gradeData);
+  const handleSaveDraft = (_gradeData: any) => {
+    // TODO: Implement draft saving via API
   };
 
   if (isLoading) {

@@ -67,8 +67,8 @@ export function ExerciseResultsPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading results...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading results...</p>
         </div>
       </div>
     );
@@ -79,7 +79,7 @@ export function ExerciseResultsPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center max-w-md">
-          <div className="mb-4 text-red-600">
+          <div className="mb-4 text-destructive">
             <svg className="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
@@ -88,8 +88,8 @@ export function ExerciseResultsPage() {
               />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Failed to Load Results</h2>
-          <p className="text-gray-600 mb-4">{error.message || 'An error occurred'}</p>
+          <h2 className="text-xl font-bold text-foreground mb-2">Failed to Load Results</h2>
+          <p className="text-muted-foreground mb-4">{error.message || 'An error occurred'}</p>
           <Button onClick={() => navigate('/learner/dashboard')}>Back to Dashboard</Button>
         </div>
       </div>
@@ -101,8 +101,13 @@ export function ExerciseResultsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Screen reader announcement for results */}
+        <div className="sr-only" aria-live="polite" aria-atomic="true">
+          {result.passed ? 'You passed!' : 'You did not pass.'} Score: {result.score} out of {result.maxScore}.
+        </div>
+
         {/* Attempt Badge */}
         <div className="mb-4 flex items-center gap-3">
           <Badge
@@ -132,7 +137,7 @@ export function ExerciseResultsPage() {
         )}
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-between bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="flex items-center justify-between bg-card rounded-lg shadow-sm border border-border p-6">
           <div>
             <Button
               variant="outline"

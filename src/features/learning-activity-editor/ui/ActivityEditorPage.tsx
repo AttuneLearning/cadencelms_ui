@@ -113,12 +113,11 @@ export function ActivityEditorPage() {
     navigate(`/staff/courses/${courseId}/modules/${moduleId}`);
   };
 
-  const handleSubmit = async (data: ActivityFormData) => {
+  const handleSubmit = async (_data: ActivityFormData) => {
     setIsSubmitting(true);
 
     try {
       // TODO: Replace with actual API call
-      console.log('Submitting activity data:', data);
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       toast({

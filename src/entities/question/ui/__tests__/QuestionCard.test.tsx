@@ -162,7 +162,7 @@ describe('QuestionCard', () => {
 
       const { container } = render(<QuestionCard question={question} />);
 
-      const badge = container.querySelector('[class*="text-green-500"]');
+      const badge = container.querySelector('[class*="text-emerald-500"]');
       expect(badge).toBeInTheDocument();
     });
 
@@ -180,7 +180,7 @@ describe('QuestionCard', () => {
 
       const { container } = render(<QuestionCard question={question} />);
 
-      const badge = container.querySelector('[class*="text-red-500"]');
+      const badge = container.querySelector('[class*="text-destructive"]');
       expect(badge).toBeInTheDocument();
     });
   });
@@ -267,7 +267,7 @@ describe('QuestionCard', () => {
       expect(screen.getByText(correctOption!.text)).toBeInTheDocument();
 
       // Should have CheckCircle2 icon (green checkmark)
-      const checkIcons = container.querySelectorAll('svg.text-green-500');
+      const checkIcons = container.querySelectorAll('svg.text-emerald-500');
       expect(checkIcons.length).toBeGreaterThan(0);
     });
 

@@ -116,7 +116,6 @@ export const useNavigationStore = create<NavigationState>()(
          */
         setSelectedDepartment: (deptId) => {
           set({ selectedDepartmentId: deptId });
-          console.log('[NavigationStore] Department selected:', deptId);
         },
 
         /**
@@ -130,10 +129,6 @@ export const useNavigationStore = create<NavigationState>()(
               [userId]: deptId,
             },
           }));
-          console.log('[NavigationStore] Remembered department for user:', {
-            userId,
-            deptId,
-          });
         },
 
         /**
@@ -148,7 +143,6 @@ export const useNavigationStore = create<NavigationState>()(
             currentDepartmentName: null,
             switchDepartmentError: null,
           });
-          console.log('[NavigationStore] Department selection cleared');
         },
 
         /**
@@ -166,8 +160,6 @@ export const useNavigationStore = create<NavigationState>()(
           });
 
           try {
-            console.log('[NavigationStore] Switching to department:', deptId);
-
             // Call the API
             const response = await authApi.switchDepartment({ departmentId: deptId });
 
@@ -184,12 +176,6 @@ export const useNavigationStore = create<NavigationState>()(
               switchDepartmentError: null,
             });
 
-            console.log('[NavigationStore] Department switch successful:', {
-              departmentId: deptId,
-              departmentName: currentDepartment.departmentName,
-              roles: currentDepartment.roles,
-              accessRights: currentDepartment.accessRights.length,
-            });
           } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
@@ -261,7 +247,6 @@ export const useNavigationStore = create<NavigationState>()(
               departmentPath: [...state.departmentPath, deptId],
             };
           });
-          console.log('[NavigationStore] Navigated to department:', deptId);
         },
 
         /**
@@ -279,7 +264,6 @@ export const useNavigationStore = create<NavigationState>()(
               departmentPath: newPath,
             };
           });
-          console.log('[NavigationStore] Navigated up in department path');
         },
 
         /**
@@ -290,7 +274,6 @@ export const useNavigationStore = create<NavigationState>()(
             selectedDepartmentId: null,
             departmentPath: [],
           });
-          console.log('[NavigationStore] Department path cleared');
         },
 
         /**

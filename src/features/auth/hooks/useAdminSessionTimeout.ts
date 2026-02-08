@@ -46,8 +46,6 @@ export const useAdminSessionTimeout = (): UseAdminSessionTimeoutReturn => {
 
   // Handle timeout expiration
   const handleTimeout = useCallback(() => {
-    console.log('[AdminSessionTimeout] Session expired - de-escalating');
-
     // De-escalate from admin
     deEscalateFromAdmin();
 
@@ -80,13 +78,10 @@ export const useAdminSessionTimeout = (): UseAdminSessionTimeoutReturn => {
       window.addEventListener(event, handleActivity);
     });
 
-    console.log('[AdminSessionTimeout] Activity tracking started');
-
     return () => {
       events.forEach(event => {
         window.removeEventListener(event, handleActivity);
       });
-      console.log('[AdminSessionTimeout] Activity tracking stopped');
     };
   }, [isAdminSessionActive, resetTimeout]);
 

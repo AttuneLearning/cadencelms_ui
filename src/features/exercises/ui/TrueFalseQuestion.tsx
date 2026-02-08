@@ -30,9 +30,9 @@ export function TrueFalseQuestion({
     const isCorrect = question.correctAnswer === option;
     const isSelected = selectedAnswer === option;
 
-    if (isCorrect && isSelected) return 'bg-green-50 border-green-300';
-    if (isCorrect) return 'bg-green-50 border-green-200';
-    if (isSelected) return 'bg-red-50 border-red-300';
+    if (isCorrect && isSelected) return 'bg-emerald-500/10 border-emerald-500/30';
+    if (isCorrect) return 'bg-emerald-500/10 border-emerald-500/20';
+    if (isSelected) return 'bg-destructive/10 border-destructive/30';
 
     return '';
   };
@@ -42,8 +42,8 @@ export function TrueFalseQuestion({
       {options.map((option) => (
         <label
           key={option}
-          className={`flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors ${
-            selectedAnswer === option ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+          className={`flex items-center p-4 border rounded-lg cursor-pointer hover:bg-muted transition-colors ${
+            selectedAnswer === option ? 'border-primary bg-primary/10' : 'border-input'
           } ${getOptionClassName(option)} ${isReview ? 'cursor-default' : ''}`}
         >
           <input
@@ -53,12 +53,12 @@ export function TrueFalseQuestion({
             checked={selectedAnswer === option}
             onChange={(e) => !isReview && onAnswerChange(e.target.value)}
             disabled={isReview}
-            className="w-5 h-5 text-blue-600 focus:ring-blue-500 disabled:opacity-50"
+            className="w-5 h-5 text-primary focus:ring-ring disabled:opacity-50"
             aria-label={option}
           />
-          <span className="ml-3 text-lg font-medium text-gray-900">{option}</span>
+          <span className="ml-3 text-lg font-medium text-foreground">{option}</span>
           {showCorrectAnswer && question.correctAnswer === option && (
-            <span className="ml-auto text-green-600 font-medium">Correct Answer</span>
+            <span className="ml-auto text-emerald-600 dark:text-emerald-400 font-medium">Correct Answer</span>
           )}
         </label>
       ))}

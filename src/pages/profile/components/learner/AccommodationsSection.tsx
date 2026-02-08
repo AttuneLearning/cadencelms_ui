@@ -52,7 +52,6 @@ export function AccommodationsSection({ data }: AccommodationsSectionProps) {
 
   const handleSubmitRequest = () => {
     // TODO: Implement actual request submission to API
-    console.log('Accommodation request submitted:', requestText);
     setRequestText('');
     setShowRequestForm(false);
     // In real implementation, would call API endpoint to create request

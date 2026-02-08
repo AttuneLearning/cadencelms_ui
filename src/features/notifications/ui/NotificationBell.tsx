@@ -22,7 +22,7 @@ interface NotificationBellProps {
   isLoading?: boolean;
   onViewAll?: () => void;
   onSettings?: () => void;
-  onNotificationClick?: (notificationId: string) => void;
+  onNotificationClick?: (notificationId: string, actionUrl?: string | null) => void;
   onMarkAsRead?: (notificationId: string) => void;
   className?: string;
 }
@@ -95,7 +95,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                     notification={notification}
                     compact
                     onClick={() => {
-                      onNotificationClick?.(notification.id);
+                      onNotificationClick?.(notification.id, notification.actionUrl);
                       setOpen(false);
                     }}
                     onMarkAsRead={() => onMarkAsRead?.(notification.id)}

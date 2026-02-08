@@ -85,16 +85,6 @@ const MyCoursesPageInner: React.FC = () => {
     limit: 12,
   });
 
-  // Debug logging
-  console.log('[MyCoursesPage] Render state:', {
-    isLoading,
-    hasError: !!error,
-    errorMessage: error?.message,
-    hasData: !!data,
-    enrollmentsCount: data?.enrollments?.length || 0,
-    data,
-  });
-
   const enrollments = data?.enrollments || [];
   const pagination = data?.pagination;
 

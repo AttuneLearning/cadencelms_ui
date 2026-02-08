@@ -141,24 +141,24 @@ export function FillInBlankQuestion({
       'inline-block min-w-[120px] max-w-[200px] px-2 py-1 mx-1 border-b-2 text-center focus:outline-none transition-colors';
 
     if (!showCorrectAnswer) {
-      return `${baseClasses} border-blue-400 focus:border-blue-600 bg-blue-50`;
+      return `${baseClasses} border-primary/60 focus:border-primary bg-primary/10`;
     }
 
     const correct = isBlankCorrect(index);
     if (correct === true) {
-      return `${baseClasses} border-green-500 bg-green-50 text-green-900`;
+      return `${baseClasses} border-emerald-500 bg-emerald-500/10 text-emerald-900 dark:text-emerald-300`;
     }
     if (correct === false) {
-      return `${baseClasses} border-red-500 bg-red-50 text-red-900`;
+      return `${baseClasses} border-destructive bg-destructive/10 text-destructive`;
     }
-    return `${baseClasses} border-gray-400 bg-gray-50`;
+    return `${baseClasses} border-border bg-muted`;
   };
 
   // If no blanks found, show a fallback UI
   if (blankCount === 0) {
     return (
       <div className={`space-y-4 ${className}`}>
-        <p className="text-gray-900">{question.questionText}</p>
+        <p className="text-foreground">{question.questionText}</p>
         <p className="text-sm text-amber-600">
           Note: No blanks detected in this question. Use [blank] or ___ markers to indicate blanks.
         </p>
@@ -168,12 +168,12 @@ export function FillInBlankQuestion({
 
   return (
     <div className={`space-y-4 ${className}`}>
-      <p className="text-sm text-gray-600 mb-2">
+      <p className="text-sm text-muted-foreground mb-2">
         Fill in the blank{blankCount > 1 ? 's' : ''} below.
       </p>
 
       {/* Question text with inline blanks */}
-      <div className="text-lg leading-loose text-gray-900">
+      <div className="text-lg leading-loose text-foreground">
         {segments.map((segment, idx) => {
           if (segment.type === 'text') {
             return <span key={idx}>{segment.content}</span>;
@@ -197,8 +197,8 @@ export function FillInBlankQuestion({
                 <span
                   className={`absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${
                     isCorrect
-                      ? 'bg-green-500 text-white'
-                      : 'bg-red-500 text-white'
+                      ? 'bg-emerald-500 text-white'
+                      : 'bg-destructive text-destructive-foreground'
                   }`}
                   aria-label={isCorrect ? 'Correct' : 'Incorrect'}
                 >
@@ -212,8 +212,8 @@ export function FillInBlankQuestion({
 
       {/* Show correct answers in review mode */}
       {showCorrectAnswer && (
-        <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <p className="text-sm font-medium text-gray-700 mb-2">Correct answers:</p>
+        <div className="mt-4 p-4 bg-muted rounded-lg border border-border">
+          <p className="text-sm font-medium text-foreground mb-2">Correct answers:</p>
           <div className="space-y-1">
             {correctAnswers.map((answer, index) => {
               const userAnswer = blankValues[index] || '';
@@ -221,15 +221,15 @@ export function FillInBlankQuestion({
 
               return (
                 <div key={index} className="flex items-center gap-2 text-sm">
-                  <span className="font-medium text-gray-600">Blank {index + 1}:</span>
+                  <span className="font-medium text-muted-foreground">Blank {index + 1}:</span>
                   {isCorrect ? (
-                    <span className="text-green-600">{userAnswer}</span>
+                    <span className="text-emerald-600 dark:text-emerald-400">{userAnswer}</span>
                   ) : (
                     <>
                       {userAnswer && (
-                        <span className="text-red-600 line-through">{userAnswer}</span>
+                        <span className="text-destructive line-through">{userAnswer}</span>
                       )}
-                      <span className="text-green-600">{answer}</span>
+                      <span className="text-emerald-600 dark:text-emerald-400">{answer}</span>
                     </>
                   )}
                 </div>

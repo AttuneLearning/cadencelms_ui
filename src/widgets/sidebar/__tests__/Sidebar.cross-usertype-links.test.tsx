@@ -172,7 +172,9 @@ describe('Sidebar - Dashboard-Specific Navigation', () => {
 
       // Learner-specific items
       expect(screen.getByText('Learning')).toBeInTheDocument();
-      expect(screen.getByTestId('nav-link-My Classes')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-My Courses')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-My Programs')).toBeInTheDocument();
+      expect(screen.getByTestId('nav-link-My Learning')).toBeInTheDocument();
       expect(screen.getByTestId('nav-link-Course Catalog')).toBeInTheDocument();
       expect(screen.getByText('Progress')).toBeInTheDocument();
 

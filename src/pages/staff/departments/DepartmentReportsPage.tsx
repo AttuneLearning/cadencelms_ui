@@ -221,9 +221,8 @@ export function DepartmentReportsPage() {
     );
   }
 
-  const handleGenerateReport = (reportId: string) => {
-    // TODO: Implement report generation
-    console.log('Generate report:', reportId, 'for department:', deptId);
+  const handleGenerateReport = (_reportId: string) => {
+    // TODO: Implement report generation via createReportJob mutation
     // This would call the createReportJob mutation with appropriate parameters
   };
 

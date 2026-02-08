@@ -953,11 +953,11 @@ function getStatusVariant(status: ExerciseStatus): 'default' | 'secondary' | 'de
 function getDifficultyColor(difficulty: ExerciseDifficulty): string {
   switch (difficulty) {
     case 'easy':
-      return 'text-green-700 border-green-300';
+      return 'text-emerald-700 dark:text-emerald-400 border-emerald-500/30';
     case 'medium':
-      return 'text-yellow-700 border-yellow-300';
+      return 'text-yellow-700 dark:text-yellow-400 border-yellow-500/30';
     case 'hard':
-      return 'text-red-700 border-red-300';
+      return 'text-destructive border-destructive/30';
     default:
       return '';
   }

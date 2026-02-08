@@ -46,18 +46,18 @@ export function ShortAnswerQuestion({
         disabled={isReview}
         maxLength={maxLength}
         placeholder="Enter your answer..."
-        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-50 disabled:opacity-70"
+        className="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-ring disabled:bg-muted disabled:opacity-70"
         aria-label="Short answer input"
       />
-      <div className="flex justify-between items-center text-sm text-gray-500">
+      <div className="flex justify-between items-center text-sm text-muted-foreground">
         <span>
           {value.length} / {maxLength} characters
         </span>
       </div>
       {showCorrectAnswer && question.correctAnswer && (
-        <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-sm font-medium text-green-800 mb-1">Sample Correct Answer:</p>
-          <p className="text-green-700">{question.correctAnswer}</p>
+        <div className="mt-3 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+          <p className="text-sm font-medium text-emerald-800 dark:text-emerald-300 mb-1">Sample Correct Answer:</p>
+          <p className="text-emerald-700 dark:text-emerald-400">{question.correctAnswer}</p>
         </div>
       )}
     </div>

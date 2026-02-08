@@ -190,8 +190,8 @@ export function ExerciseTakingPage() {
               />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">No Attempts Remaining</h2>
-          <p className="text-gray-600 mb-4">
+          <h2 className="text-xl font-bold text-foreground mb-2">No Attempts Remaining</h2>
+          <p className="text-muted-foreground mb-4">
             You have used all {maxAttemptsFromResponse} attempts for this exercise.
             Please contact your instructor if you need additional attempts.
           </p>
@@ -206,8 +206,8 @@ export function ExerciseTakingPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading exam...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading exam...</p>
         </div>
       </div>
     );
@@ -218,7 +218,7 @@ export function ExerciseTakingPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center max-w-md">
-          <div className="mb-4 text-red-600">
+          <div className="mb-4 text-destructive">
             <svg className="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
@@ -227,8 +227,8 @@ export function ExerciseTakingPage() {
               />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Failed to Start Exam</h2>
-          <p className="text-gray-600 mb-4">
+          <h2 className="text-xl font-bold text-foreground mb-2">Failed to Start Exam</h2>
+          <p className="text-muted-foreground mb-4">
             {error?.message || startAttemptMutation.error?.message || 'An error occurred'}
           </p>
           <Button onClick={() => navigate('/learner/dashboard')}>Back to Dashboard</Button>
@@ -249,14 +249,19 @@ export function ExerciseTakingPage() {
   const isCurrentQuestionMarked = markedForReview.has(currentQuestion.id);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
+      {/* Screen reader live region for question navigation */}
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        Question {currentQuestionIndex + 1} of {attempt.questions.length}. {answeredCount} answered, {unansweredCount} remaining.
+      </div>
+
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
+      <div className="bg-card border-b border-border sticky top-0 z-10 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{attempt.examTitle}</h1>
-              <p className="text-sm text-gray-600 mt-1">
+              <h1 className="text-2xl font-bold text-foreground">{attempt.examTitle}</h1>
+              <p className="text-sm text-muted-foreground mt-1">
                 Attempt #{attempt.attemptNumber} | Question {currentQuestionIndex + 1} of{' '}
                 {attempt.questions.length}
               </p>
@@ -269,7 +274,7 @@ export function ExerciseTakingPage() {
               <Button
                 onClick={handleSubmitClick}
                 disabled={submitExamMutation.isPending}
-                className="bg-green-600 hover:bg-green-700"
+                className="bg-emerald-600 hover:bg-emerald-700"
               >
                 Submit Exam
               </Button>
@@ -281,9 +286,9 @@ export function ExerciseTakingPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Instructions */}
         {attempt.instructions && (
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h2 className="text-sm font-semibold text-blue-900 mb-1">Instructions</h2>
-            <p className="text-sm text-blue-800">{attempt.instructions}</p>
+          <div className="mb-6 p-4 bg-primary/10 border border-primary/20 rounded-lg">
+            <h2 className="text-sm font-semibold text-primary mb-1">Instructions</h2>
+            <p className="text-sm text-primary/80">{attempt.instructions}</p>
           </div>
         )}
 
@@ -303,18 +308,18 @@ export function ExerciseTakingPage() {
 
           {/* Question Content - Main Area */}
           <div className="lg:col-span-3 order-1 lg:order-2">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="bg-card rounded-lg shadow-sm border border-border p-6">
               {/* Question Header */}
-              <div className="mb-6 pb-4 border-b border-gray-200">
+              <div className="mb-6 pb-4 border-b border-border">
                 <div className="flex items-start justify-between mb-2">
-                  <h2 className="text-lg font-semibold text-gray-900">
+                  <h2 className="text-lg font-semibold text-foreground">
                     Question {currentQuestionIndex + 1}
                   </h2>
-                  <span className="text-sm font-medium text-gray-600">
+                  <span className="text-sm font-medium text-muted-foreground">
                     {currentQuestion.points} points
                   </span>
                 </div>
-                <p className="text-gray-800 text-lg">{currentQuestion.questionText}</p>
+                <p className="text-foreground text-lg">{currentQuestion.questionText}</p>
               </div>
 
               {/* Question Renderer */}
@@ -327,7 +332,7 @@ export function ExerciseTakingPage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center justify-between pt-6 border-t border-gray-200">
+              <div className="flex items-center justify-between pt-6 border-t border-border">
                 <div>
                   <Button
                     variant="outline"

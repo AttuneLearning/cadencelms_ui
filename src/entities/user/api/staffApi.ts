@@ -48,17 +48,12 @@ export const staffApi = {
    * GET /users/staff?page=&limit=&search=&department=&role=&status=&sort=
    */
   list: async (params?: StaffListParams): Promise<StaffListResponse> => {
-    console.log('[staffApi.list] Making request to:', endpoints.admin.staff.list);
     try {
       const response = await client.get(endpoints.admin.staff.list, { params });
-      console.log('[staffApi.list] Raw response:', response);
-      console.log('[staffApi.list] Response data:', response.data);
       // API returns { success, data: { staff, pagination } }
       // Transform to our expected format
       const apiData = response.data?.data ?? response.data ?? {};
-      console.log('[staffApi.list] apiData:', apiData);
       const normalizedData = apiData?.data ?? apiData;
-      console.log('[staffApi.list] normalizedData:', normalizedData);
       let shapeWarning: DataShapeWarningDetails | undefined;
       const staffList = Array.isArray(normalizedData?.staff)
         ? normalizedData.staff
@@ -69,7 +64,6 @@ export const staffApi = {
             : Array.isArray(normalizedData?.results)
               ? normalizedData.results
               : [];
-      console.log('[staffApi.list] staffList:', staffList);
 
       // Transform API response: map 'id' to '_id' for frontend compatibility
       const users = staffList.map((staff: any) => ({
@@ -121,7 +115,6 @@ export const staffApi = {
       totalPages,
       shapeWarning,
     };
-    console.log('[staffApi.list] Returning:', result);
     return result;
     } catch (err) {
       console.error('[staffApi.list] Error:', err);

@@ -164,7 +164,6 @@ export const QuizBuilderPage: React.FC = () => {
     setIsSubmitting(true);
     try {
       // TODO: Call API to create/update quiz
-      console.log('Creating static quiz:', data);
 
       toast({
         title: isEditMode ? 'Quiz Updated' : 'Quiz Created',
@@ -194,7 +193,6 @@ export const QuizBuilderPage: React.FC = () => {
     setIsSubmitting(true);
     try {
       // TODO: Call API to create/update quiz
-      console.log('Creating dynamic quiz:', data);
 
       toast({
         title: isEditMode ? 'Quiz Updated' : 'Quiz Created',

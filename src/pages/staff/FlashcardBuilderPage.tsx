@@ -140,7 +140,6 @@ export const FlashcardBuilderPage: React.FC = () => {
     setIsSubmitting(true);
     try {
       // TODO: Implement API call to create flashcard set
-      console.log('Creating static flashcard set:', data);
       toast({
         title: 'Flashcard set created',
         description: `"${data.title}" has been created with ${data.cards.length} cards.`,
@@ -165,7 +164,6 @@ export const FlashcardBuilderPage: React.FC = () => {
     setIsSubmitting(true);
     try {
       // TODO: Implement API call to create dynamic flashcard set
-      console.log('Creating dynamic flashcard set:', data);
       toast({
         title: 'Flashcard set created',
         description: `"${data.title}" has been created with ${data.cardCount} random cards.`,

@@ -375,13 +375,13 @@ export const QuestionSelector: React.FC<QuestionSelectorProps> = ({
                         {question.options.map((option, idx) => (
                           <div key={idx} className="flex items-center gap-2 text-sm">
                             {option === question.correctAnswers[0] ? (
-                              <CheckCircle2 className="h-4 w-4 text-green-600" />
+                              <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                             ) : (
                               <XCircle className="h-4 w-4 text-muted-foreground" />
                             )}
                             <span
                               className={cn(
-                                option === question.correctAnswers[0] && 'font-medium text-green-700'
+                                option === question.correctAnswers[0] && 'font-medium text-emerald-700 dark:text-emerald-400'
                               )}
                             >
                               {option}

@@ -552,10 +552,10 @@ export function QuestionForm({
 
       {/* Flashcard Section */}
       {hasFlashcardType && (
-        <Card className="border-blue-200 bg-blue-50/50">
+        <Card className="border-primary/20 bg-primary/5">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
-              <CreditCard className="h-4 w-4 text-blue-600" />
+              <CreditCard className="h-4 w-4 text-primary" />
               Flashcard Settings
             </CardTitle>
             <CardDescription>
@@ -566,7 +566,7 @@ export function QuestionForm({
             {/* Front Preview */}
             <div className="space-y-2">
               <Label className="text-sm font-medium">Front of Card</Label>
-              <div className="p-3 bg-white rounded-md border text-sm">
+              <div className="p-3 bg-card rounded-md border text-sm">
                 {formData.questionText || <span className="text-muted-foreground italic">Question text will appear here</span>}
               </div>
             </div>
@@ -574,7 +574,7 @@ export function QuestionForm({
             {/* Back Preview */}
             <div className="space-y-2">
               <Label className="text-sm font-medium">Back of Card</Label>
-              <div className="p-3 bg-white rounded-md border text-sm">
+              <div className="p-3 bg-card rounded-md border text-sm">
                 {formData.correctAnswers.length > 0
                   ? formData.correctAnswers[0]
                   : formData.options.find(o => o.isCorrect)?.text
@@ -626,10 +626,10 @@ export function QuestionForm({
 
       {/* Matching Section */}
       {hasMatchingType && (
-        <Card className="border-purple-200 bg-purple-50/50">
+        <Card className="border-purple-500/20 bg-purple-500/5">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
-              <GitCompare className="h-4 w-4 text-purple-600" />
+              <GitCompare className="h-4 w-4 text-purple-600 dark:text-purple-400" />
               Matching Settings
             </CardTitle>
             <CardDescription>
@@ -640,7 +640,7 @@ export function QuestionForm({
             {/* Column A Preview */}
             <div className="space-y-2">
               <Label className="text-sm font-medium">Column A (Prompt)</Label>
-              <div className="p-3 bg-white rounded-md border text-sm">
+              <div className="p-3 bg-card rounded-md border text-sm">
                 {formData.questionText || <span className="text-muted-foreground italic">Question text will appear here</span>}
               </div>
             </div>
@@ -648,7 +648,7 @@ export function QuestionForm({
             {/* Column B Preview */}
             <div className="space-y-2">
               <Label className="text-sm font-medium">Column B (Match)</Label>
-              <div className="p-3 bg-white rounded-md border text-sm">
+              <div className="p-3 bg-card rounded-md border text-sm">
                 {formData.correctAnswers.length > 0
                   ? formData.correctAnswers[0]
                   : formData.options.find(o => o.isCorrect)?.text

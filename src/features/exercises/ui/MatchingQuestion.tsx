@@ -53,21 +53,21 @@ export function MatchingQuestion({
 
   return (
     <div className={`space-y-4 ${className}`}>
-      <p className="text-sm text-gray-600 mb-4">
+      <p className="text-sm text-muted-foreground mb-4">
         Match each item on the left with its corresponding answer on the right.
       </p>
       {prompts.map((prompt, index) => (
-        <div key={index} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+        <div key={index} className="flex items-center gap-4 p-3 bg-muted rounded-lg">
           <div className="flex-1">
-            <span className="font-medium text-gray-900">{prompt}</span>
+            <span className="font-medium text-foreground">{prompt}</span>
           </div>
-          <div className="w-px h-8 bg-gray-300" />
+          <div className="w-px h-8 bg-border" />
           <div className="flex-1">
             <select
               value={selections[index] || ''}
               onChange={(e) => handleSelectionChange(index, e.target.value)}
               disabled={isReview}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:opacity-70"
+              className="w-full px-3 py-2 border border-input rounded-md focus:ring-2 focus:ring-ring focus:border-ring disabled:bg-muted disabled:opacity-70"
               aria-label={`Match for ${prompt}`}
             >
               <option value="">-- Select --</option>
@@ -81,11 +81,11 @@ export function MatchingQuestion({
           {showCorrectAnswer && (
             <div className="flex-shrink-0 w-32">
               {selections[index] === getCorrectMatch(index) ? (
-                <span className="text-green-600 text-sm font-medium">Correct</span>
+                <span className="text-emerald-600 dark:text-emerald-400 text-sm font-medium">Correct</span>
               ) : (
                 <div className="text-sm">
-                  <span className="text-red-600">Incorrect</span>
-                  <p className="text-gray-600 mt-1">Correct: {getCorrectMatch(index)}</p>
+                  <span className="text-destructive">Incorrect</span>
+                  <p className="text-muted-foreground mt-1">Correct: {getCorrectMatch(index)}</p>
                 </div>
               )}
             </div>

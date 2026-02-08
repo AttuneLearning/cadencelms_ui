@@ -226,8 +226,8 @@ export function AssignmentEditor({
     setRubric((prev) => [...prev, newCriterion]);
   }, []);
 
-  const handleEditCriterion = useCallback((id: string) => {
-    console.log('Edit criterion:', id);
+  const handleEditCriterion = useCallback((_id: string) => {
+    // TODO: Implement criterion editing
   }, []);
 
   const handleDeleteCriterion = useCallback((id: string) => {

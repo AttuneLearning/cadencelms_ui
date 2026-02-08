@@ -44,12 +44,8 @@ export const LoginForm: React.FC = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      console.log('[LoginForm] Starting login...');
-
       // Call V2 login from authStore
       await login(data);
-
-      console.log('[LoginForm] Login successful');
 
       // Get the current auth state after login
       const authState = useAuthStore.getState();
@@ -71,7 +67,6 @@ export const LoginForm: React.FC = () => {
         destination = from || dashboardMap[currentRoleHierarchy.defaultDashboard] || '/dashboard';
       }
 
-      console.log('[LoginForm] Navigating to:', destination);
       navigate(destination, { replace: true });
     } catch (err: any) {
       console.error('[LoginForm] Login failed:', err);

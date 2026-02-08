@@ -159,7 +159,6 @@ export const MatchGameBuilderPage: React.FC = () => {
     setIsSubmitting(true);
     try {
       // TODO: Implement API call to create match game
-      console.log('Creating static match game:', data);
       toast({
         title: 'Match game created',
         description: `"${data.title}" has been created with ${data.pairs.length} matching pairs.`,
@@ -184,7 +183,6 @@ export const MatchGameBuilderPage: React.FC = () => {
     setIsSubmitting(true);
     try {
       // TODO: Implement API call to create dynamic match game
-      console.log('Creating dynamic match game:', data);
       toast({
         title: 'Match game created',
         description: `"${data.title}" has been created with ${data.pairCount} random pairs.`,

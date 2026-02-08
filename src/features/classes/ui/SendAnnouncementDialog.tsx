@@ -48,7 +48,7 @@ type AnnouncementFormData = z.infer<typeof announcementSchema>;
 
 export function SendAnnouncementDialog({
   open,
-  classId,
+  classId: _classId,
   className,
   studentCount,
   onClose,
@@ -72,16 +72,12 @@ export function SendAnnouncementDialog({
     }
   }, [open, form]);
 
-  const onSubmit = async (data: AnnouncementFormData) => {
+  const onSubmit = async (_data: AnnouncementFormData) => {
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // In a real app, this would call an API to send the announcement
-      console.log('Sending announcement:', {
-        classId,
-        ...data,
-      });
+      // TODO: Replace with actual API call to send the announcement
 
       onSuccess();
       handleClose();

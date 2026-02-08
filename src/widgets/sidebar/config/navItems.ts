@@ -190,19 +190,14 @@ export const LEARNER_CONTEXT_NAV: ContextNavItem[] = [
     icon: Award,
   },
   {
-    label: 'My Classes',
-    path: '/learner/classes',
-    icon: Calendar,
-  },
-  {
-    label: 'Calendar',
-    path: '/learner/calendar',
-    icon: CalendarDays,
+    label: 'My Learning',
+    path: '/learner/learning',
+    icon: BookOpen,
   },
   {
     label: 'Course Catalog',
     path: '/learner/catalog',
-    icon: BookOpen,
+    icon: Search,
     requiredPermission: 'course:view-catalog',
   },
 ];

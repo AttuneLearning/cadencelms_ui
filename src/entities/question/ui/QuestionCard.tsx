@@ -34,13 +34,13 @@ export function QuestionCard({
   const getDifficultyBadgeColor = (difficulty: string) => {
     switch (difficulty) {
       case 'easy':
-        return 'bg-green-500/10 text-green-500 border-green-500/20';
+        return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
       case 'medium':
         return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
       case 'hard':
-        return 'bg-red-500/10 text-red-500 border-red-500/20';
+        return 'bg-destructive/10 text-destructive border-destructive/20';
       default:
-        return 'bg-gray-500/10 text-gray-500 border-gray-500/20';
+        return 'bg-muted text-muted-foreground border-border';
     }
   };
 
@@ -129,7 +129,7 @@ export function QuestionCard({
                       className="flex items-center gap-2 text-sm p-2 rounded-md bg-muted/50"
                     >
                       {option.isCorrect ? (
-                        <CheckCircle2 className="h-3 w-3 text-green-500 flex-shrink-0" />
+                        <CheckCircle2 className="h-3 w-3 text-emerald-500 flex-shrink-0" />
                       ) : (
                         <Circle className="h-3 w-3 text-muted-foreground flex-shrink-0" />
                       )}
