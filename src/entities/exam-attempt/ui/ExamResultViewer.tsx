@@ -9,12 +9,23 @@ import { formatTimeRemaining } from '../lib/timerUtils';
 
 export interface ExamResultViewerProps {
   result: ExamResult;
+  gradingPolicy?: 'best' | 'last' | 'average';
   className?: string;
 }
 
-export function ExamResultViewer({ result, className = '' }: ExamResultViewerProps) {
+function getGradingPolicyLabel(policy?: 'best' | 'last' | 'average'): string | null {
+  switch (policy) {
+    case 'best': return 'Best Attempt';
+    case 'last': return 'Latest Attempt';
+    case 'average': return 'Average of Attempts';
+    default: return null;
+  }
+}
+
+export function ExamResultViewer({ result, gradingPolicy, className = '' }: ExamResultViewerProps) {
   const gradeColor = getGradeColor(result.gradeLetter);
   const gradeDescription = getGradeDescription(result.gradeLetter);
+  const gradingPolicyLabel = getGradingPolicyLabel(gradingPolicy);
 
   return (
     <div className={`bg-white rounded-lg shadow-sm border border-gray-200 ${className}`}>
@@ -41,7 +52,9 @@ export function ExamResultViewer({ result, className = '' }: ExamResultViewerPro
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Score Summary</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-gray-50 p-4 rounded-lg">
-            <p className="text-sm text-gray-600 mb-1">Score</p>
+            <p className="text-sm text-gray-600 mb-1">
+              {gradingPolicyLabel ? `Score (${gradingPolicyLabel})` : 'Score'}
+            </p>
             <p className="text-2xl font-bold text-gray-900">
               {result.score}/{result.maxScore}
             </p>

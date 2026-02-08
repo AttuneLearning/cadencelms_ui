@@ -164,7 +164,7 @@ export function ExerciseResultsPage() {
         {/* Attempt History */}
         {historyData && historyData.attempts.length > 0 && (
           <div className="mt-6">
-            <AttemptHistory attempts={historyData.attempts} />
+            <AttemptHistory attempts={historyData.attempts} maxAttempts={result.maxAttempts} />
           </div>
         )}
       </div>

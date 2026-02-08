@@ -155,6 +155,7 @@ export interface Assessment {
   attempts: AssessmentAttempts;
   scoring: AssessmentScoring;
   feedback: AssessmentFeedback;
+  gradingPolicy?: 'best' | 'last' | 'average';
   isPublished: boolean;
   isArchived: boolean;
   usedInLearningUnits?: number;

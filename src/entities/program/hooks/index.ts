@@ -20,4 +20,4 @@ export {
 } from '../model/useProgram';
 
 // Learner-specific hooks
-export { useMyPrograms, useProgramForLearner } from './useLearnerPrograms';
+export { useMyPrograms, useProgramForLearner, useEnrollProgram } from './useLearnerPrograms';

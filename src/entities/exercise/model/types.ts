@@ -132,6 +132,7 @@ export interface Exercise {
   showFeedback: boolean;
   allowReview: boolean;
   instructions?: string;
+  gradingPolicy?: 'best' | 'last' | 'average';
   status: ExerciseStatus;
   createdBy: UserRef;
   createdAt: string;

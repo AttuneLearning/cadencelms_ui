@@ -26,6 +26,13 @@ vi.mock('@/shared/ui/use-toast', () => ({
   }),
 }));
 
+// Mock the auth hook
+vi.mock('@/features/auth', () => ({
+  useAuth: () => ({
+    user: { _id: 'learner-1' },
+  }),
+}));
+
 // Mock react-router-dom hooks
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
@@ -116,6 +123,13 @@ describe('ExerciseTakingPage', () => {
     vi.clearAllMocks();
     vi.restoreAllMocks();
     mockNavigate.mockClear();
+
+    // Default mock for exercise attempts (pre-flight check)
+    vi.spyOn(examAttemptHooks, 'useExerciseAttempts').mockReturnValue({
+      data: [],
+      isLoading: false,
+      error: null,
+    } as any);
   });
 
   describe('Initial Load', () => {

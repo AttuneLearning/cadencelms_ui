@@ -49,6 +49,7 @@ export {
   // Learner hooks
   useMyPrograms,
   useProgramForLearner,
+  useEnrollProgram,
 } from './hooks';
 
 // Query keys

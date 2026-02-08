@@ -32,6 +32,8 @@ export const programKeys = {
     [...programKeys.all, 'myPrograms', params] as const,
   learnerDetails: () => [...programKeys.all, 'learnerDetail'] as const,
   learnerDetail: (id: string) => [...programKeys.learnerDetails(), id] as const,
+  enrollmentProgress: (enrollmentId: string) =>
+    [...programKeys.all, 'enrollmentProgress', enrollmentId] as const,
 };
 
 export const certificateTemplateKeys = {

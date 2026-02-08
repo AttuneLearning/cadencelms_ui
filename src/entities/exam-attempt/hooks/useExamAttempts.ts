@@ -13,6 +13,7 @@ import {
   getExamResults,
   gradeExam,
   listAttemptsByExam,
+  getExerciseAttempts,
 } from '../api/examAttemptApi';
 import type {
   ListExamAttemptsParams,
@@ -56,6 +57,8 @@ export const EXAM_ATTEMPT_KEYS = {
   results: () => [...EXAM_ATTEMPT_KEYS.all, 'results'] as const,
   result: (id: string) => [...EXAM_ATTEMPT_KEYS.results(), id] as const,
   history: (examId: string) => [...EXAM_ATTEMPT_KEYS.all, 'history', examId] as const,
+  exerciseAttempts: (exerciseId: string, learnerId: string) =>
+    [...EXAM_ATTEMPT_KEYS.all, 'exerciseAttempts', exerciseId, learnerId] as const,
   byExam: (examId: string, params?: ListAttemptsByExamParams) =>
     [...EXAM_ATTEMPT_KEYS.all, 'byExam', examId, params] as const,
 };
@@ -240,6 +243,17 @@ export function useGradeExam() {
       queryClient.invalidateQueries({ queryKey: EXAM_ATTEMPT_KEYS.result(variables.attemptId) });
       queryClient.invalidateQueries({ queryKey: EXAM_ATTEMPT_KEYS.lists() });
     },
+  });
+}
+
+/**
+ * Hook to fetch exercise attempts for a specific learner
+ */
+export function useExerciseAttempts(exerciseId: string, learnerId: string) {
+  return useQuery({
+    queryKey: EXAM_ATTEMPT_KEYS.exerciseAttempts(exerciseId, learnerId),
+    queryFn: () => getExerciseAttempts(exerciseId, learnerId),
+    enabled: !!exerciseId && !!learnerId,
   });
 }
 

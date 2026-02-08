@@ -185,6 +185,10 @@ export const endpoints = {
     stats: '/learning-events/stats',
   },
 
+  exercises: {
+    attempts: (exerciseId: string) => `/exercises/${exerciseId}/attempts`,
+  },
+
   examAttempts: {
     list: '/exam-attempts',
     byId: (id: string) => `/exam-attempts/${id}`,

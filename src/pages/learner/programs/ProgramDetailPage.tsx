@@ -5,13 +5,14 @@
 
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useProgramForLearner } from '@/entities/program';
+import { useProgramForLearner, useEnrollProgram } from '@/entities/program';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Badge } from '@/shared/ui/badge';
 import { Progress } from '@/shared/ui/progress';
 import { PageHeader } from '@/shared/ui/page-header';
+import { useToast } from '@/shared/ui/use-toast';
 import {
   CheckCircle2,
   Circle,
@@ -21,6 +22,7 @@ import {
   Calendar,
   GraduationCap,
   BookOpen,
+  Loader2,
 } from 'lucide-react';
 import type { ProgramCourseItem } from '@/entities/program/api/learnerProgramApi';
 
@@ -115,6 +117,27 @@ const CourseCard: React.FC<{ course: ProgramCourseItem }> = ({ course }) => {
 export const ProgramDetailPage: React.FC = () => {
   const { programId } = useParams<{ programId: string }>();
   const { data: program, isLoading, error } = useProgramForLearner(programId || '');
+  const enrollMutation = useEnrollProgram();
+  const { toast } = useToast();
+
+  const isEnrolled = !!program?.enrollment;
+
+  const handleEnroll = async () => {
+    if (!programId) return;
+    try {
+      await enrollMutation.mutateAsync(programId);
+      toast({
+        title: 'Enrolled successfully',
+        description: `You have been enrolled in ${program?.name || 'the program'}.`,
+      });
+    } catch {
+      toast({
+        title: 'Enrollment failed',
+        description: 'Unable to enroll in this program. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -216,40 +239,70 @@ export const ProgramDetailPage: React.FC = () => {
         </Card>
       </div>
 
-      {/* Overall Progress */}
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>Overall Progress</CardTitle>
-          <CardDescription>
-            {program.statistics.completedCourses} of {program.statistics.totalCourses} courses completed
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-2xl font-bold">{program.statistics.overallProgress}%</span>
-              {program.enrollment.status === 'completed' && (
-                <Badge variant="default" className="gap-1">
-                  <CheckCircle2 className="h-3 w-3" />
-                  Completed
-                </Badge>
+      {/* Enrollment CTA for unenrolled users */}
+      {!isEnrolled && (
+        <Card className="mb-8 border-primary">
+          <CardHeader>
+            <CardTitle>Enroll in This Program</CardTitle>
+            <CardDescription>
+              This program contains {program.statistics.totalCourses} courses. Enroll to start tracking your progress.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              onClick={handleEnroll}
+              disabled={enrollMutation.isPending}
+              className="w-full"
+            >
+              {enrollMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Enrolling...
+                </>
+              ) : (
+                'Enroll in Program'
               )}
-            </div>
-            <Progress value={program.statistics.overallProgress} className="h-3" />
-          </div>
-          {nextIncompleteCourse && (
-            <Button asChild className="w-full mt-4">
-              <Link to={`/learner/courses/${nextIncompleteCourse.id}/player`}>
-                Continue to {nextIncompleteCourse.title}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
             </Button>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
-      {/* Certificate Info */}
-      {program.certificate?.enabled && (
+      {/* Overall Progress (enrolled users only) */}
+      {isEnrolled && (
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Overall Progress</CardTitle>
+            <CardDescription>
+              {program.statistics.completedCourses} of {program.statistics.totalCourses} courses completed
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-2xl font-bold">{program.statistics.overallProgress}%</span>
+                {program.enrollment?.status === 'completed' && (
+                  <Badge variant="default" className="gap-1">
+                    <CheckCircle2 className="h-3 w-3" />
+                    Completed
+                  </Badge>
+                )}
+              </div>
+              <Progress value={program.statistics.overallProgress} className="h-3" />
+            </div>
+            {nextIncompleteCourse && (
+              <Button asChild className="w-full mt-4">
+                <Link to={`/learner/courses/${nextIncompleteCourse.id}/player`}>
+                  {program.statistics.completedCourses === 0 ? 'Start Course' : 'Continue to'} {nextIncompleteCourse.title}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Certificate Info (enrolled users only) */}
+      {isEnrolled && program.certificate?.enabled && (
         <Card className="mb-8 border-primary">
           <CardHeader>
             <div className="flex items-center gap-2">

@@ -9,6 +9,7 @@ import type { ApiResponse } from '@/shared/api/types';
 import type {
   ExamAttempt,
   ExamAttemptsListResponse,
+  ExamAttemptListItem,
   StartExamAttemptRequest,
   StartExamAttemptResponse,
   SubmitAnswersRequest,
@@ -109,6 +110,20 @@ export async function gradeExam(
     data
   );
   return response.data.data;
+}
+
+/**
+ * Get exercise attempts for a specific learner
+ */
+export async function getExerciseAttempts(
+  exerciseId: string,
+  learnerId: string
+): Promise<ExamAttemptListItem[]> {
+  const response = await client.get<ApiResponse<ExamAttemptsListResponse>>(
+    endpoints.exercises.attempts(exerciseId),
+    { params: { learnerId } }
+  );
+  return response.data.data.attempts;
 }
 
 /**

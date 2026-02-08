@@ -51,12 +51,14 @@ export interface ProgramCourseItem {
   title: string;
   code: string;
   description: string;
+  order: number;
   level: {
     id: string;
     name: string;
     levelNumber: number;
   };
   status: 'completed' | 'in-progress' | 'locked' | 'available';
+  prerequisiteMet: boolean;
   enrollment?: {
     id: string;
     progress: number;
@@ -67,8 +69,21 @@ export interface ProgramCourseItem {
 }
 
 /**
- * Learner Program Detail Response
+ * Program Enrollment Progress
  */
+export interface ProgramEnrollmentProgress {
+  enrollmentId: string;
+  programId: string;
+  overallProgress: number;
+  coursesCompleted: number;
+  coursesTotal: number;
+  courses: Array<{
+    courseId: string;
+    status: 'completed' | 'in-progress' | 'locked' | 'available';
+    progress: number;
+  }>;
+}
+
 export interface LearnerProgramDetail {
   id: string;
   name: string;
@@ -81,7 +96,7 @@ export interface LearnerProgramDetail {
     id: string;
     name: string;
   };
-  enrollment: {
+  enrollment?: {
     id: string;
     status: 'active' | 'completed' | 'withdrawn';
     enrolledAt: string;
@@ -139,6 +154,28 @@ export async function getMyPrograms(params?: {
 export async function getProgramForLearner(id: string): Promise<LearnerProgramDetail> {
   const response = await client.get<ApiResponse<LearnerProgramDetail>>(
     `/programs/${id}/learner`
+  );
+  return response.data.data;
+}
+
+/**
+ * POST /programs/:id/enroll - Enroll the current learner in a program
+ */
+export async function enrollProgram(programId: string): Promise<{ enrollmentId: string }> {
+  const response = await client.post<ApiResponse<{ enrollmentId: string }>>(
+    `/programs/${programId}/enroll`
+  );
+  return response.data.data;
+}
+
+/**
+ * GET /program-enrollments/:enrollmentId/progress - Get program enrollment progress
+ */
+export async function getProgramEnrollmentProgress(
+  enrollmentId: string
+): Promise<ProgramEnrollmentProgress> {
+  const response = await client.get<ApiResponse<ProgramEnrollmentProgress>>(
+    `/program-enrollments/${enrollmentId}/progress`
   );
   return response.data.data;
 }

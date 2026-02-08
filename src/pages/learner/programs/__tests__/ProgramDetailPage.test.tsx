@@ -4,6 +4,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ProgramDetailPage } from '../ProgramDetailPage';
@@ -16,8 +17,15 @@ vi.mock('@/entities/program', async () => {
   return {
     ...actual,
     useProgramForLearner: vi.fn(),
+    useEnrollProgram: vi.fn(),
   };
 });
+
+// Mock useToast
+const mockToast = vi.fn();
+vi.mock('@/shared/ui/use-toast', () => ({
+  useToast: () => ({ toast: mockToast }),
+}));
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
@@ -63,12 +71,14 @@ const mockProgramDetail: LearnerProgramDetail = {
       title: 'HTML & CSS Fundamentals',
       code: 'CS101',
       description: 'Learn the basics of web development',
+      order: 1,
       level: {
         id: 'level-1',
         name: 'Level 1',
         levelNumber: 1,
       },
       status: 'completed',
+      prerequisiteMet: true,
       enrollment: {
         id: 'ce-1',
         progress: 100,
@@ -82,12 +92,14 @@ const mockProgramDetail: LearnerProgramDetail = {
       title: 'JavaScript Essentials',
       code: 'CS102',
       description: 'Master JavaScript programming',
+      order: 2,
       level: {
         id: 'level-1',
         name: 'Level 1',
         levelNumber: 1,
       },
       status: 'in-progress',
+      prerequisiteMet: true,
       enrollment: {
         id: 'ce-2',
         progress: 60,
@@ -101,12 +113,14 @@ const mockProgramDetail: LearnerProgramDetail = {
       title: 'React Framework',
       code: 'CS201',
       description: 'Build modern web applications with React',
+      order: 3,
       level: {
         id: 'level-2',
         name: 'Level 2',
         levelNumber: 2,
       },
       status: 'available',
+      prerequisiteMet: true,
       prerequisites: ['course-2'],
     },
     {
@@ -114,12 +128,14 @@ const mockProgramDetail: LearnerProgramDetail = {
       title: 'Advanced Backend Development',
       code: 'CS301',
       description: 'Master backend architecture and APIs',
+      order: 4,
       level: {
         id: 'level-3',
         name: 'Level 3',
         levelNumber: 3,
       },
       status: 'locked',
+      prerequisiteMet: false,
       prerequisites: ['course-3'],
     },
   ],
@@ -136,11 +152,39 @@ const mockProgramDetail: LearnerProgramDetail = {
   },
 };
 
+const mockUnenrolledProgram: LearnerProgramDetail = {
+  ...mockProgramDetail,
+  enrollment: undefined,
+  courses: mockProgramDetail.courses.map((c) => ({
+    ...c,
+    status: 'locked' as const,
+    prerequisiteMet: false,
+    enrollment: undefined,
+  })),
+  statistics: {
+    totalCourses: 4,
+    completedCourses: 0,
+    inProgressCourses: 0,
+    overallProgress: 0,
+  },
+};
+
+// Default enroll mutation mock
+const mockMutateAsync = vi.fn();
+const defaultEnrollMock = {
+  mutateAsync: mockMutateAsync,
+  isPending: false,
+  isError: false,
+  isSuccess: false,
+  error: null,
+  reset: vi.fn(),
+};
+
 describe('ProgramDetailPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Set initial URL
     window.history.pushState({}, '', '/learner/programs/prog-1');
+    vi.mocked(programHooks.useEnrollProgram).mockReturnValue(defaultEnrollMock as any);
   });
 
   it('renders loading state initially', () => {
@@ -239,7 +283,7 @@ describe('ProgramDetailPage', () => {
     render(<ProgramDetailPage />, { wrapper: createWrapper() });
 
     await waitFor(() => {
-      expect(screen.getByText('Continue to JavaScript Essentials')).toBeInTheDocument();
+      expect(screen.getByText(/Continue to JavaScript Essentials/)).toBeInTheDocument();
     });
   });
 
@@ -262,7 +306,7 @@ describe('ProgramDetailPage', () => {
     const completedProgram: LearnerProgramDetail = {
       ...mockProgramDetail,
       enrollment: {
-        ...mockProgramDetail.enrollment,
+        ...mockProgramDetail.enrollment!,
         status: 'completed',
         progress: 100,
         completedAt: '2024-06-01T00:00:00Z',
@@ -323,5 +367,114 @@ describe('ProgramDetailPage', () => {
     await waitFor(() => {
       expect(screen.getByText('Complete prerequisites to unlock this course')).toBeInTheDocument();
     });
+  });
+
+  // =====================
+  // Enrollment Flow Tests
+  // =====================
+
+  it('renders enrollment button for unenrolled user', async () => {
+    vi.mocked(programHooks.useProgramForLearner).mockReturnValue({
+      data: mockUnenrolledProgram,
+      isLoading: false,
+      error: null,
+    } as any);
+
+    render(<ProgramDetailPage />, { wrapper: createWrapper() });
+
+    await waitFor(() => {
+      expect(screen.getByText('Enroll in This Program')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Enroll in Program' })).toBeInTheDocument();
+    });
+
+    // Should NOT show overall progress for unenrolled users
+    expect(screen.queryByText('Overall Progress')).not.toBeInTheDocument();
+  });
+
+  it('calls enrollment mutation on enroll button click', async () => {
+    const user = userEvent.setup();
+    mockMutateAsync.mockResolvedValue({ enrollmentId: 'new-enr-1' });
+
+    vi.mocked(programHooks.useProgramForLearner).mockReturnValue({
+      data: mockUnenrolledProgram,
+      isLoading: false,
+      error: null,
+    } as any);
+
+    render(<ProgramDetailPage />, { wrapper: createWrapper() });
+
+    const enrollButton = await screen.findByRole('button', { name: 'Enroll in Program' });
+    await user.click(enrollButton);
+
+    expect(mockMutateAsync).toHaveBeenCalledWith('prog-1');
+    expect(mockToast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Enrolled successfully',
+      })
+    );
+  });
+
+  it('shows loading state during enrollment', async () => {
+    vi.mocked(programHooks.useEnrollProgram).mockReturnValue({
+      ...defaultEnrollMock,
+      isPending: true,
+    } as any);
+
+    vi.mocked(programHooks.useProgramForLearner).mockReturnValue({
+      data: mockUnenrolledProgram,
+      isLoading: false,
+      error: null,
+    } as any);
+
+    render(<ProgramDetailPage />, { wrapper: createWrapper() });
+
+    await waitFor(() => {
+      expect(screen.getByText('Enrolling...')).toBeInTheDocument();
+    });
+
+    // Button should be disabled during enrollment
+    const enrollButton = screen.getByRole('button', { name: /Enrolling/ });
+    expect(enrollButton).toBeDisabled();
+  });
+
+  it('shows error toast on enrollment failure', async () => {
+    const user = userEvent.setup();
+    mockMutateAsync.mockRejectedValue(new Error('Enrollment failed'));
+
+    vi.mocked(programHooks.useProgramForLearner).mockReturnValue({
+      data: mockUnenrolledProgram,
+      isLoading: false,
+      error: null,
+    } as any);
+
+    render(<ProgramDetailPage />, { wrapper: createWrapper() });
+
+    const enrollButton = await screen.findByRole('button', { name: 'Enroll in Program' });
+    await user.click(enrollButton);
+
+    expect(mockToast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Enrollment failed',
+        variant: 'destructive',
+      })
+    );
+  });
+
+  it('shows progress section for enrolled users, not enrollment button', async () => {
+    vi.mocked(programHooks.useProgramForLearner).mockReturnValue({
+      data: mockProgramDetail,
+      isLoading: false,
+      error: null,
+    } as any);
+
+    render(<ProgramDetailPage />, { wrapper: createWrapper() });
+
+    await waitFor(() => {
+      expect(screen.getByText('Overall Progress')).toBeInTheDocument();
+    });
+
+    // Should NOT show enrollment button for enrolled users
+    expect(screen.queryByText('Enroll in This Program')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Enroll in Program' })).not.toBeInTheDocument();
   });
 });

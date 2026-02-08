@@ -213,6 +213,7 @@ export interface StartExamAttemptResponse {
   status: 'started';
   score: number;
   maxScore: number;
+  maxAttempts: number | null;
   timeLimit: number;
   remainingTime: number;
   shuffleQuestions: boolean;
@@ -261,6 +262,7 @@ export interface SubmitExamResponse {
   status: 'submitted' | 'graded';
   score: number;
   maxScore: number;
+  maxAttempts: number | null;
   percentage: number;
   passed: boolean;
   gradeLetter: string | null;

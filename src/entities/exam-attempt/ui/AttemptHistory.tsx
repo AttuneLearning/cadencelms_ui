@@ -9,10 +9,11 @@ import { Badge } from '@/shared/ui/badge';
 
 export interface AttemptHistoryProps {
   attempts: ExamAttemptListItem[];
+  maxAttempts?: number | null;
   className?: string;
 }
 
-export function AttemptHistory({ attempts, className = '' }: AttemptHistoryProps) {
+export function AttemptHistory({ attempts, maxAttempts, className = '' }: AttemptHistoryProps) {
   if (attempts.length === 0) {
     return (
       <div className={`text-center py-8 text-gray-500 ${className}`} data-testid="attempt-history-empty">
@@ -25,7 +26,9 @@ export function AttemptHistory({ attempts, className = '' }: AttemptHistoryProps
     <div className={`bg-white rounded-lg shadow-sm border border-gray-200 ${className}`} data-testid="attempt-history">
       <div className="p-6 border-b border-gray-200">
         <h2 className="text-lg font-semibold text-gray-900">
-          Attempt History ({attempts.length})
+          Attempt History ({maxAttempts != null
+            ? `${attempts.length} of ${maxAttempts}`
+            : attempts.length})
         </h2>
       </div>
       <div className="overflow-x-auto">
@@ -44,7 +47,9 @@ export function AttemptHistory({ attempts, className = '' }: AttemptHistoryProps
             {attempts.map((attempt) => (
               <tr key={attempt.id} className="hover:bg-gray-50" data-testid="attempt-history-row">
                 <td className="px-6 py-4 font-medium text-gray-900">
-                  #{attempt.attemptNumber}
+                  {maxAttempts != null
+                    ? `${attempt.attemptNumber} of ${maxAttempts}`
+                    : `#${attempt.attemptNumber}`}
                 </td>
                 <td className="px-6 py-4 text-gray-600">
                   {attempt.submittedAt

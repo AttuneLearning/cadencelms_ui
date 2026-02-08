@@ -3,10 +3,11 @@
  * React Query hooks for learner program views
  */
 
-import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@tanstack/react-query';
 import {
   getMyPrograms,
   getProgramForLearner,
+  enrollProgram,
   type MyProgramsResponse,
   type LearnerProgramDetail,
 } from '../api/learnerProgramApi';
@@ -60,5 +61,20 @@ export function useProgramForLearner(
     staleTime: 2 * 60 * 1000, // 2 minutes
     enabled: !!id,
     ...options,
+  });
+}
+
+/**
+ * Hook to enroll the current learner in a program
+ */
+export function useEnrollProgram() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (programId: string) => enrollProgram(programId),
+    onSuccess: (_data, programId) => {
+      queryClient.invalidateQueries({ queryKey: programKeys.myPrograms() });
+      queryClient.invalidateQueries({ queryKey: programKeys.learnerDetail(programId) });
+    },
   });
 }
