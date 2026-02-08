@@ -3,7 +3,7 @@
  * Tests for Dexie database schema and operations
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { LMSDatabase, initDatabase, type Course, type Lesson } from './db';
 
 describe('LMSDatabase', () => {
@@ -214,15 +214,6 @@ describe('LMSDatabase', () => {
 
 describe('initDatabase', () => {
   it('should initialize database successfully', async () => {
-    // Mock console.log
-    const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-
-    await initDatabase();
-
-    expect(consoleLogSpy).toHaveBeenCalledWith(
-      expect.stringContaining('[Database] Initialized successfully')
-    );
-
-    consoleLogSpy.mockRestore();
+    await expect(initDatabase()).resolves.toBeUndefined();
   });
 });

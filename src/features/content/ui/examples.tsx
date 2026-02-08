@@ -98,7 +98,6 @@ export const ContentSelectorExample: React.FC = () => {
 
   const handleContentSelect = (content: any) => {
     setSelectedContent(content);
-    console.log('Selected content:', content);
   };
 
   return (
@@ -124,7 +123,8 @@ export const ContentSelectorExample: React.FC = () => {
  */
 export const FilteredContentSelectorExample: React.FC = () => {
   const handleContentSelect = (content: any) => {
-    console.log('Selected SCORM content:', content);
+    // Handle SCORM content selection
+    void content;
   };
 
   return (
@@ -144,8 +144,7 @@ export const FilteredContentSelectorExample: React.FC = () => {
  * Simple upload with minimal configuration
  */
 export const QuickUploaderDefaultExample: React.FC = () => {
-  const handleUploadSuccess = (contentId: string) => {
-    console.log('Uploaded content ID:', contentId);
+  const handleUploadSuccess = (_contentId: string) => {
     // Navigate or update state as needed
   };
 
@@ -165,8 +164,8 @@ export const QuickUploaderDefaultExample: React.FC = () => {
  * Use custom button or element as trigger
  */
 export const QuickUploaderCustomTriggerExample: React.FC = () => {
-  const handleUploadSuccess = (contentId: string) => {
-    console.log('Uploaded content ID:', contentId);
+  const handleUploadSuccess = (_contentId: string) => {
+    // Handle upload success
   };
 
   return (
@@ -288,7 +287,7 @@ export const HybridContentManagerExample: React.FC = () => {
       {mode === 'upload' ? (
         <QuickContentUploader
           type="video"
-          onSuccess={(id) => console.log('Uploaded:', id)}
+          onSuccess={() => {}}
         />
       ) : (
         <ContentSelector
@@ -308,9 +307,7 @@ export const CourseModuleContentUploaderExample: React.FC<{
   courseId: string;
   moduleId: string;
 }> = ({ courseId, moduleId }) => {
-  const handleUploadSuccess = (contentId: string) => {
-    // Link content to module
-    console.log('Linking content', contentId, 'to module', moduleId);
+  const handleUploadSuccess = (_contentId: string) => {
     // API call to link content to module would go here
   };
 
@@ -358,10 +355,7 @@ export const BatchDocumentUploaderExample: React.FC = () => {
 
   const handleUploadAll = () => {
     // Upload all files
-    files.forEach((file, _index) => {
-      // Simulate upload
-      console.log('Uploading file:', file.file.name);
-    });
+    void files;
   };
 
   return (

@@ -82,7 +82,6 @@ export class SCORMFileManager {
         });
       }
 
-      console.log('[SCORMFileManager] Initialized successfully');
       return true;
     } catch (error) {
       console.error('[SCORMFileManager] Failed to initialize:', error);
@@ -134,8 +133,6 @@ export class SCORMFileManager {
 
       // Update database
       await scormQueries.markDownloaded(packageId, packageId);
-
-      console.log(`[SCORMFileManager] Downloaded package ${packageId}`);
 
       return {
         success: true,
@@ -251,7 +248,6 @@ export class SCORMFileManager {
         }
       });
 
-      console.log(`[SCORMFileManager] Deleted package ${packageId}`);
       return true;
     } catch (error) {
       console.error(`[SCORMFileManager] Failed to delete package ${packageId}:`, error);
@@ -317,7 +313,6 @@ export class SCORMFileManager {
         await this.deletePackage(packageId);
       }
 
-      console.log('[SCORMFileManager] Cleared all packages');
       return true;
     } catch (error) {
       console.error('[SCORMFileManager] Failed to clear packages:', error);

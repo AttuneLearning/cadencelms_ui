@@ -113,7 +113,6 @@ export class SyncEngine {
       // Step 3: Process sync queue
       await this.processSyncQueue(result);
 
-      console.log('[SyncEngine] Full sync completed', result);
     } catch (error) {
       result.success = false;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -306,7 +305,6 @@ export class SyncEngine {
       );
       await lessonQueries.bulkUpsert(lessonsResponse.data);
 
-      console.log(`[SyncEngine] Downloaded course ${courseId} for offline access`);
     } catch (error) {
       console.error(`[SyncEngine] Failed to download course ${courseId}:`, error);
       throw error;

@@ -81,7 +81,6 @@ export function useOfflineSync(config: OfflineSyncConfig = {}) {
   const { isOnline, wasOffline } = useOnlineStatus({
     onOnline: mergedConfig.syncOnOnline
       ? () => {
-          console.log('[OfflineSync] Device came online, triggering sync');
           performSync();
         }
       : undefined,
@@ -95,12 +94,10 @@ export function useOfflineSync(config: OfflineSyncConfig = {}) {
    */
   const performSync = async () => {
     if (isSyncingRef.current) {
-      console.log('[OfflineSync] Sync already in progress, skipping');
       return;
     }
 
     if (!isOnline) {
-      console.log('[OfflineSync] Device is offline, skipping sync');
       return;
     }
 
@@ -130,7 +127,6 @@ export function useOfflineSync(config: OfflineSyncConfig = {}) {
         error: result.success ? undefined : result.errors.join(', '),
       });
 
-      console.log('[OfflineSync] Sync completed successfully', result);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
@@ -198,7 +194,6 @@ export function useOfflineSync(config: OfflineSyncConfig = {}) {
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible' && isOnline) {
-        console.log('[OfflineSync] Page became visible, triggering sync');
         performSync();
       }
     };
@@ -215,7 +210,6 @@ export function useOfflineSync(config: OfflineSyncConfig = {}) {
    */
   useEffect(() => {
     if (mergedConfig.syncOnMount && isOnline) {
-      console.log('[OfflineSync] App mounted, triggering initial sync');
       performSync();
     }
   }, []);
@@ -240,7 +234,6 @@ export function useOfflineSync(config: OfflineSyncConfig = {}) {
    */
   useEffect(() => {
     if (wasOffline && isOnline) {
-      console.log('[OfflineSync] Came back online, triggering sync');
       performSync();
     }
   }, [wasOffline, isOnline]);
@@ -273,7 +266,6 @@ export async function registerServiceWorkerSync(): Promise<boolean> {
     const registration = await navigator.serviceWorker.ready;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (registration as any).sync.register('sync-offline-data');
-    console.log('[OfflineSync] Background sync registered');
     return true;
   } catch (error) {
     console.error('[OfflineSync] Failed to register background sync:', error);
@@ -285,10 +277,6 @@ export async function registerServiceWorkerSync(): Promise<boolean> {
  * Initialize offline sync process
  */
 export async function initOfflineSync(_config: OfflineSyncConfig = {}): Promise<void> {
-  console.log('[OfflineSync] Initializing offline sync process');
-
   // Register service worker for background sync
   await registerServiceWorkerSync();
-
-  console.log('[OfflineSync] Offline sync process initialized');
 }

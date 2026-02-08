@@ -284,11 +284,6 @@ export async function initDatabase(): Promise<void> {
     // Open the database
     await db.open();
 
-    console.log('[Database] Initialized successfully');
-
-    // Log database size
-    const size = await db.getSize();
-    console.log('[Database] Size:', size);
   } catch (error) {
     console.error('[Database] Failed to initialize:', error);
     throw error;
