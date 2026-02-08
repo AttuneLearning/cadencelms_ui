@@ -5,7 +5,7 @@
 
 // API-supported module types
 // Note: 'assessment' type will be added per specs/ASSESSMENT_MODULE_SPEC.md
-export type CourseModuleType = 'scorm' | 'custom' | 'exercise' | 'video' | 'document';
+export type CourseModuleType = 'scorm' | 'custom' | 'exercise' | 'video' | 'audio' | 'document';
 
 export interface CourseModuleSettings {
   allowMultipleAttempts: boolean;

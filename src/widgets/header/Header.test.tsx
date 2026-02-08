@@ -17,8 +17,58 @@ import type { RoleHierarchy, User } from '@/shared/types/auth';
 // Mock dependencies
 vi.mock('@/features/auth/model/authStore');
 vi.mock('@/shared/lib/navigation');
+vi.mock('@/features/auth/hooks/useDisplayName', () => ({
+  useDisplayName: () => 'Test User',
+}));
+vi.mock('@/features/auth/hooks/useCurrentUser', () => ({
+  useCurrentUser: () => ({
+    person: null,
+    primaryEmail: 'test@example.com',
+    displayName: 'Test User',
+    isAuthenticated: true,
+    isLoading: false,
+    user: null,
+    primaryPhone: null,
+  }),
+}));
+vi.mock('@/shared/hooks', () => ({
+  useDepartmentContext: () => ({
+    currentDepartmentId: null,
+    currentDepartmentName: null,
+    currentDepartmentRoles: [],
+    currentDepartmentAccessRights: [],
+    hasPermission: vi.fn(() => true),
+    hasAnyPermission: vi.fn(() => true),
+    hasAllPermissions: vi.fn(() => true),
+    hasRole: vi.fn(() => false),
+    switchDepartment: vi.fn(),
+    isSwitching: false,
+    switchError: null,
+  }),
+}));
 vi.mock('@/features/theme/ui/ThemeToggle', () => ({
   ThemeToggle: () => <div data-testid="theme-toggle">Theme Toggle</div>,
+}));
+vi.mock('@/entities/user/ui/UserAvatar', () => ({
+  UserAvatar: ({ displayName }: { displayName?: string }) => (
+    <div data-testid="user-avatar">{displayName}</div>
+  ),
+}));
+vi.mock('@/entities/notification', () => ({
+  useNotificationSummary: () => ({
+    data: null,
+    isLoading: false,
+  }),
+  useMarkNotificationsAsRead: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+  }),
+}));
+vi.mock('@/features/notifications', () => ({
+  NotificationBell: () => <div data-testid="notification-bell">Notifications</div>,
+}));
+vi.mock('@/features/auth/ui/AdminSessionIndicator', () => ({
+  AdminSessionIndicator: () => <div data-testid="admin-indicator" />,
 }));
 
 const mockNavigate = vi.fn();

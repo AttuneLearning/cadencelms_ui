@@ -117,8 +117,11 @@ import { MyCoursesPage } from '@/pages/learner/courses/MyCoursesPage';
 import { MyLearningPage } from '@/pages/learner/learning';
 import { MyClassesPage } from '@/pages/learner/classes';
 import { CertificatesPage, CertificateViewPage } from '@/pages/learner/certificates';
+import { MyProgramsPage, ProgramDetailPage } from '@/pages/learner/programs';
 import { LearnerTestPage } from '@/pages/learner/test-page';
 import { LearnerSettingsPage } from '@/pages/learner/settings';
+import { InboxPage } from '@/pages/learner/inbox/InboxPage';
+import { CourseForumPage, ThreadDetailPage } from '@/pages/learner/forums';
 
 // Auth error page (replaces direct login redirects for better debugging)
 import { AuthErrorPage } from '@/pages/auth-error';
@@ -282,12 +285,38 @@ export function AppRouter() {
           </LearnerOnlyRoute>
         }
       />
+      {/* Inbox Route */}
+      <Route
+        path="/learner/inbox"
+        element={
+          <LearnerOnlyRoute>
+            <InboxPage />
+          </LearnerOnlyRoute>
+        }
+      />
       {/* My Courses Route */}
       <Route
         path="/learner/courses"
         element={
           <LearnerOnlyRoute>
             <MyCoursesPage />
+          </LearnerOnlyRoute>
+        }
+      />
+      {/* My Programs Routes */}
+      <Route
+        path="/learner/programs"
+        element={
+          <LearnerOnlyRoute>
+            <MyProgramsPage />
+          </LearnerOnlyRoute>
+        }
+      />
+      <Route
+        path="/learner/programs/:programId"
+        element={
+          <LearnerOnlyRoute>
+            <ProgramDetailPage />
           </LearnerOnlyRoute>
         }
       />
@@ -371,6 +400,24 @@ export function AppRouter() {
         element={
           <LearnerOnlyRoute>
             <LearnerTestPage />
+          </LearnerOnlyRoute>
+        }
+      />
+
+      {/* Forum Routes */}
+      <Route
+        path="/learner/courses/:courseId/forum"
+        element={
+          <LearnerOnlyRoute>
+            <CourseForumPage />
+          </LearnerOnlyRoute>
+        }
+      />
+      <Route
+        path="/learner/courses/:courseId/forum/:threadId"
+        element={
+          <LearnerOnlyRoute>
+            <ThreadDetailPage />
           </LearnerOnlyRoute>
         }
       />

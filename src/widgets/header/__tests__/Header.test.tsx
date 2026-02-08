@@ -34,6 +34,33 @@ vi.mock('@/entities/user/ui/UserAvatar', () => ({
     <div data-testid="user-avatar">{displayName}</div>
   ),
 }));
+vi.mock('@/entities/notification', () => ({
+  useNotificationSummary: () => ({
+    data: null,
+    isLoading: false,
+    isError: false,
+    error: null,
+  }),
+  useMarkNotificationsAsRead: () => ({
+    mutate: vi.fn(),
+    mutateAsync: vi.fn(),
+    isLoading: false,
+    isError: false,
+    isSuccess: false,
+    error: null,
+    data: undefined,
+    reset: vi.fn(),
+    isPending: false,
+    isIdle: true,
+    status: 'idle',
+  }),
+}));
+vi.mock('@/features/notifications', () => ({
+  NotificationBell: () => <div data-testid="notification-bell">Notifications</div>,
+}));
+vi.mock('@/features/auth/ui/AdminSessionIndicator', () => ({
+  AdminSessionIndicator: () => <div data-testid="admin-indicator">Admin</div>,
+}));
 
 // ============================================================================
 // Test Utilities

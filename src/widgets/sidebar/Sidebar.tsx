@@ -26,6 +26,7 @@ import { useAuthStore } from '@/features/auth/model/authStore';
 import { useNavigationStore } from '@/shared/stores/navigationStore';
 import { useDepartmentContext } from '@/shared/hooks';
 import type { UserType } from '@/shared/types/auth';
+import { useUnreadCount } from '@/entities/message';
 import {
   getSectionsForDashboard,
   getDepartmentActionsForDashboard,
@@ -52,6 +53,7 @@ interface UserDepartment {
 
 interface ProcessedNavItem extends NavItem {
   disabled: boolean;
+  badge?: string | number;
 }
 
 // ============================================================================
@@ -107,6 +109,7 @@ const Section: React.FC<SectionProps> = ({
               path={item.path}
               icon={item.icon}
               disabled={item.disabled}
+              badge={item.badge}
               onClick={onNavigate}
             />
           ))}
@@ -177,6 +180,11 @@ export const Sidebar: React.FC = () => {
     return 'staff'; // Default
   }, [location.pathname]);
 
+  // Fetch unread message count for learners
+  const { data: unreadCountData } = useUnreadCount({
+    enabled: currentDashboard === 'learner',
+  });
+
   // ================================================================
   // Get Sections for Current Dashboard
   // ================================================================
@@ -192,6 +200,7 @@ export const Sidebar: React.FC = () => {
   const processItems = (items: NavItem[]): ProcessedNavItem[] => {
     return items.map((item) => {
       let disabled = false;
+      let badge: string | number | undefined = undefined;
 
       if (item.requiredPermission) {
         if (item.departmentScoped) {
@@ -201,29 +210,34 @@ export const Sidebar: React.FC = () => {
         }
       }
 
-      return { ...item, disabled };
+      // Add unread count badge for inbox link
+      if (item.id === 'learner-inbox' && unreadCountData?.total) {
+        badge = unreadCountData.total > 99 ? '99+' : unreadCountData.total;
+      }
+
+      return { ...item, disabled, badge };
     });
   };
 
   const overviewItems = useMemo(
     () => processItems(sections.overview.items),
-    [sections, hasDeptPermission, hasGlobalPermission]
+    [sections, hasDeptPermission, hasGlobalPermission, unreadCountData]
   );
   const primaryItems = useMemo(
     () => processItems(sections.primary.items),
-    [sections, hasDeptPermission, hasGlobalPermission]
+    [sections, hasDeptPermission, hasGlobalPermission, unreadCountData]
   );
   const secondaryItems = useMemo(
     () => processItems(sections.secondary.items),
-    [sections, hasDeptPermission, hasGlobalPermission]
+    [sections, hasDeptPermission, hasGlobalPermission, unreadCountData]
   );
   const insightsItems = useMemo(
     () => processItems(sections.insights.items),
-    [sections, hasDeptPermission, hasGlobalPermission]
+    [sections, hasDeptPermission, hasGlobalPermission, unreadCountData]
   );
   const footerItems = useMemo(
     () => processItems(sections.footer.items),
-    [sections, hasDeptPermission, hasGlobalPermission]
+    [sections, hasDeptPermission, hasGlobalPermission, unreadCountData]
   );
 
   // ================================================================

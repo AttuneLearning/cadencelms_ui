@@ -21,6 +21,9 @@ import * as departmentContext from '@/shared/hooks/useDepartmentContext';
 vi.mock('@/features/auth/model/authStore');
 vi.mock('@/shared/stores/navigationStore');
 vi.mock('@/shared/hooks/useDepartmentContext');
+vi.mock('@/entities/message', () => ({
+  useUnreadCount: () => ({ data: null }),
+}));
 vi.mock('../ui/NavLink', () => ({
   NavLink: ({ label, path, disabled }: any) => (
     <a

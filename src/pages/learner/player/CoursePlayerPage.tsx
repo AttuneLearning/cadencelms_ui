@@ -11,7 +11,9 @@ import { Button } from '@/shared/ui/button';
 import {
   ScormPlayer,
   VideoPlayer,
+  AudioPlayer,
   DocumentViewer,
+  AssignmentPlayer,
   PlayerSidebar,
   PlayerControls,
   type CourseModule,
@@ -339,6 +341,17 @@ export function CoursePlayerPage() {
       );
     }
 
+    if (contentType === 'audio') {
+      return (
+        <AudioPlayer
+          attemptId={currentAttempt.id}
+          audioUrl={(currentAttempt.content as any)?.url || ''}
+          lastPosition={currentAttempt.location ? parseFloat(currentAttempt.location) : 0}
+          onComplete={handleContentComplete}
+        />
+      );
+    }
+
     if (contentType === 'document') {
       const url = (currentAttempt.content as any)?.url || '';
       const isPdf = url.toLowerCase().endsWith('.pdf');
@@ -348,6 +361,33 @@ export function CoursePlayerPage() {
           attemptId={currentAttempt.id}
           documentUrl={url}
           documentType={isPdf ? 'pdf' : 'image'}
+        />
+      );
+    }
+
+    if (contentType === 'assignment') {
+      const assignment = (currentAttempt.content as any)?.assignment;
+      if (!assignment) {
+        return (
+          <div className="flex h-full items-center justify-center bg-muted/10">
+            <div className="flex flex-col items-center gap-4 text-center">
+              <AlertCircle className="h-12 w-12 text-destructive" />
+              <div>
+                <h3 className="text-lg font-semibold">Assignment Not Found</h3>
+                <p className="text-sm text-muted-foreground">
+                  Assignment data is missing
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <AssignmentPlayer
+          attemptId={currentAttempt.id}
+          assignment={assignment}
+          onComplete={handleContentComplete}
         />
       );
     }

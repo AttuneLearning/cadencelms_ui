@@ -23,11 +23,11 @@ import {
   Award,
   Calendar,
   PlayCircle,
-  AlertCircle,
 } from 'lucide-react';
 import type { EnrollmentWithCourse } from '../model/types';
 import { cn } from '@/shared/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
+import { ExpiryBadge } from './ExpiryBadge';
 
 interface EnrollmentCardProps {
   enrollment: EnrollmentWithCourse;
@@ -125,15 +125,10 @@ export const EnrollmentCard: React.FC<EnrollmentCardProps> = ({
               </span>
             </div>
           )}
-          {enrollment.expiresAt && new Date(enrollment.expiresAt) > new Date() && (
-            <div className="flex items-center gap-1 text-orange-600">
-              <AlertCircle className="h-3 w-3" />
-              <span>
-                Expires {formatDistanceToNow(new Date(enrollment.expiresAt), { addSuffix: true })}
-              </span>
-            </div>
-          )}
         </div>
+
+        {/* Expiry Badge */}
+        <ExpiryBadge expiresAt={enrollment.expiresAt} />
 
         {/* Certificate Badge */}
         {enrollment.isCertificateIssued && (

@@ -37,6 +37,7 @@ import {
   Award,
   Building2,
   UserPlus,
+  Inbox,
 } from 'lucide-react';
 
 // ============================================================================
@@ -232,6 +233,12 @@ export const LEARNER_SECTIONS: DashboardSections = {
     collapsible: true,
     defaultExpanded: true,
     items: [
+      {
+        id: 'learner-inbox',
+        label: 'Inbox',
+        path: '/learner/inbox',
+        icon: Inbox,
+      },
       {
         id: 'learner-classes',
         label: 'My Classes',

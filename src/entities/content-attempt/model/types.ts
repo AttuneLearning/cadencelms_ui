@@ -6,7 +6,7 @@
 /**
  * Content types that can have attempts
  */
-export type ContentType = 'scorm' | 'video' | 'document' | 'html' | 'assignment';
+export type ContentType = 'scorm' | 'video' | 'audio' | 'document' | 'html' | 'assignment';
 
 /**
  * Attempt status values

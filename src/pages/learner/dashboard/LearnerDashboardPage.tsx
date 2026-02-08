@@ -23,6 +23,8 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { PageHeader } from '@/shared/ui/page-header';
+import { ExpiryBadge } from '@/entities/enrollment/ui/ExpiryBadge';
+import { sortByExpiry, isExpiringSoon } from '@/entities/enrollment/lib/expiryUtils';
 
 // ============================================================================
 // Stat Card with Loading State
@@ -157,6 +159,100 @@ const ContinueLearning: React.FC<ContinueLearningProps> = ({ enrollments, isLoad
               <div className="h-2 flex-1 rounded-full bg-secondary">
                 <div
                   className="h-full rounded-full bg-primary transition-all"
+                  style={{ width: `${enrollment.progress.percentage}%` }}
+                />
+              </div>
+              <Button variant="ghost" size="sm" className="h-6 px-2" asChild>
+                <Link to={`/learner/courses/${enrollment.target.id}/player`}>
+                  <Play className="h-3 w-3" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+};
+
+// ============================================================================
+// Expiring Soon Section
+// ============================================================================
+
+interface ExpiringSoonProps {
+  enrollments: {
+    id: string;
+    target: { id: string; name: string };
+    expiresAt: string | null;
+    progress: { percentage: number };
+  }[];
+  isLoading: boolean;
+}
+
+const ExpiringSoon: React.FC<ExpiringSoonProps> = ({ enrollments, isLoading }) => {
+  // Filter enrollments expiring in the next 30 days
+  const expiringEnrollments = React.useMemo(() => {
+    const filtered = enrollments.filter((e) => isExpiringSoon(e.expiresAt, 30));
+    return sortByExpiry(filtered);
+  }, [enrollments]);
+
+  if (isLoading) {
+    return (
+      <Card className="border-amber-200 bg-amber-50/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-amber-800">
+            <AlertCircle className="h-5 w-5" />
+            Expiring Soon
+          </CardTitle>
+          <CardDescription>Enrollments expiring in the next 30 days</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {[1, 2].map((i) => (
+            <div key={i} className="flex items-center gap-3">
+              <Skeleton className="h-12 w-12 rounded" />
+              <div className="flex-1">
+                <Skeleton className="h-4 w-3/4 mb-2" />
+                <Skeleton className="h-2 w-full" />
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (expiringEnrollments.length === 0) {
+    return null; // Don't show section if no expiring enrollments
+  }
+
+  return (
+    <Card className="border-amber-200 bg-amber-50/50">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2 text-amber-800">
+              <AlertCircle className="h-5 w-5" />
+              Expiring Soon
+            </CardTitle>
+            <CardDescription>
+              {expiringEnrollments.length} {expiringEnrollments.length === 1 ? 'enrollment' : 'enrollments'} expiring in the next 30 days
+            </CardDescription>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {expiringEnrollments.map((enrollment) => (
+          <div key={enrollment.id} className="space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-sm font-medium truncate flex-1">
+                {enrollment.target.name}
+              </span>
+              <ExpiryBadge expiresAt={enrollment.expiresAt} variant="compact" />
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-2 flex-1 rounded-full bg-amber-200">
+                <div
+                  className="h-full rounded-full bg-amber-600 transition-all"
                   style={{ width: `${enrollment.progress.percentage}%` }}
                 />
               </div>
@@ -374,6 +470,12 @@ export const LearnerDashboardPage: React.FC = () => {
           isLoading={isLoading}
         />
       </div>
+
+      {/* Expiring Soon Alert */}
+      <ExpiringSoon
+        enrollments={enrollmentsData?.enrollments ?? []}
+        isLoading={isLoadingEnrollments}
+      />
 
       {/* Content Grid */}
       <div className="grid gap-4 md:grid-cols-2">

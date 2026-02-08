@@ -35,6 +35,8 @@ import { cn } from '@/shared/lib/utils';
 import type { UserType } from '@/shared/types/auth';
 import { EscalationModal } from '@/features/auth/ui/EscalationModal';
 import { AdminSessionIndicator } from '@/features/auth/ui/AdminSessionIndicator';
+import { NotificationBell } from '@/features/notifications';
+import { useNotificationSummary, useMarkNotificationsAsRead } from '@/entities/notification';
 
 // ============================================================================
 // Dashboard Tab Configuration
@@ -95,9 +97,37 @@ export const Header: React.FC = () => {
   const [showEscalationModal, setShowEscalationModal] = useState(false);
   const [pendingAdminPath, setPendingAdminPath] = useState('/admin/dashboard');
 
+  // Notification system hooks
+  const { data: notificationSummary, isLoading: notificationsLoading } = useNotificationSummary();
+  const markAsReadMutation = useMarkNotificationsAsRead();
+
   const handleLogout = async () => {
     await logout();
     navigate('/login');
+  };
+
+  // Handle notification click - navigate to relevant page or mark as read
+  const handleNotificationClick = (notificationId: string) => {
+    // Mark as read when clicked
+    markAsReadMutation.mutate({ notificationIds: [notificationId] });
+    // TODO: Navigate based on notification type/actionUrl
+  };
+
+  // Handle mark single notification as read
+  const handleMarkNotificationAsRead = (notificationId: string) => {
+    markAsReadMutation.mutate({ notificationIds: [notificationId] });
+  };
+
+  // Handle view all notifications
+  const handleViewAllNotifications = () => {
+    // Navigate to notifications list page (to be created)
+    // For now, navigate to notification settings as placeholder
+    navigate('/settings/notifications');
+  };
+
+  // Handle notification settings
+  const handleNotificationSettings = () => {
+    navigate('/settings/notifications');
   };
 
   // ISS-013: Handle admin tab click with escalation modal
@@ -240,6 +270,16 @@ export const Header: React.FC = () => {
               <>
                 {/* ISS-013 Phase 2: Admin Session Indicator */}
                 <AdminSessionIndicator />
+
+                {/* ISS-103: Notification Bell */}
+                <NotificationBell
+                  summary={notificationSummary ?? null}
+                  isLoading={notificationsLoading}
+                  onViewAll={handleViewAllNotifications}
+                  onSettings={handleNotificationSettings}
+                  onNotificationClick={handleNotificationClick}
+                  onMarkAsRead={handleMarkNotificationAsRead}
+                />
 
                 {/* User dropdown */}
                 <DropdownMenu>

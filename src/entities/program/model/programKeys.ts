@@ -26,6 +26,12 @@ export const programKeys = {
 
   certificates: () => [...programKeys.all, 'certificate'] as const,
   programCertificate: (id: string) => [...programKeys.certificates(), id] as const,
+
+  // Learner-specific keys
+  myPrograms: (params?: { page?: number; limit?: number; status?: string }) =>
+    [...programKeys.all, 'myPrograms', params] as const,
+  learnerDetails: () => [...programKeys.all, 'learnerDetail'] as const,
+  learnerDetail: (id: string) => [...programKeys.learnerDetails(), id] as const,
 };
 
 export const certificateTemplateKeys = {

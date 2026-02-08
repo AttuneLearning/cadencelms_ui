@@ -19,13 +19,14 @@ interface NavLinkProps {
   icon: React.ComponentType<{ className?: string }>;
   onClick?: () => void;
   disabled?: boolean;
+  badge?: string | number; // Optional badge (e.g., unread count)
 }
 
 // ============================================================================
 // Component
 // ============================================================================
 
-export const NavLink: React.FC<NavLinkProps> = ({ label, path, icon: Icon, onClick, disabled = false }) => {
+export const NavLink: React.FC<NavLinkProps> = ({ label, path, icon: Icon, onClick, disabled = false, badge }) => {
   const location = useLocation();
 
   // Determine if this link is active
@@ -44,6 +45,11 @@ export const NavLink: React.FC<NavLinkProps> = ({ label, path, icon: Icon, onCli
       >
         <Icon className="h-5 w-5 flex-shrink-0" />
         <span className="truncate">{label}</span>
+        {badge && (
+          <span className="ml-auto text-xs bg-muted px-2 py-0.5 rounded-full">
+            {badge}
+          </span>
+        )}
       </div>
     );
   }
@@ -62,6 +68,11 @@ export const NavLink: React.FC<NavLinkProps> = ({ label, path, icon: Icon, onCli
     >
       <Icon className="h-5 w-5 flex-shrink-0" />
       <span className="truncate">{label}</span>
+      {badge && (
+        <span className="ml-auto text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full font-semibold">
+          {badge}
+        </span>
+      )}
     </Link>
   );
 };

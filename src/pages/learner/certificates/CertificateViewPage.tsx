@@ -1,11 +1,12 @@
 /**
  * CertificateViewPage
- * Full-screen certificate viewer with print-optimized layout
+ * Full-screen certificate viewer for issued credentials
  */
 
 import React from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { useEnrollment } from '@/entities/enrollment';
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useLearnerCertificates, useCertificateIssuance } from '@/entities/credential/hooks/useCredentials';
+import { useAuthStore } from '@/features/auth/model/authStore';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent } from '@/shared/ui/card';
 import { Skeleton } from '@/shared/ui/skeleton';
@@ -16,12 +17,12 @@ import {
   Download,
   Printer,
   Share2,
-  ShieldCheck,
   ArrowLeft,
   Calendar,
   Hash,
   GraduationCap,
   Clock,
+  ExternalLink,
 } from 'lucide-react';
 import { useToast } from '@/shared/ui/use-toast';
 
@@ -32,27 +33,44 @@ const formatDate = (dateString: string | null): string => {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
-    month: 'short',
+    month: 'long',
     day: 'numeric',
   });
-};
-
-// Format certificate ID
-const formatCertificateId = (enrollmentId: string): string => {
-  return enrollmentId.toUpperCase();
 };
 
 export const CertificateViewPage: React.FC = () => {
   const { certificateId } = useParams<{ certificateId: string }>();
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user);
 
-  const { data: enrollment, isLoading, error } = useEnrollment(certificateId || '');
+  // Get list item for display (includes learner, credential group, certificate definition)
+  const { data: certificates, isLoading: isLoadingList, error: errorList } = useLearnerCertificates(
+    user?._id || '',
+    true // Include revoked certificates for viewing
+  );
+  const listItem = certificates?.find((cert) => cert.id === certificateId);
+
+  // Get full issuance for additional details like pdfUrl
+  const { data: fullIssuance, isLoading: isLoadingFull, error: errorFull } = useCertificateIssuance(
+    certificateId || '',
+    { enabled: !!certificateId }
+  );
+
+  const isLoading = isLoadingList || isLoadingFull;
+  const error = errorList || errorFull;
+  const issuance = listItem; // Use list item for display since it has nested objects
+  const pdfUrl = fullIssuance?.pdfUrl; // Get pdfUrl from full issuance
 
   const handleDownload = () => {
-    toast({
-      title: 'Download Started',
-      description: 'Your certificate PDF is being generated.',
-    });
+    if (pdfUrl) {
+      window.open(pdfUrl, '_blank');
+    } else {
+      toast({
+        title: 'PDF Not Available',
+        description: 'Certificate PDF is being generated.',
+      });
+    }
   };
 
   const handlePrint = () => {
@@ -60,12 +78,13 @@ export const CertificateViewPage: React.FC = () => {
   };
 
   const handleShare = async () => {
-    const shareUrl = `${window.location.origin}/learner/certificates/${certificateId}`;
+    if (!issuance) return;
+    const shareUrl = `${window.location.origin}/verify?code=${issuance.verificationCode}`;
     try {
       await navigator.clipboard.writeText(shareUrl);
       toast({
         title: 'Link Copied',
-        description: 'Certificate link copied to clipboard.',
+        description: 'Certificate verification link copied to clipboard.',
       });
     } catch (error) {
       toast({
@@ -77,11 +96,8 @@ export const CertificateViewPage: React.FC = () => {
   };
 
   const handleVerify = () => {
-    if (enrollment) {
-      toast({
-        title: 'Certificate Verified',
-        description: `Certificate ${formatCertificateId(enrollment.id)} is authentic and valid.`,
-      });
+    if (issuance) {
+      navigate(`/verify?code=${issuance.verificationCode}`);
     }
   };
 
@@ -105,7 +121,7 @@ export const CertificateViewPage: React.FC = () => {
   }
 
   // Error state
-  if (error || !enrollment) {
+  if (error || !issuance) {
     return (
       <div className="min-h-screen bg-background">
         <div className="container mx-auto py-8 px-4">
@@ -133,12 +149,16 @@ export const CertificateViewPage: React.FC = () => {
     );
   }
 
-  const learnerName = `${enrollment.learner.firstName} ${enrollment.learner.lastName}`;
-  const courseName = enrollment.target.name;
-  const courseCode = enrollment.target.code;
-  const issueDate = formatDate(enrollment.completedAt);
-  const expiryDate = enrollment.expiresAt ? formatDate(enrollment.expiresAt) : 'Does not expire';
-  const verificationCode = formatCertificateId(enrollment.id);
+  // Extract certificate data
+  const learnerName = `${issuance.learner.firstName} ${issuance.learner.lastName}`;
+  const certificateTitle = issuance.certificateDefinition.title;
+  const credentialName = issuance.credentialGroup.name;
+  const credentialCode = issuance.credentialGroup.code;
+  const issueDate = formatDate(issuance.issuedAt);
+  const expiryDate = issuance.expiresAt ? formatDate(issuance.expiresAt) : 'Does not expire';
+  const verificationCode = issuance.verificationCode;
+  const isRevoked = issuance.isRevoked;
+  const isExpired = issuance.expiresAt ? new Date(issuance.expiresAt) < new Date() : false;
 
   return (
     <div className="min-h-screen bg-background">
@@ -160,7 +180,15 @@ export const CertificateViewPage: React.FC = () => {
               <CardContent className="p-12">
                 {/* Certificate Header */}
                 <div className="text-center mb-8">
-                  <Award className="h-20 w-20 mx-auto text-primary mb-4" />
+                  {issuance.credentialGroup.badgeImageUrl ? (
+                    <img
+                      src={issuance.credentialGroup.badgeImageUrl}
+                      alt={credentialName}
+                      className="h-20 w-20 mx-auto mb-4"
+                    />
+                  ) : (
+                    <Award className="h-20 w-20 mx-auto text-primary mb-4" />
+                  )}
                   <h1 className="text-4xl font-bold text-primary mb-2">
                     Certificate of Completion
                   </h1>
@@ -179,28 +207,35 @@ export const CertificateViewPage: React.FC = () => {
                   </p>
                 </div>
 
-                {/* Course Name */}
+                {/* Certificate Title */}
                 <div className="text-center mb-8">
                   <h3 className="text-3xl font-bold text-foreground mb-2">
-                    {courseName}
+                    {certificateTitle}
                   </h3>
+                  <p className="text-lg text-muted-foreground mb-2">{credentialName}</p>
                   <Badge variant="secondary" className="text-lg px-4 py-1">
-                    {courseCode}
+                    {credentialCode}
                   </Badge>
+                  {issuance.certificateDefinition.version && (
+                    <Badge variant="outline" className="text-sm px-3 py-1 ml-2">
+                      v{issuance.certificateDefinition.version}
+                    </Badge>
+                  )}
                 </div>
 
-                {/* Grade Display */}
-                {enrollment.grade && enrollment.grade.score !== null && enrollment.grade.letter && (
+                {/* Status Badges */}
+                {(isRevoked || isExpired) && (
                   <div className="text-center mb-8">
-                    <p className="text-muted-foreground mb-2">with a grade of</p>
-                    <div className="inline-flex items-center gap-3">
-                      <Badge variant="default" className="text-2xl px-6 py-2 font-bold">
-                        {enrollment.grade.letter}
+                    {isRevoked && (
+                      <Badge variant="destructive" className="text-lg px-4 py-1">
+                        REVOKED
                       </Badge>
-                      <span className="text-xl text-muted-foreground">
-                        ({enrollment.grade.score}%)
-                      </span>
-                    </div>
+                    )}
+                    {isExpired && !isRevoked && (
+                      <Badge variant="secondary" className="text-lg px-4 py-1">
+                        EXPIRED
+                      </Badge>
+                    )}
                   </div>
                 )}
 
@@ -217,8 +252,8 @@ export const CertificateViewPage: React.FC = () => {
                     <p className="font-mono">{verificationCode}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold">Department</p>
-                    <p>{enrollment.department.name}</p>
+                    <p className="font-semibold">Credential Type</p>
+                    <p className="capitalize">{issuance.credentialGroup.type}</p>
                   </div>
                 </div>
 
@@ -240,14 +275,15 @@ export const CertificateViewPage: React.FC = () => {
                 <h3 className="text-lg font-bold mb-4">Certificate Details</h3>
 
                 <div className="space-y-4">
-                  {/* Course Information */}
+                  {/* Credential Information */}
                   <div>
                     <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground mb-1">
                       <GraduationCap className="h-4 w-4" />
-                      <span>Course</span>
+                      <span>Credential</span>
                     </div>
-                    <p className="font-medium">{courseName}</p>
-                    <p className="text-sm text-muted-foreground">{courseCode}</p>
+                    <p className="font-medium">{certificateTitle}</p>
+                    <p className="text-sm text-muted-foreground">{credentialName}</p>
+                    <p className="text-xs text-muted-foreground font-mono">{credentialCode}</p>
                   </div>
 
                   <Separator />
@@ -267,26 +303,10 @@ export const CertificateViewPage: React.FC = () => {
                       <Clock className="h-4 w-4" />
                       <span>Expiry Date</span>
                     </div>
-                    <p className="font-medium">{expiryDate}</p>
+                    <p className={`font-medium ${isExpired ? 'text-amber-600' : ''}`}>
+                      {expiryDate}
+                    </p>
                   </div>
-
-                  {/* Grade */}
-                  {enrollment.grade && enrollment.grade.score !== null && enrollment.grade.letter && (
-                    <div>
-                      <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground mb-1">
-                        <Award className="h-4 w-4" />
-                        <span>Grade</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="secondary" className="font-bold">
-                          {enrollment.grade.letter}
-                        </Badge>
-                        <span className="text-muted-foreground">
-                          ({enrollment.grade.score}%)
-                        </span>
-                      </div>
-                    </div>
-                  )}
 
                   {/* Verification Code */}
                   <div>
@@ -301,18 +321,22 @@ export const CertificateViewPage: React.FC = () => {
 
                   {/* Action Buttons */}
                   <div className="space-y-2">
-                    <Button
-                      onClick={handleDownload}
-                      className="w-full print:hidden"
-                      variant="default"
-                    >
-                      <Download className="h-4 w-4 mr-2" />
-                      Download PDF
-                    </Button>
+                    {pdfUrl && (
+                      <Button
+                        onClick={handleDownload}
+                        className="w-full print:hidden"
+                        variant="default"
+                        disabled={isRevoked}
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Download PDF
+                      </Button>
+                    )}
                     <Button
                       onClick={handlePrint}
                       className="w-full print:hidden"
                       variant="outline"
+                      disabled={isRevoked}
                     >
                       <Printer className="h-4 w-4 mr-2" />
                       Print Certificate
@@ -330,10 +354,28 @@ export const CertificateViewPage: React.FC = () => {
                       className="w-full print:hidden"
                       variant="outline"
                     >
-                      <ShieldCheck className="h-4 w-4 mr-2" />
+                      <ExternalLink className="h-4 w-4 mr-2" />
                       Verify Certificate
                     </Button>
                   </div>
+
+                  {/* Revoked Notice */}
+                  {isRevoked && (
+                    <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                      <p className="text-sm text-destructive font-semibold">
+                        This certificate has been revoked and is no longer valid.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Expired Notice */}
+                  {isExpired && !isRevoked && (
+                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg dark:bg-amber-950/20 dark:border-amber-800">
+                      <p className="text-sm text-amber-600 dark:text-amber-400 font-semibold">
+                        This certificate has expired.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

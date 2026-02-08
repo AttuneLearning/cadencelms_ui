@@ -46,6 +46,9 @@ export {
   // Certificate hooks
   useCertificateTemplates,
   useUpdateProgramCertificate,
+  // Learner hooks
+  useMyPrograms,
+  useProgramForLearner,
 } from './hooks';
 
 // Query keys

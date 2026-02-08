@@ -18,3 +18,6 @@ export {
   useCertificateTemplates,
   useUpdateProgramCertificate,
 } from '../model/useProgram';
+
+// Learner-specific hooks
+export { useMyPrograms, useProgramForLearner } from './useLearnerPrograms';

@@ -185,6 +185,11 @@ export const LEARNER_CONTEXT_NAV: ContextNavItem[] = [
     icon: GraduationCap,
   },
   {
+    label: 'My Programs',
+    path: '/learner/programs',
+    icon: Award,
+  },
+  {
     label: 'My Classes',
     path: '/learner/classes',
     icon: Calendar,
