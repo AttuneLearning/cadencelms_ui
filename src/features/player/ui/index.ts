@@ -9,3 +9,4 @@ export * from './DocumentViewer';
 export * from './PlayerSidebar';
 export * from './PlayerControls';
 export * from './AssignmentPlayer';
+export * from './HtmlContentViewer';

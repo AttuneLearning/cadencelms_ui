@@ -19,8 +19,9 @@ export interface CourseModule {
 export interface Lesson {
   id: string;
   title: string;
-  type: 'scorm' | 'video' | 'document' | 'exercise';
+  type: 'scorm' | 'video' | 'document' | 'exercise' | 'assessment' | 'media' | 'custom' | 'audio' | 'assignment';
   contentId?: string;
+  category?: 'topic' | 'practice' | 'assignment' | 'graded';
   isCompleted: boolean;
   isLocked: boolean;
   isCurrent: boolean;

@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { CoursePlayerPage } from '../CoursePlayerPage';
@@ -30,12 +30,37 @@ vi.mock('@/entities/content-attempt', () => ({
   useContentAttempt: vi.fn(),
 }));
 
+vi.mock('@/entities/learning-unit', () => ({
+  listLearningUnits: vi.fn().mockResolvedValue({
+    learningUnits: [],
+    totalCount: 0,
+    categoryCounts: { topic: 0, practice: 0, assignment: 0, graded: 0 },
+  }),
+  learningUnitKeys: {
+    all: ['learning-units'],
+    lists: () => ['learning-units', 'list'],
+    list: (moduleId: string, filters?: unknown) => ['learning-units', 'list', moduleId, filters],
+    details: () => ['learning-units', 'detail'],
+    detail: (id: string) => ['learning-units', 'detail', id],
+    byModule: (moduleId: string) => ['learning-units', 'module', moduleId],
+    byCategory: (moduleId: string, category: string) =>
+      ['learning-units', 'list', moduleId, undefined, 'category', category],
+  },
+}));
+
+vi.mock('@/entities/content', () => ({
+  useContent: vi.fn().mockReturnValue({ data: null, isLoading: false, error: null }),
+}));
+
 vi.mock('@/features/player/ui', () => ({
   ScormPlayer: () => <div data-testid="scorm-player">Scorm Player</div>,
   VideoPlayer: () => <div data-testid="video-player">Video Player</div>,
   AudioPlayer: () => <div data-testid="audio-player">Audio Player</div>,
   DocumentViewer: () => <div data-testid="document-viewer">Document Viewer</div>,
   AssignmentPlayer: () => <div data-testid="assignment-player">Assignment Player</div>,
+  HtmlContentViewer: ({ contentId }: { contentId: string }) => (
+    <div data-testid="html-content-viewer">HTML Content: {contentId}</div>
+  ),
   PlayerSidebar: ({ courseTitle }: { courseTitle: string }) => (
     <div data-testid="player-sidebar">{courseTitle}</div>
   ),
@@ -103,7 +128,7 @@ describe('CoursePlayerPage', () => {
     expect(screen.queryByText('Course')).not.toBeInTheDocument();
   });
 
-  it('renders not-enrolled state when no enrollment found', () => {
+  it('renders not-enrolled state when no enrollment found', async () => {
     (useEnrollmentStatus as any).mockReturnValue({
       data: undefined,
       isLoading: false,
@@ -117,12 +142,14 @@ describe('CoursePlayerPage', () => {
       wrapper: createWrapper('/learner/courses/course1/player'),
     });
 
-    expect(screen.getByText('Not Enrolled')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Not Enrolled')).toBeInTheDocument();
+    });
     expect(screen.getByText('You are not enrolled in this course')).toBeInTheDocument();
     expect(screen.getByText('Go to Dashboard')).toBeInTheDocument();
   });
 
-  it('renders course player with sidebar and controls when enrolled', () => {
+  it('renders course player with sidebar and controls when enrolled', async () => {
     (useEnrollmentStatus as any).mockReturnValue({
       data: { id: 'enr1' },
       isLoading: false,
@@ -153,14 +180,15 @@ describe('CoursePlayerPage', () => {
       wrapper: createWrapper('/learner/courses/course1/player'),
     });
 
-    // Course title appears in both header and sidebar
+    await waitFor(() => {
+      expect(screen.getByTestId('player-sidebar')).toBeInTheDocument();
+    });
     const courseTitle = screen.getAllByText('My Test Course');
     expect(courseTitle.length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByTestId('player-sidebar')).toBeInTheDocument();
     expect(screen.getByTestId('player-controls')).toBeInTheDocument();
   });
 
-  it('shows loading content message when no attempt yet', () => {
+  it('shows loading content message when no attempt yet', async () => {
     (useEnrollmentStatus as any).mockReturnValue({
       data: { id: 'enr1' },
       isLoading: false,
@@ -189,10 +217,12 @@ describe('CoursePlayerPage', () => {
       wrapper: createWrapper('/learner/courses/course1/player'),
     });
 
-    expect(screen.getByText('Loading content...')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Loading content...')).toBeInTheDocument();
+    });
   });
 
-  it('renders exit button', () => {
+  it('renders exit button', async () => {
     (useEnrollmentStatus as any).mockReturnValue({
       data: { id: 'enr1' },
       isLoading: false,
@@ -209,12 +239,15 @@ describe('CoursePlayerPage', () => {
       wrapper: createWrapper('/learner/courses/course1/player'),
     });
 
-    // The X close button should be present
+    await waitFor(() => {
+      const titles = screen.getAllByText('My Course');
+      expect(titles.length).toBeGreaterThanOrEqual(1);
+    });
     const buttons = screen.getAllByRole('button');
     expect(buttons.length).toBeGreaterThan(0);
   });
 
-  it('renders modules with multi-lesson support', () => {
+  it('renders modules with multi-lesson support', async () => {
     (useEnrollmentStatus as any).mockReturnValue({
       data: { id: 'enr1' },
       isLoading: false,
@@ -255,9 +288,10 @@ describe('CoursePlayerPage', () => {
       wrapper: createWrapper('/learner/courses/course1/player'),
     });
 
-    // Course title appears in both header and sidebar
+    await waitFor(() => {
+      expect(screen.getByTestId('player-sidebar')).toBeInTheDocument();
+    });
     const courseTitle = screen.getAllByText('Multi-Lesson Course');
     expect(courseTitle.length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByTestId('player-sidebar')).toBeInTheDocument();
   });
 });

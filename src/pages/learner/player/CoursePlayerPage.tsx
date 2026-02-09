@@ -1,12 +1,13 @@
 /**
  * CoursePlayerPage
  * Main learning interface for consuming course content.
- * Supports multi-lesson modules: each module can contain 1+ lessons.
+ * Fetches modules + learning units per module to build navigation.
  */
 
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { X, Menu } from 'lucide-react';
+import { useQueries } from '@tanstack/react-query';
+import { X, Menu, Loader2, AlertCircle, BookOpen, FileText } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import {
   ScormPlayer,
@@ -14,9 +15,10 @@ import {
   AudioPlayer,
   DocumentViewer,
   AssignmentPlayer,
+  HtmlContentViewer,
   PlayerSidebar,
   PlayerControls,
-  type CourseModule,
+  type CourseModule as SidebarModule,
   type Lesson,
 } from '@/features/player/ui';
 import { CourseCompletionScreen } from '@/features/player/ui/CourseCompletionScreen';
@@ -28,13 +30,16 @@ import { useCourse } from '@/entities/course';
 import { useCourseModules } from '@/entities/course-module';
 import { useEnrollmentStatus } from '@/entities/enrollment';
 import { useCourseProgress } from '@/entities/progress';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { listLearningUnits, learningUnitKeys } from '@/entities/learning-unit';
+import type { LearningUnitListItem } from '@/entities/learning-unit';
 
 /** Flattened lesson reference for sequential navigation */
 interface FlatLesson {
   moduleId: string;
   lessonId: string;
-  contentId: string;
+  contentId: string | null;
+  contentType: string;
+  category: string | null;
 }
 
 export function CoursePlayerPage() {
@@ -52,6 +57,12 @@ export function CoursePlayerPage() {
   const [currentLessonId, setCurrentLessonId] = useState<string | null>(urlLessonId || null);
   const [currentAttemptId, setCurrentAttemptId] = useState<string | null>(null);
   const [showCompletion, setShowCompletion] = useState(false);
+
+  // Track what type of content is currently selected
+  const [currentLessonMeta, setCurrentLessonMeta] = useState<{
+    contentType: string;
+    category: string | null;
+  } | null>(null);
 
   // Fetch course metadata (for certificateEnabled check)
   const { data: course } = useCourse(courseId || '');
@@ -75,6 +86,53 @@ export function CoursePlayerPage() {
     [courseProgress]
   );
 
+  // Fetch learning units for each module
+  const moduleIds = useMemo(
+    () => segmentsData?.modules?.map((m) => m.id) || [],
+    [segmentsData]
+  );
+
+  const learningUnitQueries = useQueries({
+    queries: moduleIds.map((moduleId) => ({
+      queryKey: learningUnitKeys.list(moduleId),
+      queryFn: () => listLearningUnits(moduleId),
+      enabled: moduleIds.length > 0,
+      staleTime: 5 * 60 * 1000,
+    })),
+  });
+
+  const allLUsLoaded = moduleIds.length === 0 || learningUnitQueries.every((q) => !q.isLoading);
+
+  // Build map: moduleId → LearningUnit[]
+  const learningUnitsMap = useMemo(() => {
+    const map = new Map<string, LearningUnitListItem[]>();
+    moduleIds.forEach((moduleId, index) => {
+      const query = learningUnitQueries[index];
+      if (query.data?.learningUnits) {
+        map.set(moduleId, query.data.learningUnits);
+      }
+    });
+    return map;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [moduleIds.join(','), allLUsLoaded]);
+
+  // Map learning unit contentType to Lesson type
+  const mapContentType = (lu: LearningUnitListItem): Lesson['type'] => {
+    // API returns contentType field (not in TS interface), fall back to type
+    const ct = (lu as unknown as Record<string, unknown>).contentType as string || lu.type;
+    switch (ct) {
+      case 'document': return 'document';
+      case 'video': return 'video';
+      case 'media': return 'media';
+      case 'scorm': return 'scorm';
+      case 'audio': return 'audio';
+      case 'exercise': return 'exercise';
+      case 'assessment': return 'assessment';
+      case 'assignment': return 'assignment';
+      default: return 'document';
+    }
+  };
+
   // Start content attempt
   const { mutate: startAttempt } = useStartContentAttempt();
 
@@ -84,8 +142,8 @@ export function CoursePlayerPage() {
     currentAttemptId ? true : false
   );
 
-  // Transform API modules into sidebar format with multi-lesson support
-  const modules: CourseModule[] = useMemo(() => {
+  // Transform API modules + learning units into sidebar format
+  const modules: SidebarModule[] = useMemo(() => {
     if (!segmentsData?.modules) return [];
 
     return segmentsData.modules.map((module, index) => {
@@ -102,30 +160,46 @@ export function CoursePlayerPage() {
           return prevProgress.status !== 'completed';
         });
 
-      // Build lessons array from module.lessons or fall back to single-lesson
+      // Get learning units for this module
+      const lus = learningUnitsMap.get(module.id);
+
+      // Build lessons from learning units (preferred) or fall back to module as single lesson
       const lessons: Lesson[] =
-        module.lessons && module.lessons.length > 0
-          ? module.lessons.map((lesson) => ({
-              id: lesson.id,
-              title: lesson.title,
-              type: lesson.type as Lesson['type'],
-              contentId: lesson.contentId || lesson.id,
-              isCompleted: isModuleCompleted, // TODO: per-lesson progress when API supports it
-              isLocked: isModuleLocked,
-              isCurrent: lesson.id === currentLessonId,
-            }))
-          : [
-              {
-                id: module.id,
-                title: module.title,
-                type: module.type as Lesson['type'],
-                contentId: module.contentId || module.id,
+        lus && lus.length > 0
+          ? lus
+              .sort((a, b) => a.sequence - b.sequence)
+              .map((lu) => ({
+                id: lu.id,
+                title: lu.title,
+                type: mapContentType(lu),
+                contentId: lu.contentId || undefined,
+                category: lu.category || undefined,
+                isCompleted: isModuleCompleted, // TODO: per-LU progress
+                isLocked: isModuleLocked,
+                isCurrent: lu.id === currentLessonId,
+              }))
+          : module.lessons && module.lessons.length > 0
+            ? module.lessons.map((lesson) => ({
+                id: lesson.id,
+                title: lesson.title,
+                type: lesson.type as Lesson['type'],
+                contentId: lesson.contentId || lesson.id,
                 isCompleted: isModuleCompleted,
                 isLocked: isModuleLocked,
-                isCurrent:
-                  module.id === currentLessonId || module.id === currentContentId,
-              },
-            ];
+                isCurrent: lesson.id === currentLessonId,
+              }))
+            : [
+                {
+                  id: module.id,
+                  title: module.title,
+                  type: module.type as Lesson['type'],
+                  contentId: module.contentId || module.id,
+                  isCompleted: isModuleCompleted,
+                  isLocked: isModuleLocked,
+                  isCurrent:
+                    module.id === currentLessonId || module.id === currentContentId,
+                },
+              ];
 
       return {
         id: module.id,
@@ -133,7 +207,8 @@ export function CoursePlayerPage() {
         lessons,
       };
     });
-  }, [segmentsData, progressMap, currentLessonId, currentContentId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [segmentsData, progressMap, currentLessonId, currentContentId, learningUnitsMap]);
 
   // Flatten all lessons for sequential navigation
   const flatLessons: FlatLesson[] = useMemo(
@@ -142,7 +217,9 @@ export function CoursePlayerPage() {
         m.lessons.map((l) => ({
           moduleId: m.id,
           lessonId: l.id,
-          contentId: (l as Lesson & { contentId?: string }).contentId || l.id,
+          contentId: l.contentId || null,
+          contentType: l.type,
+          category: l.category || null,
         }))
       ),
     [modules]
@@ -171,6 +248,7 @@ export function CoursePlayerPage() {
         setCurrentModuleId(urlModuleId);
         setCurrentLessonId(urlLessonId);
         setCurrentContentId(flat.contentId);
+        setCurrentLessonMeta({ contentType: flat.contentType, category: flat.category });
       }
     } else if (contentId) {
       // Legacy single-content route
@@ -181,6 +259,7 @@ export function CoursePlayerPage() {
       if (flat) {
         setCurrentModuleId(flat.moduleId);
         setCurrentLessonId(flat.lessonId);
+        setCurrentLessonMeta({ contentType: flat.contentType, category: flat.category });
       }
     } else if (flatLessons.length > 0 && !currentContentId) {
       // No content specified — start with first unlocked lesson
@@ -191,13 +270,14 @@ export function CoursePlayerPage() {
           setCurrentModuleId(flat.moduleId);
           setCurrentLessonId(flat.lessonId);
           setCurrentContentId(flat.contentId);
+          setCurrentLessonMeta({ contentType: flat.contentType, category: flat.category });
         }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flatLessons.length, urlModuleId, urlLessonId, contentId]);
 
-  // Start content attempt when currentContentId changes
+  // Start content attempt when currentContentId changes (only for content that has a contentId)
   useEffect(() => {
     if (currentContentId && enrollment && !currentAttemptId) {
       startAttempt(
@@ -208,6 +288,10 @@ export function CoursePlayerPage() {
         {
           onSuccess: (data) => {
             setCurrentAttemptId(data.id);
+          },
+          onError: () => {
+            // Content attempt failed — still allow direct content viewing
+            setCurrentAttemptId(null);
           },
         }
       );
@@ -231,14 +315,10 @@ export function CoursePlayerPage() {
     setCurrentContentId(flat.contentId);
     setCurrentAttemptId(null);
     setShowCompletion(false);
+    setCurrentLessonMeta({ contentType: flat.contentType, category: flat.category });
 
-    // Use multi-lesson URL when modules have multiple lessons, else legacy URL
-    const hasMultiLessonModules = modules.some((m) => m.lessons.length > 1);
-    if (hasMultiLessonModules) {
-      navigate(`/learner/courses/${courseId}/player/${moduleId}/${lessonId}`);
-    } else {
-      navigate(`/learner/courses/${courseId}/player/${flat.contentId}`);
-    }
+    // Use multi-lesson URL
+    navigate(`/learner/courses/${courseId}/player/${moduleId}/${lessonId}`);
   };
 
   const handlePrevious = () => {
@@ -266,7 +346,6 @@ export function CoursePlayerPage() {
   // Handle content completion callback (auto-advance or show completion)
   const handleContentComplete = () => {
     if (isOnFinalLesson) {
-      // Check if all modules are completed
       const allCompleted = modules
         .flatMap((m) => m.lessons)
         .every((l) => l.isCompleted || l.isCurrent);
@@ -314,6 +393,60 @@ export function CoursePlayerPage() {
       );
     }
 
+    // For learning units without contentId (exercises, assessments) — render inline
+    if (!currentContentId && currentLessonMeta) {
+      const { contentType, category } = currentLessonMeta;
+      if (category === 'practice' || contentType === 'exercise') {
+        return (
+          <div className="flex h-full items-center justify-center bg-muted/10">
+            <div className="flex flex-col items-center gap-4 text-center max-w-md">
+              <BookOpen className="h-12 w-12 text-primary" />
+              <div>
+                <h3 className="text-lg font-semibold">Practice Exercise</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {currentLessonTitle || 'This exercise'} is an interactive practice activity.
+                </p>
+              </div>
+              <Button onClick={handleContentComplete}>
+                Mark as Complete & Continue
+              </Button>
+            </div>
+          </div>
+        );
+      }
+
+      if (category === 'graded' || contentType === 'assessment') {
+        return (
+          <div className="flex h-full items-center justify-center bg-muted/10">
+            <div className="flex flex-col items-center gap-4 text-center max-w-md">
+              <FileText className="h-12 w-12 text-primary" />
+              <div>
+                <h3 className="text-lg font-semibold">Assessment</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {currentLessonTitle || 'This assessment'} is a graded evaluation.
+                </p>
+              </div>
+              <Button onClick={handleContentComplete}>
+                Mark as Complete & Continue
+              </Button>
+            </div>
+          </div>
+        );
+      }
+    }
+
+    // For topic content with contentId — render via HtmlContentViewer directly
+    // (bypasses content attempt for HTML content since the attempt may return 'media' type)
+    if (currentContentId && currentLessonMeta?.category === 'topic') {
+      return (
+        <HtmlContentViewer
+          contentId={currentContentId}
+          onViewed={handleContentComplete}
+        />
+      );
+    }
+
+    // Fallback: attempt-based rendering for other content types
     if (!currentAttempt || !currentContentId) {
       return (
         <div className="flex h-full items-center justify-center">
@@ -402,6 +535,16 @@ export function CoursePlayerPage() {
       );
     }
 
+    // Handle 'media' or 'html' content types — render via HtmlContentViewer
+    if (contentType === 'media' || contentType === 'html') {
+      return (
+        <HtmlContentViewer
+          contentId={currentContentId}
+          onViewed={handleContentComplete}
+        />
+      );
+    }
+
     return (
       <div className="flex h-full items-center justify-center bg-muted/10">
         <div className="flex flex-col items-center gap-4 text-center">
@@ -409,7 +552,7 @@ export function CoursePlayerPage() {
           <div>
             <h3 className="text-lg font-semibold">Unsupported Content Type</h3>
             <p className="text-sm text-muted-foreground">
-              This content type is not yet supported
+              This content type ({contentType || 'unknown'}) is not yet supported
             </p>
           </div>
         </div>
@@ -417,7 +560,7 @@ export function CoursePlayerPage() {
     );
   };
 
-  if (enrollmentsLoading || segmentsLoading) {
+  if (enrollmentsLoading || segmentsLoading || !allLUsLoaded) {
     return (
       <div className="flex h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -457,7 +600,7 @@ export function CoursePlayerPage() {
           </Button>
           <div className="flex items-center gap-2 text-sm">
             <h1 className="text-lg font-semibold">{segmentsData?.courseTitle || 'Course'}</h1>
-            {currentModuleTitle && modules.some((m) => m.lessons.length > 1) && (
+            {currentModuleTitle && (
               <>
                 <span className="text-muted-foreground">/</span>
                 <span className="text-muted-foreground">{currentModuleTitle}</span>
