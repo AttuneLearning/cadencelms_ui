@@ -33,9 +33,11 @@ test.describe('User Story: Casey learner core journey', () => {
     const coursesHeader = page.locator('h1:has-text("My Courses")');
     await expect(coursesHeader).toBeVisible();
 
-    const pageState = page.locator(
-      'text=/Showing .* courses/i, text=/No courses found/i, text=/haven\'t enrolled in any courses yet/i'
-    );
+    const pageState = page
+      .getByText(/Showing .* courses/i)
+      .or(page.getByText(/No courses found/i))
+      .or(page.getByText(/haven't enrolled in any courses yet/i))
+      .or(page.locator('[data-testid^="course-card"]'));
     await expect(pageState.first()).toBeVisible();
   });
 
@@ -57,9 +59,11 @@ test.describe('User Story: Casey learner core journey', () => {
 
     await page.waitForURL(/\/learner\/courses\/.+\/player(\/.*)?$/, { timeout: 30000 });
 
-    const playerState = page.locator(
-      'button:has-text("Go to Dashboard"), text=/Loading course/i, text=/Failed to load course/i, aside, nav'
-    );
+    const playerState = page
+      .locator('button:has-text("Go to Dashboard")')
+      .or(page.getByText(/Loading course/i))
+      .or(page.getByText(/Failed to load course/i))
+      .or(page.locator('main, [role="main"], aside, nav'));
     await expect(playerState.first()).toBeVisible();
   });
 });
