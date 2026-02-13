@@ -75,14 +75,20 @@ export function ExerciseResultsPage() {
     );
   };
 
+  const isGradingPending = result
+    ? result.status !== 'graded' || !result.gradingComplete
+    : false;
+
   // Derive retry eligibility from result
   const canRetry = result
-    ? !result.passed &&
+    ? !isGradingPending &&
+      !result.passed &&
       (result.maxAttempts === null || result.attemptsUsed < result.maxAttempts)
     : false;
 
   const attemptsExhausted = result
-    ? !result.passed &&
+    ? !isGradingPending &&
+      !result.passed &&
       result.maxAttempts !== null &&
       result.attemptsUsed >= result.maxAttempts
     : false;
@@ -131,7 +137,9 @@ export function ExerciseResultsPage() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Screen reader announcement for results */}
         <div className="sr-only" aria-live="polite" aria-atomic="true">
-          {result.passed ? 'You passed!' : 'You did not pass.'} Score: {result.score} out of {result.maxScore}.
+          {isGradingPending
+            ? 'Your assessment is still being graded.'
+            : `${result.passed ? 'You passed!' : 'You did not pass.'} Score: ${result.score} out of ${result.maxScore}.`}
         </div>
 
         {/* Attempt Badge */}
@@ -145,6 +153,19 @@ export function ExerciseResultsPage() {
               : `Attempt ${result.attemptNumber} — Unlimited`}
           </Badge>
         </div>
+
+        {isGradingPending && (
+          <div
+            className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4 text-blue-900"
+            data-testid="grading-pending-banner"
+          >
+            <p className="font-medium">Grading in progress</p>
+            <p className="text-sm mt-1">
+              Your instructor is still finalizing this assessment. Feedback and detailed review
+              will appear once grading is complete.
+            </p>
+          </div>
+        )}
 
         {/* Results Viewer */}
         <ExamResultViewer result={result} className="mb-6" />

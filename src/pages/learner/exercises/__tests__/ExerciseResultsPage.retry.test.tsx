@@ -66,6 +66,8 @@ function createMockResult(overrides: Partial<ExamResult> = {}): ExamResult {
     questionResults: [],
     overallFeedback: null,
     gradedBy: null,
+    gradingComplete: true,
+    feedbackReleased: true,
     allowReview: true,
     showCorrectAnswers: true,
     ...overrides,
@@ -201,6 +203,23 @@ describe('ExerciseResultsPage - Retry Flow', () => {
       renderWithProviders(<ExerciseResultsPage />);
 
       expect(screen.getByTestId('retry-exam-button')).toBeInTheDocument();
+    });
+
+    it('should hide retry button while grading is still in progress', () => {
+      const result = createMockResult({
+        status: 'submitted',
+        gradingComplete: false,
+        feedbackReleased: false,
+        passed: false,
+      });
+      mockResultHook(result);
+      mockHistoryHook([]);
+      mockStartAttemptHook();
+
+      renderWithProviders(<ExerciseResultsPage />);
+
+      expect(screen.queryByTestId('retry-exam-button')).not.toBeInTheDocument();
+      expect(screen.getByTestId('grading-pending-banner')).toBeInTheDocument();
     });
   });
 

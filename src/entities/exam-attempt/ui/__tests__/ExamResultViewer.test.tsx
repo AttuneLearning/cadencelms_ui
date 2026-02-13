@@ -36,6 +36,8 @@ const createMockResult = (overrides: Partial<ExamResult> = {}): ExamResult => ({
   questionResults: [],
   overallFeedback: null,
   gradedBy: null,
+  gradingComplete: true,
+  feedbackReleased: true,
   allowReview: true,
   showCorrectAnswers: true,
   ...overrides,
@@ -88,5 +90,22 @@ describe('ExamResultViewer', () => {
     const result = createMockResult({ examTitle: 'Final Exam' });
     render(<ExamResultViewer result={result} />);
     expect(screen.getByText('Final Exam')).toBeInTheDocument();
+  });
+
+  it('should show pending grading message when grading is incomplete', () => {
+    const result = createMockResult({
+      status: 'submitted',
+      gradingComplete: false,
+      feedbackReleased: false,
+      overallFeedback: 'Hidden feedback',
+      allowReview: false,
+      showCorrectAnswers: false,
+    });
+
+    render(<ExamResultViewer result={result} />);
+
+    expect(screen.getAllByText(/in review/i).length).toBeGreaterThan(0);
+    expect(screen.getByTestId('grading-pending-message')).toBeInTheDocument();
+    expect(screen.queryByText(/instructor feedback/i)).not.toBeInTheDocument();
   });
 });

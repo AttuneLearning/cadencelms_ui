@@ -64,6 +64,8 @@ function createMockResult(overrides: Partial<ExamResult> = {}): ExamResult {
     questionResults: [],
     overallFeedback: null,
     gradedBy: null,
+    gradingComplete: true,
+    feedbackReleased: true,
     allowReview: true,
     showCorrectAnswers: true,
     ...overrides,
@@ -222,6 +224,38 @@ describe('ExerciseResultsPage', () => {
       const srAnnouncement = document.querySelector('[aria-live="polite"]');
       expect(srAnnouncement?.textContent).toContain('You did not pass.');
       expect(srAnnouncement?.textContent).toContain('Score: 40 out of 100');
+    });
+
+    it('should show grading pending banner and pending announcement when grading is incomplete', () => {
+      const result = createMockResult({
+        status: 'submitted',
+        gradingComplete: false,
+        feedbackReleased: false,
+        overallFeedback: 'This should be hidden while grading',
+        allowReview: false,
+        showCorrectAnswers: false,
+      });
+
+      vi.spyOn(assessmentAttemptHooks, 'useAssessmentAttemptResult').mockReturnValue({
+        data: result,
+        isLoading: false,
+        error: null,
+        isError: false,
+        isSuccess: true,
+      } as any);
+      vi.spyOn(assessmentAttemptHooks, 'useMyAssessmentAttemptHistory').mockReturnValue({
+        data: undefined,
+        isLoading: false,
+        error: null,
+      } as any);
+      mockStartAttemptHook();
+
+      renderWithProviders(<ExerciseResultsPage />);
+
+      expect(screen.getByTestId('grading-pending-banner')).toBeInTheDocument();
+
+      const srAnnouncement = document.querySelector('[aria-live="polite"]');
+      expect(srAnnouncement?.textContent).toContain('still being graded');
     });
   });
 });

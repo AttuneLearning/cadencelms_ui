@@ -350,6 +350,8 @@ export const mockExamResult: ExamResult = {
     firstName: 'John',
     lastName: 'Doe',
   },
+  gradingComplete: true,
+  feedbackReleased: true,
   allowReview: true,
   showCorrectAnswers: true,
 };

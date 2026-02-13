@@ -26,11 +26,17 @@ export function ExamResultViewer({ result, gradingPolicy, className = '' }: Exam
   const gradeColor = getGradeColor(result.gradeLetter);
   const gradeDescription = getGradeDescription(result.gradeLetter);
   const gradingPolicyLabel = getGradingPolicyLabel(gradingPolicy);
+  const isGradingPending =
+    result.status !== 'graded' || !result.gradingComplete || !result.feedbackReleased;
 
   return (
     <div className={`bg-white rounded-lg shadow-sm border border-gray-200 ${className}`}>
       {/* Header Section */}
-      <div className={`p-6 border-b border-gray-200 ${result.passed ? 'bg-green-50' : 'bg-red-50'}`}>
+      <div
+        className={`p-6 border-b border-gray-200 ${
+          isGradingPending ? 'bg-amber-50' : result.passed ? 'bg-green-50' : 'bg-red-50'
+        }`}
+      >
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 mb-1">{result.examTitle}</h1>
@@ -39,10 +45,19 @@ export function ExamResultViewer({ result, gradingPolicy, className = '' }: Exam
             </p>
           </div>
           <div className="text-right">
-            <div className={`text-5xl font-bold text-${gradeColor}-600 mb-1`}>
-              {result.gradeLetter}
-            </div>
-            <p className={`text-sm font-medium text-${gradeColor}-600`}>{gradeDescription}</p>
+            {isGradingPending ? (
+              <>
+                <div className="text-2xl font-bold text-amber-700 mb-1">In Review</div>
+                <p className="text-sm font-medium text-amber-700">Instructor grading pending</p>
+              </>
+            ) : (
+              <>
+                <div className={`text-5xl font-bold text-${gradeColor}-600 mb-1`}>
+                  {result.gradeLetter}
+                </div>
+                <p className={`text-sm font-medium text-${gradeColor}-600`}>{gradeDescription}</p>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -71,10 +86,14 @@ export function ExamResultViewer({ result, gradingPolicy, className = '' }: Exam
             <p className="text-sm text-gray-600 mb-1">Status</p>
             <p
               className={`text-2xl font-bold ${
-                result.passed ? 'text-green-600' : 'text-red-600'
+                isGradingPending
+                  ? 'text-amber-700'
+                  : result.passed
+                    ? 'text-green-600'
+                    : 'text-red-600'
               }`}
             >
-              {result.passed ? 'Passed' : 'Failed'}
+              {isGradingPending ? 'In Review' : result.passed ? 'Passed' : 'Failed'}
             </p>
           </div>
         </div>
@@ -103,8 +122,16 @@ export function ExamResultViewer({ result, gradingPolicy, className = '' }: Exam
         </div>
       </div>
 
+      {isGradingPending && (
+        <div className="p-6 border-b border-gray-200" data-testid="grading-pending-message">
+          <p className="text-sm text-amber-800">
+            Detailed feedback will be released when grading is complete.
+          </p>
+        </div>
+      )}
+
       {/* Overall Feedback */}
-      {result.overallFeedback && (
+      {!isGradingPending && result.overallFeedback && (
         <div className="p-6 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900 mb-2">Instructor Feedback</h2>
           <p className="text-gray-700 whitespace-pre-wrap">{result.overallFeedback}</p>
@@ -118,7 +145,7 @@ export function ExamResultViewer({ result, gradingPolicy, className = '' }: Exam
       )}
 
       {/* Question Results */}
-      {result.showCorrectAnswers && result.allowReview && (
+      {!isGradingPending && result.showCorrectAnswers && result.allowReview && (
         <div className="p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
             Question Results ({result.summary.totalQuestions})
@@ -194,7 +221,7 @@ export function ExamResultViewer({ result, gradingPolicy, className = '' }: Exam
         </div>
       )}
 
-      {!result.allowReview && (
+      {!isGradingPending && !result.allowReview && (
         <div className="p-6 text-center text-gray-500">
           <p>Review is not allowed for this exam.</p>
         </div>
