@@ -36,6 +36,31 @@ export type LearningUnitType =
 export type LearningUnitCategory = 'topic' | 'practice' | 'assignment' | 'graded';
 
 // =====================
+// ADAPTIVE METADATA (from API-ISS-034)
+// =====================
+
+/**
+ * Gate configuration for adaptive learning units
+ */
+export interface GateConfig {
+  masteryThreshold: number;
+  minQuestions: number;
+  maxRetries: number;
+  failStrategy: 'allow-continue' | 'hold' | 'inject-practice' | 'prescribe-review';
+}
+
+/**
+ * Adaptive metadata returned on learning units when configured
+ */
+export interface LearningUnitAdaptive {
+  teachesNodes: string[];
+  assessesNodes: string[];
+  isGate: boolean;
+  isSkippable: boolean;
+  gateConfig?: GateConfig;
+}
+
+// =====================
 // NESTED TYPES
 // =====================
 
@@ -107,6 +132,7 @@ export interface LearningUnit {
   availableFrom?: string | null;
   availableUntil?: string | null;
   isActive: boolean;
+  adaptive?: LearningUnitAdaptive;
   statistics?: LearningUnitStatistics;
   createdBy?: UserRef | string;
   createdAt: string;
@@ -129,6 +155,7 @@ export interface LearningUnitListItem {
   sequence: number;
   estimatedDuration: number | null;
   isActive: boolean;
+  adaptive?: LearningUnitAdaptive;
   createdAt: string;
   updatedAt: string;
 }

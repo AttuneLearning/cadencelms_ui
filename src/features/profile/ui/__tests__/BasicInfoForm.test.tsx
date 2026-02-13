@@ -150,13 +150,12 @@ describe('BasicInfoForm', () => {
   });
 
   it('should validate bio length', async () => {
-    const user = userEvent.setup();
     const { container } = render(<BasicInfoForm person={mockPerson} />);
 
     const bioInput = container.querySelector('#bio') as HTMLTextAreaElement;
     const longBio = 'a'.repeat(501);
-    await user.clear(bioInput);
-    await user.type(bioInput, longBio);
+    // Use fireEvent.change for bulk input to avoid typing 501 chars one-by-one
+    fireEvent.change(bioInput, { target: { value: longBio } });
     fireEvent.blur(bioInput);
 
     await waitFor(() => {
@@ -248,13 +247,12 @@ describe('BasicInfoForm', () => {
   });
 
   it('should validate field length limits', async () => {
-    const user = userEvent.setup();
     const { container } = render(<BasicInfoForm person={mockPerson} />);
 
     const firstNameInput = container.querySelector('#firstName') as HTMLInputElement;
     const longName = 'a'.repeat(101);
-    await user.clear(firstNameInput);
-    await user.type(firstNameInput, longName);
+    // Use fireEvent.change for bulk input to avoid typing 101 chars one-by-one
+    fireEvent.change(firstNameInput, { target: { value: longName } });
     fireEvent.blur(firstNameInput);
 
     await waitFor(() => {

@@ -593,9 +593,12 @@ describe('ReportViewerPage', () => {
           return HttpResponse.json({
             success: true,
             data: {
-              ...mockReadyReport,
-              id: 'report-new',
-              status: "pending",
+              report: {
+                ...mockReadyReport,
+                id: 'report-new',
+                status: "pending",
+              },
+              message: 'Report queued for generation',
             },
           });
         })

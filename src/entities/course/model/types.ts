@@ -41,6 +41,17 @@ export interface CourseSettings {
 }
 
 /**
+ * Adaptive playlist settings for a course version (API-ISS-035)
+ */
+export type AdaptiveMode = 'off' | 'guided' | 'full';
+
+export interface CourseAdaptiveSettings {
+  mode: AdaptiveMode;
+  allowLearnerChoice: boolean;
+  preAssessmentEnabled: boolean;
+}
+
+/**
  * Department Reference
  */
 export interface DepartmentRef {
@@ -122,6 +133,9 @@ export interface Course {
   lockedBy: UserRef | null;
   lockedReason: LockReason | null;
   changeNotes: string | null;
+
+  // Adaptive settings (API-ISS-035)
+  adaptiveSettings?: CourseAdaptiveSettings;
 }
 
 /**
@@ -156,6 +170,9 @@ export interface CourseListItem {
   parentVersionId: string | null;
   lockedAt: string | null;
   lockedReason: LockReason | null;
+
+  // Adaptive settings (API-ISS-035)
+  adaptiveSettings?: CourseAdaptiveSettings;
 }
 
 /**

@@ -17,7 +17,7 @@
 
 ## Development Principles
 
-**Read:** `dev_communication/guidance/DEVELOPMENT_PRINCIPLES.md`
+**Read:** `dev_communication/shared/guidance/DEVELOPMENT_PRINCIPLES.md`
 
 **Key Rule:** Unless otherwise specified, always design for the ideal API/route structure. No backward compatibility layers, deprecated fields, or legacy fallbacks unless explicitly requested.
 
@@ -38,7 +38,7 @@
 
 ## Architecture Decisions
 
-**Location:** `dev_communication/architecture/`
+**Location:** `dev_communication/shared/architecture/`
 
 | Action | Command |
 |--------|---------|
@@ -56,43 +56,45 @@
 
 ## Development Workflow (MANDATORY)
 
-**ADR:** `dev_communication/architecture/decisions/ADR-DEV-002-DEVELOPMENT-LIFECYCLE.md`
-**Config:** `memory/prompts/team-configs/development-lifecycle.md`
+**ADR:** `dev_communication/shared/architecture/decisions/ADR-DEV-002-DEVELOPMENT-LIFECYCLE.md`
 
-| Action | Command |
-|--------|---------|
-| Process next issue | `/develop` |
-| Process specific issue | `/develop UI-ISS-082` |
-| Process all issues | `/develop all` |
-| Quick mode (trivial) | `/develop quick <file>` |
+### Before Any Implementation
 
-### Lifecycle Phases (ALL MANDATORY)
+1. **Check comms:** `/comms` for inbox messages and blockers
+2. **Define endpoint contracts:** If the work involves new or changed API endpoints, define the contracts first and send to the API team (`/comms send`). Getting cross-team agreement on contracts early prevents rework and is second in priority only to team configuration.
+3. **Load context:** `/context` for relevant ADRs, patterns, memory
+4. **Implement** following patterns and ADRs
+5. **Verify** — ALL must pass before completing:
+   ```bash
+   npx tsc --noEmit                                        # Type check
+   npx vitest run                                          # Unit tests
+   npx vitest run --config vitest.integration.config.ts    # Integration tests
+   ```
+6. **Document:** `/memory` if new pattern, `/adr suggest` if architectural, `/comms send` if cross-team
+7. **Complete:** Verify acceptance criteria, `/comms move` to completed
 
-0. **Poll & Unblock** - Check `*-to-{team}/` inbox, unblock issues with responses
-1. **Context** - Check /comms, load /memory patterns, identify ADRs
-2. **Implementation** - Follow patterns, follow ADRs, update types
-3. **Verification** - `tsc --noEmit` (0 errors), unit tests, integration tests
-4. **Documentation** - Update /memory, /adr suggest if needed, /comms if cross-team
-5. **Completion** - Verify acceptance criteria, move issue, store session
+### Skills Reference
 
-### Message Polling (Automatic)
+| Skill | Purpose |
+|-------|---------|
+| `/comms` | Inter-team communication (inbox, issues, messages) |
+| `/adr` | Architecture decisions, gaps, suggestions |
+| `/context` | Load relevant ADRs, patterns, and memory before work |
+| `/memory` | Manage the extended memory vault |
+| `/refine` | Review patterns, promote to ADRs |
+| `/reflect` | Capture learnings after implementation |
 
-- **UI team** polls: `dev_communication/messaging/api-to-ui/`
-- **API team** polls: `dev_communication/messaging/ui-to-api/`
-- Responses automatically unblock matching BLOCKED issues
-- **Stops after:** 20 min inactivity OR issue completion
+### Agent Team Configuration
 
-### Verification Commands
+When spawning agent teams, read role definitions and review criteria from:
+- `.claude-workflow/team-configs/agent-team-roles.json` — team role definitions, spawn prompts, presets
+- `.claude-workflow/team-configs/code-reviewer-config.json` — code review gate criteria
 
-```bash
-# Type check (MUST pass before completing)
-npx tsc --noEmit
+### Completion Gate (Blocking)
 
-# Unit tests
-npx vitest run
-
-# Integration tests
-npx vitest run --config vitest.integration.config.ts
-```
-
-**CRITICAL:** No issue can be marked complete until ALL verification steps pass.
+No issue can be marked complete until ALL pass:
+- [ ] `npx tsc --noEmit` — 0 errors
+- [ ] `npx vitest run` — all tests pass
+- [ ] New functionality has corresponding tests
+- [ ] Session file created: `memory/sessions/{date}-{issue-slug}.md`
+- [ ] Issue file updated with commit hash and status COMPLETE

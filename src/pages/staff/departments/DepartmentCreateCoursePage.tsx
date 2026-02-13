@@ -21,7 +21,9 @@ export const DepartmentCreateCoursePage: React.FC = () => {
       if (currentDepartmentId === null && !isInitialMountRef.current) {
         return;
       }
-      switchDepartment(deptId);
+      switchDepartment(deptId).catch(() => {
+        // Handled by department context — error state exposed via switchError
+      });
     }
     isInitialMountRef.current = false;
   }, [deptId, currentDepartmentId, switchDepartment, isSwitching]);

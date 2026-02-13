@@ -1,8 +1,9 @@
 /**
  * UAT Test Fixtures - User States
- * 
+ *
  * Provides consistent user data for UAT scenarios.
- * These represent different user personas and their expected states.
+ * These map to seeded users from the API's seed-mock-data script.
+ * All passwords default to Password123! except admin which uses Admin123!
  */
 
 export interface UATUser {
@@ -16,32 +17,33 @@ export interface UATUser {
 }
 
 /**
- * Test users for different UAT scenarios
+ * Test users for different UAT scenarios — mapped to API seed data
  */
 export const uatUsers: Record<string, UATUser> = {
   learner: {
-    id: 'uat-learner-001',
-    email: 'uat.learner@test.cadencelms.com',
-    password: 'UatTest123!',
-    displayName: 'UAT Learner',
+    id: 'casey-learner',
+    email: 'casey.learner@lms.edu',
+    password: 'Password123!',
+    displayName: 'Casey Learner',
     role: 'learner',
     expectedDashboard: '/learner/dashboard',
   },
 
   staff: {
-    id: 'uat-staff-001',
-    email: 'uat.staff@test.cadencelms.com',
-    password: 'UatTest123!',
-    displayName: 'UAT Staff Member',
+    id: 'john-instructor',
+    email: 'john.instructor@lms.edu',
+    password: 'Password123!',
+    displayName: 'John Instructor',
     role: 'staff',
     expectedDashboard: '/staff/dashboard',
   },
 
   admin: {
-    id: 'uat-admin-001',
-    email: 'uat.admin@test.cadencelms.com',
-    password: 'UatTest123!',
-    displayName: 'UAT Administrator',
+    id: 'admin',
+    email: 'admin@lms.edu',
+    password: 'Admin123!',
+    escalationPassword: 'Escalate123!',
+    displayName: 'Admin',
     role: 'admin',
     expectedDashboard: '/admin/dashboard',
   },
@@ -49,6 +51,8 @@ export const uatUsers: Record<string, UATUser> = {
   /**
    * Riley Instructor - Staff member with multiple department memberships
    * Used for testing department switching functionality
+   * Departments: Cognitive Therapy (primary), CBT Fundamentals
+   * Roles: instructor, content-admin, department-admin
    */
   rileyInstructor: {
     id: 'riley-instructor',
@@ -65,26 +69,26 @@ export const uatUsers: Record<string, UATUser> = {
  */
 export const enrollmentStates = {
   noEnrollments: {
-    userId: 'uat-learner-001',
+    userId: 'alex-learner',
     courses: [],
   },
-  
+
   singleEnrollment: {
-    userId: 'uat-learner-001',
+    userId: 'casey-learner',
     courses: [
       { courseId: 'course-101', status: 'enrolled', progress: 0 },
     ],
   },
-  
+
   inProgress: {
-    userId: 'uat-learner-001',
+    userId: 'casey-learner',
     courses: [
       { courseId: 'course-101', status: 'in-progress', progress: 45 },
     ],
   },
-  
+
   completed: {
-    userId: 'uat-learner-001',
+    userId: 'casey-learner',
     courses: [
       { courseId: 'course-101', status: 'completed', progress: 100 },
     ],

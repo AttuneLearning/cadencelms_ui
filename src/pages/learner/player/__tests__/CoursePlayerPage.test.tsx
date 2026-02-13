@@ -13,8 +13,12 @@ vi.mock('@/entities/course', () => ({
   useCourse: vi.fn(),
 }));
 
+vi.mock('@/entities/class', () => ({
+  useClass: vi.fn(),
+}));
+
 vi.mock('@/entities/enrollment', () => ({
-  useEnrollmentStatus: vi.fn(),
+  listEnrollments: vi.fn(),
 }));
 
 vi.mock('@/entities/course-module', () => ({
@@ -72,7 +76,8 @@ vi.mock('@/features/player/ui/CourseCompletionScreen', () => ({
 }));
 
 import { useCourse } from '@/entities/course';
-import { useEnrollmentStatus } from '@/entities/enrollment';
+import { useClass } from '@/entities/class';
+import { listEnrollments } from '@/entities/enrollment';
 import { useCourseModules } from '@/entities/course-module';
 import { useCourseProgress } from '@/entities/progress';
 import { useStartContentAttempt, useContentAttempt } from '@/entities/content-attempt';
@@ -99,21 +104,29 @@ const createWrapper = (initialEntry: string) => {
   );
 };
 
+// Helper: mock enrollment data returned by listEnrollments
+const mockEnrollmentResponse = (enrollment: Record<string, unknown> | null) => ({
+  enrollments: enrollment ? [enrollment] : [],
+  pagination: { page: 1, limit: 1, total: enrollment ? 1 : 0, totalPages: enrollment ? 1 : 0, hasNext: false, hasPrev: false },
+});
+
 describe('CoursePlayerPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    (useCourse as any).mockReturnValue({ data: { settings: { certificateEnabled: false } } });
+    // Default: URL param is a valid course ID (course probe succeeds, class probe returns nothing)
+    (useCourse as any).mockReturnValue({ data: { settings: { certificateEnabled: false } }, isLoading: false });
+    (useClass as any).mockReturnValue({ data: undefined, isLoading: false });
     (useCourseProgress as any).mockReturnValue({ data: null });
     (useStartContentAttempt as any).mockReturnValue({ mutate: vi.fn() });
     (useContentAttempt as any).mockReturnValue({ data: null });
+    // Default: enrolled
+    (listEnrollments as any).mockResolvedValue(mockEnrollmentResponse({ id: 'enr1' }));
   });
 
-  it('renders loading state when enrollment is loading', () => {
-    (useEnrollmentStatus as any).mockReturnValue({
-      data: undefined,
-      isLoading: true,
-    });
+  it('renders loading state when ID probes are loading', () => {
+    (useCourse as any).mockReturnValue({ data: undefined, isLoading: true });
+    (useClass as any).mockReturnValue({ data: undefined, isLoading: true });
     (useCourseModules as any).mockReturnValue({
       data: undefined,
       isLoading: true,
@@ -123,16 +136,13 @@ describe('CoursePlayerPage', () => {
       wrapper: createWrapper('/learner/courses/course1/player'),
     });
 
-    // Should show loading spinner (Loader2 from lucide)
+    // Should show loading spinner
     expect(screen.queryByText('Not Enrolled')).not.toBeInTheDocument();
     expect(screen.queryByText('Course')).not.toBeInTheDocument();
   });
 
   it('renders not-enrolled state when no enrollment found', async () => {
-    (useEnrollmentStatus as any).mockReturnValue({
-      data: undefined,
-      isLoading: false,
-    });
+    (listEnrollments as any).mockResolvedValue(mockEnrollmentResponse(null));
     (useCourseModules as any).mockReturnValue({
       data: { modules: [], courseTitle: 'Test Course' },
       isLoading: false,
@@ -150,10 +160,6 @@ describe('CoursePlayerPage', () => {
   });
 
   it('renders course player with sidebar and controls when enrolled', async () => {
-    (useEnrollmentStatus as any).mockReturnValue({
-      data: { id: 'enr1' },
-      isLoading: false,
-    });
     (useCourseModules as any).mockReturnValue({
       data: {
         courseTitle: 'My Test Course',
@@ -189,10 +195,6 @@ describe('CoursePlayerPage', () => {
   });
 
   it('shows loading content message when no attempt yet', async () => {
-    (useEnrollmentStatus as any).mockReturnValue({
-      data: { id: 'enr1' },
-      isLoading: false,
-    });
     (useCourseModules as any).mockReturnValue({
       data: {
         courseTitle: 'My Course',
@@ -223,10 +225,6 @@ describe('CoursePlayerPage', () => {
   });
 
   it('renders exit button', async () => {
-    (useEnrollmentStatus as any).mockReturnValue({
-      data: { id: 'enr1' },
-      isLoading: false,
-    });
     (useCourseModules as any).mockReturnValue({
       data: {
         courseTitle: 'My Course',
@@ -248,10 +246,6 @@ describe('CoursePlayerPage', () => {
   });
 
   it('renders modules with multi-lesson support', async () => {
-    (useEnrollmentStatus as any).mockReturnValue({
-      data: { id: 'enr1' },
-      isLoading: false,
-    });
     (useCourseModules as any).mockReturnValue({
       data: {
         courseTitle: 'Multi-Lesson Course',
@@ -293,5 +287,48 @@ describe('CoursePlayerPage', () => {
     });
     const courseTitle = screen.getAllByText('Multi-Lesson Course');
     expect(courseTitle.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('resolves class ID to course ID when URL param is a class ID', async () => {
+    // Course probe fails (ID is a class, not a course)
+    (useCourse as any).mockImplementation((id: string) => {
+      if (id === 'class-123') return { data: undefined, isLoading: false, isError: true };
+      if (id === 'real-course-id') return { data: { settings: {} }, isLoading: false };
+      return { data: undefined, isLoading: false };
+    });
+    // Class probe succeeds
+    (useClass as any).mockReturnValue({
+      data: { id: 'class-123', course: { id: 'real-course-id', title: 'EMDR Intro', code: 'EMDR101' } },
+      isLoading: false,
+    });
+    (listEnrollments as any).mockResolvedValue(mockEnrollmentResponse({ id: 'enr-class' }));
+    (useCourseModules as any).mockReturnValue({
+      data: { courseTitle: 'EMDR Intro', modules: [] },
+      isLoading: false,
+    });
+
+    render(<CoursePlayerPage />, {
+      wrapper: createWrapper('/learner/courses/class-123/player'),
+    });
+
+    await waitFor(() => {
+      const titles = screen.getAllByText('EMDR Intro');
+      expect(titles.length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  it('shows course not found when both probes fail', async () => {
+    (useCourse as any).mockReturnValue({ data: undefined, isLoading: false, isError: true });
+    (useClass as any).mockReturnValue({ data: undefined, isLoading: false, isError: true });
+    (useCourseModules as any).mockReturnValue({ data: undefined, isLoading: false });
+
+    render(<CoursePlayerPage />, {
+      wrapper: createWrapper('/learner/courses/invalid-id/player'),
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Course Not Found')).toBeInTheDocument();
+    });
+    expect(screen.getByText('This course could not be found')).toBeInTheDocument();
   });
 });

@@ -18,6 +18,21 @@ interface EnrolledCourseCardProps {
 }
 
 export const EnrolledCourseCard: React.FC<EnrolledCourseCardProps> = ({ enrollment }) => {
+  // Determine the correct route based on enrollment type
+  const getTargetRoute = () => {
+    switch (enrollment.type) {
+      case 'program':
+        return `/learner/programs/${enrollment.target.id}`;
+      case 'class':
+        return `/learner/courses/${enrollment.target.id}/player`;
+      case 'course':
+      default:
+        return `/learner/courses/${enrollment.target.id}/player`;
+    }
+  };
+
+  const targetRoute = getTargetRoute();
+
   const getStatusBadge = () => {
     if (enrollment.status === 'completed') {
       return <Badge variant="default">Completed</Badge>;
@@ -34,7 +49,7 @@ export const EnrolledCourseCard: React.FC<EnrolledCourseCardProps> = ({ enrollme
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex-1">
             <Link
-              to={`/learner/courses/${enrollment.target.id}/player`}
+              to={targetRoute}
               className="hover:underline"
             >
               <h3 className="font-semibold text-lg line-clamp-2">
@@ -103,7 +118,7 @@ export const EnrolledCourseCard: React.FC<EnrolledCourseCardProps> = ({ enrollme
 
       <CardFooter>
         <Button asChild className="w-full">
-          <Link to={`/learner/courses/${enrollment.target.id}/player`}>
+          <Link to={targetRoute}>
             <PlayCircle className="h-4 w-4 mr-2" />
             {enrollment.status === 'completed' ? 'Review Course' : 'Continue Learning'}
           </Link>

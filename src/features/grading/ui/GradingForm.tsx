@@ -197,9 +197,6 @@ export function GradingForm({
         </CardHeader>
         <CardContent className="space-y-6">
           {questions.map((question, index) => {
-            const gradeIndex = formValues.questionGrades?.findIndex(
-              (g) => g.questionId === question.id
-            );
             const error = getQuestionError(question.id);
 
             return (
@@ -247,7 +244,7 @@ export function GradingForm({
                         Score Earned <span className="text-destructive">*</span>
                       </Label>
                       <Controller
-                        name={`questionGrades.${gradeIndex}.scoreEarned`}
+                        name={`questionGrades.${index}.scoreEarned`}
                         control={control}
                         render={({ field }) => (
                           <Input
@@ -280,13 +277,13 @@ export function GradingForm({
                       <Label>Question Score</Label>
                       <div className="h-10 px-3 py-2 bg-muted rounded-md flex items-center justify-between">
                         <span>
-                          {formValues.questionGrades?.[gradeIndex]?.scoreEarned || 0} /{' '}
+                          {formValues.questionGrades?.[index]?.scoreEarned || 0} /{' '}
                           {question.points}
                         </span>
                         <Badge variant="outline">
                           {question.points > 0
                             ? Math.round(
-                                ((formValues.questionGrades?.[gradeIndex]?.scoreEarned || 0) /
+                                ((formValues.questionGrades?.[index]?.scoreEarned || 0) /
                                   question.points) *
                                   100
                               )
@@ -303,7 +300,7 @@ export function GradingForm({
                       Question Feedback (Optional)
                     </Label>
                     <Controller
-                      name={`questionGrades.${gradeIndex}.feedback`}
+                      name={`questionGrades.${index}.feedback`}
                       control={control}
                       render={({ field }) => (
                         <Textarea

@@ -6,7 +6,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQueries } from '@tanstack/react-query';
+import { useQuery, useQueries } from '@tanstack/react-query';
 import { X, Menu, Loader2, AlertCircle, BookOpen, FileText } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import {
@@ -27,11 +27,13 @@ import {
   useContentAttempt,
 } from '@/entities/content-attempt';
 import { useCourse } from '@/entities/course';
+import { useClass } from '@/entities/class';
 import { useCourseModules } from '@/entities/course-module';
-import { useEnrollmentStatus } from '@/entities/enrollment';
+import { listEnrollments } from '@/entities/enrollment';
 import { useCourseProgress } from '@/entities/progress';
 import { listLearningUnits, learningUnitKeys } from '@/entities/learning-unit';
 import type { LearningUnitListItem } from '@/entities/learning-unit';
+import { usePlaylistEngine, useAdaptiveConfig, mapToStaticLearningUnits } from '@/features/playlist-engine';
 
 /** Flattened lesson reference for sequential navigation */
 interface FlatLesson {
@@ -64,21 +66,47 @@ export function CoursePlayerPage() {
     category: string | null;
   } | null>(null);
 
-  // Fetch course metadata (for certificateEnabled check)
-  const { data: course } = useCourse(courseId || '');
+  // The URL param might be a course ID or a class ID (class enrollments link with class IDs).
+  // Probe both in parallel with retry:false for fast resolution.
+  const { data: directCourse, isLoading: courseProbeLoading } = useCourse(courseId || '', { retry: false });
+  const { data: classData, isLoading: classProbeLoading } = useClass(courseId || '', { retry: false });
 
-  // Fetch enrollment for this specific course
-  const { data: enrollment, isLoading: enrollmentsLoading } = useEnrollmentStatus(courseId || '');
+  // Resolve the actual course ID for course-level API calls
+  const idProbeSettled = !courseProbeLoading && !classProbeLoading;
+  const resolvedCourseId = directCourse ? (courseId || '') : (classData?.course?.id || '');
+
+  // Fetch course data using the resolved ID (for settings, adaptive config)
+  const { data: course } = useCourse(resolvedCourseId);
+
+  // Fetch enrollment — tries course filter, falls back to class filter
+  const { data: enrollment, isLoading: enrollmentsLoading } = useQuery({
+    queryKey: ['enrollment-for-player', courseId, resolvedCourseId],
+    queryFn: async () => {
+      // Try course filter first (works for direct course enrollments)
+      if (resolvedCourseId) {
+        const byCourse = await listEnrollments({ course: resolvedCourseId, limit: 1 });
+        if (byCourse.enrollments.length > 0) return byCourse.enrollments[0];
+      }
+      // Try class filter (works for class enrollments where URL param is class ID)
+      if (courseId && courseId !== resolvedCourseId) {
+        const byClass = await listEnrollments({ class: courseId, limit: 1 });
+        if (byClass.enrollments.length > 0) return byClass.enrollments[0];
+      }
+      return null;
+    },
+    enabled: !!resolvedCourseId,
+    staleTime: 2 * 60 * 1000,
+  });
 
   // Fetch course structure
   const { data: segmentsData, isLoading: segmentsLoading } = useCourseModules(
-    courseId || '',
+    resolvedCourseId,
     {},
-    { enabled: !!courseId }
+    { enabled: !!resolvedCourseId }
   );
 
   // Fetch course progress for completion/lock status
-  const { data: courseProgress } = useCourseProgress(courseId || '');
+  const { data: courseProgress } = useCourseProgress(resolvedCourseId);
 
   // Build progress lookup: moduleId → ModuleProgress
   const progressMap = useMemo(
@@ -115,6 +143,28 @@ export function CoursePlayerPage() {
     return map;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [moduleIds.join(','), allLUsLoaded]);
+
+  // Build static LU list for playlist engine (flattened across all modules)
+  const staticLearningUnits = useMemo(() => {
+    const allLUs: LearningUnitListItem[] = [];
+    moduleIds.forEach((modId) => {
+      const lus = learningUnitsMap.get(modId);
+      if (lus) allLUs.push(...lus);
+    });
+    return mapToStaticLearningUnits(allLUs);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [moduleIds.join(','), learningUnitsMap]);
+
+  // Adaptive configuration (currently 'off' mode)
+  const { config: adaptiveConfig } = useAdaptiveConfig(course?.adaptiveSettings);
+
+  // Playlist engine — in off mode, produces identical sequential navigation to flatLessons
+  const playlistEngine = usePlaylistEngine({
+    config: adaptiveConfig,
+    learningUnits: staticLearningUnits,
+    enrollmentId: enrollment?.id || '',
+    moduleId: moduleIds[0] || '',
+  });
 
   // Map learning unit contentType to Lesson type
   const mapContentType = (lu: LearningUnitListItem): Lesson['type'] => {
@@ -261,8 +311,10 @@ export function CoursePlayerPage() {
         setCurrentLessonId(flat.lessonId);
         setCurrentLessonMeta({ contentType: flat.contentType, category: flat.category });
       }
-    } else if (flatLessons.length > 0 && !currentContentId) {
+    } else if (flatLessons.length > 0 && !currentContentId && allLUsLoaded) {
       // No content specified — start with first unlocked lesson
+      // Guard with allLUsLoaded to prevent premature selection from module-level
+      // fallback lessons before real LU data is available
       const firstUnlocked = modules.flatMap((m) => m.lessons).find((l) => !l.isLocked);
       if (firstUnlocked) {
         const flat = flatLessons.find((fl) => fl.lessonId === firstUnlocked.id);
@@ -275,11 +327,14 @@ export function CoursePlayerPage() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [flatLessons.length, urlModuleId, urlLessonId, contentId]);
+  }, [flatLessons.length, urlModuleId, urlLessonId, contentId, allLUsLoaded]);
 
-  // Start content attempt when currentContentId changes (only for content that has a contentId)
+  const isAssessmentUnit =
+    currentLessonMeta?.category === 'graded' || currentLessonMeta?.contentType === 'assessment';
+
+  // Start content attempt when currentContentId changes (non-assessment content only)
   useEffect(() => {
-    if (currentContentId && enrollment && !currentAttemptId) {
+    if (currentContentId && enrollment && !currentAttemptId && !isAssessmentUnit) {
       startAttempt(
         {
           contentId: currentContentId,
@@ -296,7 +351,7 @@ export function CoursePlayerPage() {
         }
       );
     }
-  }, [currentContentId, enrollment, currentAttemptId, startAttempt]);
+  }, [currentContentId, enrollment, currentAttemptId, startAttempt, isAssessmentUnit]);
 
   // Handle exit
   const handleExit = () => {
@@ -344,6 +399,7 @@ export function CoursePlayerPage() {
   };
 
   // Handle content completion callback (auto-advance or show completion)
+  // Uses the playlist engine for decision-making (off mode = identical to index nav)
   const handleContentComplete = () => {
     if (isOnFinalLesson) {
       const allCompleted = modules
@@ -354,10 +410,25 @@ export function CoursePlayerPage() {
         return;
       }
     }
-    // Auto-advance to next lesson
-    if (currentIndex < flatLessons.length - 1) {
-      handleNext();
+
+    // Ask the playlist engine what to do next
+    const decision = playlistEngine.resolveAndApplyNext();
+
+    if (decision.action === 'complete') {
+      setShowCompletion(true);
+      return;
     }
+
+    if (decision.action === 'advance' || decision.action === 'skip') {
+      // Navigate to the next lesson in flatLessons
+      if (currentIndex < flatLessons.length - 1) {
+        handleNext();
+      }
+      return;
+    }
+
+    // hold, retry, inject — future phases will handle these
+    // For now in off mode, these won't occur
   };
 
   // Get breadcrumb info
@@ -393,7 +464,42 @@ export function CoursePlayerPage() {
       );
     }
 
-    // For learning units without contentId (exercises, assessments) — render inline
+    if (currentLessonMeta && (currentLessonMeta.category === 'graded' || currentLessonMeta.contentType === 'assessment')) {
+      const canLaunchAssessment = !!currentContentId && !!enrollment && !!currentLessonId;
+      return (
+        <div className="flex h-full items-center justify-center bg-muted/10">
+          <div className="flex flex-col items-center gap-4 text-center max-w-md">
+            <FileText className="h-12 w-12 text-primary" />
+            <div>
+              <h3 className="text-lg font-semibold">Assessment</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                {currentLessonTitle || 'This assessment'} is a graded evaluation.
+              </p>
+              {!currentContentId && (
+                <p className="text-sm text-destructive mt-2">
+                  Assessment reference missing (`learningUnit.contentId`).
+                </p>
+              )}
+            </div>
+            <Button
+              disabled={!canLaunchAssessment}
+              onClick={() => {
+                if (!currentContentId || !enrollment || !currentLessonId) return;
+                const params = new URLSearchParams();
+                params.set('courseId', resolvedCourseId || courseId || '');
+                params.set('enrollmentId', enrollment.id);
+                params.set('learningUnitId', currentLessonId);
+                navigate(`/learner/exercises/${currentContentId}/take?${params.toString()}`);
+              }}
+            >
+              Start Assessment
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    // For learning units without contentId (practice exercises) — render inline
     if (!currentContentId && currentLessonMeta) {
       const { contentType, category } = currentLessonMeta;
       if (category === 'practice' || contentType === 'exercise') {
@@ -415,24 +521,7 @@ export function CoursePlayerPage() {
         );
       }
 
-      if (category === 'graded' || contentType === 'assessment') {
-        return (
-          <div className="flex h-full items-center justify-center bg-muted/10">
-            <div className="flex flex-col items-center gap-4 text-center max-w-md">
-              <FileText className="h-12 w-12 text-primary" />
-              <div>
-                <h3 className="text-lg font-semibold">Assessment</h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {currentLessonTitle || 'This assessment'} is a graded evaluation.
-                </p>
-              </div>
-              <Button onClick={handleContentComplete}>
-                Mark as Complete & Continue
-              </Button>
-            </div>
-          </div>
-        );
-      }
+      if (category === 'graded' || contentType === 'assessment') return null;
     }
 
     // For topic content with contentId — render via HtmlContentViewer directly
@@ -559,6 +648,33 @@ export function CoursePlayerPage() {
       </div>
     );
   };
+
+  // Wait for ID probes to settle so we know if this is a course or class ID
+  if (!idProbeSettled && !resolvedCourseId) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // Both probes settled but neither matched — invalid ID
+  if (idProbeSettled && !resolvedCourseId) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <AlertCircle className="h-12 w-12 text-destructive" />
+          <div>
+            <h3 className="text-lg font-semibold">Course Not Found</h3>
+            <p className="text-sm text-muted-foreground">
+              This course could not be found
+            </p>
+          </div>
+          <Button onClick={() => navigate('/learner/dashboard')}>Go to Dashboard</Button>
+        </div>
+      </div>
+    );
+  }
 
   if (enrollmentsLoading || segmentsLoading || !allLUsLoaded) {
     return (

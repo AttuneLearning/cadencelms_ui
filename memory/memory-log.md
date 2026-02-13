@@ -4,6 +4,9 @@ Chronological log of all memory additions and updates.
 
 | Date | Type | Title | Tags | Link |
 |------|------|-------|------|------|
+| 2026-02-13 | session | Assessment Attempt Canonicalization Handoff | #session #assessment #learning-unit #api-contract | [[sessions/2026-02-13-assessment-attempt-canonicalization-handoff]] |
+| 2026-02-13 | context | Assessment Attempt Contract and LearningUnit Linkage | #context #assessment #learning-unit #rest | [[context/assessment-attempt-contract-and-learningunit-linkage]] |
+| 2026-02-13 | pattern | Frontend Issue Routing | #pattern #workflow #issue-triage #dev-communication #frontend | [[patterns/frontend-issue-routing]] |
 | 2026-02-05 | ADR | Development Lifecycle Enforcement | #adr #development #testing #workflow | [[../../dev_communication/architecture/decisions/ADR-DEV-002-DEVELOPMENT-LIFECYCLE]] |
 | 2026-02-05 | team-config | Development Lifecycle Team Config | #team-config #workflow #testing | [[prompts/team-configs/development-lifecycle]] |
 | 2026-02-05 | context | Permission String Audit | #context #permissions #audit #api-mismatch | [[context/permission-string-audit]] |

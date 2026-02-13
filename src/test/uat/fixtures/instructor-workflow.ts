@@ -157,10 +157,10 @@ export const adminUser = {
  * Department admin user
  */
 export const departmentAdminUser = {
-  id: 'uat-dept-admin-001',
-  email: 'sam.department@lms.edu',
+  id: 'riley-instructor',
+  email: 'riley.instructor@lms.edu',
   password: 'Password123!',
-  displayName: 'Sam Department',
+  displayName: 'Riley Instructor',
   role: 'staff' as const,
   expectedDashboard: '/staff/dashboard',
 };

@@ -1,10 +1,11 @@
 /**
  * AssignmentPlayer Component
  * Handles assignment submission with text and file uploads
+ * Aligned with API-ISS-029 assignment contracts
  */
 
 import { useEffect, useState, useCallback } from 'react';
-import { Loader2, Upload, X, FileText, CheckCircle2 } from 'lucide-react';
+import { Loader2, Upload, FileText, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { Textarea } from '@/shared/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -21,19 +22,19 @@ import {
   AlertDialogTitle,
 } from '@/shared/ui/alert-dialog';
 import {
-  useMySubmissions,
+  useSubmissions,
   useCreateSubmission,
   useUpdateSubmission,
-  useSubmitAssignment,
-  useUploadFile,
-  useDeleteFile,
+  useSubmitSubmission,
   type Assignment,
+  type AssignmentSubmission,
 } from '@/entities/assignment';
 import { useCompleteContentAttempt } from '@/entities/content-attempt';
 
 export interface AssignmentPlayerProps {
   attemptId: string;
   assignment: Assignment;
+  enrollmentId?: string;
   onComplete?: () => void;
   onError?: (error: string) => void;
 }
@@ -41,33 +42,33 @@ export interface AssignmentPlayerProps {
 export function AssignmentPlayer({
   attemptId,
   assignment,
+  enrollmentId,
   onComplete,
   onError,
 }: AssignmentPlayerProps) {
   const [textContent, setTextContent] = useState('');
   const [isDirty, setIsDirty] = useState(false);
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
-  const [uploadingFiles, setUploadingFiles] = useState<Set<string>>(new Set());
 
-  // Fetch existing submissions
-  const { data: submissions, isLoading: submissionsLoading } = useMySubmissions(assignment.id);
+  // Fetch existing submissions for this assignment
+  const { data: submissionsData, isLoading: submissionsLoading } = useSubmissions(assignment.id);
 
-  // Get latest submission
-  const latestSubmission = submissions?.[0];
+  // Get latest submission (first in list, sorted by server)
+  const submissions = submissionsData?.submissions ?? [];
+  const latestSubmission = submissions[0] as AssignmentSubmission | undefined;
   const isSubmitted = latestSubmission?.status === 'submitted';
   const isGraded = latestSubmission?.status === 'graded';
+  const isReturned = latestSubmission?.status === 'returned';
   const canResubmit =
-    isSubmitted &&
-    assignment.allowResubmission &&
-    (!assignment.maxSubmissions ||
-      (latestSubmission?.attemptNumber ?? 0) < assignment.maxSubmissions);
+    (isSubmitted || isReturned) &&
+    assignment.maxResubmissions !== null &&
+    assignment.maxResubmissions > 0 &&
+    (latestSubmission?.submissionNumber ?? 0) < (assignment.maxResubmissions ?? 0) + 1;
 
   // Mutations
   const { mutate: createSubmission, isPending: isCreating } = useCreateSubmission();
   const { mutate: updateSubmission, isPending: isUpdating } = useUpdateSubmission();
-  const { mutate: submitAssignment, isPending: isSubmitting } = useSubmitAssignment();
-  const { mutate: uploadFile, isPending: isUploadingFile } = useUploadFile();
-  const { mutate: deleteFile, isPending: isDeletingFile } = useDeleteFile();
+  const { mutate: submitSubmission, isPending: isSubmitting } = useSubmitSubmission();
   const { mutate: completeAttempt } = useCompleteContentAttempt();
 
   // Load existing submission data
@@ -90,17 +91,17 @@ export function AssignmentPlayer({
       createSubmission(
         {
           assignmentId: assignment.id,
-          textContent,
-          status: 'draft',
+          data: {
+            enrollmentId: enrollmentId || '',
+            textContent,
+          },
         },
         {
           onSuccess: () => {
             setIsDirty(false);
           },
-          onError: (error) => {
-            if (onError) {
-              onError('Failed to save draft');
-            }
+          onError: (error: Error) => {
+            onError?.('Failed to save draft');
             console.error('Failed to save draft:', error);
           },
         }
@@ -118,10 +119,8 @@ export function AssignmentPlayer({
           onSuccess: () => {
             setIsDirty(false);
           },
-          onError: (error) => {
-            if (onError) {
-              onError('Failed to save draft');
-            }
+          onError: (error: Error) => {
+            onError?.('Failed to save draft');
             console.error('Failed to save draft:', error);
           },
         }
@@ -131,6 +130,7 @@ export function AssignmentPlayer({
     latestSubmission,
     textContent,
     assignment.id,
+    enrollmentId,
     createSubmission,
     updateSubmission,
     onError,
@@ -141,234 +141,133 @@ export function AssignmentPlayer({
     const submissionToSubmit = latestSubmission;
 
     if (!submissionToSubmit) {
-      // Create and submit in one go
+      // Create draft first, then submit
       createSubmission(
         {
           assignmentId: assignment.id,
-          textContent,
-          status: 'submitted',
+          data: {
+            enrollmentId: enrollmentId || '',
+            textContent,
+          },
         },
         {
-          onSuccess: () => {
-            setIsDirty(false);
-            setShowSubmitDialog(false);
+          onSuccess: (data) => {
+            // Now submit the newly created submission
+            submitSubmission(data.id, {
+              onSuccess: () => {
+                setIsDirty(false);
+                setShowSubmitDialog(false);
 
-            // Mark content attempt as complete
-            completeAttempt({
-              attemptId,
-              data: {
-                passed: true,
+                completeAttempt({
+                  attemptId,
+                  data: { passed: true },
+                });
+
+                onComplete?.();
+              },
+              onError: (error: Error) => {
+                onError?.('Failed to submit assignment');
+                console.error('Failed to submit assignment:', error);
               },
             });
-
-            if (onComplete) {
-              onComplete();
-            }
           },
-          onError: (error) => {
-            if (onError) {
-              onError('Failed to submit assignment');
-            }
-            console.error('Failed to submit assignment:', error);
+          onError: (error: Error) => {
+            onError?.('Failed to create submission');
+            console.error('Failed to create submission:', error);
           },
         }
       );
     } else {
-      // Submit existing draft
-      submitAssignment(
-        {
-          submissionId: submissionToSubmit.id,
-          textContent,
-        },
-        {
+      // Save any pending text changes first, then submit
+      if (isDirty && submissionToSubmit.status === 'draft') {
+        updateSubmission(
+          {
+            id: submissionToSubmit.id,
+            data: { textContent },
+          },
+          {
+            onSuccess: () => {
+              submitSubmission(submissionToSubmit.id, {
+                onSuccess: () => {
+                  setIsDirty(false);
+                  setShowSubmitDialog(false);
+
+                  completeAttempt({
+                    attemptId,
+                    data: { passed: true },
+                  });
+
+                  onComplete?.();
+                },
+                onError: (error: Error) => {
+                  onError?.('Failed to submit assignment');
+                  console.error('Failed to submit assignment:', error);
+                },
+              });
+            },
+          }
+        );
+      } else {
+        submitSubmission(submissionToSubmit.id, {
           onSuccess: () => {
             setIsDirty(false);
             setShowSubmitDialog(false);
 
-            // Mark content attempt as complete
             completeAttempt({
               attemptId,
-              data: {
-                passed: true,
-              },
+              data: { passed: true },
             });
 
-            if (onComplete) {
-              onComplete();
-            }
+            onComplete?.();
           },
-          onError: (error) => {
-            if (onError) {
-              onError('Failed to submit assignment');
-            }
+          onError: (error: Error) => {
+            onError?.('Failed to submit assignment');
             console.error('Failed to submit assignment:', error);
           },
-        }
-      );
+        });
+      }
     }
   }, [
     latestSubmission,
     textContent,
+    isDirty,
     assignment.id,
+    enrollmentId,
     attemptId,
     createSubmission,
-    submitAssignment,
+    updateSubmission,
+    submitSubmission,
     completeAttempt,
     onComplete,
     onError,
   ]);
 
-  // Handle file upload
-  const handleFileUpload = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const files = event.target.files;
-      if (!files || files.length === 0) return;
-
-      // Ensure we have a submission to attach files to
-      if (!latestSubmission || latestSubmission.status !== 'draft') {
-        // Create draft first
-        createSubmission(
-          {
-            assignmentId: assignment.id,
-            textContent,
-            status: 'draft',
-          },
-          {
-            onSuccess: (data) => {
-              setIsDirty(false);
-              // Upload file to new submission
-              uploadFileToSubmission(data.id, files[0]);
-            },
-            onError: (error) => {
-              if (onError) {
-                onError('Failed to create submission for file upload');
-              }
-              console.error('Failed to create submission:', error);
-            },
-          }
-        );
-      } else {
-        uploadFileToSubmission(latestSubmission.id, files[0]);
-      }
-
-      // Reset input
-      event.target.value = '';
-    },
-    [latestSubmission, textContent, assignment.id, createSubmission, onError]
-  );
-
-  const uploadFileToSubmission = useCallback(
-    (submissionId: string, file: File) => {
-      // Check file size
-      if (assignment.maxFileSize && file.size > assignment.maxFileSize) {
-        if (onError) {
-          const maxSizeMB = (assignment.maxFileSize / (1024 * 1024)).toFixed(2);
-          onError(`File size exceeds maximum allowed size of ${maxSizeMB}MB`);
-        }
-        return;
-      }
-
-      // Check file type
-      if (assignment.allowedFileTypes && assignment.allowedFileTypes.length > 0) {
-        const fileExtension = file.name.split('.').pop()?.toLowerCase();
-        if (!fileExtension || !assignment.allowedFileTypes.includes(fileExtension)) {
-          if (onError) {
-            onError(
-              `File type not allowed. Allowed types: ${assignment.allowedFileTypes.join(', ')}`
-            );
-          }
-          return;
-        }
-      }
-
-      // Check max files
-      if (assignment.maxFiles && (latestSubmission?.files?.length ?? 0) >= assignment.maxFiles) {
-        if (onError) {
-          onError(`Maximum number of files (${assignment.maxFiles}) reached`);
-        }
-        return;
-      }
-
-      setUploadingFiles((prev) => new Set(prev).add(file.name));
-
-      uploadFile(
-        {
-          submissionId,
-          file,
-        },
-        {
-          onSuccess: () => {
-            setUploadingFiles((prev) => {
-              const next = new Set(prev);
-              next.delete(file.name);
-              return next;
-            });
-          },
-          onError: (error) => {
-            setUploadingFiles((prev) => {
-              const next = new Set(prev);
-              next.delete(file.name);
-              return next;
-            });
-            if (onError) {
-              onError('Failed to upload file');
-            }
-            console.error('Failed to upload file:', error);
-          },
-        }
-      );
-    },
-    [assignment, latestSubmission, uploadFile, onError]
-  );
-
-  // Handle file delete
-  const handleFileDelete = useCallback(
-    (fileId: string) => {
-      if (!latestSubmission) return;
-
-      deleteFile(
-        {
-          submissionId: latestSubmission.id,
-          fileId,
-        },
-        {
-          onError: (error) => {
-            if (onError) {
-              onError('Failed to delete file');
-            }
-            console.error('Failed to delete file:', error);
-          },
-        }
-      );
-    },
-    [latestSubmission, deleteFile, onError]
-  );
-
   // Handle resubmit
   const handleResubmit = useCallback(() => {
-    // Create new draft submission for resubmission
     createSubmission(
       {
         assignmentId: assignment.id,
-        status: 'draft',
+        data: {
+          enrollmentId: enrollmentId || '',
+        },
       },
       {
         onSuccess: () => {
           setTextContent('');
           setIsDirty(false);
         },
-        onError: (error) => {
-          if (onError) {
-            onError('Failed to create resubmission');
-          }
+        onError: (error: Error) => {
+          onError?.('Failed to create resubmission');
           console.error('Failed to create resubmission:', error);
         },
       }
     );
-  }, [assignment.id, createSubmission, onError]);
+  }, [assignment.id, enrollmentId, createSubmission, onError]);
 
-  const showTextInput = assignment.type === 'text' || assignment.type === 'text_and_file';
-  const showFileUpload = assignment.type === 'file' || assignment.type === 'text_and_file';
+  const showTextInput =
+    assignment.submissionType === 'text' || assignment.submissionType === 'text_and_file';
+  const showFileUpload =
+    assignment.submissionType === 'file' || assignment.submissionType === 'text_and_file';
   const canEdit = !latestSubmission || latestSubmission.status === 'draft';
 
   if (submissionsLoading) {
@@ -391,11 +290,9 @@ export function AssignmentPlayer({
             <div className="flex items-start justify-between">
               <div>
                 <CardTitle>{assignment.title}</CardTitle>
-                {assignment.dueDate && (
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Due: {new Date(assignment.dueDate).toLocaleDateString()}
-                  </p>
-                )}
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Max score: {assignment.maxScore}
+                </p>
               </div>
               {latestSubmission && (
                 <Badge
@@ -415,7 +312,7 @@ export function AssignmentPlayer({
           <CardContent>
             <div
               className="prose prose-sm max-w-none"
-              dangerouslySetInnerHTML={{ __html: assignment.description }}
+              dangerouslySetInnerHTML={{ __html: assignment.instructions }}
             />
           </CardContent>
         </Card>
@@ -432,8 +329,17 @@ export function AssignmentPlayer({
           </Alert>
         )}
 
+        {/* Returned for resubmission */}
+        {isReturned && latestSubmission?.returnReason && (
+          <Alert>
+            <AlertDescription>
+              <strong>Returned by instructor:</strong> {latestSubmission.returnReason}
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Grade Display */}
-        {isGraded && latestSubmission?.grade && (
+        {isGraded && latestSubmission?.grade != null && (
           <Card>
             <CardHeader>
               <CardTitle>Grade</CardTitle>
@@ -441,21 +347,23 @@ export function AssignmentPlayer({
             <CardContent className="space-y-4">
               <div className="flex items-center gap-2">
                 <span className="text-2xl font-bold">
-                  {latestSubmission.grade.score} / {latestSubmission.grade.maxScore}
+                  {latestSubmission.grade} / {assignment.maxScore}
                 </span>
                 <span className="text-muted-foreground">
-                  ({Math.round((latestSubmission.grade.score / latestSubmission.grade.maxScore) * 100)}%)
+                  ({Math.round((latestSubmission.grade / assignment.maxScore) * 100)}%)
                 </span>
               </div>
-              {latestSubmission.grade.feedback && (
+              {latestSubmission.feedback && (
                 <div>
                   <h4 className="mb-2 text-sm font-semibold">Feedback</h4>
-                  <p className="text-sm text-muted-foreground">{latestSubmission.grade.feedback}</p>
+                  <p className="text-sm text-muted-foreground">{latestSubmission.feedback}</p>
                 </div>
               )}
-              <p className="text-xs text-muted-foreground">
-                Graded on {new Date(latestSubmission.grade.gradedAt).toLocaleString()}
-              </p>
+              {latestSubmission.gradedAt && (
+                <p className="text-xs text-muted-foreground">
+                  Graded on {new Date(latestSubmission.gradedAt).toLocaleString()}
+                </p>
+              )}
             </CardContent>
           </Card>
         )}
@@ -468,7 +376,8 @@ export function AssignmentPlayer({
                 <div>
                   <p className="text-sm font-medium">Resubmission Available</p>
                   <p className="text-sm text-muted-foreground">
-                    Attempt {latestSubmission?.attemptNumber ?? 0} of {assignment.maxSubmissions}
+                    Submission {latestSubmission?.submissionNumber ?? 0} of{' '}
+                    {(assignment.maxResubmissions ?? 0) + 1}
                   </p>
                 </div>
                 <Button onClick={handleResubmit} disabled={isCreating}>
@@ -500,22 +409,19 @@ export function AssignmentPlayer({
                 </div>
               )}
 
-              {/* File Upload */}
+              {/* File Upload Placeholder */}
               {showFileUpload && (
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Files</label>
-
-                  {/* Upload Button */}
                   <div>
-                    <Button variant="outline" className="relative" asChild disabled={isUploadingFile}>
+                    <Button variant="outline" className="relative" asChild>
                       <label>
                         <Upload className="mr-2 h-4 w-4" />
                         Upload File
                         <input
                           type="file"
                           className="absolute inset-0 cursor-pointer opacity-0"
-                          onChange={handleFileUpload}
-                          disabled={isUploadingFile}
+                          disabled
                         />
                       </label>
                     </Button>
@@ -531,46 +437,27 @@ export function AssignmentPlayer({
                     )}
                   </div>
 
-                  {/* File List */}
+                  {/* Existing File List */}
                   {latestSubmission?.files && latestSubmission.files.length > 0 && (
                     <div className="space-y-2">
                       {latestSubmission.files.map((file) => (
                         <div
-                          key={file.id}
+                          key={file.fileId}
                           className="flex items-center justify-between rounded-lg border p-3"
                         >
                           <div className="flex items-center gap-2">
                             <FileText className="h-4 w-4 text-muted-foreground" />
                             <div>
-                              <p className="text-sm font-medium">{file.name}</p>
+                              <p className="text-sm font-medium">{file.fileName}</p>
                               <p className="text-xs text-muted-foreground">
-                                {(file.size / 1024).toFixed(2)} KB
+                                {(file.fileSize / 1024).toFixed(2)} KB
                               </p>
                             </div>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleFileDelete(file.id)}
-                            disabled={isDeletingFile}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
                         </div>
                       ))}
                     </div>
                   )}
-
-                  {/* Uploading Files */}
-                  {Array.from(uploadingFiles).map((fileName) => (
-                    <div
-                      key={fileName}
-                      className="flex items-center gap-2 rounded-lg border border-dashed p-3"
-                    >
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <p className="text-sm text-muted-foreground">Uploading {fileName}...</p>
-                    </div>
-                  ))}
                 </div>
               )}
 
@@ -623,17 +510,17 @@ export function AssignmentPlayer({
                   <div className="space-y-2">
                     {latestSubmission.files.map((file) => (
                       <a
-                        key={file.id}
-                        href={file.url}
+                        key={file.fileId}
+                        href={file.fileUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 rounded-lg border p-3 transition-colors hover:bg-muted"
                       >
                         <FileText className="h-4 w-4 text-muted-foreground" />
                         <div>
-                          <p className="text-sm font-medium">{file.name}</p>
+                          <p className="text-sm font-medium">{file.fileName}</p>
                           <p className="text-xs text-muted-foreground">
-                            {(file.size / 1024).toFixed(2)} KB
+                            {(file.fileSize / 1024).toFixed(2)} KB
                           </p>
                         </div>
                       </a>
@@ -653,7 +540,8 @@ export function AssignmentPlayer({
             <AlertDialogTitle>Submit Assignment?</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to submit this assignment? This action cannot be undone.
-              {!assignment.allowResubmission && ' You will not be able to make changes after submitting.'}
+              {assignment.maxResubmissions === null &&
+                ' You will not be able to make changes after submitting.'}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

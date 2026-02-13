@@ -4,12 +4,12 @@
  */
 
 import { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  useExamAttemptResult,
-  useExamAttemptHistory,
-  useStartExamAttempt,
-} from '@/entities/exam-attempt/hooks/useExamAttempts';
+  useAssessmentAttemptResult,
+  useMyAssessmentAttemptHistory,
+  useStartAssessmentAttempt,
+} from '@/entities/assessment-attempt';
 import { ExamResultViewer } from '@/entities/exam-attempt/ui/ExamResultViewer';
 import { AttemptHistory } from '@/entities/exam-attempt/ui/AttemptHistory';
 import { Button } from '@/shared/ui/button';
@@ -17,13 +17,27 @@ import { Badge } from '@/shared/ui/badge';
 import { useNavigation } from '@/shared/lib/navigation/useNavigation';
 
 export function ExerciseResultsPage() {
-  const { exerciseId, attemptId } = useParams<{ exerciseId: string; attemptId: string }>();
+  const { exerciseId: assessmentId, attemptId } = useParams<{ exerciseId: string; attemptId: string }>();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { updateBreadcrumbs } = useNavigation();
 
-  const { data: result, isLoading, error } = useExamAttemptResult(attemptId || '');
-  const { data: historyData } = useExamAttemptHistory(exerciseId || '');
-  const startAttemptMutation = useStartExamAttempt();
+  const enrollmentId = searchParams.get('enrollmentId') || '';
+  const learningUnitId = searchParams.get('learningUnitId') || undefined;
+  const courseId = searchParams.get('courseId') || '';
+
+  const { data: result, isLoading, error } = useAssessmentAttemptResult(assessmentId || '', attemptId || '');
+  const { data: historyData } = useMyAssessmentAttemptHistory(assessmentId || '');
+  const startAttemptMutation = useStartAssessmentAttempt(assessmentId || '');
+
+  const contextQueryString = (() => {
+    const params = new URLSearchParams();
+    if (courseId) params.set('courseId', courseId);
+    if (enrollmentId) params.set('enrollmentId', enrollmentId);
+    if (learningUnitId) params.set('learningUnitId', learningUnitId);
+    const query = params.toString();
+    return query ? `?${query}` : '';
+  })();
 
   useEffect(() => {
     if (result) {
@@ -38,13 +52,13 @@ export function ExerciseResultsPage() {
   }, [result]);
 
   const handleRetry = () => {
-    if (!exerciseId) return;
+    if (!assessmentId || !enrollmentId) return;
 
     startAttemptMutation.mutate(
-      { examId: exerciseId },
+      { enrollmentId, learningUnitId },
       {
         onSuccess: () => {
-          navigate(`/learner/exercises/${exerciseId}/take`);
+          navigate(`/learner/exercises/${assessmentId}/take${contextQueryString}`);
         },
       }
     );
@@ -151,14 +165,14 @@ export function ExerciseResultsPage() {
               <Button
                 variant="outline"
                 onClick={handleRetry}
-                disabled={startAttemptMutation.isPending}
+                disabled={startAttemptMutation.isPending || !enrollmentId}
                 data-testid="retry-exam-button"
               >
-                {startAttemptMutation.isPending ? 'Starting...' : 'Retry Exam'}
+                {startAttemptMutation.isPending ? 'Starting...' : 'Retry Assessment'}
               </Button>
             )}
             <Button
-              onClick={() => navigate(`/learner/courses/${exerciseId}`)}
+              onClick={() => navigate(courseId ? `/learner/courses/${courseId}/player` : '/learner/dashboard')}
               variant="default"
             >
               Back to Course

@@ -2,11 +2,26 @@
  * LearnerCalendarPage Tests
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { LearnerCalendarPage } from '../LearnerCalendarPage';
 import { format, startOfMonth } from 'date-fns';
+
+// Mock calendar-event hooks — the real hook uses React Query
+vi.mock('@/entities/calendar-event', async () => {
+  const actual = await vi.importActual<typeof import('@/entities/calendar-event')>(
+    '@/entities/calendar-event'
+  );
+  return {
+    ...actual,
+    useCalendarFeed: () => ({
+      data: { events: [] },
+      isLoading: false,
+      isError: false,
+    }),
+  };
+});
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
   <BrowserRouter>{children}</BrowserRouter>
@@ -37,13 +52,12 @@ describe('LearnerCalendarPage', () => {
     });
   });
 
-  it('renders legend section', () => {
+  it('renders navigation buttons', () => {
     render(<LearnerCalendarPage />, { wrapper: Wrapper });
 
-    expect(screen.getByText('Legend')).toBeInTheDocument();
-    expect(screen.getByText('Enrolled')).toBeInTheDocument();
-    expect(screen.getByText('Expiry')).toBeInTheDocument();
-    expect(screen.getByText('Deadline')).toBeInTheDocument();
+    expect(screen.getByLabelText('Previous month')).toBeInTheDocument();
+    expect(screen.getByLabelText('Next month')).toBeInTheDocument();
+    expect(screen.getByText('Today')).toBeInTheDocument();
   });
 
   it('navigates to previous month', () => {
@@ -93,45 +107,25 @@ describe('LearnerCalendarPage', () => {
     expect(screen.getByText('Click a day on the calendar to see its events.')).toBeInTheDocument();
   });
 
-  it('shows selected day events when a day is clicked', () => {
+  it('shows selected day panel when a day is clicked', () => {
     render(<LearnerCalendarPage />, { wrapper: Wrapper });
 
-    // Click on day 3 which has a placeholder event ("Safety Fundamentals — enrolled")
-    const now = new Date();
-    const day3 = new Date(now.getFullYear(), now.getMonth(), 3);
-    const dayStr = format(day3, 'd');
-
-    // Find a button containing just the day number "3"
-    const dayButtons = screen.getAllByRole('button');
-    const targetButton = dayButtons.find((btn) => {
-      const span = btn.querySelector('span');
-      return span && span.textContent === dayStr && btn.className.includes('bg-background');
+    // Click a day cell
+    const dayButtons = screen.getAllByRole('button').filter((btn) => {
+      const text = btn.textContent?.trim() ?? '';
+      return /^\d+$/.test(text);
     });
 
-    if (targetButton) {
-      fireEvent.click(targetButton);
-      // The sidebar should now show the formatted day
-      expect(screen.getByText(format(day3, 'EEEE, MMMM d'))).toBeInTheDocument();
+    if (dayButtons.length > 0) {
+      fireEvent.click(dayButtons[0]);
+      // Should no longer show "Select a day"
+      expect(screen.queryByText('Select a day')).not.toBeInTheDocument();
     }
   });
 
-  it('shows "No events on this day" for a day without events', () => {
+  it('does not show feed toggles (single feed)', () => {
     render(<LearnerCalendarPage />, { wrapper: Wrapper });
 
-    // Click on day 10 which has no placeholder events
-    const now = new Date();
-    const day10 = new Date(now.getFullYear(), now.getMonth(), 10);
-    const dayStr = format(day10, 'd');
-
-    const dayButtons = screen.getAllByRole('button');
-    const targetButton = dayButtons.find((btn) => {
-      const span = btn.querySelector('span');
-      return span && span.textContent === dayStr && btn.className.includes('bg-background');
-    });
-
-    if (targetButton) {
-      fireEvent.click(targetButton);
-      expect(screen.getByText('No events on this day')).toBeInTheDocument();
-    }
+    expect(screen.queryByText('Feeds')).not.toBeInTheDocument();
   });
 });

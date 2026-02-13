@@ -1,12 +1,12 @@
 /**
  * Assignment Entity Types
- * Types for assignment submissions and grading
+ * Aligned with API-ISS-029 assignment submission contracts
  */
 
 /**
  * Assignment submission types
  */
-export type AssignmentType = 'text' | 'file' | 'text_and_file';
+export type AssignmentSubmissionType = 'text' | 'file' | 'text_and_file';
 
 /**
  * Submission status values
@@ -14,59 +14,57 @@ export type AssignmentType = 'text' | 'file' | 'text_and_file';
 export type SubmissionStatus = 'draft' | 'submitted' | 'graded' | 'returned';
 
 /**
- * Assignment definition
+ * Assignment definition (matches API Assignment schema)
  */
 export interface Assignment {
   id: string;
+  courseId: string;
+  moduleId?: string;
   title: string;
-  description: string;
-  type: AssignmentType;
-  maxFileSize?: number; // bytes
-  allowedFileTypes?: string[]; // ['pdf', 'docx', 'jpg']
-  maxFiles?: number;
-  rubricId?: string | null;
-  dueDate?: string | null;
-  allowResubmission: boolean;
-  maxSubmissions?: number;
+  instructions: string;
+  submissionType: AssignmentSubmissionType;
+  allowedFileTypes: string[];
+  maxFileSize: number;
+  maxFiles: number;
+  maxScore: number;
+  maxResubmissions: number | null;
+  isPublished: boolean;
+  createdBy: string;
+  isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
 /**
- * File attachment in submission
+ * File attachment in submission (matches API file shape)
  */
 export interface SubmissionFile {
-  id: string;
-  name: string;
-  size: number;
-  url: string;
-  uploadedAt: string;
+  fileId: string;
+  fileName: string;
+  fileUrl: string;
+  fileSize: number;
+  mimeType: string;
 }
 
 /**
- * Grade information
- */
-export interface AssignmentGrade {
-  score: number;
-  maxScore: number;
-  feedback?: string;
-  gradedBy: string;
-  gradedAt: string;
-}
-
-/**
- * Assignment submission
+ * Assignment submission (matches API AssignmentSubmission schema)
  */
 export interface AssignmentSubmission {
   id: string;
   assignmentId: string;
   learnerId: string;
-  attemptNumber: number;
+  enrollmentId: string;
+  submissionNumber: number;
   status: SubmissionStatus;
-  textContent?: string | null;
-  files?: SubmissionFile[];
+  textContent: string | null;
+  files: SubmissionFile[];
   submittedAt: string | null;
-  grade?: AssignmentGrade | null;
+  grade: number | null;
+  feedback: string | null;
+  gradedBy: string | null;
+  gradedAt: string | null;
+  returnedAt: string | null;
+  returnReason: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -82,36 +80,56 @@ export interface ListAssignmentsParams {
   moduleId?: string;
 }
 
-export interface CreateSubmissionRequest {
-  assignmentId: string;
-  textContent?: string;
-  status?: 'draft' | 'submitted';
-}
-
-export interface UpdateSubmissionRequest {
-  textContent?: string;
-  status?: SubmissionStatus;
-}
-
-export interface SubmitAssignmentRequest {
-  submissionId: string;
-  textContent?: string;
-}
-
-export interface UploadFileRequest {
-  submissionId: string;
-  file: File;
-}
-
-export interface DeleteFileRequest {
-  submissionId: string;
-  fileId: string;
-}
-
-export interface GradeSubmissionRequest {
-  score: number;
+export interface CreateAssignmentPayload {
+  courseId: string;
+  title: string;
+  instructions: string;
+  submissionType: AssignmentSubmissionType;
   maxScore: number;
+  moduleId?: string;
+  allowedFileTypes?: string[];
+  maxFileSize?: number;
+  maxFiles?: number;
+  maxResubmissions?: number;
+}
+
+export interface UpdateAssignmentPayload {
+  title?: string;
+  instructions?: string;
+  submissionType?: AssignmentSubmissionType;
+  maxScore?: number;
+  allowedFileTypes?: string[];
+  maxFileSize?: number;
+  maxFiles?: number;
+  maxResubmissions?: number | null;
+  isPublished?: boolean;
+}
+
+export interface CreateSubmissionPayload {
+  enrollmentId: string;
+  textContent?: string;
+  files?: SubmissionFile[];
+}
+
+export interface UpdateSubmissionPayload {
+  textContent?: string;
+  files?: SubmissionFile[];
+}
+
+export interface GradeSubmissionPayload {
+  grade: number;
   feedback?: string;
+}
+
+export interface ReturnSubmissionPayload {
+  returnReason: string;
+}
+
+export interface ListSubmissionsParams {
+  learnerId?: string;
+  status?: SubmissionStatus;
+  page?: number;
+  limit?: number;
 }
 
 /**
@@ -136,22 +154,3 @@ export interface ListSubmissionsResponse {
   submissions: AssignmentSubmission[];
   pagination: PaginationMeta;
 }
-
-export interface CreateSubmissionResponse extends AssignmentSubmission {}
-
-export interface UpdateSubmissionResponse extends AssignmentSubmission {}
-
-export interface SubmitAssignmentResponse extends AssignmentSubmission {}
-
-export interface UploadFileResponse {
-  submissionId: string;
-  file: SubmissionFile;
-}
-
-export interface DeleteFileResponse {
-  submissionId: string;
-  fileId: string;
-  deleted: boolean;
-}
-
-export interface GradeSubmissionResponse extends AssignmentSubmission {}

@@ -4,30 +4,32 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  useStartExamAttempt,
-  useExamAttempt,
-  useSaveAnswer,
-  useSubmitExamAttempt,
-  useExerciseAttempts,
-} from '@/entities/exam-attempt/hooks/useExamAttempts';
+  useStartAssessmentAttempt,
+  useAssessmentAttempt,
+  useSaveAssessmentResponses,
+  useSubmitAssessmentAttempt,
+} from '@/entities/assessment-attempt';
 import { AttemptTimer } from '@/entities/exam-attempt/ui/AttemptTimer';
 import type { Answer } from '@/entities/exam-attempt/model/types';
 import { QuestionRenderer } from '@/features/exercises/ui/QuestionRenderer';
 import { QuestionNavigator } from '@/features/exercises/ui/QuestionNavigator';
 import { SubmitConfirmDialog } from '@/features/exercises/ui/SubmitConfirmDialog';
-import { useAuth } from '@/features/auth';
 import { Button } from '@/shared/ui/button';
 import { useToast } from '@/shared/ui/use-toast';
 import { useNavigation } from '@/shared/lib/navigation/useNavigation';
 
 export function ExerciseTakingPage() {
-  const { exerciseId } = useParams<{ exerciseId: string }>();
+  const { exerciseId: assessmentId } = useParams<{ exerciseId: string }>();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { updateBreadcrumbs } = useNavigation();
-  const { user } = useAuth();
+
+  const enrollmentId = searchParams.get('enrollmentId') || '';
+  const learningUnitId = searchParams.get('learningUnitId') || undefined;
+  const courseId = searchParams.get('courseId') || '';
 
   // State
   const [attemptId, setAttemptId] = useState<string | null>(null);
@@ -36,32 +38,35 @@ export function ExerciseTakingPage() {
   const [markedForReview, setMarkedForReview] = useState<Set<string>>(new Set());
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
 
-  // Pre-flight: fetch exercise attempts to check maxAttempts
-  const {
-    data: exerciseAttempts,
-    isLoading: isLoadingAttempts,
-  } = useExerciseAttempts(exerciseId || '', user?._id || '');
-
-  // Derive maxAttempts exhausted from the start response or pre-flight data
-  const startResponse = useStartExamAttempt();
-  const startAttemptMutation = startResponse;
-  const maxAttemptsFromResponse = startResponse.data?.maxAttempts ?? null;
-  const attemptCountFromHistory = exerciseAttempts?.length ?? 0;
-  const attemptsExhausted =
-    maxAttemptsFromResponse !== null
-      ? attemptCountFromHistory >= maxAttemptsFromResponse
-      : false;
+  const startAttemptMutation = useStartAssessmentAttempt(assessmentId || '');
 
   // Hooks
-  const { data: attempt, isLoading, error } = useExamAttempt(attemptId || '');
-  const saveAnswerMutation = useSaveAnswer();
-  const submitExamMutation = useSubmitExamAttempt();
+  const { data: attempt, isLoading, error } = useAssessmentAttempt(
+    assessmentId || '',
+    attemptId || ''
+  );
+  const saveAnswerMutation = useSaveAssessmentResponses(assessmentId || '');
+  const submitExamMutation = useSubmitAssessmentAttempt(assessmentId || '');
 
-  // Start exam attempt on mount (only if pre-flight check passes)
+  const contextQueryString = (() => {
+    const params = new URLSearchParams();
+    if (courseId) params.set('courseId', courseId);
+    if (enrollmentId) params.set('enrollmentId', enrollmentId);
+    if (learningUnitId) params.set('learningUnitId', learningUnitId);
+    const query = params.toString();
+    return query ? `?${query}` : '';
+  })();
+
+  // Start assessment attempt on mount
   useEffect(() => {
-    if (exerciseId && !attemptId && !startAttemptMutation.isPending && !isLoadingAttempts && !attemptsExhausted) {
+    if (
+      assessmentId &&
+      enrollmentId &&
+      !attemptId &&
+      !startAttemptMutation.isPending
+    ) {
       startAttemptMutation.mutate(
-        { examId: exerciseId },
+        { enrollmentId, learningUnitId },
         {
           onSuccess: (data) => {
             setAttemptId(data.id);
@@ -76,7 +81,7 @@ export function ExerciseTakingPage() {
         }
       );
     }
-  }, [exerciseId, attemptId, startAttemptMutation, toast, isLoadingAttempts, attemptsExhausted]);
+  }, [assessmentId, enrollmentId, learningUnitId, attemptId, startAttemptMutation, toast]);
 
   // Update breadcrumbs
   useEffect(() => {
@@ -95,6 +100,7 @@ export function ExerciseTakingPage() {
     if (attempt && attempt.remainingTime === 0 && attempt.status === 'in_progress') {
       handleSubmitExam();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [attempt?.remainingTime, attempt?.status]);
 
   // Handlers
@@ -111,7 +117,14 @@ export function ExerciseTakingPage() {
       // Auto-save with debouncing
       saveAnswerMutation.mutateDebounced({
         attemptId,
-        answers: [answer],
+        data: {
+          responses: [
+            {
+              questionId: answer.questionId,
+              response: answer.answer,
+            },
+          ],
+        },
       });
     },
     [attemptId, saveAnswerMutation]
@@ -163,7 +176,7 @@ export function ExerciseTakingPage() {
             title: 'Exam Submitted',
             description: 'Your exam has been submitted successfully.',
           });
-          navigate(`/learner/exercises/${exerciseId}/results/${attemptId}`);
+          navigate(`/learner/exercises/${assessmentId}/results/${attemptId}${contextQueryString}`);
         },
         onError: (err) => {
           toast({
@@ -176,24 +189,27 @@ export function ExerciseTakingPage() {
     );
   };
 
-  // Attempts exhausted state
-  if (attemptsExhausted && !attemptId) {
+  if (!assessmentId) {
     return (
-      <div className="flex items-center justify-center min-h-screen" data-testid="attempts-exhausted">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="text-center max-w-md">
-          <div className="mb-4 text-amber-600">
-            <svg className="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </div>
-          <h2 className="text-xl font-bold text-foreground mb-2">No Attempts Remaining</h2>
+          <h2 className="text-xl font-bold text-foreground mb-2">Assessment Not Found</h2>
           <p className="text-muted-foreground mb-4">
-            You have used all {maxAttemptsFromResponse} attempts for this exercise.
-            Please contact your instructor if you need additional attempts.
+            Missing assessment identifier in route.
+          </p>
+          <Button onClick={() => navigate('/learner/dashboard')}>Back to Dashboard</Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!enrollmentId) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center max-w-md">
+          <h2 className="text-xl font-bold text-foreground mb-2">Launch Context Missing</h2>
+          <p className="text-muted-foreground mb-4">
+            This assessment requires an enrollment context. Launch it from the course player.
           </p>
           <Button onClick={() => navigate('/learner/dashboard')}>Back to Dashboard</Button>
         </div>
@@ -202,7 +218,7 @@ export function ExerciseTakingPage() {
   }
 
   // Loading state
-  if (isLoading || isLoadingAttempts || startAttemptMutation.isPending) {
+  if (isLoading || startAttemptMutation.isPending) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -260,7 +276,7 @@ export function ExerciseTakingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-foreground">{attempt.examTitle}</h1>
+              <h1 className="text-2xl font-bold text-foreground">{attempt.examTitle || 'Assessment'}</h1>
               <p className="text-sm text-muted-foreground mt-1">
                 Attempt #{attempt.attemptNumber} | Question {currentQuestionIndex + 1} of{' '}
                 {attempt.questions.length}

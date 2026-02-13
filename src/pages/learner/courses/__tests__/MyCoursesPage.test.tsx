@@ -111,6 +111,22 @@ describe('MyCoursesPage', () => {
       expect(screen.getByText(/My Courses/i)).toBeInTheDocument();
     });
 
+    it('should call useMyEnrollments with type course filter', () => {
+      vi.mocked(useMyEnrollments).mockReturnValue(
+        createMockQueryResult(
+          { enrollments: [], pagination: { page: 1, total: 0, limit: 12, totalPages: 0, hasNext: false, hasPrev: false } },
+          false,
+          null
+        )
+      );
+
+      render(<MyCoursesPage />, { wrapper: createWrapper() });
+
+      expect(useMyEnrollments).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'course' })
+      );
+    });
+
     it('should render search bar', () => {
       
       vi.mocked(useMyEnrollments).mockReturnValue(

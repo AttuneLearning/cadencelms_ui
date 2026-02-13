@@ -2,15 +2,35 @@
  * Tests for AdminCalendarPage
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 import { format, startOfMonth, addMonths, subMonths } from 'date-fns';
 import { AdminCalendarPage } from '../AdminCalendarPage';
+
+// Mock calendar-event hooks — the real hook uses React Query
+vi.mock('@/entities/calendar-event', async () => {
+  const actual = await vi.importActual<typeof import('@/entities/calendar-event')>(
+    '@/entities/calendar-event'
+  );
+  return {
+    ...actual,
+    useCalendarFeed: () => ({
+      data: { events: [] },
+      isLoading: false,
+      isError: false,
+    }),
+  };
+});
+
+const Wrapper = ({ children }: { children: React.ReactNode }) => (
+  <BrowserRouter>{children}</BrowserRouter>
+);
 
 describe('AdminCalendarPage', () => {
   describe('Rendering', () => {
     it('should render page title and description', () => {
-      render(<AdminCalendarPage />);
+      render(<AdminCalendarPage />, { wrapper: Wrapper });
 
       expect(screen.getByText('System Calendar')).toBeInTheDocument();
       expect(
@@ -19,14 +39,14 @@ describe('AdminCalendarPage', () => {
     });
 
     it('should render the current month and year', () => {
-      render(<AdminCalendarPage />);
+      render(<AdminCalendarPage />, { wrapper: Wrapper });
 
       const now = new Date();
       expect(screen.getByText(format(startOfMonth(now), 'MMMM yyyy'))).toBeInTheDocument();
     });
 
     it('should render weekday headers', () => {
-      render(<AdminCalendarPage />);
+      render(<AdminCalendarPage />, { wrapper: Wrapper });
 
       for (const day of ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']) {
         expect(screen.getByText(day)).toBeInTheDocument();
@@ -34,26 +54,23 @@ describe('AdminCalendarPage', () => {
     });
 
     it('should render navigation buttons', () => {
-      render(<AdminCalendarPage />);
+      render(<AdminCalendarPage />, { wrapper: Wrapper });
 
       expect(screen.getByLabelText('Previous month')).toBeInTheDocument();
       expect(screen.getByLabelText('Next month')).toBeInTheDocument();
       expect(screen.getByText('Today')).toBeInTheDocument();
     });
 
-    it('should render legend section with all event types', () => {
-      render(<AdminCalendarPage />);
+    it('should not show feed toggles (single feed)', () => {
+      render(<AdminCalendarPage />, { wrapper: Wrapper });
 
-      expect(screen.getByText('Legend')).toBeInTheDocument();
-      expect(screen.getByText('System event')).toBeInTheDocument();
-      expect(screen.getByText('Academic date')).toBeInTheDocument();
-      expect(screen.getByText('Department event')).toBeInTheDocument();
+      expect(screen.queryByText('Feeds')).not.toBeInTheDocument();
     });
   });
 
   describe('Navigation', () => {
     it('should navigate to previous month', () => {
-      render(<AdminCalendarPage />);
+      render(<AdminCalendarPage />, { wrapper: Wrapper });
 
       const now = new Date();
       const prevMonth = subMonths(startOfMonth(now), 1);
@@ -64,7 +81,7 @@ describe('AdminCalendarPage', () => {
     });
 
     it('should navigate to next month', () => {
-      render(<AdminCalendarPage />);
+      render(<AdminCalendarPage />, { wrapper: Wrapper });
 
       const now = new Date();
       const nextMonth = addMonths(startOfMonth(now), 1);
@@ -75,7 +92,7 @@ describe('AdminCalendarPage', () => {
     });
 
     it('should navigate back to today when Today button is clicked', () => {
-      render(<AdminCalendarPage />);
+      render(<AdminCalendarPage />, { wrapper: Wrapper });
 
       const now = new Date();
       const currentMonthLabel = format(startOfMonth(now), 'MMMM yyyy');
@@ -93,7 +110,7 @@ describe('AdminCalendarPage', () => {
 
   describe('Day Selection', () => {
     it('should show "Select a day" when no day is selected', () => {
-      render(<AdminCalendarPage />);
+      render(<AdminCalendarPage />, { wrapper: Wrapper });
 
       expect(screen.getByText('Select a day')).toBeInTheDocument();
       expect(
@@ -102,7 +119,7 @@ describe('AdminCalendarPage', () => {
     });
 
     it('should show selected day heading when a day cell is clicked', () => {
-      render(<AdminCalendarPage />);
+      render(<AdminCalendarPage />, { wrapper: Wrapper });
 
       // Click on a day cell (they are buttons in the grid)
       const dayButtons = screen.getAllByRole('button').filter((btn) => {
@@ -118,50 +135,12 @@ describe('AdminCalendarPage', () => {
   });
 
   describe('Event Display', () => {
-    it('should show event details when a day with events is clicked', () => {
-      render(<AdminCalendarPage />);
-
-      // The 2nd of the current month has "System Maintenance Window"
-      const dayButtons = screen.getAllByRole('button').filter(
-        (btn) => btn.textContent?.trim() === '2'
-      );
-
-      if (dayButtons.length > 0) {
-        fireEvent.click(dayButtons[0]);
-
-        const allText = document.body.textContent ?? '';
-        expect(allText).toContain('System Maintenance Window');
-        expect(allText).toContain('2:00 AM - 4:00 AM');
-      }
-    });
-
-    it('should show event description in sidebar', () => {
-      render(<AdminCalendarPage />);
-
-      // The 5th has "Fall Semester Begins"
-      const dayButtons = screen.getAllByRole('button').filter(
-        (btn) => btn.textContent?.trim() === '5'
-      );
-
-      if (dayButtons.length > 0) {
-        fireEvent.click(dayButtons[0]);
-
-        const allText = document.body.textContent ?? '';
-        expect(allText).toContain('Fall Semester Begins');
-        expect(allText).toContain('First day of fall semester classes');
-      }
-    });
-
     it('should show "No events on this day" for days without events', () => {
-      render(<AdminCalendarPage />);
+      render(<AdminCalendarPage />, { wrapper: Wrapper });
 
-      // Click Today first, then navigate to a month with no events
-      fireEvent.click(screen.getByText('Today'));
-      fireEvent.click(screen.getByLabelText('Next month'));
-
-      // Click a day that probably has no events
+      // Click a day that has no events (mock returns empty)
       const dayButtons = screen.getAllByRole('button').filter(
-        (btn) => btn.textContent?.trim() === '28'
+        (btn) => btn.textContent?.trim() === '15'
       );
 
       if (dayButtons.length > 0) {

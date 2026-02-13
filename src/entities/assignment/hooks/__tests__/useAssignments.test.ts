@@ -1,5 +1,6 @@
 /**
  * Tests for Assignment React Query Hooks
+ * Updated for API-ISS-029 contract alignment
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -12,13 +13,13 @@ import {
   useAssignments,
   useAssignment,
   useSubmissions,
-  useMySubmissions,
   useSubmission,
+  useCreateAssignment,
   useCreateSubmission,
   useUpdateSubmission,
-  useSubmitAssignment,
-  useDeleteSubmission,
+  useSubmitSubmission,
   useGradeSubmission,
+  useReturnSubmission,
 } from '../useAssignments';
 import type {
   Assignment,
@@ -38,14 +39,21 @@ describe('Assignment Hooks', () => {
     vi.restoreAllMocks();
   });
 
-  // Mock data
+  // Mock data aligned with API-ISS-029 contract
   const mockAssignment: Assignment = {
     id: 'assign-1',
+    courseId: 'course-1',
     title: 'Week 1 Essay',
-    description: 'Write a 500-word essay on the topic.',
-    type: 'text',
-    allowResubmission: true,
-    maxSubmissions: 3,
+    instructions: 'Write a 500-word essay on the topic.',
+    submissionType: 'text',
+    allowedFileTypes: ['pdf', 'docx'],
+    maxFileSize: 10485760,
+    maxFiles: 5,
+    maxScore: 100,
+    maxResubmissions: 2,
+    isPublished: true,
+    createdBy: 'instructor-1',
+    isDeleted: false,
     createdAt: '2026-02-01T00:00:00Z',
     updatedAt: '2026-02-01T00:00:00Z',
   };
@@ -54,10 +62,18 @@ describe('Assignment Hooks', () => {
     id: 'sub-1',
     assignmentId: 'assign-1',
     learnerId: 'user-1',
-    attemptNumber: 1,
+    enrollmentId: 'enroll-1',
+    submissionNumber: 1,
     status: 'draft',
     textContent: 'My essay draft...',
+    files: [],
     submittedAt: null,
+    grade: null,
+    feedback: null,
+    gradedBy: null,
+    gradedAt: null,
+    returnedAt: null,
+    returnReason: null,
     createdAt: '2026-02-08T10:00:00Z',
     updatedAt: '2026-02-08T10:00:00Z',
   };
@@ -211,31 +227,10 @@ describe('Assignment Hooks', () => {
     });
   });
 
-  describe('useMySubmissions', () => {
-    it('should fetch my submissions for an assignment', async () => {
-      server.use(
-        http.get(`${baseUrl}/assignments/assign-1/my-submissions`, () => {
-          return HttpResponse.json({
-            success: true,
-            data: { submissions: [mockSubmission] },
-          });
-        })
-      );
-
-      const { result } = renderHook(() => useMySubmissions('assign-1'));
-
-      await waitFor(() => {
-        expect(result.current.isSuccess).toBe(true);
-      });
-
-      expect(result.current.data).toHaveLength(1);
-    });
-  });
-
   describe('useSubmission', () => {
     it('should fetch a single submission by id', async () => {
       server.use(
-        http.get(`${baseUrl}/assignment-submissions/sub-1`, () => {
+        http.get(`${baseUrl}/submissions/sub-1`, () => {
           return HttpResponse.json({
             success: true,
             data: mockSubmission,
@@ -264,10 +259,41 @@ describe('Assignment Hooks', () => {
   // MUTATION HOOKS
   // =====================
 
+  describe('useCreateAssignment', () => {
+    it('should create a new assignment', async () => {
+      server.use(
+        http.post(`${baseUrl}/assignments`, () => {
+          return HttpResponse.json({
+            success: true,
+            data: mockAssignment,
+          });
+        })
+      );
+
+      const { result } = renderHook(() => useCreateAssignment());
+
+      act(() => {
+        result.current.mutate({
+          courseId: 'course-1',
+          title: 'Week 1 Essay',
+          instructions: 'Write a 500-word essay on the topic.',
+          submissionType: 'text',
+          maxScore: 100,
+        });
+      });
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(result.current.data).toEqual(mockAssignment);
+    });
+  });
+
   describe('useCreateSubmission', () => {
     it('should create a new submission', async () => {
       server.use(
-        http.post(`${baseUrl}/assignment-submissions`, () => {
+        http.post(`${baseUrl}/assignments/assign-1/submissions`, () => {
           return HttpResponse.json({
             success: true,
             data: mockSubmission,
@@ -280,7 +306,10 @@ describe('Assignment Hooks', () => {
       act(() => {
         result.current.mutate({
           assignmentId: 'assign-1',
-          textContent: 'My essay draft...',
+          data: {
+            enrollmentId: 'enroll-1',
+            textContent: 'My essay draft...',
+          },
         });
       });
 
@@ -297,7 +326,7 @@ describe('Assignment Hooks', () => {
       const updatedSubmission = { ...mockSubmission, textContent: 'Updated draft' };
 
       server.use(
-        http.patch(`${baseUrl}/assignment-submissions/sub-1`, () => {
+        http.put(`${baseUrl}/submissions/sub-1`, () => {
           return HttpResponse.json({
             success: true,
             data: updatedSubmission,
@@ -322,10 +351,10 @@ describe('Assignment Hooks', () => {
     });
   });
 
-  describe('useSubmitAssignment', () => {
-    it('should submit an assignment', async () => {
+  describe('useSubmitSubmission', () => {
+    it('should submit a submission', async () => {
       server.use(
-        http.post(`${baseUrl}/assignment-submissions/sub-1/submit`, () => {
+        http.post(`${baseUrl}/submissions/sub-1/submit`, () => {
           return HttpResponse.json({
             success: true,
             data: mockSubmittedSubmission,
@@ -333,13 +362,10 @@ describe('Assignment Hooks', () => {
         })
       );
 
-      const { result } = renderHook(() => useSubmitAssignment());
+      const { result } = renderHook(() => useSubmitSubmission());
 
       act(() => {
-        result.current.mutate({
-          submissionId: 'sub-1',
-          textContent: 'My final essay.',
-        });
+        result.current.mutate('sub-1');
       });
 
       await waitFor(() => {
@@ -355,17 +381,14 @@ describe('Assignment Hooks', () => {
       const gradedSubmission: AssignmentSubmission = {
         ...mockSubmittedSubmission,
         status: 'graded',
-        grade: {
-          score: 85,
-          maxScore: 100,
-          feedback: 'Good work!',
-          gradedBy: 'instructor-1',
-          gradedAt: '2026-02-09T10:00:00Z',
-        },
+        grade: 85,
+        feedback: 'Good work!',
+        gradedBy: 'instructor-1',
+        gradedAt: '2026-02-09T10:00:00Z',
       };
 
       server.use(
-        http.post(`${baseUrl}/assignment-submissions/sub-2/grade`, () => {
+        http.post(`${baseUrl}/submissions/sub-2/grade`, () => {
           return HttpResponse.json({
             success: true,
             data: gradedSubmission,
@@ -377,8 +400,8 @@ describe('Assignment Hooks', () => {
 
       act(() => {
         result.current.mutate({
-          submissionId: 'sub-2',
-          data: { score: 85, maxScore: 100, feedback: 'Good work!' },
+          id: 'sub-2',
+          data: { grade: 85, feedback: 'Good work!' },
         });
       });
 
@@ -387,30 +410,43 @@ describe('Assignment Hooks', () => {
       });
 
       expect(result.current.data?.status).toBe('graded');
-      expect(result.current.data?.grade?.score).toBe(85);
+      expect(result.current.data?.grade).toBe(85);
     });
   });
 
-  describe('useDeleteSubmission', () => {
-    it('should delete a submission', async () => {
+  describe('useReturnSubmission', () => {
+    it('should return a submission for resubmission', async () => {
+      const returnedSubmission: AssignmentSubmission = {
+        ...mockSubmittedSubmission,
+        status: 'returned',
+        returnedAt: '2026-02-09T11:00:00Z',
+        returnReason: 'Please add more detail to section 2.',
+      };
+
       server.use(
-        http.delete(`${baseUrl}/assignment-submissions/sub-1`, () => {
+        http.post(`${baseUrl}/submissions/sub-2/return`, () => {
           return HttpResponse.json({
             success: true,
-            data: { id: 'sub-1', deleted: true },
+            data: returnedSubmission,
           });
         })
       );
 
-      const { result } = renderHook(() => useDeleteSubmission());
+      const { result } = renderHook(() => useReturnSubmission());
 
       act(() => {
-        result.current.mutate('sub-1');
+        result.current.mutate({
+          id: 'sub-2',
+          data: { returnReason: 'Please add more detail to section 2.' },
+        });
       });
 
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);
       });
+
+      expect(result.current.data?.status).toBe('returned');
+      expect(result.current.data?.returnReason).toBe('Please add more detail to section 2.');
     });
   });
 });

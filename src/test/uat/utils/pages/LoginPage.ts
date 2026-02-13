@@ -19,7 +19,7 @@ export class LoginPage {
     this.emailInput = page.locator('[data-testid="email-input"], input[type="email"], input[name="email"]');
     this.passwordInput = page.locator('[data-testid="password-input"], input[type="password"], input[name="password"]');
     this.loginButton = page.locator('[data-testid="login-button"], button[type="submit"]');
-    this.errorMessage = page.locator('[data-testid="login-error"], [role="alert"], .error-message');
+    this.errorMessage = page.locator('[data-testid="login-error"], [role="alert"], .error-message, .bg-red-50');
     this.forgotPasswordLink = page.locator('[data-testid="forgot-password"], a:has-text("Forgot")');
   }
 

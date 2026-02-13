@@ -217,9 +217,13 @@ client.interceptors.response.use(
         try {
           // Attempt to refresh the token
           const refreshToken = getRefreshToken();
-          const refreshPayload = refreshToken?.value
-            ? { refreshToken: refreshToken.value }
-            : {};
+
+          // No refresh token available — can't refresh, fail immediately
+          if (!refreshToken?.value) {
+            throw new ApiClientError('No refresh token available', 401, 'NO_REFRESH_TOKEN');
+          }
+
+          const refreshPayload = { refreshToken: refreshToken.value };
 
           const response = await axios.post(
             `${env.apiFullUrl}/auth/refresh`,
@@ -254,16 +258,20 @@ client.interceptors.response.use(
           clearAuthStorage();
 
           // Redirect to auth-error page for debugging (skip in test environment)
-          // Previously redirected to /login which made debugging auth issues difficult
+          // Skip redirect when already on a public page to prevent boot loops
           if (typeof window !== 'undefined' && env.environment !== 'test') {
-            const delayMs = getAuthRedirectDelayMs();
-            const target = '/auth-error?reason=token-refresh-failed';
-            if (delayMs > 0) {
-              console.warn(`[API Client] Redirecting to ${target} in ${delayMs}ms (debug delay).`);
+            const currentPath = window.location.pathname;
+            const publicPaths = ['/login', '/auth-error', '/', '/unauthorized', '/404'];
+            if (!publicPaths.includes(currentPath)) {
+              const delayMs = getAuthRedirectDelayMs();
+              const target = '/auth-error?reason=token-refresh-failed';
+              if (delayMs > 0) {
+                console.warn(`[API Client] Redirecting to ${target} in ${delayMs}ms (debug delay).`);
+              }
+              window.setTimeout(() => {
+                window.location.href = target;
+              }, delayMs);
             }
-            window.setTimeout(() => {
-              window.location.href = target;
-            }, delayMs);
           }
 
           return Promise.reject(

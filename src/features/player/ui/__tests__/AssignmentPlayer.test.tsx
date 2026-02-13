@@ -1,5 +1,6 @@
 /**
  * AssignmentPlayer Component Tests
+ * Aligned with API-ISS-029 assignment contracts
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -29,34 +30,54 @@ const createWrapper = () => {
 
 const mockTextAssignment: Assignment = {
   id: 'assignment-1',
+  courseId: 'course-1',
   title: 'Essay Assignment',
-  description: '<p>Write an essay about testing</p>',
-  type: 'text',
-  allowResubmission: false,
+  instructions: '<p>Write an essay about testing</p>',
+  submissionType: 'text',
+  allowedFileTypes: [],
+  maxFileSize: 0,
+  maxFiles: 0,
+  maxScore: 100,
+  maxResubmissions: null,
+  isPublished: true,
+  createdBy: 'instructor-1',
+  isDeleted: false,
   createdAt: '2024-01-01T00:00:00Z',
   updatedAt: '2024-01-01T00:00:00Z',
 };
 
 const mockFileAssignment: Assignment = {
   id: 'assignment-2',
+  courseId: 'course-1',
   title: 'File Upload Assignment',
-  description: '<p>Upload your project files</p>',
-  type: 'file',
+  instructions: '<p>Upload your project files</p>',
+  submissionType: 'file',
   maxFileSize: 5 * 1024 * 1024, // 5MB
   allowedFileTypes: ['pdf', 'docx'],
   maxFiles: 3,
-  allowResubmission: false,
+  maxScore: 100,
+  maxResubmissions: null,
+  isPublished: true,
+  createdBy: 'instructor-1',
+  isDeleted: false,
   createdAt: '2024-01-01T00:00:00Z',
   updatedAt: '2024-01-01T00:00:00Z',
 };
 
 const mockTextAndFileAssignment: Assignment = {
   id: 'assignment-3',
+  courseId: 'course-1',
   title: 'Combined Assignment',
-  description: '<p>Submit text and files</p>',
-  type: 'text_and_file',
-  allowResubmission: true,
-  maxSubmissions: 3,
+  instructions: '<p>Submit text and files</p>',
+  submissionType: 'text_and_file',
+  allowedFileTypes: [],
+  maxFileSize: 0,
+  maxFiles: 0,
+  maxScore: 100,
+  maxResubmissions: 2,
+  isPublished: true,
+  createdBy: 'instructor-1',
+  isDeleted: false,
   createdAt: '2024-01-01T00:00:00Z',
   updatedAt: '2024-01-01T00:00:00Z',
 };
@@ -65,10 +86,18 @@ const mockDraftSubmission: AssignmentSubmission = {
   id: 'submission-1',
   assignmentId: 'assignment-1',
   learnerId: 'learner-1',
-  attemptNumber: 1,
+  enrollmentId: 'enroll-1',
+  submissionNumber: 1,
   status: 'draft',
   textContent: 'Draft content',
+  files: [],
   submittedAt: null,
+  grade: null,
+  feedback: null,
+  gradedBy: null,
+  gradedAt: null,
+  returnedAt: null,
+  returnReason: null,
   createdAt: '2024-01-02T00:00:00Z',
   updatedAt: '2024-01-02T00:00:00Z',
 };
@@ -77,10 +106,18 @@ const mockSubmittedSubmission: AssignmentSubmission = {
   id: 'submission-2',
   assignmentId: 'assignment-1',
   learnerId: 'learner-1',
-  attemptNumber: 1,
+  enrollmentId: 'enroll-1',
+  submissionNumber: 1,
   status: 'submitted',
   textContent: 'Final submission',
+  files: [],
   submittedAt: '2024-01-03T00:00:00Z',
+  grade: null,
+  feedback: null,
+  gradedBy: null,
+  gradedAt: null,
+  returnedAt: null,
+  returnReason: null,
   createdAt: '2024-01-02T00:00:00Z',
   updatedAt: '2024-01-03T00:00:00Z',
 };
@@ -89,17 +126,18 @@ const mockGradedSubmission: AssignmentSubmission = {
   id: 'submission-3',
   assignmentId: 'assignment-1',
   learnerId: 'learner-1',
-  attemptNumber: 1,
+  enrollmentId: 'enroll-1',
+  submissionNumber: 1,
   status: 'graded',
   textContent: 'Final submission',
+  files: [],
   submittedAt: '2024-01-03T00:00:00Z',
-  grade: {
-    score: 85,
-    maxScore: 100,
-    feedback: 'Great work!',
-    gradedBy: 'instructor-1',
-    gradedAt: '2024-01-04T00:00:00Z',
-  },
+  grade: 85,
+  feedback: 'Great work!',
+  gradedBy: 'instructor-1',
+  gradedAt: '2024-01-04T00:00:00Z',
+  returnedAt: null,
+  returnReason: null,
   createdAt: '2024-01-02T00:00:00Z',
   updatedAt: '2024-01-04T00:00:00Z',
 };
@@ -119,17 +157,7 @@ describe('AssignmentPlayer', () => {
       isPending: false,
     } as any);
 
-    vi.spyOn(assignmentHooks, 'useSubmitAssignment').mockReturnValue({
-      mutate: vi.fn(),
-      isPending: false,
-    } as any);
-
-    vi.spyOn(assignmentHooks, 'useUploadFile').mockReturnValue({
-      mutate: vi.fn(),
-      isPending: false,
-    } as any);
-
-    vi.spyOn(assignmentHooks, 'useDeleteFile').mockReturnValue({
+    vi.spyOn(assignmentHooks, 'useSubmitSubmission').mockReturnValue({
       mutate: vi.fn(),
       isPending: false,
     } as any);
@@ -141,9 +169,9 @@ describe('AssignmentPlayer', () => {
   });
 
   describe('Text Assignment', () => {
-    it('renders assignment description', () => {
-      vi.spyOn(assignmentHooks, 'useMySubmissions').mockReturnValue({
-        data: [],
+    it('renders assignment instructions', () => {
+      vi.spyOn(assignmentHooks, 'useSubmissions').mockReturnValue({
+        data: { submissions: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0, hasNext: false, hasPrev: false } },
         isLoading: false,
       } as any);
 
@@ -157,8 +185,8 @@ describe('AssignmentPlayer', () => {
     });
 
     it('shows text area for text assignments', () => {
-      vi.spyOn(assignmentHooks, 'useMySubmissions').mockReturnValue({
-        data: [],
+      vi.spyOn(assignmentHooks, 'useSubmissions').mockReturnValue({
+        data: { submissions: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0, hasNext: false, hasPrev: false } },
         isLoading: false,
       } as any);
 
@@ -171,8 +199,8 @@ describe('AssignmentPlayer', () => {
     });
 
     it('loads existing draft content', () => {
-      vi.spyOn(assignmentHooks, 'useMySubmissions').mockReturnValue({
-        data: [mockDraftSubmission],
+      vi.spyOn(assignmentHooks, 'useSubmissions').mockReturnValue({
+        data: { submissions: [mockDraftSubmission], pagination: { page: 1, limit: 20, total: 1, totalPages: 1, hasNext: false, hasPrev: false } },
         isLoading: false,
       } as any);
 
@@ -186,8 +214,8 @@ describe('AssignmentPlayer', () => {
 
     it('enables save draft button when text is changed', async () => {
       const user = userEvent.setup();
-      vi.spyOn(assignmentHooks, 'useMySubmissions').mockReturnValue({
-        data: [],
+      vi.spyOn(assignmentHooks, 'useSubmissions').mockReturnValue({
+        data: { submissions: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0, hasNext: false, hasPrev: false } },
         isLoading: false,
       } as any);
 
@@ -204,8 +232,8 @@ describe('AssignmentPlayer', () => {
     });
 
     it('shows submit button', () => {
-      vi.spyOn(assignmentHooks, 'useMySubmissions').mockReturnValue({
-        data: [],
+      vi.spyOn(assignmentHooks, 'useSubmissions').mockReturnValue({
+        data: { submissions: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0, hasNext: false, hasPrev: false } },
         isLoading: false,
       } as any);
 
@@ -220,8 +248,8 @@ describe('AssignmentPlayer', () => {
 
   describe('File Assignment', () => {
     it('shows file upload for file assignments', () => {
-      vi.spyOn(assignmentHooks, 'useMySubmissions').mockReturnValue({
-        data: [],
+      vi.spyOn(assignmentHooks, 'useSubmissions').mockReturnValue({
+        data: { submissions: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0, hasNext: false, hasPrev: false } },
         isLoading: false,
       } as any);
 
@@ -236,8 +264,8 @@ describe('AssignmentPlayer', () => {
     });
 
     it('does not show text area for file-only assignments', () => {
-      vi.spyOn(assignmentHooks, 'useMySubmissions').mockReturnValue({
-        data: [],
+      vi.spyOn(assignmentHooks, 'useSubmissions').mockReturnValue({
+        data: { submissions: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0, hasNext: false, hasPrev: false } },
         isLoading: false,
       } as any);
 
@@ -252,8 +280,8 @@ describe('AssignmentPlayer', () => {
 
   describe('Text and File Assignment', () => {
     it('shows both text area and file upload', () => {
-      vi.spyOn(assignmentHooks, 'useMySubmissions').mockReturnValue({
-        data: [],
+      vi.spyOn(assignmentHooks, 'useSubmissions').mockReturnValue({
+        data: { submissions: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0, hasNext: false, hasPrev: false } },
         isLoading: false,
       } as any);
 
@@ -269,8 +297,8 @@ describe('AssignmentPlayer', () => {
 
   describe('Submitted Assignment', () => {
     it('shows submitted status', () => {
-      vi.spyOn(assignmentHooks, 'useMySubmissions').mockReturnValue({
-        data: [mockSubmittedSubmission],
+      vi.spyOn(assignmentHooks, 'useSubmissions').mockReturnValue({
+        data: { submissions: [mockSubmittedSubmission], pagination: { page: 1, limit: 20, total: 1, totalPages: 1, hasNext: false, hasPrev: false } },
         isLoading: false,
       } as any);
 
@@ -284,8 +312,8 @@ describe('AssignmentPlayer', () => {
     });
 
     it('displays submitted content', () => {
-      vi.spyOn(assignmentHooks, 'useMySubmissions').mockReturnValue({
-        data: [mockSubmittedSubmission],
+      vi.spyOn(assignmentHooks, 'useSubmissions').mockReturnValue({
+        data: { submissions: [mockSubmittedSubmission], pagination: { page: 1, limit: 20, total: 1, totalPages: 1, hasNext: false, hasPrev: false } },
         isLoading: false,
       } as any);
 
@@ -301,8 +329,8 @@ describe('AssignmentPlayer', () => {
 
   describe('Graded Assignment', () => {
     it('shows grade when graded', () => {
-      vi.spyOn(assignmentHooks, 'useMySubmissions').mockReturnValue({
-        data: [mockGradedSubmission],
+      vi.spyOn(assignmentHooks, 'useSubmissions').mockReturnValue({
+        data: { submissions: [mockGradedSubmission], pagination: { page: 1, limit: 20, total: 1, totalPages: 1, hasNext: false, hasPrev: false } },
         isLoading: false,
       } as any);
 
@@ -317,8 +345,8 @@ describe('AssignmentPlayer', () => {
     });
 
     it('shows feedback when available', () => {
-      vi.spyOn(assignmentHooks, 'useMySubmissions').mockReturnValue({
-        data: [mockGradedSubmission],
+      vi.spyOn(assignmentHooks, 'useSubmissions').mockReturnValue({
+        data: { submissions: [mockGradedSubmission], pagination: { page: 1, limit: 20, total: 1, totalPages: 1, hasNext: false, hasPrev: false } },
         isLoading: false,
       } as any);
 
@@ -337,11 +365,11 @@ describe('AssignmentPlayer', () => {
       const submittedWithResubmit: AssignmentSubmission = {
         ...mockSubmittedSubmission,
         assignmentId: 'assignment-3',
-        attemptNumber: 1,
+        submissionNumber: 1,
       };
 
-      vi.spyOn(assignmentHooks, 'useMySubmissions').mockReturnValue({
-        data: [submittedWithResubmit],
+      vi.spyOn(assignmentHooks, 'useSubmissions').mockReturnValue({
+        data: { submissions: [submittedWithResubmit], pagination: { page: 1, limit: 20, total: 1, totalPages: 1, hasNext: false, hasPrev: false } },
         isLoading: false,
       } as any);
 
@@ -351,13 +379,13 @@ describe('AssignmentPlayer', () => {
       );
 
       expect(screen.getByText('Resubmission Available')).toBeInTheDocument();
-      expect(screen.getByText('Attempt 1 of 3')).toBeInTheDocument();
+      expect(screen.getByText('Submission 1 of 3')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /start resubmission/i })).toBeInTheDocument();
     });
 
     it('does not show resubmission when not allowed', () => {
-      vi.spyOn(assignmentHooks, 'useMySubmissions').mockReturnValue({
-        data: [mockSubmittedSubmission],
+      vi.spyOn(assignmentHooks, 'useSubmissions').mockReturnValue({
+        data: { submissions: [mockSubmittedSubmission], pagination: { page: 1, limit: 20, total: 1, totalPages: 1, hasNext: false, hasPrev: false } },
         isLoading: false,
       } as any);
 
@@ -372,7 +400,7 @@ describe('AssignmentPlayer', () => {
 
   describe('Loading State', () => {
     it('shows loading spinner while fetching submissions', () => {
-      vi.spyOn(assignmentHooks, 'useMySubmissions').mockReturnValue({
+      vi.spyOn(assignmentHooks, 'useSubmissions').mockReturnValue({
         data: undefined,
         isLoading: true,
       } as any);
@@ -389,8 +417,8 @@ describe('AssignmentPlayer', () => {
   describe('Submit Confirmation', () => {
     it('shows confirmation dialog when submit is clicked', async () => {
       const user = userEvent.setup();
-      vi.spyOn(assignmentHooks, 'useMySubmissions').mockReturnValue({
-        data: [],
+      vi.spyOn(assignmentHooks, 'useSubmissions').mockReturnValue({
+        data: { submissions: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0, hasNext: false, hasPrev: false } },
         isLoading: false,
       } as any);
 

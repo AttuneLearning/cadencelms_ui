@@ -79,6 +79,7 @@ const MyCoursesPageInner: React.FC = () => {
   };
 
   const { data, isLoading, error } = useMyEnrollments({
+    type: 'course',
     status: getApiStatus(),
     sort: sortBy,
     page: currentPage,

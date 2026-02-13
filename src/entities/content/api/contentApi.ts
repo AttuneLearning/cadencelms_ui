@@ -64,10 +64,7 @@ export async function getContent(id: string): Promise<Content> {
   const response = await client.get<ApiResponse<Content>>(
     `/content/${id}`
   );
-  const result = response.data.data;
-  // API wraps response in extra { data: ... } — unwrap if needed
-  const raw = result as unknown as Record<string, unknown>;
-  return raw?.data ? (raw.data as Content) : result;
+  return response.data.data;
 }
 
 /**

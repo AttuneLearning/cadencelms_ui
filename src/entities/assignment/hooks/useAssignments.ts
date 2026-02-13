@@ -1,17 +1,19 @@
 /**
  * React Query hooks for Assignments
+ * Aligned with API-ISS-029 assignment submission contracts
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { assignmentApi } from '../api/assignmentApi';
 import type {
   ListAssignmentsParams,
-  CreateSubmissionRequest,
-  UpdateSubmissionRequest,
-  SubmitAssignmentRequest,
-  UploadFileRequest,
-  DeleteFileRequest,
-  GradeSubmissionRequest,
+  ListSubmissionsParams,
+  CreateAssignmentPayload,
+  UpdateAssignmentPayload,
+  CreateSubmissionPayload,
+  UpdateSubmissionPayload,
+  GradeSubmissionPayload,
+  ReturnSubmissionPayload,
 } from '../model/types';
 
 /**
@@ -25,14 +27,13 @@ export const ASSIGNMENT_KEYS = {
   detail: (id: string) => [...ASSIGNMENT_KEYS.details(), id] as const,
   submissions: (assignmentId: string) =>
     [...ASSIGNMENT_KEYS.all, 'submissions', assignmentId] as const,
-  mySubmissions: (assignmentId: string) =>
-    [...ASSIGNMENT_KEYS.all, 'my-submissions', assignmentId] as const,
   submission: (id: string) => [...ASSIGNMENT_KEYS.all, 'submission', id] as const,
 };
 
-/**
- * Hook to fetch list of assignments
- */
+// =====================
+// ASSIGNMENT QUERIES
+// =====================
+
 export function useAssignments(params?: ListAssignmentsParams) {
   return useQuery({
     queryKey: ASSIGNMENT_KEYS.list(params),
@@ -40,24 +41,19 @@ export function useAssignments(params?: ListAssignmentsParams) {
   });
 }
 
-/**
- * Hook to fetch single assignment by ID
- */
 export function useAssignment(id: string) {
   return useQuery({
     queryKey: ASSIGNMENT_KEYS.detail(id),
-    queryFn: () => assignmentApi.getAssignmentById(id),
+    queryFn: () => assignmentApi.getAssignment(id),
     enabled: !!id,
   });
 }
 
-/**
- * Hook to fetch submissions for an assignment (instructor view)
- */
-export function useSubmissions(
-  assignmentId: string,
-  params?: { page?: number; limit?: number }
-) {
+// =====================
+// SUBMISSION QUERIES
+// =====================
+
+export function useSubmissions(assignmentId: string, params?: ListSubmissionsParams) {
   return useQuery({
     queryKey: [...ASSIGNMENT_KEYS.submissions(assignmentId), params],
     queryFn: () => assignmentApi.listSubmissions(assignmentId, params),
@@ -65,40 +61,64 @@ export function useSubmissions(
   });
 }
 
-/**
- * Hook to fetch my submissions for an assignment (learner view)
- */
-export function useMySubmissions(assignmentId: string) {
-  return useQuery({
-    queryKey: ASSIGNMENT_KEYS.mySubmissions(assignmentId),
-    queryFn: () => assignmentApi.getMySubmissions(assignmentId),
-    enabled: !!assignmentId,
-  });
-}
-
-/**
- * Hook to fetch single submission by ID
- */
 export function useSubmission(id: string) {
   return useQuery({
     queryKey: ASSIGNMENT_KEYS.submission(id),
-    queryFn: () => assignmentApi.getSubmissionById(id),
+    queryFn: () => assignmentApi.getSubmission(id),
     enabled: !!id,
   });
 }
 
-/**
- * Hook to create a new submission
- */
+// =====================
+// ASSIGNMENT MUTATIONS (Staff)
+// =====================
+
+export function useCreateAssignment() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: CreateAssignmentPayload) => assignmentApi.createAssignment(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ASSIGNMENT_KEYS.lists() });
+    },
+  });
+}
+
+export function useUpdateAssignment() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: UpdateAssignmentPayload }) =>
+      assignmentApi.updateAssignment(id, data),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ASSIGNMENT_KEYS.detail(data.id) });
+      queryClient.invalidateQueries({ queryKey: ASSIGNMENT_KEYS.lists() });
+    },
+  });
+}
+
+export function useDeleteAssignment() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => assignmentApi.deleteAssignment(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ASSIGNMENT_KEYS.lists() });
+    },
+  });
+}
+
+// =====================
+// SUBMISSION MUTATIONS (Learner)
+// =====================
+
 export function useCreateSubmission() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateSubmissionRequest) => assignmentApi.createSubmission(data),
+    mutationFn: ({ assignmentId, data }: { assignmentId: string; data: CreateSubmissionPayload }) =>
+      assignmentApi.createSubmission(assignmentId, data),
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ASSIGNMENT_KEYS.mySubmissions(variables.assignmentId),
-      });
       queryClient.invalidateQueries({
         queryKey: ASSIGNMENT_KEYS.submissions(variables.assignmentId),
       });
@@ -106,41 +126,14 @@ export function useCreateSubmission() {
   });
 }
 
-/**
- * Hook to update a submission (save draft)
- */
 export function useUpdateSubmission() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateSubmissionRequest }) =>
+    mutationFn: ({ id, data }: { id: string; data: UpdateSubmissionPayload }) =>
       assignmentApi.updateSubmission(id, data),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: ASSIGNMENT_KEYS.submission(data.id),
-      });
-      queryClient.invalidateQueries({
-        queryKey: ASSIGNMENT_KEYS.mySubmissions(data.assignmentId),
-      });
-    },
-  });
-}
-
-/**
- * Hook to submit an assignment (final submission)
- */
-export function useSubmitAssignment() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (data: SubmitAssignmentRequest) => assignmentApi.submitAssignment(data),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: ASSIGNMENT_KEYS.submission(data.id),
-      });
-      queryClient.invalidateQueries({
-        queryKey: ASSIGNMENT_KEYS.mySubmissions(data.assignmentId),
-      });
+      queryClient.invalidateQueries({ queryKey: ASSIGNMENT_KEYS.submission(data.id) });
       queryClient.invalidateQueries({
         queryKey: ASSIGNMENT_KEYS.submissions(data.assignmentId),
       });
@@ -148,75 +141,49 @@ export function useSubmitAssignment() {
   });
 }
 
-/**
- * Hook to upload a file to a submission
- */
-export function useUploadFile() {
+export function useSubmitSubmission() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: UploadFileRequest) => assignmentApi.uploadFile(data),
+    mutationFn: (id: string) => assignmentApi.submitSubmission(id),
     onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ASSIGNMENT_KEYS.submission(data.id) });
       queryClient.invalidateQueries({
-        queryKey: ASSIGNMENT_KEYS.submission(data.submissionId),
+        queryKey: ASSIGNMENT_KEYS.submissions(data.assignmentId),
       });
     },
   });
 }
 
-/**
- * Hook to delete a file from a submission
- */
-export function useDeleteFile() {
-  const queryClient = useQueryClient();
+// =====================
+// GRADING MUTATIONS (Staff)
+// =====================
 
-  return useMutation({
-    mutationFn: (data: DeleteFileRequest) => assignmentApi.deleteFile(data),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: ASSIGNMENT_KEYS.submission(data.submissionId),
-      });
-    },
-  });
-}
-
-/**
- * Hook to grade a submission (instructor only)
- */
 export function useGradeSubmission() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ submissionId, data }: { submissionId: string; data: GradeSubmissionRequest }) =>
-      assignmentApi.gradeSubmission(submissionId, data),
+    mutationFn: ({ id, data }: { id: string; data: GradeSubmissionPayload }) =>
+      assignmentApi.gradeSubmission(id, data),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: ASSIGNMENT_KEYS.submission(data.id),
-      });
+      queryClient.invalidateQueries({ queryKey: ASSIGNMENT_KEYS.submission(data.id) });
       queryClient.invalidateQueries({
         queryKey: ASSIGNMENT_KEYS.submissions(data.assignmentId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: ASSIGNMENT_KEYS.mySubmissions(data.assignmentId),
       });
     },
   });
 }
 
-/**
- * Hook to delete a submission
- */
-export function useDeleteSubmission() {
+export function useReturnSubmission() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => assignmentApi.deleteSubmission(id),
-    onSuccess: (_data, id) => {
+    mutationFn: ({ id, data }: { id: string; data: ReturnSubmissionPayload }) =>
+      assignmentApi.returnSubmission(id, data),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ASSIGNMENT_KEYS.submission(data.id) });
       queryClient.invalidateQueries({
-        queryKey: ASSIGNMENT_KEYS.submission(id),
-      });
-      queryClient.invalidateQueries({
-        queryKey: ASSIGNMENT_KEYS.all,
+        queryKey: ASSIGNMENT_KEYS.submissions(data.assignmentId),
       });
     },
   });

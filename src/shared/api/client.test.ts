@@ -11,6 +11,7 @@ import {
   clearAllTokens,
   getAccessToken,
   setAccessToken,
+  setRefreshToken,
 } from '@/shared/utils/tokenStorage';
 
 describe('API Client', () => {
@@ -214,6 +215,10 @@ describe('API Client', () => {
         type: 'Bearer',
         expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
         scope: [],
+      });
+      setRefreshToken({
+        value: 'valid-refresh-token',
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       });
 
       let requestCount = 0;

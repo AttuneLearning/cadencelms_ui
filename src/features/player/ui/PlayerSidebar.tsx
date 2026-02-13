@@ -8,6 +8,9 @@ import { Button } from '@/shared/ui/button';
 import { Progress } from '@/shared/ui/progress';
 import { cn } from '@/shared/lib/utils';
 import { useState } from 'react';
+import type { PlaylistDisplayEntry } from '@/shared/lib/business-logic/playlist-engine';
+import { GateIndicator } from '@/features/playlist-engine/ui/GateIndicator';
+import { PlaylistEntryLabel } from '@/features/playlist-engine/ui/PlaylistEntryLabel';
 
 export interface CourseModule {
   id: string;
@@ -32,6 +35,10 @@ export interface PlayerSidebarProps {
   modules: CourseModule[];
   overallProgress: number;
   onLessonClick: (moduleId: string, lessonId: string) => void;
+  /** Optional playlist entries from the adaptive engine — when provided, renders playlist view */
+  playlistEntries?: PlaylistDisplayEntry[];
+  /** Callback when a playlist entry is clicked */
+  onPlaylistEntryClick?: (index: number) => void;
 }
 
 export function PlayerSidebar({
@@ -39,6 +46,8 @@ export function PlayerSidebar({
   modules,
   overallProgress,
   onLessonClick,
+  playlistEntries,
+  onPlaylistEntryClick,
 }: PlayerSidebarProps) {
   const [expandedModules, setExpandedModules] = useState<Set<string>>(
     new Set(modules.map((m) => m.id))
@@ -79,6 +88,36 @@ export function PlayerSidebar({
           <Progress value={overallProgress} className="h-2" />
         </div>
       </div>
+
+      {/* Playlist Entries (adaptive engine view) */}
+      {playlistEntries && playlistEntries.length > 0 && (
+        <div className="border-b p-3">
+          <h3 className="text-xs font-semibold uppercase text-muted-foreground mb-2">Playlist</h3>
+          <div className="space-y-0.5">
+            {playlistEntries.map((entry, index) => (
+              <button
+                key={entry.id}
+                onClick={() => onPlaylistEntryClick?.(index)}
+                className={cn(
+                  'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors',
+                  entry.isCurrent && 'bg-primary/10 text-primary font-medium',
+                  !entry.isCurrent && !entry.isSkipped && 'hover:bg-muted/50',
+                  entry.isSkipped && 'opacity-40 line-through',
+                  entry.isCompleted && !entry.isSkipped && 'text-muted-foreground'
+                )}
+              >
+                {entry.isGate && entry.gateStatus && (
+                  <GateIndicator status={entry.gateStatus} />
+                )}
+                {entry.isCompleted && !entry.isGate && (
+                  <Check className="h-3.5 w-3.5 text-green-600 shrink-0" />
+                )}
+                <PlaylistEntryLabel entry={entry} className="flex-1 min-w-0" />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Module List */}
       <div className="flex-1 overflow-y-auto">

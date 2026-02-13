@@ -97,8 +97,10 @@ export const Header: React.FC = () => {
   const [showEscalationModal, setShowEscalationModal] = useState(false);
   const [pendingAdminPath, setPendingAdminPath] = useState('/admin/dashboard');
 
-  // Notification system hooks
-  const { data: notificationSummary, isLoading: notificationsLoading } = useNotificationSummary();
+  // Notification system hooks — only fetch when authenticated
+  const { data: notificationSummary, isLoading: notificationsLoading } = useNotificationSummary({
+    enabled: isAuthenticated,
+  });
   const markAsReadMutation = useMarkNotificationsAsRead();
 
   const handleLogout = async () => {

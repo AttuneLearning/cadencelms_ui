@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -217,8 +217,6 @@ describe('UserFormDialog', () => {
     });
 
     it('should handle create error', async () => {
-      const user = userEvent.setup();
-
       server.use(
         http.post(`${baseUrl}/users/staff`, () => {
           return HttpResponse.json(
@@ -234,13 +232,16 @@ describe('UserFormDialog', () => {
       );
 
       const submitButton = screen.getByRole('button', { name: /submit/i });
-      await user.click(submitButton);
+      fireEvent.click(submitButton);
+
+      // Wait for mutation to settle — form should return to ready state after error
+      await waitFor(() => {
+        expect(screen.getByText('Form Ready')).toBeInTheDocument();
+      }, { timeout: 3000 });
 
       // Dialog should remain open on error
-      await waitFor(() => {
-        expect(mockOnOpenChange).not.toHaveBeenCalledWith(false);
-        expect(screen.getByTestId('user-form')).toBeInTheDocument();
-      });
+      expect(screen.getByTestId('user-form')).toBeInTheDocument();
+      expect(mockOnOpenChange).not.toHaveBeenCalledWith(false);
     });
 
     it('should handle validation errors', async () => {
@@ -379,7 +380,6 @@ describe('UserFormDialog', () => {
     });
 
     it('should handle update error', async () => {
-      const user = userEvent.setup();
       const existingUser = mockUsers[0];
 
       server.use(
@@ -397,12 +397,15 @@ describe('UserFormDialog', () => {
       );
 
       const submitButton = screen.getByRole('button', { name: /submit/i });
-      await user.click(submitButton);
+      fireEvent.click(submitButton);
+
+      // Wait for mutation to settle — form should return to ready state after error
+      await waitFor(() => {
+        expect(screen.getByText('Form Ready')).toBeInTheDocument();
+      }, { timeout: 3000 });
 
       // Dialog should remain open on error
-      await waitFor(() => {
-        expect(mockOnOpenChange).not.toHaveBeenCalledWith(false);
-      });
+      expect(mockOnOpenChange).not.toHaveBeenCalledWith(false);
     });
 
     it('should handle server errors during update', async () => {

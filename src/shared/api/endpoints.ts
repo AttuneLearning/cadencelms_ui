@@ -200,6 +200,20 @@ export const endpoints = {
     byExam: (examId: string) => `/exam-attempts/exam/${examId}`,
   },
 
+  assessmentAttempts: {
+    start: (assessmentId: string) => `/assessments/${assessmentId}/attempts/start`,
+    save: (assessmentId: string, attemptId: string) =>
+      `/assessments/${assessmentId}/attempts/${attemptId}/save`,
+    submit: (assessmentId: string, attemptId: string) =>
+      `/assessments/${assessmentId}/attempts/${attemptId}/submit`,
+    grade: (assessmentId: string, attemptId: string) =>
+      `/assessments/${assessmentId}/attempts/${attemptId}/grade`,
+    list: (assessmentId: string) => `/assessments/${assessmentId}/attempts`,
+    my: (assessmentId: string) => `/assessments/${assessmentId}/attempts/my`,
+    byId: (assessmentId: string, attemptId: string) =>
+      `/assessments/${assessmentId}/attempts/${attemptId}`,
+  },
+
   certificates: {
     list: '/certificates',
     byId: (id: string) => `/certificates/${id}`,
@@ -297,5 +311,12 @@ export const endpoints = {
     list: '/audit-logs',
     byId: (id: string) => `/audit-logs/${id}`,
     export: '/audit-logs/export',
+  },
+
+  calendar: {
+    learner: '/calendar/learner',
+    staff: '/calendar/staff',
+    system: '/calendar/system',
+    reminders: '/calendar/reminders',
   },
 } as const;
