@@ -1,6 +1,6 @@
 /**
  * Flashcard React Query Hooks
- * Provides hooks for flashcard configuration, sessions, and progress
+ * Canonical hooks for flashcard, retention-check, and remediation flows.
  */
 
 import {
@@ -17,7 +17,11 @@ import {
   recordResult,
   getProgress,
   resetProgress,
-  completeSession,
+  getPendingRetentionChecks,
+  getRetentionCheck,
+  submitRetentionCheck,
+  getRetentionCheckHistory,
+  getActiveRemediations,
   type FlashcardConfig,
   type UpdateFlashcardConfigPayload,
   type FlashcardSession,
@@ -25,11 +29,15 @@ import {
   type RecordResultResponse,
   type FlashcardProgress,
   type GetSessionParams,
+  type ResetProgressParams,
+  type PendingRetentionChecksResponse,
+  type RetentionCheckDetail,
+  type SubmitRetentionCheckRequest,
+  type SubmitRetentionCheckResponse,
+  type RetentionCheckHistoryResponse,
+  type GetRetentionHistoryParams,
+  type ActiveRemediationsResponse,
 } from '../api/flashcardApi';
-
-// ============================================================================
-// Query Keys
-// ============================================================================
 
 export const flashcardKeys = {
   all: ['flashcards'] as const,
@@ -42,16 +50,23 @@ export const flashcardKeys = {
     [...flashcardKeys.sessions(), courseId, params] as const,
 
   progress: () => [...flashcardKeys.all, 'progress'] as const,
-  progressByCourse: (courseId: string) => [...flashcardKeys.progress(), courseId] as const,
+  progressByCourse: (courseId: string, moduleId?: string) =>
+    [...flashcardKeys.progress(), courseId, moduleId] as const,
+
+  retention: () => [...flashcardKeys.all, 'retention'] as const,
+  retentionPending: (courseId: string) => [...flashcardKeys.retention(), 'pending', courseId] as const,
+  retentionCheck: (courseId: string, checkId: string) =>
+    [...flashcardKeys.retention(), 'check', courseId, checkId] as const,
+  retentionHistory: (courseId: string, params?: GetRetentionHistoryParams) =>
+    [...flashcardKeys.retention(), 'history', courseId, params] as const,
+
+  remediations: () => [...flashcardKeys.all, 'remediations'] as const,
+  remediationsActive: (courseId: string) =>
+    [...flashcardKeys.remediations(), 'active', courseId] as const,
 };
 
-// ============================================================================
-// Configuration Hooks
-// ============================================================================
-
 /**
- * Hook to fetch flashcard configuration for a course
- * GET /courses/:courseId/flashcards/config
+ * GET /courses/:courseId/flashcard-config
  */
 export function useFlashcardConfig(
   courseId: string,
@@ -63,15 +78,14 @@ export function useFlashcardConfig(
   return useQuery({
     queryKey: flashcardKeys.config(courseId),
     queryFn: () => getConfig(courseId),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
     enabled: !!courseId,
     ...options,
   });
 }
 
 /**
- * Hook to update flashcard configuration
- * PUT /courses/:courseId/flashcards/config
+ * PUT /courses/:courseId/flashcard-config
  */
 export function useUpdateFlashcardConfig(
   courseId: string,
@@ -82,20 +96,14 @@ export function useUpdateFlashcardConfig(
   return useMutation({
     mutationFn: (payload) => updateConfig(courseId, payload),
     onSuccess: (data) => {
-      // Update cached config
       queryClient.setQueryData(flashcardKeys.config(courseId), data);
     },
     ...options,
   });
 }
 
-// ============================================================================
-// Session Hooks
-// ============================================================================
-
 /**
- * Hook to get or start a flashcard session
- * GET /courses/:courseId/flashcards/session
+ * GET /courses/:courseId/flashcard-session
  */
 export function useFlashcardSession(
   courseId: string,
@@ -113,83 +121,37 @@ export function useFlashcardSession(
   return useQuery({
     queryKey: flashcardKeys.session(courseId, params),
     queryFn: () => getSession(courseId, params),
-    staleTime: 0, // Always fresh - sessions are dynamic
+    staleTime: 0,
     enabled: !!courseId,
     ...options,
   });
 }
 
 /**
- * Hook to record a flashcard result
- * POST /courses/:courseId/flashcards/session/:sessionId/result
+ * POST /courses/:courseId/flashcard-result
  */
 export function useRecordFlashcardResult(
   courseId: string,
-  sessionId: string,
   options?: UseMutationOptions<RecordResultResponse, Error, FlashcardResult>
 ) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (result) => recordResult(courseId, sessionId, result),
-    onSuccess: (response) => {
-      // Update session in cache with new progress
-      queryClient.setQueryData(
-        flashcardKeys.session(courseId),
-        (old: FlashcardSession | undefined) => {
-          if (!old) return old;
-          return {
-            ...old,
-            completedCards: response.sessionProgress.completedCards,
-            currentIndex: Math.min(old.currentIndex + 1, old.totalCards),
-          };
-        }
-      );
-
-      // Invalidate progress when session completes
-      if (response.sessionProgress.isComplete) {
-        queryClient.invalidateQueries({ queryKey: flashcardKeys.progressByCourse(courseId) });
-      }
-    },
-    ...options,
-  });
-}
-
-/**
- * Hook to complete a flashcard session
- * POST /courses/:courseId/flashcards/session/:sessionId/complete
- */
-export function useCompleteFlashcardSession(
-  courseId: string,
-  options?: UseMutationOptions<
-    { completedAt: string; summary: { cardsReviewed: number; averageRating: number } },
-    Error,
-    string
-  >
-) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (sessionId) => completeSession(courseId, sessionId),
+    mutationFn: (result) => recordResult(courseId, result),
     onSuccess: () => {
-      // Invalidate session and progress caches
       queryClient.invalidateQueries({ queryKey: flashcardKeys.sessions() });
-      queryClient.invalidateQueries({ queryKey: flashcardKeys.progressByCourse(courseId) });
+      queryClient.invalidateQueries({ queryKey: [...flashcardKeys.progress(), courseId] });
     },
     ...options,
   });
 }
 
-// ============================================================================
-// Progress Hooks
-// ============================================================================
-
 /**
- * Hook to fetch flashcard progress statistics
- * GET /courses/:courseId/flashcards/progress
+ * GET /courses/:courseId/flashcard-progress
  */
 export function useFlashcardProgress(
   courseId: string,
+  moduleId?: string,
   options?: Omit<
     UseQueryOptions<
       FlashcardProgress,
@@ -201,32 +163,143 @@ export function useFlashcardProgress(
   >
 ) {
   return useQuery({
-    queryKey: flashcardKeys.progressByCourse(courseId),
-    queryFn: () => getProgress(courseId),
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    queryKey: flashcardKeys.progressByCourse(courseId, moduleId),
+    queryFn: () => getProgress(courseId, moduleId),
+    staleTime: 2 * 60 * 1000,
     enabled: !!courseId,
     ...options,
   });
 }
 
 /**
- * Hook to reset flashcard progress
- * DELETE /courses/:courseId/flashcards/progress
+ * DELETE /courses/:courseId/flashcard-progress
  */
 export function useResetFlashcardProgress(
   courseId: string,
-  options?: UseMutationOptions<void, Error, void>
+  options?: UseMutationOptions<{ cardsReset: number }, Error, ResetProgressParams | undefined>
 ) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => resetProgress(courseId),
+    mutationFn: (params) => resetProgress(courseId, params),
     onSuccess: () => {
-      // Invalidate progress cache
-      queryClient.invalidateQueries({ queryKey: flashcardKeys.progressByCourse(courseId) });
-      // Also invalidate sessions since they depend on progress
+      queryClient.invalidateQueries({ queryKey: [...flashcardKeys.progress(), courseId] });
+      queryClient.invalidateQueries({ queryKey: flashcardKeys.sessions() });
+      queryClient.invalidateQueries({ queryKey: flashcardKeys.retention() });
+      queryClient.invalidateQueries({ queryKey: flashcardKeys.remediations() });
+    },
+    ...options,
+  });
+}
+
+/**
+ * GET /courses/:courseId/retention-checks/pending
+ */
+export function usePendingRetentionChecks(
+  courseId: string,
+  options?: Omit<
+    UseQueryOptions<
+      PendingRetentionChecksResponse,
+      Error,
+      PendingRetentionChecksResponse,
+      ReturnType<typeof flashcardKeys.retentionPending>
+    >,
+    'queryKey' | 'queryFn'
+  >
+) {
+  return useQuery({
+    queryKey: flashcardKeys.retentionPending(courseId),
+    queryFn: () => getPendingRetentionChecks(courseId),
+    enabled: !!courseId,
+    ...options,
+  });
+}
+
+/**
+ * GET /courses/:courseId/retention-checks/:checkId
+ */
+export function useRetentionCheck(
+  courseId: string,
+  checkId: string,
+  options?: Omit<
+    UseQueryOptions<RetentionCheckDetail, Error, RetentionCheckDetail, ReturnType<typeof flashcardKeys.retentionCheck>>,
+    'queryKey' | 'queryFn'
+  >
+) {
+  return useQuery({
+    queryKey: flashcardKeys.retentionCheck(courseId, checkId),
+    queryFn: () => getRetentionCheck(courseId, checkId),
+    enabled: !!courseId && !!checkId,
+    ...options,
+  });
+}
+
+/**
+ * POST /courses/:courseId/retention-checks/:checkId/submit
+ */
+export function useSubmitRetentionCheck(
+  courseId: string,
+  checkId: string,
+  options?: UseMutationOptions<SubmitRetentionCheckResponse, Error, SubmitRetentionCheckRequest>
+) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload) => submitRetentionCheck(courseId, checkId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: flashcardKeys.retentionPending(courseId) });
+      queryClient.invalidateQueries({ queryKey: flashcardKeys.retentionHistory(courseId) });
+      queryClient.invalidateQueries({ queryKey: flashcardKeys.remediationsActive(courseId) });
+      queryClient.invalidateQueries({ queryKey: [...flashcardKeys.progress(), courseId] });
       queryClient.invalidateQueries({ queryKey: flashcardKeys.sessions() });
     },
+    ...options,
+  });
+}
+
+/**
+ * GET /courses/:courseId/retention-checks/history
+ */
+export function useRetentionCheckHistory(
+  courseId: string,
+  params?: GetRetentionHistoryParams,
+  options?: Omit<
+    UseQueryOptions<
+      RetentionCheckHistoryResponse,
+      Error,
+      RetentionCheckHistoryResponse,
+      ReturnType<typeof flashcardKeys.retentionHistory>
+    >,
+    'queryKey' | 'queryFn'
+  >
+) {
+  return useQuery({
+    queryKey: flashcardKeys.retentionHistory(courseId, params),
+    queryFn: () => getRetentionCheckHistory(courseId, params),
+    enabled: !!courseId,
+    ...options,
+  });
+}
+
+/**
+ * GET /courses/:courseId/remediations/active
+ */
+export function useActiveRemediations(
+  courseId: string,
+  options?: Omit<
+    UseQueryOptions<
+      ActiveRemediationsResponse,
+      Error,
+      ActiveRemediationsResponse,
+      ReturnType<typeof flashcardKeys.remediationsActive>
+    >,
+    'queryKey' | 'queryFn'
+  >
+) {
+  return useQuery({
+    queryKey: flashcardKeys.remediationsActive(courseId),
+    queryFn: () => getActiveRemediations(courseId),
+    enabled: !!courseId,
     ...options,
   });
 }

@@ -4,6 +4,9 @@
 
 // Types
 export type {
+  CheckFrequency,
+  SelectionMethod,
+  RemediationStatus,
   FlashcardConfig,
   UpdateFlashcardConfigPayload,
   FlashcardItem,
@@ -12,6 +15,20 @@ export type {
   RecordResultResponse,
   FlashcardProgress,
   GetSessionParams,
+  ResetProgressParams,
+  PendingRetentionCheck,
+  PendingRetentionChecksResponse,
+  RetentionCheckCard,
+  RetentionCheckDetail,
+  SubmitRetentionCheckAnswer,
+  SubmitRetentionCheckRequest,
+  SubmitRetentionCheckResponse,
+  RetentionHistoryItem,
+  RetentionHistoryPagination,
+  RetentionCheckHistoryResponse,
+  GetRetentionHistoryParams,
+  ActiveRemediation,
+  ActiveRemediationsResponse,
 } from './api/flashcardApi';
 
 // Hooks
@@ -21,9 +38,13 @@ export {
   useUpdateFlashcardConfig,
   useFlashcardSession,
   useRecordFlashcardResult,
-  useCompleteFlashcardSession,
   useFlashcardProgress,
   useResetFlashcardProgress,
+  usePendingRetentionChecks,
+  useRetentionCheck,
+  useSubmitRetentionCheck,
+  useRetentionCheckHistory,
+  useActiveRemediations,
 } from './model/useFlashcard';
 
 // API (for advanced use cases)

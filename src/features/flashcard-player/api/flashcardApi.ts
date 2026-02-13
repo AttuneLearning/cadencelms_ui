@@ -1,259 +1,404 @@
 /**
  * Flashcard API Client
- * Implements endpoints for flashcard configuration and practice sessions
+ * Implements canonical flashcard, retention-check, and remediation endpoints.
  */
 
 import { client } from '@/shared/api/client';
 
-/**
- * Standard API response wrapper
- */
 interface ApiResponse<T> {
   success: boolean;
   data: T;
   message?: string;
 }
 
-// ============================================================================
-// Types
-// ============================================================================
+export type CheckFrequency = 'every_module' | 'every_n_modules' | 'custom';
+export type SelectionMethod = 'random' | 'weighted_by_difficulty' | 'sm2_priority';
+export type RemediationStatus = 'pending' | 'content_reviewed' | 'final_retaken' | 'completed';
 
-/**
- * Flashcard configuration for a course
- */
 export interface FlashcardConfig {
-  id: string;
   courseId: string;
   enabled: boolean;
-  /** Questions per session (default 10) */
-  questionsPerSession: number;
-  /** Show hints on front of card */
-  showHints: boolean;
-  /** Allow learners to mark cards as "known" */
-  allowSelfAssessment: boolean;
-  /** Spaced repetition algorithm settings */
-  spacedRepetition: {
-    enabled: boolean;
-    /** Intervals in days for each level (e.g., [1, 3, 7, 14, 30]) */
-    intervals: number[];
-  };
-  /** Which question types to include as flashcards */
-  includedQuestionTypes: string[];
+  flashcardsPerCheck: number;
+  failureThreshold: number;
+  checkFrequency: CheckFrequency;
+  checkFrequencyValue: number | null;
+  selectionMethod: SelectionMethod;
+  requireContentReview: boolean;
+  requireFinalRetake: boolean;
+  includeOnlyCompletedModules: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-/**
- * Payload for updating flashcard configuration
- */
 export interface UpdateFlashcardConfigPayload {
   enabled?: boolean;
-  questionsPerSession?: number;
-  showHints?: boolean;
-  allowSelfAssessment?: boolean;
-  spacedRepetition?: {
-    enabled?: boolean;
-    intervals?: number[];
-  };
-  includedQuestionTypes?: string[];
+  flashcardsPerCheck?: number;
+  failureThreshold?: number;
+  checkFrequency?: CheckFrequency;
+  checkFrequencyValue?: number | null;
+  selectionMethod?: SelectionMethod;
+  requireContentReview?: boolean;
+  requireFinalRetake?: boolean;
+  includeOnlyCompletedModules?: boolean;
 }
 
-/**
- * A single flashcard in a session
- */
+export interface FlashcardMedia {
+  [key: string]: unknown;
+}
+
+export interface FlashcardPrompt {
+  text: string;
+  media?: FlashcardMedia;
+}
+
+export interface FlashcardCardProgress {
+  timesCorrect: number;
+  timesIncorrect: number;
+  lastReviewed: string | null;
+  mastered: boolean;
+}
+
 export interface FlashcardItem {
-  id: string;
   questionId: string;
-  front: {
-    text: string;
-    hints?: string[];
-    mediaUrl?: string;
-    mediaType?: 'image' | 'video' | 'audio';
-  };
-  back: {
-    text: string;
-    explanation?: string;
-    mediaUrl?: string;
-    mediaType?: 'image' | 'video' | 'audio';
-  };
-  /** Current mastery level (0-5 for spaced repetition) */
-  masteryLevel: number;
-  /** Next review date for spaced repetition */
-  nextReviewDate?: string;
-  /** Number of times reviewed */
-  reviewCount: number;
+  promptIndex: number;
+  learningUnitId?: string;
+  learningUnitQuestionId?: string;
+  sourceModuleId?: string;
+  front: FlashcardPrompt;
+  back: FlashcardPrompt;
+  explanation?: string;
+  hints?: string[];
+  difficulty?: string;
+  progress: FlashcardCardProgress;
 }
 
-/**
- * Flashcard practice session
- */
-export interface FlashcardSession {
-  id: string;
-  courseId: string;
-  learnerId: string;
-  cards: FlashcardItem[];
-  /** Current card index in session */
-  currentIndex: number;
-  /** Total cards in session */
+export interface FlashcardSessionStats {
   totalCards: number;
-  /** Cards completed in this session */
-  completedCards: number;
-  /** Session start time */
-  startedAt: string;
-  /** Session type: 'new' | 'review' | 'mixed' */
-  sessionType: 'new' | 'review' | 'mixed';
+  dueCards: number;
+  masteredCards: number;
+  newCards: number;
 }
 
-/**
- * Result for a single flashcard review
- */
+export interface FlashcardSession {
+  courseId: string;
+  moduleId?: string;
+  sessionSize: number;
+  cards: FlashcardItem[];
+  stats: FlashcardSessionStats;
+}
+
 export interface FlashcardResult {
-  cardId: string;
   questionId: string;
-  /** User's self-assessment: 0=again, 1=hard, 2=good, 3=easy */
-  rating: 0 | 1 | 2 | 3;
-  /** Time spent on card in seconds */
-  timeSpent: number;
-  /** Whether user viewed the answer */
-  viewedAnswer: boolean;
+  promptIndex: number;
+  isCorrect: boolean;
+  quality?: number;
+  timeSpent?: number;
 }
 
-/**
- * Response after recording a flashcard result
- */
 export interface RecordResultResponse {
-  success: boolean;
-  /** Updated mastery level */
-  newMasteryLevel: number;
-  /** Next review date (if spaced repetition enabled) */
-  nextReviewDate?: string;
-  /** Session progress */
-  sessionProgress: {
-    completedCards: number;
-    totalCards: number;
-    isComplete: boolean;
-  };
+  questionId: string;
+  promptIndex: number;
+  isCorrect: boolean;
+  newInterval: number;
+  nextReviewDate: string;
+  mastered: boolean;
+  masteredAt?: string;
 }
 
-/**
- * Flashcard progress statistics
- */
+export interface FlashcardProgressSummary {
+  totalCards: number;
+  masteredCards: number;
+  masteryPercentage: number;
+  cardsNeedingReview: number;
+  averageEaseFactor: number;
+}
+
+export interface FlashcardProgressByModule {
+  moduleId: string;
+  moduleName: string;
+  totalCards: number;
+  masteredCards: number;
+  masteryPercentage: number;
+}
+
+export interface FlashcardRecentActivity {
+  lastReviewDate: string | null;
+  cardsReviewedToday: number;
+  streakDays: number;
+}
+
 export interface FlashcardProgress {
   courseId: string;
   learnerId: string;
-  /** Total unique cards seen */
-  totalCardsSeen: number;
-  /** Cards at each mastery level (0-5) */
-  cardsByMasteryLevel: Record<number, number>;
-  /** Total review sessions completed */
-  totalSessions: number;
-  /** Average rating across all reviews */
-  averageRating: number;
-  /** Cards due for review today */
-  cardsDueToday: number;
-  /** Streak (consecutive days with practice) */
-  currentStreak: number;
-  /** Longest streak */
-  longestStreak: number;
-  /** Last practice date */
-  lastPracticeDate?: string;
+  summary: FlashcardProgressSummary;
+  byModule: FlashcardProgressByModule[];
+  recentActivity: FlashcardRecentActivity;
 }
 
-/**
- * Parameters for getting a flashcard session
- */
 export interface GetSessionParams {
-  /** Session type preference */
-  sessionType?: 'new' | 'review' | 'mixed';
-  /** Override questions per session */
-  limit?: number;
-  /** Specific question IDs to include */
-  questionIds?: string[];
+  moduleId?: string;
+  sessionSize?: number;
+  includeMastered?: boolean;
+  shuffle?: boolean;
 }
 
-// ============================================================================
-// API Functions
-// ============================================================================
+export interface ResetProgressParams {
+  moduleId?: string;
+  learnerId?: string;
+}
+
+export interface PendingRetentionCheck {
+  checkId: string;
+  sourceModuleId: string;
+  sourceModuleName?: string;
+  cardCount: number;
+  triggeredAt: string;
+  isBlocking: boolean;
+}
+
+export interface PendingRetentionChecksResponse {
+  pendingChecks: PendingRetentionCheck[];
+  totalPending: number;
+}
+
+export interface RetentionCheckCard {
+  questionId: string;
+  promptIndex: number;
+  learningUnitId?: string;
+  learningUnitQuestionId?: string;
+  sourceModuleId?: string;
+  front: FlashcardPrompt;
+  back: FlashcardPrompt;
+}
+
+export interface RetentionCheckDetail {
+  checkId: string;
+  sourceModuleId: string;
+  failureThreshold: number;
+  cards: RetentionCheckCard[];
+  startedAt: string;
+}
+
+export interface SubmitRetentionCheckAnswer {
+  questionId: string;
+  promptIndex?: number;
+  correct: boolean;
+  quality?: number;
+  timeSpent?: number;
+}
+
+export interface SubmitRetentionCheckRequest {
+  answers: SubmitRetentionCheckAnswer[];
+}
+
+export interface RetentionRemediationSummary {
+  remediationId: string;
+  requireContentReview: boolean;
+  requireFinalRetake: boolean;
+  moduleId: string;
+}
+
+export interface SubmitRetentionCheckResponse {
+  checkId: string;
+  sourceModuleId: string;
+  passed: boolean;
+  correctCount: number;
+  incorrectCount: number;
+  failureThreshold: number;
+  remediationRequired: boolean;
+  remediation: RetentionRemediationSummary | null;
+}
+
+export interface RetentionHistoryItem {
+  checkId: string;
+  sourceModuleId: string;
+  completedAt: string;
+  passed: boolean;
+  correctCount: number;
+  incorrectCount: number;
+  remediationRequired: boolean;
+  remediationStatus: string | null;
+}
+
+export interface RetentionHistoryPagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface RetentionCheckHistoryResponse {
+  history: RetentionHistoryItem[];
+  pagination: RetentionHistoryPagination;
+}
+
+export interface GetRetentionHistoryParams {
+  moduleId?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface ActiveRemediation {
+  remediationId: string;
+  moduleId: string;
+  moduleName: string;
+  triggeredAt: string;
+  triggeredByCheckId: string;
+  status: RemediationStatus;
+  requireContentReview: boolean;
+  requireFinalRetake: boolean;
+  contentReviewedAt: string | null;
+  finalRetakenAt: string | null;
+}
+
+export interface ActiveRemediationsResponse {
+  remediations: ActiveRemediation[];
+  totalActive: number;
+  isBlocking: boolean;
+}
 
 /**
- * GET /courses/:courseId/flashcards/config - Get flashcard configuration
+ * GET /courses/:courseId/flashcard-config
  */
 export async function getConfig(courseId: string): Promise<FlashcardConfig> {
   const response = await client.get<ApiResponse<FlashcardConfig>>(
-    `/courses/${courseId}/flashcards/config`
+    `/courses/${courseId}/flashcard-config`
   );
   return response.data.data;
 }
 
 /**
- * PUT /courses/:courseId/flashcards/config - Update flashcard configuration
+ * PUT /courses/:courseId/flashcard-config
  */
 export async function updateConfig(
   courseId: string,
   payload: UpdateFlashcardConfigPayload
 ): Promise<FlashcardConfig> {
   const response = await client.put<ApiResponse<FlashcardConfig>>(
-    `/courses/${courseId}/flashcards/config`,
+    `/courses/${courseId}/flashcard-config`,
     payload
   );
   return response.data.data;
 }
 
 /**
- * GET /courses/:courseId/flashcards/session - Get or start a flashcard session
+ * GET /courses/:courseId/flashcard-session
  */
 export async function getSession(
   courseId: string,
   params?: GetSessionParams
 ): Promise<FlashcardSession> {
   const response = await client.get<ApiResponse<FlashcardSession>>(
-    `/courses/${courseId}/flashcards/session`,
+    `/courses/${courseId}/flashcard-session`,
     { params }
   );
   return response.data.data;
 }
 
 /**
- * POST /courses/:courseId/flashcards/session/:sessionId/result - Record flashcard result
+ * POST /courses/:courseId/flashcard-result
  */
 export async function recordResult(
   courseId: string,
-  sessionId: string,
   result: FlashcardResult
 ): Promise<RecordResultResponse> {
   const response = await client.post<ApiResponse<RecordResultResponse>>(
-    `/courses/${courseId}/flashcards/session/${sessionId}/result`,
+    `/courses/${courseId}/flashcard-result`,
     result
   );
   return response.data.data;
 }
 
 /**
- * GET /courses/:courseId/flashcards/progress - Get flashcard progress statistics
+ * GET /courses/:courseId/flashcard-progress
  */
-export async function getProgress(courseId: string): Promise<FlashcardProgress> {
+export async function getProgress(
+  courseId: string,
+  moduleId?: string
+): Promise<FlashcardProgress> {
   const response = await client.get<ApiResponse<FlashcardProgress>>(
-    `/courses/${courseId}/flashcards/progress`
+    `/courses/${courseId}/flashcard-progress`,
+    { params: moduleId ? { moduleId } : undefined }
   );
   return response.data.data;
 }
 
 /**
- * DELETE /courses/:courseId/flashcards/progress - Reset flashcard progress
+ * DELETE /courses/:courseId/flashcard-progress
  */
-export async function resetProgress(courseId: string): Promise<void> {
-  await client.delete(`/courses/${courseId}/flashcards/progress`);
+export async function resetProgress(
+  courseId: string,
+  params?: ResetProgressParams
+): Promise<{ cardsReset: number }> {
+  const response = await client.delete<ApiResponse<{ cardsReset: number }>>(
+    `/courses/${courseId}/flashcard-progress`,
+    { params }
+  );
+  return response.data.data;
 }
 
 /**
- * POST /courses/:courseId/flashcards/session/:sessionId/complete - Complete a session
+ * GET /courses/:courseId/retention-checks/pending
  */
-export async function completeSession(
+export async function getPendingRetentionChecks(
+  courseId: string
+): Promise<PendingRetentionChecksResponse> {
+  const response = await client.get<ApiResponse<PendingRetentionChecksResponse>>(
+    `/courses/${courseId}/retention-checks/pending`
+  );
+  return response.data.data;
+}
+
+/**
+ * GET /courses/:courseId/retention-checks/:checkId
+ */
+export async function getRetentionCheck(
   courseId: string,
-  sessionId: string
-): Promise<{ completedAt: string; summary: { cardsReviewed: number; averageRating: number } }> {
-  const response = await client.post<
-    ApiResponse<{ completedAt: string; summary: { cardsReviewed: number; averageRating: number } }>
-  >(`/courses/${courseId}/flashcards/session/${sessionId}/complete`);
+  checkId: string
+): Promise<RetentionCheckDetail> {
+  const response = await client.get<ApiResponse<RetentionCheckDetail>>(
+    `/courses/${courseId}/retention-checks/${checkId}`
+  );
+  return response.data.data;
+}
+
+/**
+ * POST /courses/:courseId/retention-checks/:checkId/submit
+ */
+export async function submitRetentionCheck(
+  courseId: string,
+  checkId: string,
+  payload: SubmitRetentionCheckRequest
+): Promise<SubmitRetentionCheckResponse> {
+  const response = await client.post<ApiResponse<SubmitRetentionCheckResponse>>(
+    `/courses/${courseId}/retention-checks/${checkId}/submit`,
+    payload
+  );
+  return response.data.data;
+}
+
+/**
+ * GET /courses/:courseId/retention-checks/history
+ */
+export async function getRetentionCheckHistory(
+  courseId: string,
+  params?: GetRetentionHistoryParams
+): Promise<RetentionCheckHistoryResponse> {
+  const response = await client.get<ApiResponse<RetentionCheckHistoryResponse>>(
+    `/courses/${courseId}/retention-checks/history`,
+    { params }
+  );
+  return response.data.data;
+}
+
+/**
+ * GET /courses/:courseId/remediations/active
+ */
+export async function getActiveRemediations(
+  courseId: string
+): Promise<ActiveRemediationsResponse> {
+  const response = await client.get<ApiResponse<ActiveRemediationsResponse>>(
+    `/courses/${courseId}/remediations/active`
+  );
   return response.data.data;
 }
