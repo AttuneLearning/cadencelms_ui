@@ -9,17 +9,20 @@ import {
   useAssessmentAttemptResult,
   useMyAssessmentAttemptHistory,
   useStartAssessmentAttempt,
+  getAssessmentAttemptErrorDetails,
 } from '@/entities/assessment-attempt';
 import { ExamResultViewer } from '@/entities/exam-attempt/ui/ExamResultViewer';
 import { AttemptHistory } from '@/entities/exam-attempt/ui/AttemptHistory';
 import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';
+import { useToast } from '@/shared/ui/use-toast';
 import { useNavigation } from '@/shared/lib/navigation/useNavigation';
 
 export function ExerciseResultsPage() {
   const { exerciseId: assessmentId, attemptId } = useParams<{ exerciseId: string; attemptId: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const { updateBreadcrumbs } = useNavigation();
 
   const enrollmentId = searchParams.get('enrollmentId') || '';
@@ -60,6 +63,14 @@ export function ExerciseResultsPage() {
         onSuccess: () => {
           navigate(`/learner/exercises/${assessmentId}/take${contextQueryString}`);
         },
+        onError: (err) => {
+          const errorDetails = getAssessmentAttemptErrorDetails(err, 'retry');
+          toast({
+            title: errorDetails.title,
+            description: errorDetails.description,
+            variant: 'destructive',
+          });
+        },
       }
     );
   };
@@ -90,6 +101,7 @@ export function ExerciseResultsPage() {
 
   // Error state
   if (error) {
+    const errorDetails = getAssessmentAttemptErrorDetails(error, 'load');
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center max-w-md">
@@ -102,8 +114,8 @@ export function ExerciseResultsPage() {
               />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-foreground mb-2">Failed to Load Results</h2>
-          <p className="text-muted-foreground mb-4">{error.message || 'An error occurred'}</p>
+          <h2 className="text-xl font-bold text-foreground mb-2">{errorDetails.title}</h2>
+          <p className="text-muted-foreground mb-4">{errorDetails.description}</p>
           <Button onClick={() => navigate('/learner/dashboard')}>Back to Dashboard</Button>
         </div>
       </div>

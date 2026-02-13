@@ -3,13 +3,14 @@
  * Main page for learners to take quizzes and exams
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   useStartAssessmentAttempt,
   useAssessmentAttempt,
   useSaveAssessmentResponses,
   useSubmitAssessmentAttempt,
+  getAssessmentAttemptErrorDetails,
 } from '@/entities/assessment-attempt';
 import { AttemptTimer } from '@/entities/exam-attempt/ui/AttemptTimer';
 import type { Answer } from '@/entities/exam-attempt/model/types';
@@ -37,6 +38,7 @@ export function ExerciseTakingPage() {
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
   const [markedForReview, setMarkedForReview] = useState<Set<string>>(new Set());
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
+  const saveErrorToastKeyRef = useRef<string | null>(null);
 
   const startAttemptMutation = useStartAssessmentAttempt(assessmentId || '');
 
@@ -72,9 +74,10 @@ export function ExerciseTakingPage() {
             setAttemptId(data.id);
           },
           onError: (err) => {
+            const errorDetails = getAssessmentAttemptErrorDetails(err, 'start');
             toast({
-              title: 'Failed to Start',
-              description: err.message || 'Could not start the exam. Please try again.',
+              title: errorDetails.title,
+              description: errorDetails.description,
               variant: 'destructive',
             });
           },
@@ -102,6 +105,27 @@ export function ExerciseTakingPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [attempt?.remainingTime, attempt?.status]);
+
+  // Surface save failures with explicit contract-aware messaging
+  useEffect(() => {
+    if (!saveAnswerMutation.error) {
+      saveErrorToastKeyRef.current = null;
+      return;
+    }
+
+    const errorDetails = getAssessmentAttemptErrorDetails(saveAnswerMutation.error, 'save');
+    const key = `${errorDetails.status || 'na'}:${errorDetails.code || 'na'}:${errorDetails.description}`;
+    if (saveErrorToastKeyRef.current === key) {
+      return;
+    }
+
+    saveErrorToastKeyRef.current = key;
+    toast({
+      title: errorDetails.title,
+      description: errorDetails.description,
+      variant: 'destructive',
+    });
+  }, [saveAnswerMutation.error, toast]);
 
   // Handlers
   const handleAnswerChange = useCallback(
@@ -179,9 +203,10 @@ export function ExerciseTakingPage() {
           navigate(`/learner/exercises/${assessmentId}/results/${attemptId}${contextQueryString}`);
         },
         onError: (err) => {
+          const errorDetails = getAssessmentAttemptErrorDetails(err, 'submit');
           toast({
-            title: 'Submission Failed',
-            description: err.message || 'Failed to submit exam. Please try again.',
+            title: errorDetails.title,
+            description: errorDetails.description,
             variant: 'destructive',
           });
         },
@@ -230,7 +255,12 @@ export function ExerciseTakingPage() {
   }
 
   // Error state
-  if (error || startAttemptMutation.isError) {
+  const startupError = error || startAttemptMutation.error;
+  if (startupError || startAttemptMutation.isError) {
+    const errorDetails = getAssessmentAttemptErrorDetails(
+      startupError,
+      error ? 'load' : 'start'
+    );
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center max-w-md">
@@ -243,9 +273,9 @@ export function ExerciseTakingPage() {
               />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-foreground mb-2">Failed to Start Exam</h2>
+          <h2 className="text-xl font-bold text-foreground mb-2">{errorDetails.title}</h2>
           <p className="text-muted-foreground mb-4">
-            {error?.message || startAttemptMutation.error?.message || 'An error occurred'}
+            {errorDetails.description}
           </p>
           <Button onClick={() => navigate('/learner/dashboard')}>Back to Dashboard</Button>
         </div>
