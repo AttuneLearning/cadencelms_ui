@@ -39,6 +39,235 @@ interface ApiResponse<T> {
 }
 
 /**
+ * Some API handlers wrap payloads as { data: {...} } inside ApiResponse.data.
+ * Accept both wrapped and direct shapes for rollout compatibility.
+ */
+function unwrapApiData<T>(response: ApiResponse<T | { data: T }>): T {
+  const payload = response.data as T | { data: T };
+  if (
+    payload &&
+    typeof payload === 'object' &&
+    !Array.isArray(payload) &&
+    'data' in payload
+  ) {
+    return (payload as { data: T }).data;
+  }
+  return payload as T;
+}
+
+interface CanonicalMediaUploadUrlResponse {
+  uploadId: string;
+  uploadUrl: string;
+  method?: 'PUT' | 'POST';
+  fields?: Record<string, string> | null;
+  contentType?: string;
+}
+
+interface CanonicalMediaFileResponse {
+  id: string;
+  type: string;
+  title?: string;
+  filename: string;
+  description?: string | null;
+  mimeType: string;
+  fileSize?: number;
+  size?: number;
+  cdnUrl?: string;
+  url?: string;
+  thumbnailUrl?: string | null;
+  duration?: number | null;
+  departmentId?: string | null;
+  department?: {
+    id: string;
+    name: string;
+    code?: string;
+  } | null;
+  createdBy?: {
+    id: string;
+    name: string;
+    email?: string;
+  };
+  metadata?: Record<string, unknown>;
+  uploadedBy?: string;
+  usageCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
+  uploadedAt?: string;
+}
+
+interface CanonicalMediaListResponse {
+  media: CanonicalMediaFileResponse[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+
+function normalizeMediaType(type: string | undefined, fallback: UploadMediaFilePayload['type']) {
+  if (type === 'image' || type === 'video' || type === 'audio' || type === 'document') {
+    return type;
+  }
+  return fallback;
+}
+
+function mapCanonicalMediaToListItem(media: CanonicalMediaFileResponse) {
+  const metadata = (media.metadata ?? {}) as Record<string, unknown>;
+  const filename = media.filename ?? 'untitled';
+  const title =
+    media.title ||
+    (metadata.title as string | undefined) ||
+    (metadata.altText as string | undefined) ||
+    filename;
+
+  return {
+    id: media.id,
+    title,
+    filename,
+    type: normalizeMediaType(media.type, 'image'),
+    mimeType: media.mimeType,
+    url: media.cdnUrl || media.url || '',
+    thumbnailUrl: media.thumbnailUrl || null,
+    size: media.fileSize ?? media.size ?? 0,
+    duration: media.duration ?? null,
+    departmentId: media.departmentId ?? null,
+    department: media.department || null,
+    createdAt: media.createdAt || media.uploadedAt || new Date().toISOString(),
+    createdBy: media.createdBy || {
+      id: media.uploadedBy || 'unknown',
+      name: 'Unknown',
+    },
+  };
+}
+
+function mapCanonicalMediaToDetail(media: CanonicalMediaFileResponse): MediaFile {
+  const metadata = (media.metadata ?? {}) as Record<string, unknown>;
+  const filename = media.filename ?? 'untitled';
+  const title =
+    media.title ||
+    (metadata.title as string | undefined) ||
+    (metadata.altText as string | undefined) ||
+    filename;
+
+  return {
+    id: media.id,
+    title,
+    filename,
+    description: media.description || (metadata.description as string | undefined) || null,
+    type: normalizeMediaType(media.type, 'image'),
+    mimeType: media.mimeType,
+    url: media.cdnUrl || media.url || '',
+    thumbnailUrl: media.thumbnailUrl || null,
+    size: media.fileSize ?? media.size ?? 0,
+    duration: media.duration ?? null,
+    metadata: {
+      width: typeof metadata.width === 'number' ? metadata.width : null,
+      height: typeof metadata.height === 'number' ? metadata.height : null,
+      bitrate: typeof metadata.bitrate === 'number' ? metadata.bitrate : null,
+      codec: typeof metadata.codec === 'string' ? metadata.codec : null,
+    },
+    departmentId: media.departmentId ?? null,
+    department: media.department || null,
+    usageCount:
+      media.usageCount ??
+      (typeof metadata.usageCount === 'number' ? metadata.usageCount : 0),
+    createdAt: media.createdAt || media.uploadedAt || new Date().toISOString(),
+    updatedAt: media.updatedAt || media.createdAt || media.uploadedAt || new Date().toISOString(),
+    createdBy: media.createdBy || {
+      id: media.uploadedBy || 'unknown',
+      name: 'Unknown',
+    },
+  };
+}
+
+async function uploadToMediaStorage(
+  upload: CanonicalMediaUploadUrlResponse,
+  file: File,
+  onProgress?: (progress: number) => void
+): Promise<void> {
+  const method = upload.method || 'PUT';
+
+  if (typeof XMLHttpRequest === 'undefined') {
+    if (method === 'POST') {
+      const formData = new FormData();
+      Object.entries(upload.fields || {}).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+      formData.append('file', file);
+
+      const response = await fetch(upload.uploadUrl, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Upload failed with status ${response.status}`);
+      }
+    } else {
+      const response = await fetch(upload.uploadUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': upload.contentType || file.type || 'application/octet-stream',
+        },
+        body: file,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Upload failed with status ${response.status}`);
+      }
+    }
+
+    if (onProgress) onProgress(100);
+    return;
+  }
+
+  await new Promise<void>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+
+    xhr.upload.addEventListener('progress', (event) => {
+      if (event.lengthComputable && onProgress) {
+        const progress = Math.round((event.loaded / event.total) * 100);
+        onProgress(progress);
+      }
+    });
+
+    xhr.addEventListener('load', () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        if (onProgress) onProgress(100);
+        resolve();
+      } else {
+        reject(new Error(`Upload failed with status ${xhr.status}`));
+      }
+    });
+
+    xhr.addEventListener('error', () => {
+      reject(new Error('Upload failed'));
+    });
+
+    xhr.open(method, upload.uploadUrl);
+
+    if (method === 'POST') {
+      const formData = new FormData();
+      Object.entries(upload.fields || {}).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+      formData.append('file', file);
+      xhr.send(formData);
+      return;
+    }
+
+    xhr.setRequestHeader(
+      'Content-Type',
+      upload.contentType || file.type || 'application/octet-stream'
+    );
+    xhr.send(file);
+  });
+}
+
+/**
  * ============================================
  * CONTENT OVERVIEW ENDPOINTS
  * ============================================
@@ -208,85 +437,126 @@ export async function unpublishScormPackage(
  */
 
 /**
- * GET /content/media - List all media files
+ * GET /media - List all media files
  */
 export async function listMediaFiles(
   filters?: MediaFileFilters
 ): Promise<MediaFilesListResponse> {
-  const response = await client.get<ApiResponse<MediaFilesListResponse>>(
-    '/content/media',
+  const response = await client.get<ApiResponse<CanonicalMediaListResponse>>(
+    '/media',
     { params: filters }
   );
-  return response.data.data;
+  const data = unwrapApiData(response.data);
+
+  return {
+    media: data.media.map(mapCanonicalMediaToListItem),
+    pagination: data.pagination,
+  };
 }
 
 /**
- * POST /content/media - Upload a new media file
+ * Upload flow:
+ * 1) POST /media/upload-url
+ * 2) direct upload to storage URL
+ * 3) POST /media/confirm
  */
 export async function uploadMediaFile(
   payload: UploadMediaFilePayload,
   onProgress?: (progress: number) => void
 ): Promise<UploadMediaFileResponse> {
-  const formData = new FormData();
-  formData.append('file', payload.file);
-  formData.append('title', payload.title);
-  formData.append('type', payload.type);
-
-  if (payload.description) {
-    formData.append('description', payload.description);
-  }
-  if (payload.departmentId) {
-    formData.append('departmentId', payload.departmentId);
-  }
-
-  const response = await client.post<ApiResponse<UploadMediaFileResponse>>(
-    '/content/media',
-    formData,
+  const uploadUrlResponse = await client.post<ApiResponse<CanonicalMediaUploadUrlResponse>>(
+    '/media/upload-url',
     {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      onUploadProgress: (progressEvent) => {
-        if (progressEvent.total && onProgress) {
-          const percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          onProgress(percentCompleted);
-        }
-      },
+      filename: payload.file.name,
+      mimeType: payload.file.type || 'application/octet-stream',
+      fileSize: payload.file.size,
+      purpose: 'content',
+      departmentId: payload.departmentId,
+      title: payload.title,
+      description: payload.description,
     }
   );
+  const uploadRequest = unwrapApiData(uploadUrlResponse.data);
 
-  return response.data.data;
+  await uploadToMediaStorage(uploadRequest, payload.file, onProgress);
+
+  const metadata: Record<string, unknown> = {
+    title: payload.title,
+  };
+  if (payload.description) {
+    metadata.description = payload.description;
+  }
+  if (payload.departmentId) {
+    metadata.departmentId = payload.departmentId;
+  }
+
+  const confirmResponse = await client.post<ApiResponse<CanonicalMediaFileResponse>>(
+    '/media/confirm',
+    {
+      uploadId: uploadRequest.uploadId,
+      altText: payload.title,
+      metadata,
+    }
+  );
+  const confirmed = unwrapApiData(confirmResponse.data);
+
+  return {
+    id: confirmed.id,
+    title: payload.title,
+    filename: confirmed.filename ?? payload.file.name,
+    type: normalizeMediaType(confirmed.type, payload.type),
+    mimeType: confirmed.mimeType ?? payload.file.type,
+    url: confirmed.cdnUrl || confirmed.url || '',
+    thumbnailUrl: confirmed.thumbnailUrl || null,
+    size: confirmed.fileSize ?? payload.file.size,
+    duration: confirmed.duration ?? null,
+    departmentId: payload.departmentId ?? null,
+    createdAt: confirmed.createdAt || new Date().toISOString(),
+  };
 }
 
 /**
- * GET /content/media/:id - Get detailed information about a media file
+ * GET /media/:id - Get detailed information about a media file
  */
 export async function getMediaFile(id: string): Promise<MediaFile> {
-  const response = await client.get<ApiResponse<MediaFile>>(
-    `/content/media/${id}`
+  const response = await client.get<ApiResponse<CanonicalMediaFileResponse>>(
+    `/media/${id}`
   );
-  return response.data.data;
+  return mapCanonicalMediaToDetail(unwrapApiData(response.data));
 }
 
 /**
- * PUT /content/media/:id - Update media file metadata
+ * PUT /media/:id - Update media file metadata
  */
 export async function updateMediaFile(
   id: string,
   payload: UpdateMediaFilePayload
 ): Promise<MediaFile> {
-  const response = await client.put<ApiResponse<MediaFile>>(
-    `/content/media/${id}`,
-    payload
+  const metadata: Record<string, unknown> = {};
+  if (payload.title !== undefined) {
+    metadata.title = payload.title;
+  }
+  if (payload.description !== undefined) {
+    metadata.description = payload.description;
+  }
+  if (payload.departmentId !== undefined) {
+    metadata.departmentId = payload.departmentId;
+  }
+
+  await client.put<ApiResponse<CanonicalMediaFileResponse>>(
+    `/media/${id}`,
+    {
+      altText: payload.title,
+      metadata,
+    }
   );
-  return response.data.data;
+
+  return getMediaFile(id);
 }
 
 /**
- * DELETE /content/media/:id - Delete a media file
+ * DELETE /media/:id - Delete a media file
  */
 export async function deleteMediaFile(id: string): Promise<void> {
-  await client.delete(`/content/media/${id}`);
+  await client.delete(`/media/${id}`);
 }

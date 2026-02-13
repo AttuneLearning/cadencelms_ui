@@ -78,11 +78,13 @@ export const endpoints = {
     },
     // Media library
     media: {
-      list: '/content/media',
-      create: '/content/media',
-      byId: (id: string) => `/content/media/${id}`,
-      update: (id: string) => `/content/media/${id}`,
-      delete: (id: string) => `/content/media/${id}`,
+      list: '/media',
+      create: '/media/upload-url',
+      uploadUrl: '/media/upload-url',
+      confirm: '/media/confirm',
+      byId: (id: string) => `/media/${id}`,
+      update: (id: string) => `/media/${id}`,
+      delete: (id: string) => `/media/${id}`,
     },
     // Legacy aliases (deprecated - use scorm.list / scorm.create)
     scormPackages: '/content/scorm',

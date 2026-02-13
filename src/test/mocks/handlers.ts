@@ -651,8 +651,8 @@ export const handlers = [
 
   // ==================== MEDIA FILE HANDLERS ====================
 
-  // GET /content/media - List media files
-  http.get(`${baseUrl}/content/media`, ({ request }) => {
+  // GET /media - List media files
+  http.get(`${baseUrl}/media`, ({ request }) => {
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get('page') || '1');
     const limit = parseInt(url.searchParams.get('limit') || '20');
@@ -690,21 +690,58 @@ export const handlers = [
     });
   }),
 
-  // POST /content/media - Upload media file
-  http.post(`${baseUrl}/content/media`, async ({ request }) => {
-    await request.formData(); // Consume form data
+  // POST /media/upload-url - Request upload URL
+  http.post(`${baseUrl}/media/upload-url`, async ({ request }) => {
+    const body = (await request.json()) as {
+      filename?: string;
+      mimeType?: string;
+    };
+
+    const uploadId = `upload-${Date.now()}`;
+    const extension = body.filename?.split('.').pop() || 'bin';
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        uploadId,
+        uploadUrl: `${baseUrl}/media/local-upload/${uploadId}`,
+        method: 'PUT',
+        contentType: body.mimeType || 'application/octet-stream',
+        storageKey: `media/content/${uploadId}.${extension}`,
+      },
+    });
+  }),
+
+  // PUT /media/local-upload/:uploadId - Direct upload sink for tests
+  http.put(`${baseUrl}/media/local-upload/:uploadId`, async ({ request }) => {
+    await request.arrayBuffer();
+    return new HttpResponse(null, { status: 200 });
+  }),
+
+  // POST /media/confirm - Confirm upload and create media record
+  http.post(`${baseUrl}/media/confirm`, async ({ request }) => {
+    const body = (await request.json()) as {
+      metadata?: { title?: string; description?: string; departmentId?: string };
+    };
 
     return HttpResponse.json(
       {
         success: true,
-        data: mockUploadMediaFileResponse,
+        data: {
+          ...mockUploadMediaFileResponse,
+          title: body.metadata?.title || mockUploadMediaFileResponse.title,
+          description: body.metadata?.description || null,
+          departmentId: body.metadata?.departmentId || mockUploadMediaFileResponse.departmentId,
+          fileSize: mockUploadMediaFileResponse.size,
+          cdnUrl: mockUploadMediaFileResponse.url,
+        },
       },
       { status: 201 }
     );
   }),
 
-  // GET /content/media/:id - Get media file
-  http.get(`${baseUrl}/content/media/:id`, ({ params }) => {
+  // GET /media/:id - Get media file
+  http.get(`${baseUrl}/media/:id`, ({ params }) => {
     const { id } = params;
     const mediaFile = mockMediaFiles.find((m) => m.id === id);
 
@@ -721,8 +758,8 @@ export const handlers = [
     );
   }),
 
-  // PUT /content/media/:id - Update media file
-  http.put(`${baseUrl}/content/media/:id`, async ({ params, request }) => {
+  // PUT /media/:id - Update media file metadata
+  http.put(`${baseUrl}/media/:id`, async ({ params, request }) => {
     const { id } = params;
     const body = await request.json() as Record<string, unknown>;
     const mediaFile = mockMediaFiles.find((m) => m.id === id);
@@ -745,8 +782,8 @@ export const handlers = [
     );
   }),
 
-  // DELETE /content/media/:id - Delete media file
-  http.delete(`${baseUrl}/content/media/:id`, ({ params }) => {
+  // DELETE /media/:id - Delete media file
+  http.delete(`${baseUrl}/media/:id`, ({ params }) => {
     const { id: _id } = params;
 
     return HttpResponse.json({}, { status: 204 });

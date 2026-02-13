@@ -1007,7 +1007,7 @@ describe('contentApi', () => {
     describe('listMediaFiles', () => {
       it('should fetch paginated list of media files without filters', async () => {
         server.use(
-          http.get(`${baseUrl}/content/media`, () => {
+          http.get(`${baseUrl}/media`, () => {
             return HttpResponse.json({
               success: true,
               data: mockMediaFilesListResponse,
@@ -1019,6 +1019,31 @@ describe('contentApi', () => {
 
         expect(result).toEqual(mockMediaFilesListResponse);
         expect(result.media).toHaveLength(mockMediaFileListItems.length);
+      });
+
+      it('should handle wrapped canonical list payload shape', async () => {
+        server.use(
+          http.get(`${baseUrl}/media`, () => {
+            return HttpResponse.json({
+              success: true,
+              data: {
+                data: {
+                  media: mockMediaFilesListResponse.media.map((media) => ({
+                    ...media,
+                    cdnUrl: media.url,
+                    fileSize: media.size,
+                  })),
+                  pagination: mockMediaFilesListResponse.pagination,
+                },
+              },
+            });
+          })
+        );
+
+        const result = await contentApi.listMediaFiles();
+
+        expect(result.media[0].url).toBe(mockMediaFilesListResponse.media[0].url);
+        expect(result.pagination.total).toBe(mockMediaFilesListResponse.pagination.total);
       });
 
       it('should fetch media files with pagination', async () => {
@@ -1035,7 +1060,7 @@ describe('contentApi', () => {
         };
 
         server.use(
-          http.get(`${baseUrl}/content/media`, () => {
+          http.get(`${baseUrl}/media`, () => {
             return HttpResponse.json({
               success: true,
               data: mockResponse,
@@ -1064,7 +1089,7 @@ describe('contentApi', () => {
         };
 
         server.use(
-          http.get(`${baseUrl}/content/media`, () => {
+          http.get(`${baseUrl}/media`, () => {
             return HttpResponse.json({
               success: true,
               data: mockResponse,
@@ -1095,7 +1120,7 @@ describe('contentApi', () => {
         };
 
         server.use(
-          http.get(`${baseUrl}/content/media`, () => {
+          http.get(`${baseUrl}/media`, () => {
             return HttpResponse.json({
               success: true,
               data: mockResponse,
@@ -1108,9 +1133,41 @@ describe('contentApi', () => {
         expect(result.media.every((m) => m.departmentId === 'dept-1')).toBe(true);
       });
 
+      it('should support document type filters on canonical media route', async () => {
+        let requestedType: string | null = null;
+        const documentRows = mockMediaFilesListResponse.media.filter((m) => m.type === 'document');
+
+        server.use(
+          http.get(`${baseUrl}/media`, ({ request }) => {
+            const url = new URL(request.url);
+            requestedType = url.searchParams.get('type');
+            return HttpResponse.json({
+              success: true,
+              data: {
+                media: documentRows,
+                pagination: {
+                  page: 1,
+                  limit: 20,
+                  total: documentRows.length,
+                  totalPages: 1,
+                  hasNext: false,
+                  hasPrev: false,
+                },
+              },
+            });
+          })
+        );
+
+        const result = await contentApi.listMediaFiles({ type: 'document' });
+
+        expect(requestedType).toBe('document');
+        expect(result.media.length).toBe(documentRows.length);
+        expect(result.media.every((m) => m.type === 'document')).toBe(true);
+      });
+
       it('should handle API error', async () => {
         server.use(
-          http.get(`${baseUrl}/content/media`, () => {
+          http.get(`${baseUrl}/media`, () => {
             return HttpResponse.json(
               { message: 'Internal server error' },
               { status: 500 }
@@ -1132,29 +1189,115 @@ describe('contentApi', () => {
           departmentId: 'dept-1',
           type: 'video' as const,
         };
-
-        let capturedFormData: FormData | null = null;
+        let capturedUploadUrlBody: Record<string, unknown> | null = null;
+        let confirmBody: Record<string, unknown> | null = null;
 
         server.use(
-          http.post(`${baseUrl}/content/media`, async ({ request }) => {
-            capturedFormData = await request.formData();
+          http.post(`${baseUrl}/media/upload-url`, async ({ request }) => {
+            capturedUploadUrlBody = await request.json() as Record<string, unknown>;
+            return HttpResponse.json({
+              success: true,
+              data: {
+                uploadId: 'upload-1',
+                uploadUrl: `${baseUrl}/media/local-upload/upload-1`,
+                method: 'PUT',
+                contentType: 'video/mp4',
+              },
+            });
+          }),
+          http.put(`${baseUrl}/media/local-upload/upload-1`, async ({ request }) => {
+            await request.arrayBuffer();
+            return new HttpResponse(null, { status: 200 });
+          }),
+          http.post(`${baseUrl}/media/confirm`, async ({ request }) => {
+            confirmBody = await request.json() as Record<string, unknown>;
             return HttpResponse.json(
               {
                 success: true,
-                data: mockUploadMediaFileResponse,
+                data: {
+                  ...mockUploadMediaFileResponse,
+                  fileSize: mockUploadMediaFileResponse.size,
+                  cdnUrl: mockUploadMediaFileResponse.url,
+                },
               },
               { status: 201 }
             );
+          }),
+        );
+
+        const result = await contentApi.uploadMediaFile(payload);
+
+        expect(result).toEqual({
+          ...mockUploadMediaFileResponse,
+          title: 'Test Video',
+          departmentId: 'dept-1',
+        });
+        expect(capturedUploadUrlBody).toMatchObject({
+          filename: 'test-video.mp4',
+          mimeType: 'video/mp4',
+          fileSize: file.size,
+          purpose: 'content',
+          departmentId: 'dept-1',
+        });
+        expect(confirmBody).toMatchObject({
+          uploadId: 'upload-1',
+          altText: 'Test Video',
+          metadata: {
+            title: 'Test Video',
+            description: 'Test description',
+            departmentId: 'dept-1',
+          },
+        });
+      });
+
+      it('should upload media with wrapped canonical upload-url and confirm payloads', async () => {
+        const file = createMockVideoFile('wrapped-shape.mp4', 1024 * 1024);
+        const payload = {
+          file,
+          title: 'Wrapped Shape Video',
+          type: 'video' as const,
+        };
+
+        server.use(
+          http.post(`${baseUrl}/media/upload-url`, () => {
+            return HttpResponse.json({
+              success: true,
+              data: {
+                data: {
+                  uploadId: 'upload-wrapped',
+                  uploadUrl: `${baseUrl}/media/local-upload/upload-wrapped`,
+                  contentType: 'video/mp4',
+                },
+              },
+            });
+          }),
+          http.put(`${baseUrl}/media/local-upload/upload-wrapped`, async ({ request }) => {
+            await request.arrayBuffer();
+            return new HttpResponse(null, { status: 200 });
+          }),
+          http.post(`${baseUrl}/media/confirm`, () => {
+            return HttpResponse.json({
+              success: true,
+              data: {
+                data: {
+                  id: 'media-wrapped',
+                  type: 'video',
+                  filename: 'wrapped-shape.mp4',
+                  mimeType: 'video/mp4',
+                  fileSize: file.size,
+                  cdnUrl: 'https://example.com/media/wrapped-shape.mp4',
+                  createdAt: '2026-02-13T00:00:00.000Z',
+                },
+              },
+            });
           })
         );
 
         const result = await contentApi.uploadMediaFile(payload);
 
-        expect(result).toEqual(mockUploadMediaFileResponse);
-        expect(capturedFormData).not.toBeNull();
-        expect(capturedFormData!.get('file')).toBeTruthy();
-        expect(capturedFormData!.get('title')).toBe('Test Video');
-        expect(capturedFormData!.get('type')).toBe('video');
+        expect(result.id).toBe('media-wrapped');
+        expect(result.url).toBe('https://example.com/media/wrapped-shape.mp4');
+        expect(result.size).toBe(file.size);
       });
 
       it('should track upload progress', async () => {
@@ -1167,20 +1310,38 @@ describe('contentApi', () => {
         const progressCallback = vi.fn();
 
         server.use(
-          http.post(`${baseUrl}/content/media`, () => {
+          http.post(`${baseUrl}/media/upload-url`, () => {
+            return HttpResponse.json({
+              success: true,
+              data: {
+                uploadId: 'upload-2',
+                uploadUrl: `${baseUrl}/media/local-upload/upload-2`,
+                method: 'PUT',
+                contentType: 'video/mp4',
+              },
+            });
+          }),
+          http.put(`${baseUrl}/media/local-upload/upload-2`, () => {
+            return new HttpResponse(null, { status: 200 });
+          }),
+          http.post(`${baseUrl}/media/confirm`, () => {
             return HttpResponse.json(
               {
                 success: true,
-                data: mockUploadMediaFileResponse,
+                data: {
+                  ...mockUploadMediaFileResponse,
+                  fileSize: mockUploadMediaFileResponse.size,
+                  cdnUrl: mockUploadMediaFileResponse.url,
+                },
               },
               { status: 201 }
             );
-          })
+          }),
         );
 
         await contentApi.uploadMediaFile(payload, progressCallback);
 
-        expect(progressCallback).toBeDefined();
+        expect(progressCallback).toHaveBeenCalled();
       });
 
       it('should upload media without optional description', async () => {
@@ -1190,26 +1351,45 @@ describe('contentApi', () => {
           title: 'Test Video',
           type: 'video' as const,
         };
-
-        let capturedFormData: FormData | null = null;
+        let confirmBody: Record<string, unknown> | null = null;
 
         server.use(
-          http.post(`${baseUrl}/content/media`, async ({ request }) => {
-            capturedFormData = await request.formData();
+          http.post(`${baseUrl}/media/upload-url`, () => {
+            return HttpResponse.json({
+              success: true,
+              data: {
+                uploadId: 'upload-3',
+                uploadUrl: `${baseUrl}/media/local-upload/upload-3`,
+                method: 'PUT',
+                contentType: 'video/mp4',
+              },
+            });
+          }),
+          http.put(`${baseUrl}/media/local-upload/upload-3`, () => {
+            return new HttpResponse(null, { status: 200 });
+          }),
+          http.post(`${baseUrl}/media/confirm`, async ({ request }) => {
+            confirmBody = await request.json() as Record<string, unknown>;
             return HttpResponse.json(
               {
                 success: true,
-                data: mockUploadMediaFileResponse,
+                data: {
+                  ...mockUploadMediaFileResponse,
+                  fileSize: mockUploadMediaFileResponse.size,
+                  cdnUrl: mockUploadMediaFileResponse.url,
+                },
               },
               { status: 201 }
             );
-          })
+          }),
         );
 
         const result = await contentApi.uploadMediaFile(payload);
 
-        expect(result).toEqual(mockUploadMediaFileResponse);
-        expect(capturedFormData!.get('description')).toBeNull();
+        expect(result.title).toBe('Test Video');
+        expect(confirmBody).toMatchObject({
+          metadata: { title: 'Test Video' },
+        });
       });
 
       it('should handle upload validation error', async () => {
@@ -1221,7 +1401,7 @@ describe('contentApi', () => {
         };
 
         server.use(
-          http.post(`${baseUrl}/content/media`, () => {
+          http.post(`${baseUrl}/media/upload-url`, () => {
             return HttpResponse.json(
               {
                 message: 'Validation failed',
@@ -1246,7 +1426,7 @@ describe('contentApi', () => {
         };
 
         server.use(
-          http.post(`${baseUrl}/content/media`, () => {
+          http.post(`${baseUrl}/media/upload-url`, () => {
             return HttpResponse.json(
               { message: 'Internal server error' },
               { status: 500 }
@@ -1263,7 +1443,7 @@ describe('contentApi', () => {
         const mediaId = 'media-1';
 
         server.use(
-          http.get(`${baseUrl}/content/media/${mediaId}`, () => {
+          http.get(`${baseUrl}/media/${mediaId}`, () => {
             return HttpResponse.json({
               success: true,
               data: mockMediaFiles[0],
@@ -1281,7 +1461,7 @@ describe('contentApi', () => {
         const mediaId = 'non-existent';
 
         server.use(
-          http.get(`${baseUrl}/content/media/${mediaId}`, () => {
+          http.get(`${baseUrl}/media/${mediaId}`, () => {
             return HttpResponse.json(
               { message: 'Media file not found' },
               { status: 404 }
@@ -1310,8 +1490,23 @@ describe('contentApi', () => {
         let capturedRequestBody: any = null;
 
         server.use(
-          http.put(`${baseUrl}/content/media/${mediaId}`, async ({ request }) => {
+          http.put(`${baseUrl}/media/${mediaId}`, async ({ request }) => {
             capturedRequestBody = await request.json();
+            return HttpResponse.json({
+              success: true,
+              data: {
+                id: mediaId,
+                altText: payload.title,
+                metadata: {
+                  title: payload.title,
+                  description: payload.description,
+                  departmentId: payload.departmentId,
+                },
+                updatedAt: updatedMedia.updatedAt,
+              },
+            });
+          }),
+          http.get(`${baseUrl}/media/${mediaId}`, () => {
             return HttpResponse.json({
               success: true,
               data: updatedMedia,
@@ -1322,7 +1517,14 @@ describe('contentApi', () => {
         const result = await contentApi.updateMediaFile(mediaId, payload);
 
         expect(result).toEqual(updatedMedia);
-        expect(capturedRequestBody).toEqual(payload);
+        expect(capturedRequestBody).toEqual({
+          altText: 'Updated Title',
+          metadata: {
+            title: 'Updated Title',
+            description: 'Updated description',
+            departmentId: 'dept-2',
+          },
+        });
       });
 
       it('should handle partial updates', async () => {
@@ -1332,7 +1534,18 @@ describe('contentApi', () => {
         const updatedMedia = { ...mockMediaFiles[0], title: 'Updated Title Only' };
 
         server.use(
-          http.put(`${baseUrl}/content/media/${mediaId}`, () => {
+          http.put(`${baseUrl}/media/${mediaId}`, () => {
+            return HttpResponse.json({
+              success: true,
+              data: {
+                id: mediaId,
+                altText: 'Updated Title Only',
+                metadata: { title: 'Updated Title Only' },
+                updatedAt: updatedMedia.updatedAt,
+              },
+            });
+          }),
+          http.get(`${baseUrl}/media/${mediaId}`, () => {
             return HttpResponse.json({
               success: true,
               data: updatedMedia,
@@ -1350,7 +1563,7 @@ describe('contentApi', () => {
         const payload = { title: 'Updated' };
 
         server.use(
-          http.put(`${baseUrl}/content/media/${mediaId}`, () => {
+          http.put(`${baseUrl}/media/${mediaId}`, () => {
             return HttpResponse.json(
               { message: 'Media file not found' },
               { status: 404 }
@@ -1368,7 +1581,7 @@ describe('contentApi', () => {
         let deleteCalled = false;
 
         server.use(
-          http.delete(`${baseUrl}/content/media/${mediaId}`, () => {
+          http.delete(`${baseUrl}/media/${mediaId}`, () => {
             deleteCalled = true;
             return HttpResponse.json({}, { status: 204 });
           })
@@ -1383,7 +1596,7 @@ describe('contentApi', () => {
         const mediaId = 'non-existent';
 
         server.use(
-          http.delete(`${baseUrl}/content/media/${mediaId}`, () => {
+          http.delete(`${baseUrl}/media/${mediaId}`, () => {
             return HttpResponse.json(
               { message: 'Media file not found' },
               { status: 404 }
@@ -1398,7 +1611,7 @@ describe('contentApi', () => {
         const mediaId = 'media-1';
 
         server.use(
-          http.delete(`${baseUrl}/content/media/${mediaId}`, () => {
+          http.delete(`${baseUrl}/media/${mediaId}`, () => {
             return HttpResponse.json(
               { message: 'Cannot delete media file in use by courses' },
               { status: 403 }

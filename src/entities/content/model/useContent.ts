@@ -300,7 +300,7 @@ export function useUnpublishScormPackage(
  */
 
 /**
- * Hook to fetch media files list (GET /api/v2/content/media)
+ * Hook to fetch media files list (GET /api/v2/media)
  */
 export function useMediaFiles(
   filters?: MediaFileFilters,
@@ -323,7 +323,7 @@ export function useMediaFiles(
 }
 
 /**
- * Hook to fetch single media file details (GET /api/v2/content/media/:id)
+ * Hook to fetch single media file details (GET /api/v2/media/:id)
  */
 export function useMediaFile(
   id: string,
@@ -347,7 +347,7 @@ export function useMediaFile(
 }
 
 /**
- * Hook to upload a media file (POST /api/v2/content/media)
+ * Hook to upload a media file (POST /api/v2/media/upload-url -> upload -> POST /api/v2/media/confirm)
  */
 export function useUploadMediaFile(
   options?: UseMutationOptions<
@@ -371,7 +371,7 @@ export function useUploadMediaFile(
 }
 
 /**
- * Hook to update media file metadata (PUT /api/v2/content/media/:id)
+ * Hook to update media file metadata (PUT /api/v2/media/:id)
  */
 export function useUpdateMediaFile(
   options?: UseMutationOptions<
@@ -396,7 +396,7 @@ export function useUpdateMediaFile(
 }
 
 /**
- * Hook to delete a media file (DELETE /api/v2/content/media/:id)
+ * Hook to delete a media file (DELETE /api/v2/media/:id)
  */
 export function useDeleteMediaFile(
   options?: UseMutationOptions<void, Error, string>
