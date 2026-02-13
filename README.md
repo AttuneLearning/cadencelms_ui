@@ -110,6 +110,7 @@ The application will be available at `http://localhost:5173`
 - `npm run test:ui` - Run tests with UI
 - `npm run test:coverage` - Generate coverage report
 - `npm run e2e` - Run E2E tests with Playwright
+- `npm run contracts:verify` - Validate UI contract ingestion against canonical `contracts/dist` artifacts
 
 ## Project Structure
 
@@ -167,6 +168,19 @@ Run checks before committing:
 npm run typecheck
 npm run lint
 npm run format
+```
+
+## Contract Artifacts
+
+UI contract ingestion should use canonical generated artifacts from:
+
+- `dev_communication/shared/contracts/dist/contracts.json`
+- `dev_communication/shared/contracts/dist/contract-types.d.ts`
+
+Run this check after pulling backend contract updates:
+
+```bash
+npm run contracts:verify
 ```
 
 ## Testing Strategy
