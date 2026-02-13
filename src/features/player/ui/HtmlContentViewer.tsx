@@ -3,7 +3,7 @@
  * Renders HTML content from content records (metadata.htmlContent)
  */
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { useContent } from '@/entities/content';
 
@@ -14,17 +14,20 @@ export interface HtmlContentViewerProps {
 
 export function HtmlContentViewer({ contentId, onViewed }: HtmlContentViewerProps) {
   const { data: content, isLoading, error } = useContent(contentId);
+  const [hasMarkedViewed, setHasMarkedViewed] = useState(false);
 
   const htmlContent =
     (content?.metadata as Record<string, unknown>)?.htmlContent as string | undefined;
 
   useEffect(() => {
-    if (htmlContent && onViewed) {
-      // Mark as viewed after a short delay (simulates reading time)
-      const timer = setTimeout(onViewed, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [htmlContent, onViewed]);
+    setHasMarkedViewed(false);
+  }, [contentId]);
+
+  const markViewedFromInteraction = () => {
+    if (!htmlContent || !onViewed || hasMarkedViewed) return;
+    setHasMarkedViewed(true);
+    onViewed();
+  };
 
   if (isLoading) {
     return (
@@ -70,7 +73,15 @@ export function HtmlContentViewer({ contentId, onViewed }: HtmlContentViewerProp
   }
 
   return (
-    <div className="h-full overflow-y-auto">
+    <div
+      className="h-full overflow-y-auto"
+      data-testid="html-content-viewer"
+      tabIndex={0}
+      onMouseDown={markViewedFromInteraction}
+      onTouchStart={markViewedFromInteraction}
+      onKeyDown={markViewedFromInteraction}
+      onScroll={markViewedFromInteraction}
+    >
       <div className="mx-auto max-w-3xl px-8 py-8">
         <h1 className="mb-6 text-2xl font-bold">{content.title}</h1>
         <div
