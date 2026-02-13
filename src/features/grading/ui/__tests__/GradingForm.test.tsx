@@ -111,6 +111,35 @@ describe('GradingForm', () => {
 
       expect(screen.getByText(/total score/i)).toBeInTheDocument();
     });
+
+    it('should render projected grading context when question metadata is present', () => {
+      const projectedQuestions = mockQuestions.map((question, index) =>
+        index === 2
+          ? {
+              ...question,
+              projectedScore: 11,
+              projectedMethod: 'short_answer_fuzzy',
+              projectedConfidence: 0.76,
+              projectedReason: 'Near-threshold response requires instructor review',
+              requiresInstructorReview: true,
+            }
+          : question
+      );
+
+      render(
+        <GradingForm
+          attemptId="attempt-1"
+          questions={projectedQuestions}
+          maxScore={100}
+          {...mockHandlers}
+        />,
+        { wrapper: createWrapper() }
+      );
+
+      expect(screen.getByText(/projected grading/i)).toBeInTheDocument();
+      expect(screen.getByText(/confidence 76%/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /use projected score/i })).toBeInTheDocument();
+    });
   });
 
   describe('Validation', () => {
@@ -262,6 +291,36 @@ describe('GradingForm', () => {
         // Check for 100% being displayed
         const percentageElements = screen.getAllByText(/100%/);
         expect(percentageElements.length).toBeGreaterThan(0);
+      });
+    });
+
+    it('should apply projected score when requested', async () => {
+      const user = userEvent.setup();
+      const projectedQuestions = mockQuestions.map((question, index) =>
+        index === 2
+          ? {
+              ...question,
+              projectedScore: 11,
+              projectedReason: 'Projected by heuristic',
+              requiresInstructorReview: true,
+            }
+          : question
+      );
+
+      render(
+        <GradingForm
+          attemptId="attempt-1"
+          questions={projectedQuestions}
+          maxScore={30}
+          {...mockHandlers}
+        />,
+        { wrapper: createWrapper() }
+      );
+
+      await user.click(screen.getByRole('button', { name: /use projected score/i }));
+
+      await waitFor(() => {
+        expect(screen.getByLabelText(/score for question 3/i)).toHaveValue(11);
       });
     });
   });

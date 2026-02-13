@@ -44,6 +44,14 @@ export interface ExamQuestion {
   feedback?: string | null;
   explanation?: string;
   hasAnswer?: boolean;
+  projectedScore?: number;
+  projectedCorrect?: boolean;
+  projectedConfidence?: number;
+  projectedMethod?: string;
+  projectedReason?: string;
+  requiresInstructorReview?: boolean;
+  projectedAt?: string;
+  reviewedAt?: string;
 }
 
 /**
@@ -114,6 +122,8 @@ export interface ExamAttempt {
     lastName: string;
   } | null;
   feedback?: string | null;
+  projectedPendingReviewCount?: number;
+  hasProjectedPendingReview?: boolean;
   metadata?: {
     ipAddress?: string;
     userAgent?: string;
@@ -157,6 +167,8 @@ export interface ExamAttemptListItem {
   gradedAt: string | null;
   timeSpent: number;
   remainingTime: number | null;
+  projectedPendingReviewCount?: number;
+  hasProjectedPendingReview?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -169,7 +181,7 @@ export interface ExamResult {
   examTitle: string;
   learnerName: string;
   attemptNumber: number;
-  status: 'graded';
+  status: 'submitted' | 'graded';
   score: number;
   maxScore: number;
   percentage: number;
@@ -190,6 +202,9 @@ export interface ExamResult {
     firstName: string;
     lastName: string;
   } | null;
+  gradingComplete: boolean;
+  feedbackReleased: boolean;
+  pendingInstructorReviewCount?: number;
   allowReview: boolean;
   showCorrectAnswers: boolean;
 }

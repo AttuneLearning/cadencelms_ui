@@ -90,6 +90,8 @@ export function GradingForm({
   const {
     control,
     handleSubmit,
+    getValues,
+    setValue,
     watch,
     formState: { errors },
   } = useForm<GradeFormData>({
@@ -201,6 +203,17 @@ export function GradingForm({
         <CardContent className="space-y-6">
           {questions.map((question, index) => {
             const error = getQuestionError(question.id);
+            const hasProjectedMetadata =
+              question.projectedScore !== undefined ||
+              question.projectedCorrect !== undefined ||
+              question.projectedConfidence !== undefined ||
+              !!question.projectedMethod ||
+              !!question.projectedReason ||
+              question.requiresInstructorReview;
+            const projectedConfidencePercent =
+              question.projectedConfidence !== undefined
+                ? Math.round(question.projectedConfidence * 100)
+                : null;
 
             return (
               <div key={question.id}>
@@ -239,6 +252,68 @@ export function GradingForm({
                       )}
                     </div>
                   </div>
+
+                  {/* Projected Grading Context */}
+                  {hasProjectedMetadata && (
+                    <Alert
+                      className={question.requiresInstructorReview ? 'border-amber-300 bg-amber-50' : ''}
+                      data-testid={`projected-grading-${question.id}`}
+                    >
+                      <AlertDescription>
+                        <div className="space-y-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Badge variant="outline">Projected Grading</Badge>
+                            {question.requiresInstructorReview && (
+                              <Badge variant="secondary">Instructor Review Required</Badge>
+                            )}
+                            {question.projectedMethod && (
+                              <Badge variant="secondary" className="capitalize">
+                                {question.projectedMethod.replace(/[_-]/g, ' ')}
+                              </Badge>
+                            )}
+                            {projectedConfidencePercent !== null && (
+                              <Badge variant="secondary">
+                                Confidence {projectedConfidencePercent}%
+                              </Badge>
+                            )}
+                          </div>
+                          {question.projectedScore !== undefined && (
+                            <div className="text-sm">
+                              Projected score: <span className="font-semibold">{question.projectedScore}</span> / {question.points}
+                            </div>
+                          )}
+                          {question.projectedReason && (
+                            <p className="text-sm text-muted-foreground">{question.projectedReason}</p>
+                          )}
+                          {question.projectedScore !== undefined && (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setValue(
+                                  `questionGrades.${index}.scoreEarned`,
+                                  question.projectedScore!,
+                                  { shouldDirty: true, shouldValidate: true }
+                                );
+                                const existingFeedback = getValues(`questionGrades.${index}.feedback`);
+                                if (!existingFeedback && question.projectedReason) {
+                                  setValue(
+                                    `questionGrades.${index}.feedback`,
+                                    question.projectedReason,
+                                    { shouldDirty: true }
+                                  );
+                                }
+                              }}
+                              data-testid={`use-projected-score-${question.id}`}
+                            >
+                              Use projected score
+                            </Button>
+                          )}
+                        </div>
+                      </AlertDescription>
+                    </Alert>
+                  )}
 
                   {/* Score Input */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

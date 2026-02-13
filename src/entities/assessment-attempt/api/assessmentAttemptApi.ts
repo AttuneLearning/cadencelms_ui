@@ -233,6 +233,10 @@ function normalizeCourseContexts(value: unknown) {
 function normalizeQuestion(rawQuestion: unknown, index: number): ExamQuestion {
   const question = asRecord(rawQuestion) || {};
   const snapshot = asRecord(question.questionSnapshot) || {};
+  const projection =
+    asRecord(question.projection) ??
+    asRecord(question.projected) ??
+    {};
   const rendererType = mapRendererQuestionType(
     asString(question.questionType) ??
       asString(snapshot.questionType) ??
@@ -264,6 +268,43 @@ function normalizeQuestion(rawQuestion: unknown, index: number): ExamQuestion {
     scoreEarned: asNumber(question.scoreEarned) ?? asNumber(question.pointsEarned) ?? undefined,
     feedback: asString(question.feedback),
     explanation: asString(question.explanation) ?? asString(snapshot.explanation) ?? undefined,
+    projectedScore:
+      asNumber(question.projectedScore) ??
+      asNumber((projection as UnknownRecord).projectedScore) ??
+      asNumber((projection as UnknownRecord).score) ??
+      undefined,
+    projectedCorrect:
+      asBoolean(question.projectedCorrect) ??
+      asBoolean((projection as UnknownRecord).projectedCorrect) ??
+      asBoolean((projection as UnknownRecord).correct) ??
+      undefined,
+    projectedConfidence:
+      asNumber(question.projectedConfidence) ??
+      asNumber((projection as UnknownRecord).projectedConfidence) ??
+      asNumber((projection as UnknownRecord).confidence) ??
+      undefined,
+    projectedMethod:
+      asString(question.projectedMethod) ??
+      asString((projection as UnknownRecord).projectedMethod) ??
+      asString((projection as UnknownRecord).method) ??
+      undefined,
+    projectedReason:
+      asString(question.projectedReason) ??
+      asString((projection as UnknownRecord).projectedReason) ??
+      asString((projection as UnknownRecord).reason) ??
+      undefined,
+    requiresInstructorReview:
+      asBoolean(question.requiresInstructorReview) ??
+      asBoolean((projection as UnknownRecord).requiresInstructorReview) ??
+      false,
+    projectedAt:
+      asString(question.projectedAt) ??
+      asString((projection as UnknownRecord).projectedAt) ??
+      undefined,
+    reviewedAt:
+      asString(question.reviewedAt) ??
+      asString((projection as UnknownRecord).reviewedAt) ??
+      undefined,
     hasAnswer:
       asBoolean(question.hasAnswer) ??
       (userAnswer !== undefined && userAnswer !== null && userAnswer !== ''),
@@ -324,6 +365,20 @@ function normalizeAttempt(rawAttempt: unknown, assessmentIdHint?: string): ExamA
     normalizeCourseContext(attempt.course) ??
     null;
   const courseContexts = normalizeCourseContexts(attempt.courseContexts);
+  const derivedPendingProjectedReviewCount = questions.filter(
+    (question) => question.requiresInstructorReview
+  ).length;
+  const pendingProjectedReviewCount =
+    asNumber(attempt.projectedPendingReviewCount) ??
+    asNumber(attempt.pendingInstructorReviewCount) ??
+    asNumber(asRecord(attempt.reviewSummary)?.projectedPendingReviewCount) ??
+    asNumber(asRecord(attempt.reviewSummary)?.pendingInstructorReviewCount) ??
+    asNumber(asRecord(attempt.reviewSummary)?.pendingCount) ??
+    derivedPendingProjectedReviewCount;
+  const hasProjectedPendingReview =
+    asBoolean(attempt.hasProjectedPendingReview) ??
+    asBoolean(attempt.requiresInstructorReview) ??
+    pendingProjectedReviewCount > 0;
 
   return {
     id: readId(attempt.id) ?? readId(attempt._id) ?? '',
@@ -386,6 +441,8 @@ function normalizeAttempt(rawAttempt: unknown, assessmentIdHint?: string): ExamA
       asString(attempt.feedback) ??
       asString(asRecord(attempt.feedback)?.overallFeedback) ??
       null,
+    projectedPendingReviewCount: pendingProjectedReviewCount,
+    hasProjectedPendingReview,
     createdAt: asString(attempt.createdAt) ?? '',
     updatedAt: asString(attempt.updatedAt) ?? '',
   };
@@ -502,37 +559,65 @@ function normalizeSubmitResponse(rawResponse: unknown): SubmitExamResponse {
 
 function normalizeResult(rawResult: unknown, assessmentIdHint: string): ExamResult {
   const result = asRecord(rawResult) || {};
-
-  // If already legacy exam-result shape, preserve it.
-  if (asString(result.attemptId) && Array.isArray(result.questionResults)) {
-    return rawResult as ExamResult;
-  }
-
+  const scoring = asRecord(result.scoring) || {};
   const attempt = normalizeAttempt(rawResult, assessmentIdHint);
   const feedbackSettings = asRecord(result.feedbackSettings) || {};
+  const rawQuestionResults = asArray(result.questionResults);
+  const normalizedQuestionResults =
+    rawQuestionResults.length > 0
+      ? rawQuestionResults.map((question, index) => normalizeQuestion(question, index))
+      : attempt.questions;
 
-  const totalQuestions = attempt.questions.length;
-  const answeredCount = attempt.questions.filter((question) => question.hasAnswer).length;
-  const correctCount = attempt.questions.filter((question) => question.isCorrect === true).length;
-  const incorrectCount = attempt.questions.filter((question) => question.isCorrect === false).length;
-  const unansweredCount = Math.max(0, totalQuestions - answeredCount);
+  const status = normalizeStatus(result.status ?? attempt.status);
+  const gradingComplete =
+    asBoolean(result.gradingComplete) ??
+    asBoolean(scoring.gradingComplete) ??
+    status === 'graded';
+  const normalizedStatus: ExamResult['status'] = gradingComplete ? 'graded' : 'submitted';
+
+  const totalQuestions = normalizedQuestionResults.length;
+  const answeredCount =
+    asNumber(asRecord(result.summary)?.answeredCount) ??
+    normalizedQuestionResults.filter((question) => question.hasAnswer).length;
+  const correctCount =
+    asNumber(asRecord(result.summary)?.correctCount) ??
+    normalizedQuestionResults.filter((question) => question.isCorrect === true).length;
+  const incorrectCount =
+    asNumber(asRecord(result.summary)?.incorrectCount) ??
+    normalizedQuestionResults.filter((question) => question.isCorrect === false).length;
+  const unansweredCount =
+    asNumber(asRecord(result.summary)?.unansweredCount) ??
+    Math.max(0, totalQuestions - answeredCount);
 
   const gradeLetter = attempt.gradeLetter ?? deriveGradeLetter(attempt.percentage);
   const showCorrectAnswers =
     asBoolean(result.showCorrectAnswers) ??
     asBoolean(feedbackSettings.showCorrectAnswers) ??
-    true;
+    gradingComplete;
   const allowReview =
     asBoolean(result.allowReview) ??
     asBoolean(feedbackSettings.allowReview) ??
-    true;
+    gradingComplete;
+  const pendingInstructorReviewCount =
+    asNumber(result.pendingInstructorReviewCount) ??
+    asNumber(result.projectedPendingReviewCount) ??
+    asNumber(asRecord(result.reviewSummary)?.pendingInstructorReviewCount) ??
+    attempt.projectedPendingReviewCount ??
+    normalizedQuestionResults.filter((question) => question.requiresInstructorReview).length;
+  const feedbackReleased = gradingComplete;
+  const questionResults = feedbackReleased
+    ? normalizedQuestionResults
+    : normalizedQuestionResults.map((question) => ({
+        ...question,
+        feedback: null,
+      }));
 
   return {
     attemptId: attempt.id,
     examTitle: attempt.examTitle,
     learnerName: attempt.learnerName || 'Learner',
     attemptNumber: attempt.attemptNumber,
-    status: 'graded',
+    status: normalizedStatus,
     score: attempt.score,
     maxScore: attempt.maxScore,
     percentage: attempt.percentage,
@@ -540,7 +625,6 @@ function normalizeResult(rawResult: unknown, assessmentIdHint: string): ExamResu
     gradeLetter,
     passingScore: asNumber(result.passingScore) ?? 70,
     submittedAt: attempt.submittedAt || '',
-    gradedAt: attempt.gradedAt || '',
     timeSpent: attempt.timeSpent,
     timeLimit: attempt.timeLimit,
     maxAttempts: asNumber(result.maxAttempts),
@@ -553,14 +637,27 @@ function normalizeResult(rawResult: unknown, assessmentIdHint: string): ExamResu
       incorrectCount,
       partialCreditCount: 0,
     },
-    questionResults: attempt.questions,
+    questionResults,
     overallFeedback:
-      asString(result.overallFeedback) ??
-      asString(attempt.feedback) ??
-      null,
-    gradedBy: attempt.gradedBy ?? null,
-    allowReview,
-    showCorrectAnswers,
+      feedbackReleased
+        ? asString(result.overallFeedback) ??
+          asString(attempt.feedback) ??
+          null
+        : null,
+    gradedBy:
+      gradingComplete
+        ? attempt.gradedBy ?? null
+        : null,
+    gradingComplete,
+    feedbackReleased,
+    pendingInstructorReviewCount:
+      pendingInstructorReviewCount > 0 ? pendingInstructorReviewCount : undefined,
+    allowReview: gradingComplete ? allowReview : false,
+    showCorrectAnswers: gradingComplete ? showCorrectAnswers : false,
+    gradedAt:
+      gradingComplete
+        ? attempt.gradedAt || asString(result.gradedAt) || ''
+        : '',
   };
 }
 
@@ -570,6 +667,13 @@ function normalizeAttemptListItem(rawAttempt: unknown, assessmentIdHint: string)
     id: attempt.id,
     examId: attempt.examId,
     examTitle: attempt.examTitle,
+    ...(attempt.courseId ? { courseId: attempt.courseId } : {}),
+    ...(attempt.courseCode ? { courseCode: attempt.courseCode } : {}),
+    ...(attempt.courseName ? { courseName: attempt.courseName } : {}),
+    ...(attempt.courseVersionId ? { courseVersionId: attempt.courseVersionId } : {}),
+    ...(attempt.courseContexts && attempt.courseContexts.length > 0
+      ? { courseContexts: attempt.courseContexts }
+      : {}),
     learnerId: attempt.learnerId,
     learnerName: attempt.learnerName || 'Learner',
     attemptNumber: attempt.attemptNumber,
@@ -584,6 +688,10 @@ function normalizeAttemptListItem(rawAttempt: unknown, assessmentIdHint: string)
     gradedAt: attempt.gradedAt ?? null,
     timeSpent: attempt.timeSpent,
     remainingTime: attempt.remainingTime,
+    ...(attempt.projectedPendingReviewCount && attempt.projectedPendingReviewCount > 0
+      ? { projectedPendingReviewCount: attempt.projectedPendingReviewCount }
+      : {}),
+    ...(attempt.hasProjectedPendingReview ? { hasProjectedPendingReview: true } : {}),
     createdAt: attempt.createdAt,
     updatedAt: attempt.updatedAt,
   };
