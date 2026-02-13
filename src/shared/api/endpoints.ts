@@ -191,18 +191,8 @@ export const endpoints = {
     attempts: (exerciseId: string) => `/content/exercises/${exerciseId}/attempts`,
   },
 
-  examAttempts: {
-    list: '/exam-attempts',
-    byId: (id: string) => `/exam-attempts/${id}`,
-    create: '/exam-attempts',
-    submitAnswers: (id: string) => `/exam-attempts/${id}/answers`,
-    submit: (id: string) => `/exam-attempts/${id}/submit`,
-    results: (id: string) => `/exam-attempts/${id}/results`,
-    grade: (id: string) => `/exam-attempts/${id}/grade`,
-    byExam: (examId: string) => `/exam-attempts/exam/${examId}`,
-  },
-
   assessmentAttempts: {
+    // Learner lifecycle keyed by assessmentId
     start: (assessmentId: string) => `/assessments/${assessmentId}/attempts/start`,
     save: (assessmentId: string, attemptId: string) =>
       `/assessments/${assessmentId}/attempts/${attemptId}/save`,
@@ -214,6 +204,10 @@ export const endpoints = {
     my: (assessmentId: string) => `/assessments/${assessmentId}/attempts/my`,
     byId: (assessmentId: string, attemptId: string) =>
       `/assessments/${assessmentId}/attempts/${attemptId}`,
+    // Staff aggregate routes keyed by attemptId
+    listAll: '/assessment-attempts',
+    byAttemptId: (attemptId: string) => `/assessment-attempts/${attemptId}`,
+    gradeByAttemptId: (attemptId: string) => `/assessment-attempts/${attemptId}/grade`,
   },
 
   certificates: {

@@ -78,6 +78,130 @@ function buildAssessmentAttempt(
   };
 }
 
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return typeof value === 'object' && value !== null ? (value as Record<string, unknown>) : null;
+}
+
+function asArray(value: unknown): unknown[] {
+  return Array.isArray(value) ? value : [];
+}
+
+function asString(value: unknown): string | null {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') return String(value);
+  return null;
+}
+
+function asNumber(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string') {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
+function mapAttemptSummaryToAggregate(rawAttempt: unknown): Record<string, unknown> {
+  const attempt = asRecord(rawAttempt) || {};
+  const id = asString(attempt.id) || 'attempt-unknown';
+  const assessmentId = asString(attempt.examId) || asString(attempt.assessmentId) || 'assessment-1';
+  const status = asString(attempt.status) || 'submitted';
+  const score = asNumber(attempt.score) || 0;
+  const maxScore = asNumber(attempt.maxScore) || 100;
+  const percentage = asNumber(attempt.percentage) || 0;
+  const passed = typeof attempt.passed === 'boolean' ? attempt.passed : percentage >= 60;
+
+  return {
+    id,
+    assessmentId,
+    assessmentTitle: asString(attempt.examTitle) || 'Assessment',
+    courseId: asString(attempt.courseId) || 'course-1',
+    courseCode: asString(attempt.courseCode) || 'CBT101',
+    courseName: asString(attempt.courseName) || 'CBT Fundamentals',
+    courseVersionId: asString(attempt.courseVersionId) || 'course-version-1',
+    courseContexts: [
+      {
+        courseId: asString(attempt.courseId) || 'course-1',
+        courseCode: asString(attempt.courseCode) || 'CBT101',
+        courseName: asString(attempt.courseName) || 'CBT Fundamentals',
+        courseVersionId: asString(attempt.courseVersionId) || 'course-version-1',
+      },
+    ],
+    learnerId: asString(attempt.learnerId) || 'learner-1',
+    learnerName: asString(attempt.learnerName) || 'Learner',
+    learnerEmail: asString(attempt.learnerEmail) || 'learner@example.com',
+    enrollmentId: asString(attempt.enrollmentId) || 'enrollment-1',
+    attemptNumber: asNumber(attempt.attemptNumber) || 1,
+    status,
+    scoring: {
+      rawScore: score,
+      maxScore,
+      percentageScore: percentage,
+      passed,
+      gradingComplete: status === 'graded',
+      requiresManualGrading: status !== 'graded',
+    },
+    timing: {
+      startedAt: asString(attempt.startedAt) || new Date().toISOString(),
+      submittedAt: asString(attempt.submittedAt),
+      timeSpentSeconds: asNumber(attempt.timeSpent) || 0,
+      timeLimitSeconds: asNumber(attempt.timeLimit) || 1800,
+    },
+    questions: asArray(attempt.questions),
+    createdAt: asString(attempt.createdAt) || new Date().toISOString(),
+    updatedAt: asString(attempt.updatedAt) || new Date().toISOString(),
+  };
+}
+
+function buildAggregateDetail(attemptId: string): Record<string, unknown> {
+  const fromStore = assessmentAttemptStore.get(attemptId);
+  if (fromStore) {
+    return {
+      ...mapAttemptSummaryToAggregate(fromStore),
+      ...fromStore,
+      id: attemptId,
+      assessmentId: asString(fromStore.examId) || asString(fromStore.assessmentId) || 'assessment-1',
+      assessmentTitle: asString(fromStore.examTitle) || 'Assessment',
+      courseId: asString(fromStore.courseId) || 'course-1',
+      courseCode: asString(fromStore.courseCode) || 'CBT101',
+      courseName: asString(fromStore.courseName) || 'CBT Fundamentals',
+      courseVersionId: asString(fromStore.courseVersionId) || 'course-version-1',
+      courseContexts:
+        asArray(fromStore.courseContexts).length > 0
+          ? fromStore.courseContexts
+          : [
+              {
+                courseId: asString(fromStore.courseId) || 'course-1',
+                courseCode: asString(fromStore.courseCode) || 'CBT101',
+                courseName: asString(fromStore.courseName) || 'CBT Fundamentals',
+                courseVersionId: asString(fromStore.courseVersionId) || 'course-version-1',
+              },
+            ],
+    };
+  }
+
+  const fallback = mockExamAttemptListItems.find((attempt) => attempt.id === attemptId) || mockExamAttemptListItems[0];
+  const detail = buildAssessmentAttempt((fallback?.examId as string) || 'assessment-1', attemptId);
+
+  return {
+    ...mapAttemptSummaryToAggregate(fallback || {}),
+    ...detail,
+    id: attemptId,
+    assessmentId: (fallback?.examId as string) || 'assessment-1',
+    assessmentTitle: fallback?.examTitle || 'Assessment',
+    learnerName: fallback?.learnerName || 'Learner',
+    status: fallback?.status || 'submitted',
+    score: fallback?.score ?? 0,
+    maxScore: fallback?.maxScore ?? 100,
+    percentage: fallback?.percentage ?? 0,
+    passed: fallback?.passed ?? false,
+    submittedAt: fallback?.submittedAt,
+    gradedAt: fallback?.gradedAt,
+    timeSpent: fallback?.timeSpent ?? 0,
+    questions: mockExamResult.questionResults,
+  };
+}
+
 /**
  * MSW Request Handlers
  */
@@ -232,6 +356,172 @@ export const handlers = [
         ...attempt,
         id: attemptId as string,
         examId: assessmentId as string,
+      },
+    });
+  }),
+
+  // GET /assessment-attempts - Staff aggregate attempt listing
+  http.get(`${baseUrl}/assessment-attempts`, ({ request }) => {
+    const url = new URL(request.url);
+    const page = parseInt(url.searchParams.get('page') || '1');
+    const limit = parseInt(url.searchParams.get('limit') || '20');
+    const search = (url.searchParams.get('search') || '').toLowerCase();
+    const status = url.searchParams.get('status');
+    const assessmentId = url.searchParams.get('assessmentId');
+
+    const aggregateAttempts = [
+      ...mockExamAttemptListItems.map((attempt) => mapAttemptSummaryToAggregate(attempt)),
+      ...Array.from(assessmentAttemptStore.values()).map((attempt) =>
+        mapAttemptSummaryToAggregate(attempt)
+      ),
+    ];
+
+    let filtered = aggregateAttempts;
+
+    if (assessmentId) {
+      filtered = filtered.filter((attempt) => attempt.assessmentId === assessmentId);
+    }
+
+    if (status) {
+      filtered = filtered.filter((attempt) => attempt.status === status);
+    }
+
+    if (search) {
+      filtered = filtered.filter((attempt) => {
+        const learnerName = asString(attempt.learnerName)?.toLowerCase() || '';
+        const learnerEmail = asString(attempt.learnerEmail)?.toLowerCase() || '';
+        const assessmentTitle = asString(attempt.assessmentTitle)?.toLowerCase() || '';
+        return (
+          learnerName.includes(search) ||
+          learnerEmail.includes(search) ||
+          assessmentTitle.includes(search) ||
+          asString(attempt.id)?.toLowerCase().includes(search)
+        );
+      });
+    }
+
+    const total = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total / limit));
+    const start = (page - 1) * limit;
+    const paginated = filtered.slice(start, start + limit);
+
+    return HttpResponse.json({
+      success: true,
+      data: {
+        attempts: paginated,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages,
+          hasNext: page < totalPages,
+          hasPrev: page > 1,
+        },
+      },
+    });
+  }),
+
+  // GET /assessment-attempts/:attemptId - Staff attempt detail by attemptId
+  http.get(`${baseUrl}/assessment-attempts/:attemptId`, ({ params }) => {
+    const { attemptId } = params;
+    const detail = buildAggregateDetail(attemptId as string);
+
+    return HttpResponse.json({
+      success: true,
+      data: detail,
+    });
+  }),
+
+  // POST /assessment-attempts/:attemptId/grade - Staff batch grading by attemptId
+  http.post(`${baseUrl}/assessment-attempts/:attemptId/grade`, async ({ params, request }) => {
+    const { attemptId } = params;
+    const body = (await request.json()) as {
+      questionGrades?: Array<{
+        questionIndex?: number;
+        questionId?: string;
+        scoreEarned?: number;
+        feedback?: string;
+      }>;
+      overallFeedback?: string;
+      notifyLearner?: boolean;
+    };
+
+    if (!Array.isArray(body.questionGrades) || body.questionGrades.length === 0) {
+      return HttpResponse.json(
+        {
+          success: false,
+          code: 'VALIDATION_ERROR',
+          message:
+            'questionGrades is required; each item must include questionIndex and scoreEarned',
+        },
+        { status: 400 }
+      );
+    }
+
+    const hasInvalidGrade = body.questionGrades.some(
+      (grade) =>
+        typeof grade.questionIndex !== 'number' ||
+        typeof grade.scoreEarned !== 'number' ||
+        grade.scoreEarned < 0
+    );
+    if (hasInvalidGrade) {
+      return HttpResponse.json(
+        {
+          success: false,
+          code: 'VALIDATION_ERROR',
+          message:
+            'questionGrades is required; each item must include questionIndex and scoreEarned',
+        },
+        { status: 400 }
+      );
+    }
+
+    const attemptDetail = buildAggregateDetail(attemptId as string);
+    const questions = asArray(attemptDetail.questions);
+    const gradingComplete = body.questionGrades.length >= questions.length;
+
+    const score = body.questionGrades.reduce((sum, grade) => sum + (grade.scoreEarned || 0), 0);
+    const maxScore =
+      questions.length > 0
+        ? questions.reduce((sum, question) => sum + (asNumber(asRecord(question)?.points) || 0), 0)
+        : 100;
+
+    const gradedQuestions = body.questionGrades.map((grade, index) => ({
+      questionId: grade.questionId || asString(asRecord(questions[grade.questionIndex || 0])?.id) || `q-${index + 1}`,
+      questionIndex: grade.questionIndex as number,
+      learningUnitQuestionId: `luq-${index + 1}`,
+      scoreEarned: grade.scoreEarned as number,
+      pointsPossible: asNumber(asRecord(questions[grade.questionIndex || 0])?.points) || 10,
+      feedback: grade.feedback,
+      gradedAt: new Date().toISOString(),
+      gradedBy: 'staff-1',
+    }));
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Attempt graded successfully',
+      data: {
+        attemptId: attemptId as string,
+        status: gradingComplete ? 'graded' : 'submitted',
+        learningUnitId: asString(attemptDetail.learningUnitId) || undefined,
+        scoring: {
+          rawScore: score,
+          maxScore,
+          percentageScore: maxScore > 0 ? (score / maxScore) * 100 : 0,
+          passed: maxScore > 0 ? score / maxScore >= 0.6 : false,
+          gradingComplete,
+          requiresManualGrading: !gradingComplete,
+        },
+        notification: {
+          requested: !!body.notifyLearner,
+          deferred: !!body.notifyLearner && !gradingComplete,
+          notifiedAt:
+            body.notifyLearner && gradingComplete
+              ? new Date().toISOString()
+              : undefined,
+        },
+        questionGrades: gradedQuestions,
+        overallFeedback: body.overallFeedback,
       },
     });
   }),

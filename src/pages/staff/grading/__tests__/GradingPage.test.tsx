@@ -85,7 +85,7 @@ describe('GradingPage', () => {
       ];
 
       server.use(
-        http.get(`${baseUrl}/exam-attempts`, () => {
+        http.get(`${baseUrl}/assessment-attempts`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -113,7 +113,7 @@ describe('GradingPage', () => {
 
     it('should display empty state when no submissions', async () => {
       server.use(
-        http.get(`${baseUrl}/exam-attempts`, () => {
+        http.get(`${baseUrl}/assessment-attempts`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -140,7 +140,7 @@ describe('GradingPage', () => {
 
     it('should handle API errors gracefully', async () => {
       server.use(
-        http.get(`${baseUrl}/exam-attempts`, () => {
+        http.get(`${baseUrl}/assessment-attempts`, () => {
           return HttpResponse.json(
             { success: false, error: 'Failed to fetch submissions' },
             { status: 500 }
@@ -161,7 +161,7 @@ describe('GradingPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/exam-attempts`, ({ request }) => {
+        http.get(`${baseUrl}/assessment-attempts`, ({ request }) => {
           const url = new URL(request.url);
           const status = url.searchParams.get('status');
 
@@ -220,7 +220,7 @@ describe('GradingPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/exam-attempts`, ({ request }) => {
+        http.get(`${baseUrl}/assessment-attempts`, ({ request }) => {
           const url = new URL(request.url);
           const search = url.searchParams.get('search');
 
@@ -284,7 +284,7 @@ describe('GradingPage', () => {
   describe('Pagination', () => {
     it('should display pagination controls', async () => {
       server.use(
-        http.get(`${baseUrl}/exam-attempts`, () => {
+        http.get(`${baseUrl}/assessment-attempts`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -318,7 +318,7 @@ describe('GradingPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/exam-attempts`, ({ request }) => {
+        http.get(`${baseUrl}/assessment-attempts`, ({ request }) => {
           const url = new URL(request.url);
           const page = parseInt(url.searchParams.get('page') || '1');
 
@@ -364,7 +364,7 @@ describe('GradingPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/exam-attempts`, () => {
+        http.get(`${baseUrl}/assessment-attempts`, () => {
           return HttpResponse.json({
             success: true,
             data: {
@@ -411,7 +411,7 @@ describe('GradingPage', () => {
       const user = userEvent.setup();
 
       server.use(
-        http.get(`${baseUrl}/exam-attempts`, () => {
+        http.get(`${baseUrl}/assessment-attempts`, () => {
           return HttpResponse.json({
             success: true,
             data: {

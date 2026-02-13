@@ -6,17 +6,15 @@
 import { client } from '@/shared/api/client';
 import { endpoints } from '@/shared/api/endpoints';
 import type { ApiResponse } from '@/shared/api/types';
+import {
+  getAssessmentAttemptByAttemptId,
+  gradeAssessmentAttemptByAttemptId,
+  listAssessmentAttempts,
+} from '@/entities/assessment-attempt/api/assessmentAttemptApi';
 import type {
   ExamAttempt,
   ExamAttemptsListResponse,
   ExamAttemptListItem,
-  StartExamAttemptRequest,
-  StartExamAttemptResponse,
-  SubmitAnswersRequest,
-  SubmitAnswersResponse,
-  SubmitExamRequest,
-  SubmitExamResponse,
-  ExamResult,
   GradeExamRequest,
   GradeExamResponse,
   ExamAttemptsByExamResponse,
@@ -30,72 +28,14 @@ import type {
 export async function listExamAttempts(
   params?: ListExamAttemptsParams
 ): Promise<ExamAttemptsListResponse> {
-  const response = await client.get<ApiResponse<ExamAttemptsListResponse>>(
-    endpoints.examAttempts.list,
-    { params }
-  );
-  return response.data.data;
+  return listAssessmentAttempts(params);
 }
 
 /**
  * Get a single exam attempt by ID
  */
 export async function getExamAttempt(id: string): Promise<ExamAttempt> {
-  const response = await client.get<ApiResponse<ExamAttempt>>(
-    endpoints.examAttempts.byId(id)
-  );
-  return response.data.data;
-}
-
-/**
- * Start a new exam attempt
- */
-export async function startExamAttempt(
-  data: StartExamAttemptRequest
-): Promise<StartExamAttemptResponse> {
-  const response = await client.post<ApiResponse<StartExamAttemptResponse>>(
-    endpoints.examAttempts.create,
-    data
-  );
-  return response.data.data;
-}
-
-/**
- * Submit or update answers for questions
- */
-export async function submitAnswers(
-  attemptId: string,
-  data: SubmitAnswersRequest
-): Promise<SubmitAnswersResponse> {
-  const response = await client.post<ApiResponse<SubmitAnswersResponse>>(
-    endpoints.examAttempts.submitAnswers(attemptId),
-    data
-  );
-  return response.data.data;
-}
-
-/**
- * Submit exam for grading (final submission)
- */
-export async function submitExam(
-  attemptId: string,
-  data?: SubmitExamRequest
-): Promise<SubmitExamResponse> {
-  const response = await client.post<ApiResponse<SubmitExamResponse>>(
-    endpoints.examAttempts.submit(attemptId),
-    data || { confirmSubmit: true }
-  );
-  return response.data.data;
-}
-
-/**
- * Get graded exam results with detailed feedback
- */
-export async function getExamResults(attemptId: string): Promise<ExamResult> {
-  const response = await client.get<ApiResponse<ExamResult>>(
-    endpoints.examAttempts.results(attemptId)
-  );
-  return response.data.data;
+  return getAssessmentAttemptByAttemptId(id);
 }
 
 /**
@@ -105,11 +45,7 @@ export async function gradeExam(
   attemptId: string,
   data: GradeExamRequest
 ): Promise<GradeExamResponse> {
-  const response = await client.post<ApiResponse<GradeExamResponse>>(
-    endpoints.examAttempts.grade(attemptId),
-    data
-  );
-  return response.data.data;
+  return gradeAssessmentAttemptByAttemptId(attemptId, data);
 }
 
 /**
@@ -133,9 +69,50 @@ export async function listAttemptsByExam(
   examId: string,
   params?: ListAttemptsByExamParams
 ): Promise<ExamAttemptsByExamResponse> {
-  const response = await client.get<ApiResponse<ExamAttemptsByExamResponse>>(
-    endpoints.examAttempts.byExam(examId),
-    { params }
-  );
-  return response.data.data;
+  const listResponse = await listAssessmentAttempts({
+    assessmentId: examId,
+    ...params,
+  });
+
+  const completedAttempts = listResponse.attempts.filter((attempt) => attempt.status === 'graded');
+  const averageScore =
+    completedAttempts.length > 0
+      ? completedAttempts.reduce((sum, attempt) => sum + attempt.score, 0) /
+        completedAttempts.length
+      : 0;
+  const averagePercentage =
+    completedAttempts.length > 0
+      ? completedAttempts.reduce((sum, attempt) => sum + attempt.percentage, 0) /
+        completedAttempts.length
+      : 0;
+  const passedCount = completedAttempts.filter((attempt) => attempt.passed).length;
+
+  return {
+    examId,
+    examTitle: listResponse.attempts[0]?.examTitle || 'Assessment',
+    statistics: {
+      totalAttempts: listResponse.attempts.length,
+      completedAttempts: completedAttempts.length,
+      inProgressAttempts: listResponse.attempts.filter((attempt) =>
+        attempt.status === 'in_progress' || attempt.status === 'started'
+      ).length,
+      averageScore,
+      averagePercentage,
+      passRate:
+        completedAttempts.length > 0
+          ? (passedCount / completedAttempts.length) * 100
+          : 0,
+      averageTimeSpent:
+        listResponse.attempts.length > 0
+          ? listResponse.attempts.reduce((sum, attempt) => sum + attempt.timeSpent, 0) /
+            listResponse.attempts.length
+          : 0,
+    },
+    attempts: listResponse.attempts.map((attempt) => ({
+      ...attempt,
+      learnerEmail: '',
+      requiresGrading: attempt.status === 'submitted' || attempt.status === 'grading',
+    })),
+    pagination: listResponse.pagination,
+  };
 }

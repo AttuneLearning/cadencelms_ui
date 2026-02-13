@@ -13,6 +13,9 @@ import type {
   ExamAttemptsListResponse,
   ExamQuestion,
   ExamResult,
+  GradeExamRequest,
+  GradeExamResponse,
+  ListExamAttemptsParams,
   StartExamAttemptResponse,
   SubmitExamRequest,
   SubmitExamResponse,
@@ -179,6 +182,54 @@ function deriveGradeLetter(percentage: number): string {
   return 'F';
 }
 
+function normalizeCourseContext(raw: unknown):
+  | {
+      courseId: string;
+      courseCode?: string;
+      courseName?: string;
+      courseVersionId?: string;
+    }
+  | null {
+  const record = asRecord(raw);
+  if (!record) return null;
+
+  const courseId =
+    readId(record.courseId) ??
+    readId(record.id) ??
+    readId(record._id);
+  if (!courseId) return null;
+
+  return {
+    courseId,
+    courseCode: asString(record.courseCode) ?? asString(record.code) ?? undefined,
+    courseName:
+      asString(record.courseName) ??
+      asString(record.courseTitle) ??
+      asString(record.title) ??
+      asString(record.name) ??
+      undefined,
+    courseVersionId:
+      readId(record.courseVersionId) ??
+      readId(record.versionId) ??
+      undefined,
+  };
+}
+
+function normalizeCourseContexts(value: unknown) {
+  return asArray(value)
+    .map((context) => normalizeCourseContext(context))
+    .filter(
+      (
+        context
+      ): context is {
+        courseId: string;
+        courseCode?: string;
+        courseName?: string;
+        courseVersionId?: string;
+      } => !!context
+    );
+}
+
 function normalizeQuestion(rawQuestion: unknown, index: number): ExamQuestion {
   const question = asRecord(rawQuestion) || {};
   const snapshot = asRecord(question.questionSnapshot) || {};
@@ -263,6 +314,16 @@ function normalizeAttempt(rawAttempt: unknown, assessmentIdHint?: string): ExamA
 
   const feedbackSettings = asRecord(attempt.feedbackSettings) || {};
   const passed = asBoolean(attempt.passed) ?? asBoolean(scoring.passed) ?? false;
+  const primaryCourse =
+    normalizeCourseContext({
+      courseId: attempt.courseId,
+      courseCode: attempt.courseCode,
+      courseName: attempt.courseName ?? attempt.courseTitle,
+      courseVersionId: attempt.courseVersionId,
+    }) ??
+    normalizeCourseContext(attempt.course) ??
+    null;
+  const courseContexts = normalizeCourseContexts(attempt.courseContexts);
 
   return {
     id: readId(attempt.id) ?? readId(attempt._id) ?? '',
@@ -275,6 +336,15 @@ function normalizeAttempt(rawAttempt: unknown, assessmentIdHint?: string): ExamA
       asString(attempt.examTitle) ??
       asString(attempt.assessmentTitle) ??
       'Assessment',
+    ...(primaryCourse
+      ? {
+          courseId: primaryCourse.courseId,
+          courseCode: primaryCourse.courseCode,
+          courseName: primaryCourse.courseName,
+          courseVersionId: primaryCourse.courseVersionId,
+        }
+      : {}),
+    ...(courseContexts.length > 0 ? { courseContexts } : {}),
     examType: 'assessment',
     learnerId: readId(attempt.learnerId) ?? '',
     learnerName:
@@ -519,6 +589,88 @@ function normalizeAttemptListItem(rawAttempt: unknown, assessmentIdHint: string)
   };
 }
 
+function normalizeGradedBy(value: unknown): GradeExamResponse['gradedBy'] {
+  const record = asRecord(value);
+  if (!record) return null;
+
+  const id = readId(record.id) ?? readId(record._id) ?? readId(value);
+  if (!id) return null;
+
+  const firstName =
+    asString(record.firstName) ??
+    asString(record.givenName) ??
+    asString(record.name)?.split(' ')[0] ??
+    'Staff';
+  const lastName =
+    asString(record.lastName) ??
+    asString(record.familyName) ??
+    asString(record.name)?.split(' ').slice(1).join(' ') ??
+    '';
+
+  return {
+    id,
+    firstName,
+    lastName,
+  };
+}
+
+function normalizeAggregateGradeResponse(rawResponse: unknown): GradeExamResponse {
+  const response = asRecord(rawResponse) || {};
+  const scoring = asRecord(response.scoring) || {};
+  const questionGradesRaw = asArray(response.questionGrades);
+  const firstQuestionGrade = asRecord(questionGradesRaw[0]) || {};
+  const score = asNumber(response.score) ?? asNumber(scoring.rawScore) ?? 0;
+  const maxScore = asNumber(response.maxScore) ?? asNumber(scoring.maxScore) ?? 0;
+  const percentage =
+    asNumber(response.percentage) ??
+    asNumber(scoring.percentageScore) ??
+    (maxScore > 0 ? (score / maxScore) * 100 : 0);
+  const passed = asBoolean(response.passed) ?? asBoolean(scoring.passed) ?? false;
+
+  const status = normalizeStatus(response.status) === 'graded' ? 'graded' : 'submitted';
+
+  return {
+    attemptId: readId(response.attemptId) ?? readId(response.id) ?? '',
+    status,
+    score,
+    maxScore,
+    percentage,
+    passed,
+    gradeLetter: asString(response.gradeLetter) ?? deriveGradeLetter(percentage),
+    gradedAt:
+      asString(response.gradedAt) ??
+      asString(firstQuestionGrade.gradedAt) ??
+      new Date().toISOString(),
+    gradedBy:
+      normalizeGradedBy(response.gradedBy) ??
+      normalizeGradedBy(firstQuestionGrade.gradedBy),
+    questionGrades: questionGradesRaw.map((grade, index) => {
+      const item = asRecord(grade) || {};
+      const pointsPossible =
+        asNumber(item.pointsPossible) ??
+        asNumber(item.maxPoints) ??
+        0;
+
+      return {
+        questionId: readId(item.questionId) ?? undefined,
+        questionIndex: asNumber(item.questionIndex) ?? index,
+        learningUnitQuestionId: readId(item.learningUnitQuestionId) ?? undefined,
+        scoreEarned: asNumber(item.scoreEarned) ?? 0,
+        pointsPossible,
+        maxPoints: pointsPossible,
+        feedback: asString(item.feedback),
+        gradedAt: asString(item.gradedAt) ?? undefined,
+        gradedBy: readId(item.gradedBy) ?? undefined,
+      };
+    }),
+    notification: {
+      requested: asBoolean(asRecord(response.notification)?.requested) ?? false,
+      deferred: asBoolean(asRecord(response.notification)?.deferred) ?? false,
+      notifiedAt: asString(asRecord(response.notification)?.notifiedAt) ?? undefined,
+    },
+  };
+}
+
 /**
  * POST /assessments/:assessmentId/attempts/start
  */
@@ -616,4 +768,100 @@ export async function listMyAssessmentAttempts(
       hasPrev: asBoolean(paginationRecord.hasPrev) ?? false,
     },
   };
+}
+
+/**
+ * GET /assessment-attempts
+ * Staff aggregate listing across assessments.
+ */
+export async function listAssessmentAttempts(
+  params?: ListExamAttemptsParams
+): Promise<ExamAttemptsListResponse> {
+  const requestParams: Record<string, unknown> = { ...(params || {}) };
+  if (typeof requestParams.examId === 'string' && !requestParams.assessmentId) {
+    requestParams.assessmentId = requestParams.examId;
+  }
+  delete requestParams.examId;
+  if (requestParams.status === 'started') {
+    requestParams.status = 'in_progress';
+  }
+  if (requestParams.status === 'grading') {
+    requestParams.status = 'submitted';
+  }
+
+  const response = await client.get<ApiResponse<ExamAttemptsListResponse | UnknownRecord>>(
+    endpoints.assessmentAttempts.listAll,
+    { params: requestParams }
+  );
+
+  const data = asRecord(response.data.data) || {};
+  const attempts = asArray(data.attempts).map((attempt) => {
+    const attemptRecord = asRecord(attempt) || {};
+    const assessmentId =
+      readId(attemptRecord.assessmentId) ??
+      readId(attemptRecord.examId) ??
+      '';
+    return normalizeAttemptListItem(attemptRecord, assessmentId);
+  });
+  const paginationRecord = asRecord(data.pagination) || {};
+
+  return {
+    attempts,
+    pagination: {
+      page: asNumber(paginationRecord.page) ?? 1,
+      limit: asNumber(paginationRecord.limit) ?? attempts.length,
+      total: asNumber(paginationRecord.total) ?? attempts.length,
+      totalPages: asNumber(paginationRecord.totalPages) ?? 1,
+      hasNext: asBoolean(paginationRecord.hasNext) ?? false,
+      hasPrev: asBoolean(paginationRecord.hasPrev) ?? false,
+    },
+  };
+}
+
+/**
+ * GET /assessment-attempts/:attemptId
+ * Staff attempt detail lookup by attemptId.
+ */
+export async function getAssessmentAttemptByAttemptId(
+  attemptId: string
+): Promise<ExamAttempt> {
+  const response = await client.get<ApiResponse<ExamAttempt | UnknownRecord>>(
+    endpoints.assessmentAttempts.byAttemptId(attemptId)
+  );
+
+  const attempt = asRecord(response.data.data) || {};
+  const assessmentId =
+    readId(attempt.assessmentId) ??
+    readId(attempt.examId) ??
+    '';
+  return normalizeAttempt(attempt, assessmentId);
+}
+
+/**
+ * POST /assessment-attempts/:attemptId/grade
+ * Staff atomic multi-question grading by attemptId.
+ */
+export async function gradeAssessmentAttemptByAttemptId(
+  attemptId: string,
+  data: GradeExamRequest
+): Promise<GradeExamResponse> {
+  const payload = {
+    questionGrades: data.questionGrades.map((grade, index) => ({
+      questionIndex: grade.questionIndex ?? index,
+      ...(grade.questionId ? { questionId: grade.questionId } : {}),
+      scoreEarned: grade.scoreEarned,
+      ...(grade.feedback !== undefined ? { feedback: grade.feedback } : {}),
+    })),
+    ...(data.overallFeedback !== undefined
+      ? { overallFeedback: data.overallFeedback }
+      : {}),
+    ...(data.notifyLearner !== undefined ? { notifyLearner: data.notifyLearner } : {}),
+  };
+
+  const response = await client.post<ApiResponse<GradeExamResponse | UnknownRecord>>(
+    endpoints.assessmentAttempts.gradeByAttemptId(attemptId),
+    payload
+  );
+
+  return normalizeAggregateGradeResponse(response.data.data);
 }

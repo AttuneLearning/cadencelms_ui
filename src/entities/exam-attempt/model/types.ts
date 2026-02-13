@@ -78,6 +78,16 @@ export interface ExamAttempt {
   id: string;
   examId: string;
   examTitle: string;
+  courseId?: string;
+  courseCode?: string;
+  courseName?: string;
+  courseVersionId?: string;
+  courseContexts?: Array<{
+    courseId: string;
+    courseCode?: string;
+    courseName?: string;
+    courseVersionId?: string;
+  }>;
   examType?: ExamType;
   learnerId: string;
   learnerName?: string;
@@ -123,6 +133,16 @@ export interface ExamAttemptListItem {
   id: string;
   examId: string;
   examTitle: string;
+  courseId?: string;
+  courseCode?: string;
+  courseName?: string;
+  courseVersionId?: string;
+  courseContexts?: Array<{
+    courseId: string;
+    courseCode?: string;
+    courseName?: string;
+    courseVersionId?: string;
+  }>;
   learnerId: string;
   learnerName: string;
   attemptNumber: number;
@@ -283,7 +303,8 @@ export interface SubmitExamResponse {
  */
 export interface GradeExamRequest {
   questionGrades: Array<{
-    questionId: string;
+    questionIndex: number;
+    questionId?: string;
     scoreEarned: number;
     feedback?: string;
   }>;
@@ -296,7 +317,7 @@ export interface GradeExamRequest {
  */
 export interface GradeExamResponse {
   attemptId: string;
-  status: 'graded';
+  status: 'submitted' | 'graded';
   score: number;
   maxScore: number;
   percentage: number;
@@ -307,13 +328,23 @@ export interface GradeExamResponse {
     id: string;
     firstName: string;
     lastName: string;
-  };
+  } | null;
   questionGrades: Array<{
-    questionId: string;
+    questionId?: string;
+    questionIndex: number;
+    learningUnitQuestionId?: string;
     scoreEarned: number;
-    maxPoints: number;
+    pointsPossible: number;
+    maxPoints?: number;
     feedback: string | null;
+    gradedAt?: string;
+    gradedBy?: string;
   }>;
+  notification?: {
+    requested: boolean;
+    deferred: boolean;
+    notifiedAt?: string;
+  };
 }
 
 /**
@@ -351,6 +382,10 @@ export interface ListExamAttemptsParams {
   limit?: number;
   learnerId?: string;
   examId?: string;
+  assessmentId?: string;
+  enrollmentId?: string;
+  courseId?: string;
+  search?: string;
   status?: AttemptStatus;
   sort?: string;
 }

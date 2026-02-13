@@ -20,6 +20,7 @@ import type { ExamQuestion } from '@/entities/exam-attempt/model/types';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 
 interface QuestionGrade {
+  questionIndex: number;
   questionId: string;
   scoreEarned: number;
   feedback?: string;
@@ -46,6 +47,7 @@ const createGradingSchema = (questions: ExamQuestion[]) => {
     questionGrades: z
       .array(
         z.object({
+          questionIndex: z.number().int().nonnegative(),
           questionId: z.string(),
           scoreEarned: z.number().nullable().refine((val) => val === null || val >= 0, {
             message: 'Score must be positive',
@@ -94,7 +96,8 @@ export function GradingForm({
     resolver: zodResolver(schema),
     mode: 'onChange',
     defaultValues: initialData || {
-      questionGrades: questions.map((q) => ({
+      questionGrades: questions.map((q, index) => ({
+        questionIndex: index,
         questionId: q.id,
         scoreEarned: q.scoreEarned !== undefined ? q.scoreEarned : (null as any),
         feedback: q.feedback || '',

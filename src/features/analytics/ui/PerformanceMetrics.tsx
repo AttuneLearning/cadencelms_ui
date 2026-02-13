@@ -49,8 +49,16 @@ export const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({ filters 
     attemptsData.attempts.forEach((attempt: any) => {
       if (typeof attempt.score !== 'number') return;
 
-      const courseId = attempt.exam?.courseId || attempt.courseId || 'unknown';
-      const courseName = attempt.exam?.title || 'Unknown Course';
+      const courseId =
+        attempt.courseId ||
+        attempt.courseContexts?.[0]?.courseId ||
+        attempt.examId ||
+        'unknown';
+      const courseName =
+        attempt.courseName ||
+        attempt.courseContexts?.[0]?.courseName ||
+        attempt.examTitle ||
+        'Unknown Course';
 
       if (!courseMap.has(courseId)) {
         courseMap.set(courseId, {

@@ -49,7 +49,7 @@ describe('GradingDetailPage', () => {
 
     // Mock the API call for fetching attempt details
     server.use(
-      http.get(`${baseUrl}/exam-attempts/:id`, () => {
+      http.get(`${baseUrl}/assessment-attempts/:id`, () => {
         return HttpResponse.json({
           success: true,
           data: mockAttempt,
@@ -105,7 +105,7 @@ describe('GradingDetailPage', () => {
   describe('Error Handling', () => {
     it('should display error message when attempt not found', async () => {
       server.use(
-        http.get(`${baseUrl}/exam-attempts/:id`, () => {
+        http.get(`${baseUrl}/assessment-attempts/:id`, () => {
           return HttpResponse.json(
             { success: false, error: 'Attempt not found' },
             { status: 404 }
@@ -124,7 +124,7 @@ describe('GradingDetailPage', () => {
 
     it('should display error message on API failure', async () => {
       server.use(
-        http.get(`${baseUrl}/exam-attempts/:id`, () => {
+        http.get(`${baseUrl}/assessment-attempts/:id`, () => {
           return HttpResponse.json(
             { success: false, error: 'Server error' },
             { status: 500 }
@@ -209,7 +209,7 @@ describe('GradingDetailPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/exam-attempts/:id`, () => {
+        http.get(`${baseUrl}/assessment-attempts/:id`, () => {
           return HttpResponse.json({
             success: true,
             data: gradedAttempt,
@@ -235,7 +235,7 @@ describe('GradingDetailPage', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/exam-attempts/:id`, () => {
+        http.get(`${baseUrl}/assessment-attempts/:id`, () => {
           return HttpResponse.json({
             success: true,
             data: gradedAttempt,

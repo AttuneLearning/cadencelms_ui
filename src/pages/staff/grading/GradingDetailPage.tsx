@@ -141,7 +141,8 @@ export function GradingDetailPage() {
           initialData={
             isAlreadyGraded
               ? {
-                  questionGrades: attempt.questions.map((q) => ({
+                  questionGrades: attempt.questions.map((q, index) => ({
+                    questionIndex: index,
                     questionId: q.id,
                     scoreEarned: q.scoreEarned || 0,
                     feedback: q.feedback || '',

@@ -10,10 +10,6 @@ import { env } from '@/shared/config/env';
 import {
   listExamAttempts,
   getExamAttempt,
-  startExamAttempt,
-  submitAnswers,
-  submitExam,
-  getExamResults,
   gradeExam,
   listAttemptsByExam,
 } from '../examAttemptApi';
@@ -21,17 +17,10 @@ import {
   mockExamAttemptListItems,
   mockStartedAttempt,
   mockGradedAttempt,
-  mockStartExamAttemptResponse,
-  mockSubmitAnswersResponse,
-  mockSubmitExamResponse,
-  mockExamResult,
   mockExamAttemptsByExamResponse,
 } from '@/test/mocks/data/examAttempts';
 import type {
   ExamAttemptsListResponse,
-  StartExamAttemptRequest,
-  SubmitAnswersRequest,
-  SubmitExamRequest,
   GradeExamRequest,
 } from '../../model/types';
 
@@ -65,7 +54,7 @@ describe('examAttemptApi', () => {
       };
 
       server.use(
-        http.get(`${baseUrl}/exam-attempts`, () => {
+        http.get(`${baseUrl}/assessment-attempts`, () => {
           return HttpResponse.json({
             success: true,
             data: mockResponse,
@@ -95,7 +84,7 @@ describe('examAttemptApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/exam-attempts`, ({ request }) => {
+        http.get(`${baseUrl}/assessment-attempts`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -117,7 +106,7 @@ describe('examAttemptApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/exam-attempts`, ({ request }) => {
+        http.get(`${baseUrl}/assessment-attempts`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -138,14 +127,14 @@ describe('examAttemptApi', () => {
 
       await listExamAttempts({ examId });
 
-      expect(capturedParams!.get('examId')).toBe(examId);
+      expect(capturedParams!.get('assessmentId')).toBe(examId);
     });
 
     it('should filter attempts by status', async () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/exam-attempts`, ({ request }) => {
+        http.get(`${baseUrl}/assessment-attempts`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -171,7 +160,7 @@ describe('examAttemptApi', () => {
 
     it('should handle error response', async () => {
       server.use(
-        http.get(`${baseUrl}/exam-attempts`, () => {
+        http.get(`${baseUrl}/assessment-attempts`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -193,7 +182,7 @@ describe('examAttemptApi', () => {
   describe('getExamAttempt', () => {
     it('should fetch started exam attempt by id', async () => {
       server.use(
-        http.get(`${baseUrl}/exam-attempts/${mockStartedAttempt.id}`, () => {
+        http.get(`${baseUrl}/assessment-attempts/${mockStartedAttempt.id}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockStartedAttempt,
@@ -203,14 +192,14 @@ describe('examAttemptApi', () => {
 
       const result = await getExamAttempt(mockStartedAttempt.id);
 
-      expect(result).toEqual(mockStartedAttempt);
+      expect(result.id).toBe(mockStartedAttempt.id);
       expect(result.status).toBe('started');
       expect(result.questions).toBeDefined();
     });
 
     it('should fetch graded exam attempt by id', async () => {
       server.use(
-        http.get(`${baseUrl}/exam-attempts/${mockGradedAttempt.id}`, () => {
+        http.get(`${baseUrl}/assessment-attempts/${mockGradedAttempt.id}`, () => {
           return HttpResponse.json({
             success: true,
             data: mockGradedAttempt,
@@ -220,7 +209,7 @@ describe('examAttemptApi', () => {
 
       const result = await getExamAttempt(mockGradedAttempt.id);
 
-      expect(result).toEqual(mockGradedAttempt);
+      expect(result.id).toBe(mockGradedAttempt.id);
       expect(result.status).toBe('graded');
       expect(result.score).toBe(85);
       expect(result.gradedBy).toBeDefined();
@@ -228,7 +217,7 @@ describe('examAttemptApi', () => {
 
     it('should handle attempt not found error', async () => {
       server.use(
-        http.get(`${baseUrl}/exam-attempts/non-existent-id`, () => {
+        http.get(`${baseUrl}/assessment-attempts/non-existent-id`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -244,267 +233,6 @@ describe('examAttemptApi', () => {
   });
 
   // =====================
-  // START EXAM ATTEMPT
-  // =====================
-
-  describe('startExamAttempt', () => {
-    it('should start a new exam attempt', async () => {
-      const request: StartExamAttemptRequest = {
-        examId: 'exam-1',
-      };
-
-      server.use(
-        http.post(`${baseUrl}/exam-attempts`, async ({ request: req }) => {
-          const body = await req.json() as StartExamAttemptRequest;
-          expect(body).toEqual(request);
-
-          return HttpResponse.json({
-            success: true,
-            message: 'Exam attempt started successfully',
-            data: mockStartExamAttemptResponse,
-          });
-        })
-      );
-
-      const result = await startExamAttempt(request);
-
-      expect(result).toEqual(mockStartExamAttemptResponse);
-      expect(result.status).toBe('started');
-      expect(result.questions).toHaveLength(3);
-      expect(result.remainingTime).toBe(1800);
-    });
-
-    it('should handle active attempt exists error', async () => {
-      server.use(
-        http.post(`${baseUrl}/exam-attempts`, () => {
-          return HttpResponse.json(
-            {
-              success: false,
-              message: 'Cannot start new attempt while another is in progress',
-            },
-            { status: 409 }
-          );
-        })
-      );
-
-      await expect(startExamAttempt({ examId: 'exam-1' })).rejects.toThrow();
-    });
-
-    it('should handle max attempts reached error', async () => {
-      server.use(
-        http.post(`${baseUrl}/exam-attempts`, () => {
-          return HttpResponse.json(
-            {
-              success: false,
-              message: 'Maximum number of attempts reached',
-            },
-            { status: 409 }
-          );
-        })
-      );
-
-      await expect(startExamAttempt({ examId: 'exam-1' })).rejects.toThrow();
-    });
-  });
-
-  // =====================
-  // SUBMIT ANSWERS
-  // =====================
-
-  describe('submitAnswers', () => {
-    it('should submit answers for questions', async () => {
-      const attemptId = 'attempt-1';
-      const request: SubmitAnswersRequest = {
-        answers: [
-          { questionId: 'q-1', answer: 'Computer-Based Training' },
-          { questionId: 'q-2', answer: 'true' },
-        ],
-      };
-
-      server.use(
-        http.post(`${baseUrl}/exam-attempts/${attemptId}/answers`, async ({ request: req }) => {
-          const body = await req.json() as SubmitAnswersRequest;
-          expect(body).toEqual(request);
-
-          return HttpResponse.json({
-            success: true,
-            message: 'Answers saved successfully',
-            data: mockSubmitAnswersResponse,
-          });
-        })
-      );
-
-      const result = await submitAnswers(attemptId, request);
-
-      expect(result).toEqual(mockSubmitAnswersResponse);
-      expect(result.status).toBe('in_progress');
-      expect(result.updatedAnswers).toHaveLength(2);
-    });
-
-    it('should handle time expired error', async () => {
-      server.use(
-        http.post(`${baseUrl}/exam-attempts/attempt-1/answers`, () => {
-          return HttpResponse.json(
-            {
-              success: false,
-              message: 'Time limit exceeded, attempt auto-submitted',
-            },
-            { status: 409 }
-          );
-        })
-      );
-
-      await expect(
-        submitAnswers('attempt-1', { answers: [{ questionId: 'q-1', answer: 'test' }] })
-      ).rejects.toThrow();
-    });
-
-    it('should handle attempt closed error', async () => {
-      server.use(
-        http.post(`${baseUrl}/exam-attempts/attempt-1/answers`, () => {
-          return HttpResponse.json(
-            {
-              success: false,
-              message: 'Cannot submit answers to completed attempt',
-            },
-            { status: 409 }
-          );
-        })
-      );
-
-      await expect(
-        submitAnswers('attempt-1', { answers: [{ questionId: 'q-1', answer: 'test' }] })
-      ).rejects.toThrow();
-    });
-  });
-
-  // =====================
-  // SUBMIT EXAM
-  // =====================
-
-  describe('submitExam', () => {
-    it('should submit exam for grading', async () => {
-      const attemptId = 'attempt-1';
-      const request: SubmitExamRequest = {
-        confirmSubmit: true,
-      };
-
-      server.use(
-        http.post(`${baseUrl}/exam-attempts/${attemptId}/submit`, async ({ request: req }) => {
-          const body = await req.json() as SubmitExamRequest;
-          expect(body).toEqual(request);
-
-          return HttpResponse.json({
-            success: true,
-            message: 'Exam submitted successfully',
-            data: mockSubmitExamResponse,
-          });
-        })
-      );
-
-      const result = await submitExam(attemptId, request);
-
-      expect(result).toEqual(mockSubmitExamResponse);
-      expect(result.status).toBe('graded');
-      expect(result.autoGraded).toBe(true);
-      expect(result.correctCount).toBe(9);
-    });
-
-    it('should submit exam without confirmation flag', async () => {
-      const attemptId = 'attempt-1';
-
-      server.use(
-        http.post(`${baseUrl}/exam-attempts/${attemptId}/submit`, () => {
-          return HttpResponse.json({
-            success: true,
-            message: 'Exam submitted successfully',
-            data: mockSubmitExamResponse,
-          });
-        })
-      );
-
-      const result = await submitExam(attemptId);
-
-      expect(result).toEqual(mockSubmitExamResponse);
-    });
-
-    it('should handle already submitted error', async () => {
-      server.use(
-        http.post(`${baseUrl}/exam-attempts/attempt-1/submit`, () => {
-          return HttpResponse.json(
-            {
-              success: false,
-              message: 'Exam attempt already submitted',
-            },
-            { status: 409 }
-          );
-        })
-      );
-
-      await expect(submitExam('attempt-1')).rejects.toThrow();
-    });
-  });
-
-  // =====================
-  // GET EXAM RESULTS
-  // =====================
-
-  describe('getExamResults', () => {
-    it('should fetch exam results with feedback', async () => {
-      const attemptId = 'attempt-3';
-
-      server.use(
-        http.get(`${baseUrl}/exam-attempts/${attemptId}/results`, () => {
-          return HttpResponse.json({
-            success: true,
-            data: mockExamResult,
-          });
-        })
-      );
-
-      const result = await getExamResults(attemptId);
-
-      expect(result).toEqual(mockExamResult);
-      expect(result.status).toBe('graded');
-      expect(result.summary).toBeDefined();
-      expect(result.questionResults).toBeDefined();
-      expect(result.allowReview).toBe(true);
-    });
-
-    it('should handle not graded error', async () => {
-      server.use(
-        http.get(`${baseUrl}/exam-attempts/attempt-1/results`, () => {
-          return HttpResponse.json(
-            {
-              success: false,
-              message: 'Attempt has not been graded yet',
-            },
-            { status: 409 }
-          );
-        })
-      );
-
-      await expect(getExamResults('attempt-1')).rejects.toThrow();
-    });
-
-    it('should handle review not allowed error', async () => {
-      server.use(
-        http.get(`${baseUrl}/exam-attempts/attempt-1/results`, () => {
-          return HttpResponse.json(
-            {
-              success: false,
-              message: 'Review not allowed for this exam',
-            },
-            { status: 409 }
-          );
-        })
-      );
-
-      await expect(getExamResults('attempt-1')).rejects.toThrow();
-    });
-  });
-
-  // =====================
   // GRADE EXAM (MANUAL)
   // =====================
 
@@ -514,6 +242,7 @@ describe('examAttemptApi', () => {
       const request: GradeExamRequest = {
         questionGrades: [
           {
+            questionIndex: 2,
             questionId: 'q-3',
             scoreEarned: 12,
             feedback: 'Good answer, but could include more detail.',
@@ -526,29 +255,32 @@ describe('examAttemptApi', () => {
       const mockResponse = {
         attemptId: 'attempt-1',
         status: 'graded' as const,
-        score: 88,
-        maxScore: 100,
-        percentage: 88,
-        passed: true,
-        gradeLetter: 'B+',
-        gradedAt: '2026-01-09T10:30:00.000Z',
-        gradedBy: {
-          id: 'instructor-1',
-          firstName: 'John',
-          lastName: 'Doe',
+        scoring: {
+          rawScore: 88,
+          maxScore: 100,
+          percentageScore: 88,
+          passed: true,
         },
         questionGrades: [
           {
+            questionIndex: 2,
             questionId: 'q-3',
             scoreEarned: 12,
-            maxPoints: 15,
+            pointsPossible: 15,
             feedback: 'Good answer, but could include more detail.',
+            gradedAt: '2026-01-09T10:30:00.000Z',
+            gradedBy: 'instructor-1',
           },
         ],
+        notification: {
+          requested: true,
+          deferred: false,
+          notifiedAt: '2026-01-09T10:31:00.000Z',
+        },
       };
 
       server.use(
-        http.post(`${baseUrl}/exam-attempts/${attemptId}/grade`, async ({ request: req }) => {
+        http.post(`${baseUrl}/assessment-attempts/${attemptId}/grade`, async ({ request: req }) => {
           const body = await req.json() as GradeExamRequest;
           expect(body).toEqual(request);
 
@@ -562,14 +294,18 @@ describe('examAttemptApi', () => {
 
       const result = await gradeExam(attemptId, request);
 
-      expect(result).toEqual(mockResponse);
       expect(result.status).toBe('graded');
-      expect(result.gradedBy).toBeDefined();
+      expect(result.score).toBe(88);
+      expect(result.maxScore).toBe(100);
+      expect(result.percentage).toBe(88);
+      expect(result.questionGrades[0].questionIndex).toBe(2);
+      expect(result.questionGrades[0].maxPoints).toBe(15);
+      expect(result.notification?.requested).toBe(true);
     });
 
     it('should handle not submitted error', async () => {
       server.use(
-        http.post(`${baseUrl}/exam-attempts/attempt-1/grade`, () => {
+        http.post(`${baseUrl}/assessment-attempts/attempt-1/grade`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -581,13 +317,15 @@ describe('examAttemptApi', () => {
       );
 
       await expect(
-        gradeExam('attempt-1', { questionGrades: [] })
+        gradeExam('attempt-1', {
+          questionGrades: [{ questionIndex: 0, scoreEarned: 0 }],
+        })
       ).rejects.toThrow();
     });
 
     it('should handle forbidden error', async () => {
       server.use(
-        http.post(`${baseUrl}/exam-attempts/attempt-1/grade`, () => {
+        http.post(`${baseUrl}/assessment-attempts/attempt-1/grade`, () => {
           return HttpResponse.json(
             {
               success: false,
@@ -599,7 +337,9 @@ describe('examAttemptApi', () => {
       );
 
       await expect(
-        gradeExam('attempt-1', { questionGrades: [] })
+        gradeExam('attempt-1', {
+          questionGrades: [{ questionIndex: 0, scoreEarned: 0 }],
+        })
       ).rejects.toThrow();
     });
   });
@@ -613,7 +353,7 @@ describe('examAttemptApi', () => {
       const examId = 'exam-1';
 
       server.use(
-        http.get(`${baseUrl}/exam-attempts/exam/${examId}`, () => {
+        http.get(`${baseUrl}/assessment-attempts`, () => {
           return HttpResponse.json({
             success: true,
             data: mockExamAttemptsByExamResponse,
@@ -623,7 +363,8 @@ describe('examAttemptApi', () => {
 
       const result = await listAttemptsByExam(examId);
 
-      expect(result).toEqual(mockExamAttemptsByExamResponse);
+      expect(result.examId).toBe(examId);
+      expect(result.attempts).toHaveLength(mockExamAttemptsByExamResponse.attempts.length);
       expect(result.statistics).toBeDefined();
       expect(result.attempts).toBeDefined();
     });
@@ -633,7 +374,7 @@ describe('examAttemptApi', () => {
       let capturedParams: URLSearchParams | null = null;
 
       server.use(
-        http.get(`${baseUrl}/exam-attempts/exam/${examId}`, ({ request }) => {
+        http.get(`${baseUrl}/assessment-attempts`, ({ request }) => {
           capturedParams = new URL(request.url).searchParams;
           return HttpResponse.json({
             success: true,
@@ -645,11 +386,19 @@ describe('examAttemptApi', () => {
       await listAttemptsByExam(examId, { status: 'submitted' });
 
       expect(capturedParams!.get('status')).toBe('submitted');
+      expect(capturedParams!.get('assessmentId')).toBe(examId);
     });
 
     it('should handle exam not found error', async () => {
       server.use(
-        http.get(`${baseUrl}/exam-attempts/exam/non-existent-id`, () => {
+        http.get(`${baseUrl}/assessment-attempts`, ({ request }) => {
+          const url = new URL(request.url);
+          if (url.searchParams.get('assessmentId') !== 'non-existent-id') {
+            return HttpResponse.json({
+              success: true,
+              data: mockExamAttemptsByExamResponse,
+            });
+          }
           return HttpResponse.json(
             {
               success: false,
