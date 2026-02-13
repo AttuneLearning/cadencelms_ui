@@ -5,7 +5,7 @@
  * ModuleAccess tracks learner access and engagement at the module level.
  * Used for analytics, progress tracking, and identifying drop-off points.
  *
- * Endpoints: /modules/:moduleId/access, /enrollments/:enrollmentId/module-access
+ * Endpoints: /module-access, /module-access/analytics/drop-off
  */
 
 // =====================
@@ -80,6 +80,8 @@ export interface Pagination {
   limit: number;
   total: number;
   totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
 }
 
 // =====================
@@ -145,6 +147,7 @@ export interface ModuleSummaryItem {
  */
 export interface RecordAccessPayload {
   enrollmentId: string;
+  courseId: string;
 }
 
 /**
@@ -184,58 +187,73 @@ export interface CourseSummaryFilters {
  * Get Module Access by Enrollment Response
  */
 export interface EnrollmentModuleAccessResponse {
-  enrollmentId: string;
-  courseId: string;
-  courseTitle: string;
-  learnerId: string;
-  moduleAccess: ModuleAccess[];
-  summary: ModuleAccessSummary;
+  accessRecords: ModuleAccess[];
+  pagination: Pagination;
 }
 
 /**
  * Get Module Access by Module Response (Analytics)
  */
 export interface ModuleAccessAnalyticsResponse {
-  moduleId: string;
-  moduleTitle: string;
-  courseId: string;
   accessRecords: ModuleAccess[];
-  analytics: ModuleAccessAnalytics;
   pagination: Pagination;
 }
 
 /**
- * Course Module Access Summary Response
+ * Module access summary metrics (drop-off endpoint)
+ */
+export interface ModuleAccessSummaryMetrics {
+  totalModules: number;
+  totalAccess: number;
+  accessedOnly: number;
+  inProgress: number;
+  completed: number;
+  dropOffRate: number;
+  dropOffPercentage: number;
+}
+
+/**
+ * Module access summary insights (drop-off endpoint)
+ */
+export interface ModuleAccessSummaryInsights {
+  learnersNotStartingContent: number;
+  learnersStuckInProgress: number;
+  completionRate: number;
+}
+
+/**
+ * Course Module Access Summary Response (drop-off analytics)
  */
 export interface CourseModuleAccessSummaryResponse {
   courseId: string;
-  courseTitle: string;
-  totalEnrollments: number;
-  modules: ModuleSummaryItem[];
-  funnel: CourseFunnel;
+  metrics: ModuleAccessSummaryMetrics;
+  insights: ModuleAccessSummaryInsights;
+}
+
+/**
+ * Shared response shape for action-based module-access updates
+ */
+export interface ModuleAccessActionResponse {
+  moduleAccessId: string;
+  moduleId: string;
+  learnerId: string;
+  hasStartedLearningUnit: boolean;
+  firstLearningUnitStartedAt: string | null;
+  learningUnitsCompleted: number;
+  learningUnitsTotal: number;
+  status: ModuleAccessStatus;
+  completedAt: string | null;
 }
 
 /**
  * Mark Learning Unit Started Response
  */
-export interface MarkLearningUnitStartedResponse {
-  moduleAccessId: string;
-  hasStartedLearningUnit: true;
-  firstLearningUnitStartedAt: string;
-  status: 'in_progress';
-}
+export type MarkLearningUnitStartedResponse = ModuleAccessActionResponse;
 
 /**
  * Update Progress Response
  */
-export interface UpdateProgressResponse {
-  moduleAccessId: string;
-  learningUnitsCompleted: number;
-  learningUnitsTotal: number;
-  progress: number; // 0-1
-  status: ModuleAccessStatus;
-  completedAt: string | null;
-}
+export type UpdateProgressResponse = ModuleAccessActionResponse;
 
 // =====================
 // UTILITY TYPES

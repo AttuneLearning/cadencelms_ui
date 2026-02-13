@@ -30,15 +30,15 @@ interface ApiResponse<T> {
 // =====================
 
 /**
- * POST /modules/:moduleId/access - Record that a learner has accessed a module
+ * POST /module-access - Record that a learner has accessed a module
  */
 export async function recordModuleAccess(
   moduleId: string,
   payload: RecordAccessPayload
 ): Promise<RecordAccessResponse> {
   const response = await client.post<ApiResponse<RecordAccessResponse>>(
-    `/modules/${moduleId}/access`,
-    payload
+    '/module-access',
+    { moduleId, ...payload }
   );
   return response.data.data;
 }
@@ -48,13 +48,14 @@ export async function recordModuleAccess(
 // =====================
 
 /**
- * GET /enrollments/:enrollmentId/module-access - Get all module access records for an enrollment
+ * GET /module-access?enrollmentId=... - Get module access records for an enrollment
  */
 export async function getModuleAccessByEnrollment(
   enrollmentId: string
 ): Promise<EnrollmentModuleAccessResponse> {
   const response = await client.get<ApiResponse<EnrollmentModuleAccessResponse>>(
-    `/enrollments/${enrollmentId}/module-access`
+    '/module-access',
+    { params: { enrollmentId } }
   );
   return response.data.data;
 }
@@ -64,15 +65,15 @@ export async function getModuleAccessByEnrollment(
 // =====================
 
 /**
- * GET /modules/:moduleId/access - Get all learner access records for a module
+ * GET /module-access?moduleId=... - Get learner access records for a module
  */
 export async function getModuleAccessByModule(
   moduleId: string,
   filters?: ModuleAccessFilters
 ): Promise<ModuleAccessAnalyticsResponse> {
   const response = await client.get<ApiResponse<ModuleAccessAnalyticsResponse>>(
-    `/modules/${moduleId}/access`,
-    { params: filters }
+    '/module-access',
+    { params: { moduleId, ...filters } }
   );
   return response.data.data;
 }
@@ -82,15 +83,15 @@ export async function getModuleAccessByModule(
 // =====================
 
 /**
- * GET /courses/:courseId/module-access-summary - Get aggregated module access summary
+ * GET /module-access/analytics/drop-off?courseId=... - Get aggregated access/drop-off summary
  */
 export async function getCourseModuleAccessSummary(
   courseId: string,
   filters?: CourseSummaryFilters
 ): Promise<CourseModuleAccessSummaryResponse> {
   const response = await client.get<ApiResponse<CourseModuleAccessSummaryResponse>>(
-    `/courses/${courseId}/module-access-summary`,
-    { params: filters }
+    '/module-access/analytics/drop-off',
+    { params: { courseId, ...filters } }
   );
   return response.data.data;
 }
@@ -100,14 +101,14 @@ export async function getCourseModuleAccessSummary(
 // =====================
 
 /**
- * POST /module-access/:moduleAccessId/learning-unit-started - Mark that learner started a learning unit
+ * PUT /module-access/:moduleAccessId with action=mark_learning_unit_started
  */
 export async function markLearningUnitStarted(
   moduleAccessId: string
 ): Promise<MarkLearningUnitStartedResponse> {
-  const response = await client.post<ApiResponse<MarkLearningUnitStartedResponse>>(
-    `/module-access/${moduleAccessId}/learning-unit-started`,
-    {}
+  const response = await client.put<ApiResponse<MarkLearningUnitStartedResponse>>(
+    `/module-access/${moduleAccessId}`,
+    { action: 'mark_learning_unit_started' }
   );
   return response.data.data;
 }
@@ -117,15 +118,18 @@ export async function markLearningUnitStarted(
 // =====================
 
 /**
- * PATCH /module-access/:moduleAccessId/progress - Update learning unit completion progress
+ * PUT /module-access/:moduleAccessId with action=update_progress
  */
 export async function updateModuleAccessProgress(
   moduleAccessId: string,
   payload: UpdateProgressPayload
 ): Promise<UpdateProgressResponse> {
-  const response = await client.patch<ApiResponse<UpdateProgressResponse>>(
-    `/module-access/${moduleAccessId}/progress`,
-    payload
+  const response = await client.put<ApiResponse<UpdateProgressResponse>>(
+    `/module-access/${moduleAccessId}`,
+    {
+      action: 'update_progress',
+      ...payload,
+    }
   );
   return response.data.data;
 }
