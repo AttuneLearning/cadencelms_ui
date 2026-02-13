@@ -50,6 +50,9 @@ export interface CourseRef {
   id: string;
   title: string;
   code: string;
+  versionId?: string;
+  version?: number;
+  versionStatus?: 'draft' | 'published' | 'archived';
 }
 
 /**

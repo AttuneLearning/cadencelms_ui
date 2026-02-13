@@ -418,6 +418,107 @@ describe('templateApi', () => {
       expect(result.usedByCourses!.length).toBeGreaterThan(0);
     });
 
+    it('should normalize canonical usedByCourses rows with version metadata', async () => {
+      server.use(
+        http.get(`${baseUrl}/templates/${mockMasterTemplate.id}`, () => {
+          return HttpResponse.json({
+            success: true,
+            data: {
+              ...mockMasterTemplate,
+              usedByCourses: [
+                {
+                  id: 'canonical-course-1',
+                  code: 'CBT101',
+                  title: 'CBT Introduction',
+                  versionId: 'course-version-1',
+                  version: 2,
+                  versionStatus: 'published',
+                },
+              ],
+            },
+          });
+        })
+      );
+
+      const result = await getTemplate(mockMasterTemplate.id);
+
+      expect(result.usedByCourses).toEqual([
+        {
+          id: 'canonical-course-1',
+          code: 'CBT101',
+          title: 'CBT Introduction',
+          versionId: 'course-version-1',
+          version: 2,
+          versionStatus: 'published',
+        },
+      ]);
+    });
+
+    it('should normalize legacy mixed usedByCourses row keys during rollout', async () => {
+      server.use(
+        http.get(`${baseUrl}/templates/${mockMasterTemplate.id}`, () => {
+          return HttpResponse.json({
+            success: true,
+            data: {
+              ...mockMasterTemplate,
+              usedByCourses: [
+                {
+                  courseId: 'canonical-course-2',
+                  courseCode: 'CBT201',
+                  courseTitle: 'Advanced CBT',
+                  courseVersionId: 'course-version-2',
+                  version: '3',
+                  courseVersionStatus: 'draft',
+                },
+              ],
+            },
+          });
+        })
+      );
+
+      const result = await getTemplate(mockMasterTemplate.id);
+
+      expect(result.usedByCourses).toEqual([
+        {
+          id: 'canonical-course-2',
+          code: 'CBT201',
+          title: 'Advanced CBT',
+          versionId: 'course-version-2',
+          version: 3,
+          versionStatus: 'draft',
+        },
+      ]);
+    });
+
+    it('should fallback title to course code when canonical row title is missing', async () => {
+      server.use(
+        http.get(`${baseUrl}/templates/${mockMasterTemplate.id}`, () => {
+          return HttpResponse.json({
+            success: true,
+            data: {
+              ...mockMasterTemplate,
+              usedByCourses: [
+                {
+                  id: 'canonical-course-3',
+                  code: 'CBT301',
+                },
+              ],
+            },
+          });
+        })
+      );
+
+      const result = await getTemplate(mockMasterTemplate.id);
+
+      expect(result.usedByCourses).toEqual([
+        {
+          id: 'canonical-course-3',
+          code: 'CBT301',
+          title: 'CBT301',
+        },
+      ]);
+    });
+
     it('should handle template not found error', async () => {
       server.use(
         http.get(`${baseUrl}/templates/non-existent-id`, () => {
@@ -784,6 +885,29 @@ describe('templateApi', () => {
       expect(result.deletedId).toBe(mockCustomTemplate.id);
       expect(result.affectedCourses).toBe(5);
       expect(result.replacedWith).toBeNull();
+    });
+
+    it('should normalize delete response aliases for affected and replacement fields', async () => {
+      server.use(
+        http.delete(`${baseUrl}/templates/${mockDepartmentTemplate.id}`, () => {
+          return HttpResponse.json({
+            success: true,
+            data: {
+              id: mockDepartmentTemplate.id,
+              affectedCourseCount: '12',
+              replacementTemplateId: 'template-1',
+            },
+          });
+        })
+      );
+
+      const result = await deleteTemplate(mockDepartmentTemplate.id, true);
+
+      expect(result).toEqual({
+        deletedId: mockDepartmentTemplate.id,
+        affectedCourses: 12,
+        replacedWith: 'template-1',
+      });
     });
 
     it('should handle delete error for template in use without force', async () => {

@@ -7,6 +7,7 @@
 
 import { client } from '@/shared/api/client';
 import type {
+  CourseRef,
   Template,
   TemplatesListResponse,
   TemplateFilters,
@@ -23,6 +24,104 @@ interface ApiResponse<T> {
   success: boolean;
   data: T;
   message?: string;
+}
+
+type UnknownRecord = Record<string, unknown>;
+
+function asRecord(value: unknown): UnknownRecord | null {
+  return typeof value === 'object' && value !== null ? (value as UnknownRecord) : null;
+}
+
+function asArray(value: unknown): unknown[] {
+  return Array.isArray(value) ? value : [];
+}
+
+function asString(value: unknown): string | null {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') return String(value);
+  return null;
+}
+
+function asNumber(value: unknown): number | undefined {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string') {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : undefined;
+  }
+  return undefined;
+}
+
+function normalizeVersionStatus(value: unknown): CourseRef['versionStatus'] | undefined {
+  const raw = asString(value)?.toLowerCase();
+  if (raw === 'draft' || raw === 'published' || raw === 'archived') return raw;
+  return undefined;
+}
+
+function normalizeCourseRef(value: unknown): CourseRef | null {
+  const course = asRecord(value);
+  if (!course) return null;
+
+  const id = asString(course.id) ?? asString(course.courseId) ?? asString(course._id);
+  if (!id) return null;
+
+  const code = asString(course.code) ?? asString(course.courseCode) ?? '';
+  const title =
+    asString(course.title) ??
+    asString(course.courseTitle) ??
+    asString(course.name) ??
+    code;
+
+  const versionId = asString(course.versionId) ?? asString(course.courseVersionId) ?? undefined;
+  const version = asNumber(course.version);
+  const versionStatus = normalizeVersionStatus(
+    asString(course.versionStatus) ?? asString(course.courseVersionStatus)
+  );
+
+  return {
+    id,
+    code,
+    title,
+    ...(versionId ? { versionId } : {}),
+    ...(version !== undefined ? { version } : {}),
+    ...(versionStatus ? { versionStatus } : {}),
+  };
+}
+
+function normalizeUsedByCourses(value: unknown): CourseRef[] | undefined {
+  if (value === undefined) return undefined;
+  return asArray(value)
+    .map(normalizeCourseRef)
+    .filter((course): course is CourseRef => !!course);
+}
+
+function normalizeTemplate(template: Template): Template {
+  const record = asRecord(template);
+  if (!record) return template;
+
+  const normalizedUsedByCourses = normalizeUsedByCourses(record.usedByCourses);
+  if (normalizedUsedByCourses === undefined) return template;
+
+  return {
+    ...template,
+    usedByCourses: normalizedUsedByCourses,
+  };
+}
+
+function normalizeDeleteTemplateResponse(raw: DeleteTemplateResponse): DeleteTemplateResponse {
+  const record = asRecord(raw);
+  if (!record) return raw;
+
+  return {
+    deletedId: asString(record.deletedId) ?? asString(record.id) ?? '',
+    affectedCourses:
+      asNumber(record.affectedCourses) ??
+      asNumber(record.affectedCourseCount) ??
+      0,
+    replacedWith:
+      asString(record.replacedWith) ??
+      asString(record.replacementTemplateId) ??
+      null,
+  };
 }
 
 // =====================
@@ -45,7 +144,7 @@ export async function listTemplates(filters?: TemplateFilters): Promise<Template
  */
 export async function getTemplate(id: string): Promise<Template> {
   const response = await client.get<ApiResponse<Template>>(`/templates/${id}`);
-  return response.data.data;
+  return normalizeTemplate(response.data.data);
 }
 
 /**
@@ -53,7 +152,7 @@ export async function getTemplate(id: string): Promise<Template> {
  */
 export async function createTemplate(payload: CreateTemplatePayload): Promise<Template> {
   const response = await client.post<ApiResponse<Template>>('/templates', payload);
-  return response.data.data;
+  return normalizeTemplate(response.data.data);
 }
 
 /**
@@ -61,7 +160,7 @@ export async function createTemplate(payload: CreateTemplatePayload): Promise<Te
  */
 export async function updateTemplate(id: string, payload: UpdateTemplatePayload): Promise<Template> {
   const response = await client.put<ApiResponse<Template>>(`/templates/${id}`, payload);
-  return response.data.data;
+  return normalizeTemplate(response.data.data);
 }
 
 /**
@@ -72,7 +171,7 @@ export async function deleteTemplate(id: string, force?: boolean): Promise<Delet
     `/templates/${id}`,
     { params: { force } }
   );
-  return response.data.data;
+  return normalizeDeleteTemplateResponse(response.data.data);
 }
 
 /**
