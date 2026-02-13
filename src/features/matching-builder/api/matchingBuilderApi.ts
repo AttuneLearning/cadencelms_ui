@@ -233,15 +233,17 @@ export async function createMatchingExercise(
 }
 
 /**
- * PUT /modules/:moduleId/matching-exercises/:exerciseId - Update a matching exercise
+ * PUT /content/exercises/:exerciseId/matching - Update a matching exercise
  */
 export async function updateMatchingExercise(
   moduleId: string,
   exerciseId: string,
   data: UpdateMatchingExerciseRequest
 ): Promise<MatchingExercise> {
+  // moduleId is retained in the signature for backward compatibility with existing callers.
+  void moduleId;
   const response = await client.put<ApiResponse<MatchingExercise>>(
-    `/modules/${moduleId}/matching-exercises/${exerciseId}`,
+    `/content/exercises/${exerciseId}/matching`,
     data
   );
   return response.data.data;
@@ -258,15 +260,17 @@ export async function deleteMatchingExercise(
 }
 
 /**
- * PUT /modules/:moduleId/matching-exercises/:exerciseId/pairs - Update pairs
+ * PUT /content/exercises/:exerciseId/matching - Update pairs
  */
 export async function updateMatchingPairs(
   moduleId: string,
   exerciseId: string,
   data: UpdatePairsRequest
 ): Promise<MatchingPairItem[]> {
+  // moduleId is retained in the signature for backward compatibility with existing callers.
+  void moduleId;
   const response = await client.put<ApiResponse<MatchingPairItem[]>>(
-    `/modules/${moduleId}/matching-exercises/${exerciseId}/pairs`,
+    `/content/exercises/${exerciseId}/matching`,
     data
   );
   return response.data.data;
