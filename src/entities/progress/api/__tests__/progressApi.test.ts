@@ -197,6 +197,41 @@ describe('progressApi', () => {
       expect(result.overallProgress.modulesCompleted).toBe(3);
       expect(result.overallProgress.modulesTotal).toBe(5);
     });
+
+    it('should normalize legacy module identity aliases to canonical moduleId', async () => {
+      const courseId = '507f1f77bcf86cd799439018';
+
+      server.use(
+        http.get(`${baseUrl}/progress/course/${courseId}`, () => {
+          return HttpResponse.json({
+            success: true,
+            data: {
+              ...mockCourseProgress,
+              moduleProgress: [
+                {
+                  id: 'legacy-module-1',
+                  title: 'Legacy Module',
+                  type: 'video',
+                  status: 'in_progress',
+                  completionPercent: 45,
+                  timeSpent: 1200,
+                  attempts: 1,
+                  isRequired: true,
+                },
+              ],
+            },
+          });
+        })
+      );
+
+      const result = await getCourseProgress(courseId);
+
+      expect(result.moduleProgress).toHaveLength(1);
+      expect(result.moduleProgress[0].moduleId).toBe('legacy-module-1');
+      expect(result.moduleProgress[0].moduleTitle).toBe('Legacy Module');
+      expect(result.moduleProgress[0].moduleType).toBe('video');
+      expect(result.moduleProgress[0].order).toBe(1);
+    });
   });
 
   // =====================
@@ -621,6 +656,48 @@ describe('progressApi', () => {
       expect(capturedParams!.get('courseId')).toBe(filters.courseId);
       expect(capturedParams!.get('format')).toBe(filters.format);
       expect(capturedParams!.get('includeModules')).toBe('true');
+    });
+
+    it('should normalize legacy module identifiers inside detailed report learner rows', async () => {
+      const filters = {
+        courseId: '507f1f77bcf86cd799439018',
+        format: 'json' as const,
+      };
+
+      server.use(
+        http.get(`${baseUrl}/progress/reports/detailed`, () => {
+          return HttpResponse.json({
+            success: true,
+            data: {
+              ...mockDetailedProgressReport,
+              learnerDetails: [
+                {
+                  ...mockDetailedProgressReport.learnerDetails[0],
+                  moduleProgress: [
+                    {
+                      contentId: 'legacy-content-1',
+                      name: 'Legacy Module Title',
+                      type: 'document',
+                      status: 'completed',
+                      completionPercent: 100,
+                      timeSpent: 300,
+                      attempts: 1,
+                      passed: true,
+                    },
+                  ],
+                },
+              ],
+            },
+          });
+        })
+      );
+
+      const result = await getDetailedProgressReport(filters);
+
+      expect(result.learnerDetails[0].moduleProgress).toHaveLength(1);
+      expect(result.learnerDetails[0].moduleProgress[0].moduleId).toBe('legacy-content-1');
+      expect(result.learnerDetails[0].moduleProgress[0].moduleTitle).toBe('Legacy Module Title');
+      expect(result.learnerDetails[0].moduleProgress[0].moduleType).toBe('document');
     });
 
     it('should include report metadata', async () => {
