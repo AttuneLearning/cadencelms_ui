@@ -331,10 +331,18 @@ export function CoursePlayerPage() {
 
   const isAssessmentUnit =
     currentLessonMeta?.category === 'graded' || currentLessonMeta?.contentType === 'assessment';
+  const isPracticeExerciseUnit =
+    currentLessonMeta?.category === 'practice' || currentLessonMeta?.contentType === 'exercise';
 
   // Start content attempt when currentContentId changes (non-assessment content only)
   useEffect(() => {
-    if (currentContentId && enrollment && !currentAttemptId && !isAssessmentUnit) {
+    if (
+      currentContentId &&
+      enrollment &&
+      !currentAttemptId &&
+      !isAssessmentUnit &&
+      !isPracticeExerciseUnit
+    ) {
       startAttempt(
         {
           contentId: currentContentId,
@@ -351,7 +359,14 @@ export function CoursePlayerPage() {
         }
       );
     }
-  }, [currentContentId, enrollment, currentAttemptId, startAttempt, isAssessmentUnit]);
+  }, [
+    currentContentId,
+    enrollment,
+    currentAttemptId,
+    startAttempt,
+    isAssessmentUnit,
+    isPracticeExerciseUnit,
+  ]);
 
   // Handle exit
   const handleExit = () => {
@@ -499,28 +514,45 @@ export function CoursePlayerPage() {
       );
     }
 
-    // For learning units without contentId (practice exercises) — render inline
+    if (currentLessonMeta && (currentLessonMeta.category === 'practice' || currentLessonMeta.contentType === 'exercise')) {
+      const practiceExerciseId = currentContentId || currentLessonId;
+      const canLaunchPractice = !!practiceExerciseId && !!enrollment && !!currentLessonId;
+
+      return (
+        <div className="flex h-full items-center justify-center bg-muted/10">
+          <div className="flex flex-col items-center gap-4 text-center max-w-md">
+            <BookOpen className="h-12 w-12 text-primary" />
+            <div>
+              <h3 className="text-lg font-semibold">Practice Exercise</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                {currentLessonTitle || 'This exercise'} is an interactive practice activity.
+              </p>
+              {!practiceExerciseId && (
+                <p className="text-sm text-destructive mt-2">
+                  Exercise reference missing. Launch context could not be resolved.
+                </p>
+              )}
+            </div>
+            <Button
+              disabled={!canLaunchPractice}
+              onClick={() => {
+                if (!practiceExerciseId || !enrollment || !currentLessonId) return;
+                const params = new URLSearchParams();
+                params.set('courseId', resolvedCourseId || courseId || '');
+                params.set('enrollmentId', enrollment.id);
+                params.set('learningUnitId', currentLessonId);
+                navigate(`/learner/exercises/${practiceExerciseId}/take?${params.toString()}`);
+              }}
+            >
+              Start Practice
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
     if (!currentContentId && currentLessonMeta) {
       const { contentType, category } = currentLessonMeta;
-      if (category === 'practice' || contentType === 'exercise') {
-        return (
-          <div className="flex h-full items-center justify-center bg-muted/10">
-            <div className="flex flex-col items-center gap-4 text-center max-w-md">
-              <BookOpen className="h-12 w-12 text-primary" />
-              <div>
-                <h3 className="text-lg font-semibold">Practice Exercise</h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {currentLessonTitle || 'This exercise'} is an interactive practice activity.
-                </p>
-              </div>
-              <Button onClick={handleContentComplete}>
-                Mark as Complete & Continue
-              </Button>
-            </div>
-          </div>
-        );
-      }
-
       if (category === 'graded' || contentType === 'assessment') return null;
     }
 

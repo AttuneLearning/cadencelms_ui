@@ -3,8 +3,8 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { MemoryRouter, Routes, Route, useLocation, useParams } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { CoursePlayerPage } from '../CoursePlayerPage';
 
@@ -81,6 +81,17 @@ import { listEnrollments } from '@/entities/enrollment';
 import { useCourseModules } from '@/entities/course-module';
 import { useCourseProgress } from '@/entities/progress';
 import { useStartContentAttempt, useContentAttempt } from '@/entities/content-attempt';
+import { listLearningUnits } from '@/entities/learning-unit';
+
+const ExerciseTakeProbe = () => {
+  const { exerciseId } = useParams<{ exerciseId: string }>();
+  const location = useLocation();
+  return (
+    <div data-testid="exercise-take-page">
+      {`exerciseId=${exerciseId};search=${location.search}`}
+    </div>
+  );
+};
 
 const createWrapper = (initialEntry: string) => {
   const queryClient = new QueryClient({
@@ -97,6 +108,7 @@ const createWrapper = (initialEntry: string) => {
           <Route path="/learner/courses/:courseId/player" element={children} />
           <Route path="/learner/courses/:courseId/player/:contentId" element={children} />
           <Route path="/learner/courses/:courseId/player/:moduleId/:lessonId" element={children} />
+          <Route path="/learner/exercises/:exerciseId/take" element={<ExerciseTakeProbe />} />
           <Route path="/learner/dashboard" element={<div>Dashboard</div>} />
         </Routes>
       </MemoryRouter>
@@ -120,6 +132,11 @@ describe('CoursePlayerPage', () => {
     (useCourseProgress as any).mockReturnValue({ data: null });
     (useStartContentAttempt as any).mockReturnValue({ mutate: vi.fn() });
     (useContentAttempt as any).mockReturnValue({ data: null });
+    (listLearningUnits as any).mockResolvedValue({
+      learningUnits: [],
+      totalCount: 0,
+      categoryCounts: { topic: 0, practice: 0, assignment: 0, graded: 0 },
+    });
     // Default: enrolled
     (listEnrollments as any).mockResolvedValue(mockEnrollmentResponse({ id: 'enr1' }));
   });
@@ -330,5 +347,98 @@ describe('CoursePlayerPage', () => {
       expect(screen.getByText('Course Not Found')).toBeInTheDocument();
     });
     expect(screen.getByText('This course could not be found')).toBeInTheDocument();
+  });
+
+  it('renders practice launch and skips content-attempt auto-start for practice units', async () => {
+    const startAttemptSpy = vi.fn();
+    (useStartContentAttempt as any).mockReturnValue({ mutate: startAttemptSpy });
+    (useCourseModules as any).mockReturnValue({
+      data: {
+        courseTitle: 'Practice Course',
+        modules: [{ id: 'm1', title: 'Module 1', type: 'exercise', lessons: [] }],
+      },
+      isLoading: false,
+    });
+    (useCourseProgress as any).mockReturnValue({
+      data: { moduleProgress: [], overallProgress: { completionPercent: 0 } },
+    });
+    (listLearningUnits as any).mockResolvedValue({
+      learningUnits: [
+        {
+          id: 'lu-practice-1',
+          title: 'Practice Exercise 1',
+          type: 'exercise',
+          contentType: 'exercise',
+          category: 'practice',
+          contentId: 'practice-content-1',
+          sequence: 1,
+        },
+      ],
+      totalCount: 1,
+      categoryCounts: { topic: 0, practice: 1, assignment: 0, graded: 0 },
+    } as any);
+
+    render(<CoursePlayerPage />, {
+      wrapper: createWrapper('/learner/courses/course1/player/m1/lu-practice-1'),
+    });
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Start Practice' })).toBeInTheDocument();
+    });
+    expect(startAttemptSpy).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Start Practice' }));
+    await waitFor(() => {
+      expect(screen.getByTestId('exercise-take-page')).toBeInTheDocument();
+    });
+    const destination = screen.getByTestId('exercise-take-page').textContent || '';
+    expect(destination).toContain('exerciseId=practice-content-1');
+    expect(destination).toContain('courseId=course1');
+    expect(destination).toContain('enrollmentId=enr1');
+    expect(destination).toContain('learningUnitId=lu-practice-1');
+  });
+
+  it('uses learningUnitId as exercise launch id when practice contentId is missing', async () => {
+    (useCourseModules as any).mockReturnValue({
+      data: {
+        courseTitle: 'Practice Course',
+        modules: [{ id: 'm1', title: 'Module 1', type: 'exercise', lessons: [] }],
+      },
+      isLoading: false,
+    });
+    (useCourseProgress as any).mockReturnValue({
+      data: { moduleProgress: [], overallProgress: { completionPercent: 0 } },
+    });
+    (listLearningUnits as any).mockResolvedValue({
+      learningUnits: [
+        {
+          id: 'lu-practice-no-content',
+          title: 'Practice Exercise 2',
+          type: 'exercise',
+          contentType: 'exercise',
+          category: 'practice',
+          contentId: null,
+          sequence: 1,
+        },
+      ],
+      totalCount: 1,
+      categoryCounts: { topic: 0, practice: 1, assignment: 0, graded: 0 },
+    } as any);
+
+    render(<CoursePlayerPage />, {
+      wrapper: createWrapper('/learner/courses/course1/player/m1/lu-practice-no-content'),
+    });
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Start Practice' })).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Start Practice' }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('exercise-take-page')).toBeInTheDocument();
+    });
+    const destination = screen.getByTestId('exercise-take-page').textContent || '';
+    expect(destination).toContain('exerciseId=lu-practice-no-content');
+    expect(destination).toContain('learningUnitId=lu-practice-no-content');
   });
 });
