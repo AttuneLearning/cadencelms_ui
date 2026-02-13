@@ -253,4 +253,41 @@ describe('GradingDetailPage', () => {
       });
     });
   });
+
+  describe('Projected Grading Review', () => {
+    it('should show projected review alert when questions require instructor review', async () => {
+      const projectedAttempt = {
+        ...mockAttempt,
+        questions: mockAttempt.questions.map((question, index) =>
+          index === 2
+            ? {
+                ...question,
+                projectedScore: 11,
+                projectedMethod: 'short_answer_fuzzy',
+                projectedConfidence: 0.78,
+                projectedReason: 'Near-threshold fuzzy projection',
+                requiresInstructorReview: true,
+              }
+            : question
+        ),
+      };
+
+      server.use(
+        http.get(`${baseUrl}/assessment-attempts/:id`, () => {
+          return HttpResponse.json({
+            success: true,
+            data: projectedAttempt,
+          });
+        })
+      );
+
+      window.history.pushState({}, '', '/staff/grading/attempt-1');
+      render(<GradingDetailPage />, { wrapper: createWrapper() });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('projected-review-alert')).toBeInTheDocument();
+        expect(screen.getByText(/require instructor review/i)).toBeInTheDocument();
+      });
+    });
+  });
 });

@@ -111,6 +111,45 @@ describe('GradingPage', () => {
       });
     });
 
+    it('should display projected review pending indicator when provided', async () => {
+      const mockAttempts = [
+        createMockExamAttempt({
+          id: 'attempt-projected-1',
+          status: 'submitted',
+          learnerName: 'Projected Learner',
+          examTitle: 'Projected Quiz',
+          projectedPendingReviewCount: 2,
+          hasProjectedPendingReview: true,
+        }),
+      ];
+
+      server.use(
+        http.get(`${baseUrl}/assessment-attempts`, () => {
+          return HttpResponse.json({
+            success: true,
+            data: {
+              attempts: mockAttempts,
+              pagination: {
+                page: 1,
+                limit: 20,
+                total: 1,
+                totalPages: 1,
+                hasNext: false,
+                hasPrev: false,
+              },
+            },
+          });
+        })
+      );
+
+      render(<GradingPage />, { wrapper: createWrapper() });
+
+      await waitFor(() => {
+        expect(screen.getByText(/projected review pending/i)).toBeInTheDocument();
+        expect(screen.getByText(/projected review pending \(2\)/i)).toBeInTheDocument();
+      });
+    });
+
     it('should display empty state when no submissions', async () => {
       server.use(
         http.get(`${baseUrl}/assessment-attempts`, () => {

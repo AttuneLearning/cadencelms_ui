@@ -123,6 +123,9 @@ export function SubmissionList({
           <TableBody>
             {attempts.map((attempt) => {
               const isSelected = selectedIds.includes(attempt.id);
+              const projectedPendingReviewCount = attempt.projectedPendingReviewCount ?? 0;
+              const hasProjectedPendingReview =
+                attempt.hasProjectedPendingReview ?? projectedPendingReviewCount > 0;
 
               return (
                 <TableRow key={attempt.id} className={isSelected ? 'bg-muted/50' : ''}>
@@ -151,7 +154,17 @@ export function SubmissionList({
                       {attempt.examTitle}
                     </div>
                   </TableCell>
-                  <TableCell>{getStatusBadge(attempt.status)}</TableCell>
+                  <TableCell>
+                    <div className="flex flex-col gap-1">
+                      <div>{getStatusBadge(attempt.status)}</div>
+                      {hasProjectedPendingReview && (
+                        <Badge variant="outline" className="w-fit">
+                          Projected review pending
+                          {projectedPendingReviewCount > 0 ? ` (${projectedPendingReviewCount})` : ''}
+                        </Badge>
+                      )}
+                    </div>
+                  </TableCell>
                   <TableCell>
                     {attempt.status === 'graded' ? (
                       <div className="flex items-center gap-2">

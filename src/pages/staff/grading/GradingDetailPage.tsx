@@ -102,6 +102,9 @@ export function GradingDetailPage() {
   }
 
   const isAlreadyGraded = attempt.status === 'graded';
+  const pendingProjectedReviewCount =
+    attempt.projectedPendingReviewCount ??
+    attempt.questions.filter((question) => question.requiresInstructorReview).length;
 
   return (
     <div className="container mx-auto py-6 space-y-6">
@@ -122,6 +125,17 @@ export function GradingDetailPage() {
           <CheckCircle className="h-4 w-4" />
           <AlertDescription>
             This submission has already been graded. You can update the grade below.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {pendingProjectedReviewCount > 0 && (
+        <Alert data-testid="projected-review-alert">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            {pendingProjectedReviewCount} question
+            {pendingProjectedReviewCount === 1 ? '' : 's'} include projected grading and require
+            instructor review/approval.
           </AlertDescription>
         </Alert>
       )}
