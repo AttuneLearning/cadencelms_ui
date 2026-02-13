@@ -47,13 +47,195 @@ import {
   mockPersonExtendedLearnerResponse,
   mockDemographicsResponse,
 } from '../fixtures/person.fixtures';
+import {
+  mockStartedAttempt,
+  mockExamResult,
+  mockExamAttemptListItems,
+  mockSubmitAnswersResponse,
+  mockSubmitExamResponse,
+  mockStartExamAttemptResponse,
+} from './data/examAttempts';
 
 const baseUrl = env.apiFullUrl;
+const assessmentAttemptStore = new Map<string, Record<string, unknown>>();
+
+function buildAssessmentAttempt(
+  assessmentId: string,
+  attemptId: string
+): Record<string, unknown> {
+  return {
+    ...mockStartedAttempt,
+    id: attemptId,
+    examId: assessmentId,
+    examTitle: mockStartedAttempt.examTitle || 'Assessment',
+    status: 'in_progress',
+    maxAttempts: mockStartExamAttemptResponse.maxAttempts ?? 3,
+    attemptsUsed: 1,
+    summary: mockExamResult.summary,
+    questionResults: mockExamResult.questionResults,
+    overallFeedback: mockExamResult.overallFeedback,
+    showCorrectAnswers: mockExamResult.showCorrectAnswers,
+  };
+}
 
 /**
  * MSW Request Handlers
  */
 export const handlers = [
+  // ==================== CANONICAL ASSESSMENT ATTEMPT HANDLERS ====================
+
+  // POST /assessments/:assessmentId/attempts/start - Start assessment attempt
+  http.post(`${baseUrl}/assessments/:assessmentId/attempts/start`, async ({ params, request }) => {
+    const { assessmentId } = params;
+    const body = (await request.json()) as { enrollmentId?: string; learningUnitId?: string };
+
+    if (!body.enrollmentId) {
+      return HttpResponse.json(
+        {
+          message: 'Enrollment ID is required',
+          code: 'VALIDATION_ERROR',
+          errors: {
+            enrollmentId: ['Enrollment ID is required'],
+          },
+        },
+        { status: 422 }
+      );
+    }
+
+    if (body.learningUnitId === 'lu-mismatch') {
+      return HttpResponse.json(
+        {
+          message: 'Learning unit does not match assessment',
+          code: 'LEARNING_UNIT_ASSESSMENT_MISMATCH',
+        },
+        { status: 400 }
+      );
+    }
+
+    if (body.learningUnitId === 'lu-not-found') {
+      return HttpResponse.json(
+        {
+          message: 'Learning unit not found',
+          code: 'LEARNING_UNIT_NOT_FOUND',
+        },
+        { status: 404 }
+      );
+    }
+
+    const attemptId = `attempt-${assessmentAttemptStore.size + 1}`;
+    const attempt = buildAssessmentAttempt(assessmentId as string, attemptId);
+    assessmentAttemptStore.set(attemptId, attempt);
+
+    return HttpResponse.json(
+      {
+        data: {
+          ...mockStartExamAttemptResponse,
+          id: attemptId,
+          examId: assessmentId as string,
+          learnerId: (attempt.learnerId as string) || mockStartExamAttemptResponse.learnerId,
+          status: 'in_progress',
+          questions: attempt.questions || mockStartExamAttemptResponse.questions,
+        },
+      },
+      { status: 201 }
+    );
+  }),
+
+  // PUT /assessments/:assessmentId/attempts/:attemptId/save - Save responses
+  http.put(
+    `${baseUrl}/assessments/:assessmentId/attempts/:attemptId/save`,
+    async ({ params, request }) => {
+      const { attemptId } = params;
+      const body = (await request.json()) as {
+        responses?: Array<{ questionId: string; response: unknown }>;
+      };
+
+      if (!Array.isArray(body.responses)) {
+        return HttpResponse.json(
+          {
+            message: 'Invalid request body',
+            code: 'VALIDATION_ERROR',
+          },
+          { status: 422 }
+        );
+      }
+
+      return HttpResponse.json({
+        data: {
+          ...mockSubmitAnswersResponse,
+          attemptId: attemptId as string,
+          updatedAnswers: body.responses.map((response) => ({
+            questionId: response.questionId,
+            answer: response.response as string,
+            savedAt: new Date().toISOString(),
+          })),
+        },
+      });
+    }
+  ),
+
+  // POST /assessments/:assessmentId/attempts/:attemptId/submit - Submit attempt
+  http.post(
+    `${baseUrl}/assessments/:assessmentId/attempts/:attemptId/submit`,
+    ({ params }) => {
+      const { assessmentId, attemptId } = params;
+      const existing = assessmentAttemptStore.get(attemptId as string);
+
+      assessmentAttemptStore.set(attemptId as string, {
+        ...(existing || buildAssessmentAttempt(assessmentId as string, attemptId as string)),
+        ...mockExamResult,
+        id: attemptId as string,
+        examId: assessmentId as string,
+        status: 'graded',
+        submittedAt: new Date().toISOString(),
+      });
+
+      return HttpResponse.json({
+        data: {
+          ...mockSubmitExamResponse,
+          attemptId: attemptId as string,
+        },
+      });
+    }
+  ),
+
+  // GET /assessments/:assessmentId/attempts/my - Learner attempt history
+  http.get(`${baseUrl}/assessments/:assessmentId/attempts/my`, ({ params }) => {
+    const { assessmentId } = params;
+    return HttpResponse.json({
+      data: {
+        attempts: mockExamAttemptListItems.map((attempt) => ({
+          ...attempt,
+          examId: assessmentId as string,
+        })),
+        pagination: {
+          page: 1,
+          limit: 20,
+          total: mockExamAttemptListItems.length,
+          totalPages: 1,
+          hasNext: false,
+          hasPrev: false,
+        },
+      },
+    });
+  }),
+
+  // GET /assessments/:assessmentId/attempts/:attemptId - Attempt detail/result
+  http.get(`${baseUrl}/assessments/:assessmentId/attempts/:attemptId`, ({ params }) => {
+    const { assessmentId, attemptId } = params;
+    const attempt =
+      assessmentAttemptStore.get(attemptId as string) ||
+      buildAssessmentAttempt(assessmentId as string, attemptId as string);
+
+    return HttpResponse.json({
+      data: {
+        ...attempt,
+        id: attemptId as string,
+        examId: assessmentId as string,
+      },
+    });
+  }),
+
   // ==================== CLASS API HANDLERS ====================
 
   // GET /classes - List classes
