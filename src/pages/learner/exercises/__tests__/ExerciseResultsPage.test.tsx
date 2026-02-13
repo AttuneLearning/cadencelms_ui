@@ -8,7 +8,7 @@ import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ExerciseResultsPage } from '../ExerciseResultsPage';
-import * as examAttemptHooks from '@/entities/exam-attempt/hooks/useExamAttempts';
+import * as assessmentAttemptHooks from '@/entities/assessment-attempt/hooks/useAssessmentAttempts';
 import type { ExamResult } from '@/entities/exam-attempt/model/types';
 
 // Mock the navigation hook
@@ -26,6 +26,12 @@ vi.mock('react-router-dom', async () => {
     ...actual,
     useNavigate: () => mockNavigate,
     useParams: () => ({ exerciseId: 'exam-1', attemptId: 'attempt-1' }),
+    useSearchParams: () => [
+      new URLSearchParams(
+        'courseId=course-1&enrollmentId=enrollment-1&learningUnitId=learning-unit-1'
+      ),
+      vi.fn(),
+    ],
   };
 });
 
@@ -84,7 +90,7 @@ function renderWithProviders(component: React.ReactElement) {
 }
 
 function mockStartAttemptHook() {
-  vi.spyOn(examAttemptHooks, 'useStartExamAttempt').mockReturnValue({
+  vi.spyOn(assessmentAttemptHooks, 'useStartAssessmentAttempt').mockReturnValue({
     mutate: vi.fn(),
     mutateAsync: vi.fn(),
     isPending: false,
@@ -102,14 +108,14 @@ describe('ExerciseResultsPage', () => {
 
   describe('Loading State', () => {
     it('should display loading spinner when data is loading', () => {
-      vi.spyOn(examAttemptHooks, 'useExamAttemptResult').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useAssessmentAttemptResult').mockReturnValue({
         data: undefined,
         isLoading: true,
         error: null,
         isError: false,
         isSuccess: false,
       } as any);
-      vi.spyOn(examAttemptHooks, 'useExamAttemptHistory').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useMyAssessmentAttemptHistory').mockReturnValue({
         data: undefined,
         isLoading: true,
         error: null,
@@ -124,14 +130,14 @@ describe('ExerciseResultsPage', () => {
 
   describe('Error State', () => {
     it('should display error message when data fails to load', () => {
-      vi.spyOn(examAttemptHooks, 'useExamAttemptResult').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useAssessmentAttemptResult').mockReturnValue({
         data: undefined,
         isLoading: false,
         error: new Error('Network error'),
         isError: true,
         isSuccess: false,
       } as any);
-      vi.spyOn(examAttemptHooks, 'useExamAttemptHistory').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useMyAssessmentAttemptHistory').mockReturnValue({
         data: undefined,
         isLoading: false,
         error: null,
@@ -140,7 +146,7 @@ describe('ExerciseResultsPage', () => {
 
       renderWithProviders(<ExerciseResultsPage />);
 
-      expect(screen.getByText('Failed to Load Results')).toBeInTheDocument();
+      expect(screen.getByText('Unable to Load Assessment')).toBeInTheDocument();
       expect(screen.getByText('Network error')).toBeInTheDocument();
       expect(screen.getByText('Back to Dashboard')).toBeInTheDocument();
     });
@@ -149,14 +155,14 @@ describe('ExerciseResultsPage', () => {
   describe('Success State', () => {
     it('should render result viewer with score data', () => {
       const result = createMockResult({ passed: true, score: 85, maxScore: 100 });
-      vi.spyOn(examAttemptHooks, 'useExamAttemptResult').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useAssessmentAttemptResult').mockReturnValue({
         data: result,
         isLoading: false,
         error: null,
         isError: false,
         isSuccess: true,
       } as any);
-      vi.spyOn(examAttemptHooks, 'useExamAttemptHistory').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useMyAssessmentAttemptHistory').mockReturnValue({
         data: undefined,
         isLoading: false,
         error: null,
@@ -173,14 +179,14 @@ describe('ExerciseResultsPage', () => {
 
     it('should render screen reader announcement for passed result', () => {
       const result = createMockResult({ passed: true, score: 85, maxScore: 100 });
-      vi.spyOn(examAttemptHooks, 'useExamAttemptResult').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useAssessmentAttemptResult').mockReturnValue({
         data: result,
         isLoading: false,
         error: null,
         isError: false,
         isSuccess: true,
       } as any);
-      vi.spyOn(examAttemptHooks, 'useExamAttemptHistory').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useMyAssessmentAttemptHistory').mockReturnValue({
         data: undefined,
         isLoading: false,
         error: null,
@@ -197,14 +203,14 @@ describe('ExerciseResultsPage', () => {
 
     it('should render screen reader announcement for failed result', () => {
       const result = createMockResult({ passed: false, score: 40, maxScore: 100 });
-      vi.spyOn(examAttemptHooks, 'useExamAttemptResult').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useAssessmentAttemptResult').mockReturnValue({
         data: result,
         isLoading: false,
         error: null,
         isError: false,
         isSuccess: true,
       } as any);
-      vi.spyOn(examAttemptHooks, 'useExamAttemptHistory').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useMyAssessmentAttemptHistory').mockReturnValue({
         data: undefined,
         isLoading: false,
         error: null,

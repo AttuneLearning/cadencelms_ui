@@ -9,7 +9,7 @@ import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ExerciseTakingPage } from '../ExerciseTakingPage';
-import * as examAttemptHooks from '@/entities/exam-attempt/hooks/useExamAttempts';
+import * as assessmentAttemptHooks from '@/entities/assessment-attempt/hooks/useAssessmentAttempts';
 import type { ExamAttempt, ExamQuestion } from '@/entities/exam-attempt/model/types';
 
 // Mock the navigation hook
@@ -41,6 +41,12 @@ vi.mock('react-router-dom', async () => {
     ...actual,
     useNavigate: () => mockNavigate,
     useParams: () => ({ exerciseId: 'exercise-1' }),
+    useSearchParams: () => [
+      new URLSearchParams(
+        'courseId=course-1&enrollmentId=enrollment-1&learningUnitId=learning-unit-1'
+      ),
+      vi.fn(),
+    ],
   };
 });
 
@@ -123,27 +129,20 @@ describe('ExerciseTakingPage', () => {
     vi.clearAllMocks();
     vi.restoreAllMocks();
     mockNavigate.mockClear();
-
-    // Default mock for exercise attempts (pre-flight check)
-    vi.spyOn(examAttemptHooks, 'useExerciseAttempts').mockReturnValue({
-      data: [],
-      isLoading: false,
-      error: null,
-    } as any);
   });
 
   describe('Initial Load', () => {
     it('should start exam attempt on mount', async () => {
       const mockStartAttempt = vi.fn().mockResolvedValue(mockAttempt);
 
-      vi.spyOn(examAttemptHooks, 'useStartExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useStartAssessmentAttempt').mockReturnValue({
         mutate: mockStartAttempt,
         isPending: false,
         isError: false,
         isSuccess: true,
       } as any);
 
-      vi.spyOn(examAttemptHooks, 'useExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useAssessmentAttempt').mockReturnValue({
         data: mockAttempt,
         isLoading: false,
         error: null,
@@ -154,19 +153,22 @@ describe('ExerciseTakingPage', () => {
       await waitFor(() => {
         expect(mockStartAttempt).toHaveBeenCalled();
         const callArgs = mockStartAttempt.mock.calls[0];
-        expect(callArgs[0]).toEqual({ examId: 'exercise-1' });
+        expect(callArgs[0]).toEqual({
+          enrollmentId: 'enrollment-1',
+          learningUnitId: 'learning-unit-1',
+        });
       });
     });
 
     it('should display loading state while starting attempt', () => {
-      vi.spyOn(examAttemptHooks, 'useStartExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useStartAssessmentAttempt').mockReturnValue({
         mutate: vi.fn(),
         isPending: true,
         isError: false,
         isSuccess: false,
       } as any);
 
-      vi.spyOn(examAttemptHooks, 'useExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useAssessmentAttempt').mockReturnValue({
         data: undefined,
         isLoading: true,
         error: null,
@@ -178,7 +180,7 @@ describe('ExerciseTakingPage', () => {
     });
 
     it('should display error state if starting attempt fails', () => {
-      vi.spyOn(examAttemptHooks, 'useStartExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useStartAssessmentAttempt').mockReturnValue({
         mutate: vi.fn(),
         isPending: false,
         isError: true,
@@ -186,7 +188,7 @@ describe('ExerciseTakingPage', () => {
         isSuccess: false,
       } as any);
 
-      vi.spyOn(examAttemptHooks, 'useExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useAssessmentAttempt').mockReturnValue({
         data: undefined,
         isLoading: false,
         error: new Error('Failed to start attempt'),
@@ -194,14 +196,16 @@ describe('ExerciseTakingPage', () => {
 
       renderWithProviders(<ExerciseTakingPage />);
 
-      expect(screen.getByRole('heading', { name: /failed to start exam/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { name: /unable to load assessment/i })
+      ).toBeInTheDocument();
       expect(screen.getByText('Failed to start attempt')).toBeInTheDocument();
     });
   });
 
   describe('Question Display', () => {
     beforeEach(() => {
-      vi.spyOn(examAttemptHooks, 'useStartExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useStartAssessmentAttempt').mockReturnValue({
         mutate: vi.fn(),
         isPending: false,
         isError: false,
@@ -209,7 +213,7 @@ describe('ExerciseTakingPage', () => {
         data: mockAttempt,
       } as any);
 
-      vi.spyOn(examAttemptHooks, 'useExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useAssessmentAttempt').mockReturnValue({
         data: mockAttempt,
         isLoading: false,
         error: null,
@@ -243,7 +247,7 @@ describe('ExerciseTakingPage', () => {
 
   describe('Navigation', () => {
     beforeEach(() => {
-      vi.spyOn(examAttemptHooks, 'useStartExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useStartAssessmentAttempt').mockReturnValue({
         mutate: vi.fn(),
         isPending: false,
         isError: false,
@@ -251,13 +255,13 @@ describe('ExerciseTakingPage', () => {
         data: mockAttempt,
       } as any);
 
-      vi.spyOn(examAttemptHooks, 'useExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useAssessmentAttempt').mockReturnValue({
         data: mockAttempt,
         isLoading: false,
         error: null,
       } as any);
 
-      vi.spyOn(examAttemptHooks, 'useSaveAnswer').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useSaveAssessmentResponses').mockReturnValue({
         mutate: vi.fn(),
         mutateDebounced: vi.fn(),
         isPending: false,
@@ -330,7 +334,7 @@ describe('ExerciseTakingPage', () => {
       mockSaveAnswer = vi.fn();
       mockSaveAnswerDebounced = vi.fn();
 
-      vi.spyOn(examAttemptHooks, 'useStartExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useStartAssessmentAttempt').mockReturnValue({
         mutate: vi.fn(),
         isPending: false,
         isError: false,
@@ -338,13 +342,13 @@ describe('ExerciseTakingPage', () => {
         data: mockAttempt,
       } as any);
 
-      vi.spyOn(examAttemptHooks, 'useExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useAssessmentAttempt').mockReturnValue({
         data: mockAttempt,
         isLoading: false,
         error: null,
       } as any);
 
-      vi.spyOn(examAttemptHooks, 'useSaveAnswer').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useSaveAssessmentResponses').mockReturnValue({
         mutate: mockSaveAnswer,
         mutateDebounced: mockSaveAnswerDebounced,
         isPending: false,
@@ -385,7 +389,7 @@ describe('ExerciseTakingPage', () => {
 
   describe('Timer', () => {
     beforeEach(() => {
-      vi.spyOn(examAttemptHooks, 'useStartExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useStartAssessmentAttempt').mockReturnValue({
         mutate: vi.fn(),
         isPending: false,
         isError: false,
@@ -393,7 +397,7 @@ describe('ExerciseTakingPage', () => {
         data: mockAttempt,
       } as any);
 
-      vi.spyOn(examAttemptHooks, 'useExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useAssessmentAttempt').mockReturnValue({
         data: mockAttempt,
         isLoading: false,
         error: null,
@@ -410,7 +414,7 @@ describe('ExerciseTakingPage', () => {
     it('should auto-submit when timer expires', async () => {
       const mockSubmitExam = vi.fn();
 
-      vi.spyOn(examAttemptHooks, 'useStartExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useStartAssessmentAttempt').mockReturnValue({
         mutate: vi.fn((_, { onSuccess }) => {
           // Immediately call onSuccess to set attemptId
           onSuccess?.(mockAttempt);
@@ -420,7 +424,7 @@ describe('ExerciseTakingPage', () => {
         isSuccess: true,
       } as any);
 
-      vi.spyOn(examAttemptHooks, 'useSubmitExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useSubmitAssessmentAttempt').mockReturnValue({
         mutate: mockSubmitExam,
         isPending: false,
       } as any);
@@ -430,7 +434,7 @@ describe('ExerciseTakingPage', () => {
         remainingTime: 0,
       };
 
-      vi.spyOn(examAttemptHooks, 'useExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useAssessmentAttempt').mockReturnValue({
         data: attemptWithNoTime,
         isLoading: false,
         error: null,
@@ -451,7 +455,7 @@ describe('ExerciseTakingPage', () => {
     beforeEach(() => {
       mockSubmitExam = vi.fn();
 
-      vi.spyOn(examAttemptHooks, 'useStartExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useStartAssessmentAttempt').mockReturnValue({
         mutate: vi.fn(),
         isPending: false,
         isError: false,
@@ -459,19 +463,19 @@ describe('ExerciseTakingPage', () => {
         data: mockAttempt,
       } as any);
 
-      vi.spyOn(examAttemptHooks, 'useExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useAssessmentAttempt').mockReturnValue({
         data: mockAttempt,
         isLoading: false,
         error: null,
       } as any);
 
-      vi.spyOn(examAttemptHooks, 'useSaveAnswer').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useSaveAssessmentResponses').mockReturnValue({
         mutate: vi.fn(),
         mutateDebounced: vi.fn(),
         isPending: false,
       } as any);
 
-      vi.spyOn(examAttemptHooks, 'useSubmitExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useSubmitAssessmentAttempt').mockReturnValue({
         mutate: mockSubmitExam,
         isPending: false,
       } as any);
@@ -568,7 +572,7 @@ describe('ExerciseTakingPage', () => {
 
   describe('Mark for Review', () => {
     beforeEach(() => {
-      vi.spyOn(examAttemptHooks, 'useStartExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useStartAssessmentAttempt').mockReturnValue({
         mutate: vi.fn(),
         isPending: false,
         isError: false,
@@ -576,13 +580,13 @@ describe('ExerciseTakingPage', () => {
         data: mockAttempt,
       } as any);
 
-      vi.spyOn(examAttemptHooks, 'useExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useAssessmentAttempt').mockReturnValue({
         data: mockAttempt,
         isLoading: false,
         error: null,
       } as any);
 
-      vi.spyOn(examAttemptHooks, 'useSaveAnswer').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useSaveAssessmentResponses').mockReturnValue({
         mutate: vi.fn(),
         mutateDebounced: vi.fn(),
         isPending: false,
@@ -610,7 +614,7 @@ describe('ExerciseTakingPage', () => {
 
   describe('Question Navigator', () => {
     beforeEach(() => {
-      vi.spyOn(examAttemptHooks, 'useStartExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useStartAssessmentAttempt').mockReturnValue({
         mutate: vi.fn(),
         isPending: false,
         isError: false,
@@ -618,13 +622,13 @@ describe('ExerciseTakingPage', () => {
         data: mockAttempt,
       } as any);
 
-      vi.spyOn(examAttemptHooks, 'useExamAttempt').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useAssessmentAttempt').mockReturnValue({
         data: mockAttempt,
         isLoading: false,
         error: null,
       } as any);
 
-      vi.spyOn(examAttemptHooks, 'useSaveAnswer').mockReturnValue({
+      vi.spyOn(assessmentAttemptHooks, 'useSaveAssessmentResponses').mockReturnValue({
         mutate: vi.fn(),
         mutateDebounced: vi.fn(),
         isPending: false,

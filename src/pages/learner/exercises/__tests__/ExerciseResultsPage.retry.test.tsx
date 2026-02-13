@@ -9,7 +9,7 @@ import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ExerciseResultsPage } from '../ExerciseResultsPage';
-import * as examAttemptHooks from '@/entities/exam-attempt/hooks/useExamAttempts';
+import * as assessmentAttemptHooks from '@/entities/assessment-attempt/hooks/useAssessmentAttempts';
 import type { ExamResult, ExamAttemptListItem, ExamAttemptsListResponse } from '@/entities/exam-attempt/model/types';
 
 // Mock the navigation hook
@@ -27,6 +27,12 @@ vi.mock('react-router-dom', async () => {
     ...actual,
     useNavigate: () => mockNavigate,
     useParams: () => ({ exerciseId: 'exam-1', attemptId: 'attempt-1' }),
+    useSearchParams: () => [
+      new URLSearchParams(
+        'courseId=course-1&enrollmentId=enrollment-1&learningUnitId=learning-unit-1'
+      ),
+      vi.fn(),
+    ],
   };
 });
 
@@ -112,7 +118,7 @@ function renderWithProviders(component: React.ReactElement) {
 
 // Default mock setup helpers
 function mockResultHook(result: ExamResult | undefined, isLoading = false, error: Error | null = null) {
-  vi.spyOn(examAttemptHooks, 'useExamAttemptResult').mockReturnValue({
+  vi.spyOn(assessmentAttemptHooks, 'useAssessmentAttemptResult').mockReturnValue({
     data: result,
     isLoading,
     error,
@@ -126,7 +132,7 @@ function mockHistoryHook(attempts: ExamAttemptListItem[] = []) {
     attempts,
     pagination: { page: 1, limit: 20, total: attempts.length, totalPages: 1, hasNext: false, hasPrev: false },
   };
-  vi.spyOn(examAttemptHooks, 'useExamAttemptHistory').mockReturnValue({
+  vi.spyOn(assessmentAttemptHooks, 'useMyAssessmentAttemptHistory').mockReturnValue({
     data: response,
     isLoading: false,
     error: null,
@@ -134,7 +140,7 @@ function mockHistoryHook(attempts: ExamAttemptListItem[] = []) {
 }
 
 function mockStartAttemptHook(mutateFn = vi.fn()) {
-  vi.spyOn(examAttemptHooks, 'useStartExamAttempt').mockReturnValue({
+  vi.spyOn(assessmentAttemptHooks, 'useStartAssessmentAttempt').mockReturnValue({
     mutate: mutateFn,
     mutateAsync: vi.fn(),
     isPending: false,
@@ -161,7 +167,7 @@ describe('ExerciseResultsPage - Retry Flow', () => {
       renderWithProviders(<ExerciseResultsPage />);
 
       expect(screen.getByTestId('retry-exam-button')).toBeInTheDocument();
-      expect(screen.getByTestId('retry-exam-button')).toHaveTextContent('Retry Exam');
+      expect(screen.getByTestId('retry-exam-button')).toHaveTextContent('Retry Assessment');
     });
 
     it('should hide retry button when passed', () => {
@@ -304,12 +310,17 @@ describe('ExerciseResultsPage - Retry Flow', () => {
       await user.click(retryButton);
 
       expect(mockMutate).toHaveBeenCalledWith(
-        { examId: 'exam-1' },
+        {
+          enrollmentId: 'enrollment-1',
+          learningUnitId: 'learning-unit-1',
+        },
         expect.objectContaining({ onSuccess: expect.any(Function) })
       );
 
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/learner/exercises/exam-1/take');
+        expect(mockNavigate).toHaveBeenCalledWith(
+          '/learner/exercises/exam-1/take?courseId=course-1&enrollmentId=enrollment-1&learningUnitId=learning-unit-1'
+        );
       });
     });
   });
