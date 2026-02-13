@@ -19,6 +19,13 @@ import {
   createReportTemplate,
   updateReportTemplate,
   deleteReportTemplate,
+  getCompletionReport,
+  getPerformanceReport,
+  getLearnerTranscript,
+  getCourseReport,
+  getProgramReport,
+  getDepartmentReport,
+  exportReport,
 } from '../reportApi';
 import type {
   ReportsListResponse,
@@ -27,6 +34,13 @@ import type {
   DownloadReportResponse,
   ReportTemplatesListResponse,
   ReportTemplate,
+  CompletionReportResponse,
+  PerformanceReportResponse,
+  LearnerTranscriptResponse,
+  CourseReportResponse,
+  ProgramReportResponse,
+  DepartmentReportResponse,
+  ReportExportResponse,
 } from '../../model/types';
 
 describe('reportApi', () => {
@@ -741,6 +755,294 @@ describe('reportApi', () => {
       );
 
       await expect(downloadReport(reportId, format)).rejects.toThrow();
+    });
+  });
+
+  // =====================
+  // CANONICAL REPORT ENDPOINTS
+  // =====================
+
+  describe('getCompletionReport', () => {
+    it('should normalize mixed legacy and canonical course fields in completion details', async () => {
+      let capturedParams: URLSearchParams | null = null;
+
+      const mockResponse: CompletionReportResponse = {
+        summary: { totalEnrollments: 2 },
+        groups: [
+          {
+            groupKey: 'g1',
+            details: [
+              {
+                id: 'course-legacy-1',
+                code: 'LEG101',
+                title: 'Legacy Course One',
+              },
+              {
+                courseId: 'course-2',
+                courseCode: 'CAN102',
+                courseName: 'Canonical Course Two',
+                courseVersionId: 'cv-2',
+              },
+            ],
+          },
+        ],
+        filters: {},
+        pagination: { page: 1, limit: 10, total: 1, totalPages: 1 },
+      };
+
+      server.use(
+        http.get(`${baseUrl}/reports/completion`, ({ request }) => {
+          capturedParams = new URL(request.url).searchParams;
+          return HttpResponse.json({
+            success: true,
+            data: mockResponse,
+          });
+        })
+      );
+
+      const result = await getCompletionReport({
+        groupBy: 'course',
+        includeDetails: true,
+      });
+
+      expect(capturedParams!.get('groupBy')).toBe('course');
+      expect(capturedParams!.get('includeDetails')).toBe('true');
+      expect(result.groups[0].details[0].courseId).toBe('course-legacy-1');
+      expect(result.groups[0].details[0].courseCode).toBe('LEG101');
+      expect(result.groups[0].details[0].courseName).toBe('Legacy Course One');
+      expect(result.groups[0].details[1].courseVersionId).toBe('cv-2');
+    });
+  });
+
+  describe('getPerformanceReport', () => {
+    it('should normalize coursePerformance rows in performance metrics', async () => {
+      const mockResponse: PerformanceReportResponse = {
+        summary: { totalLearners: 1 },
+        performanceMetrics: [
+          {
+            learnerId: 'learner-1',
+            coursePerformance: [
+              {
+                id: 'course-legacy-1',
+                code: 'PERF101',
+                name: 'Legacy Performance Course',
+              },
+            ],
+          },
+        ],
+        analytics: {},
+        filters: {},
+        pagination: { page: 1, limit: 10, total: 1, totalPages: 1 },
+      };
+
+      server.use(
+        http.get(`${baseUrl}/reports/performance`, () => {
+          return HttpResponse.json({
+            success: true,
+            data: mockResponse,
+          });
+        })
+      );
+
+      const result = await getPerformanceReport({ includeRankings: true });
+
+      expect(result.performanceMetrics[0].coursePerformance[0].courseId).toBe('course-legacy-1');
+      expect(result.performanceMetrics[0].coursePerformance[0].courseCode).toBe('PERF101');
+      expect(result.performanceMetrics[0].coursePerformance[0].courseName).toBe(
+        'Legacy Performance Course'
+      );
+    });
+  });
+
+  describe('getLearnerTranscript', () => {
+    it('should normalize transcript program course rows with canonical aliases', async () => {
+      let capturedParams: URLSearchParams | null = null;
+
+      const mockResponse: LearnerTranscriptResponse = {
+        transcript: {
+          transcriptId: 'trn-1',
+          programs: [
+            {
+              programId: 'program-1',
+              courses: [
+                {
+                  id: 'course-legacy-1',
+                  code: 'TRN101',
+                  title: 'Legacy Transcript Course',
+                },
+              ],
+            },
+          ],
+        },
+      };
+
+      server.use(
+        http.get(`${baseUrl}/reports/transcript/learner-1`, ({ request }) => {
+          capturedParams = new URL(request.url).searchParams;
+          return HttpResponse.json({
+            success: true,
+            data: mockResponse,
+          });
+        })
+      );
+
+      const result = await getLearnerTranscript('learner-1', { includeInProgress: true });
+
+      expect(capturedParams!.get('includeInProgress')).toBe('true');
+      expect(result.transcript.programs[0].courses[0].courseId).toBe('course-legacy-1');
+      expect(result.transcript.programs[0].courses[0].courseCode).toBe('TRN101');
+      expect(result.transcript.programs[0].courses[0].courseName).toBe(
+        'Legacy Transcript Course'
+      );
+    });
+  });
+
+  describe('getCourseReport', () => {
+    it('should normalize course context and learning-unit-derived module rows', async () => {
+      const mockResponse: CourseReportResponse = {
+        course: {
+          id: 'course-legacy-1',
+          code: 'CRS101',
+          title: 'Legacy Course Report',
+        },
+        summary: { totalEnrollments: 1 },
+        learners: [
+          {
+            learnerId: 'learner-1',
+            moduleProgress: [
+              {
+                learningUnitId: 'lu-1',
+                learningUnitTitle: 'Learning Unit Intro',
+              },
+            ],
+          },
+        ],
+        moduleAnalytics: [
+          {
+            learningUnitId: 'lu-1',
+            learningUnitName: 'Learning Unit Intro',
+            order: 2,
+          },
+        ],
+      };
+
+      server.use(
+        http.get(`${baseUrl}/reports/course/course-legacy-1`, () => {
+          return HttpResponse.json({
+            success: true,
+            data: mockResponse,
+          });
+        })
+      );
+
+      const result = await getCourseReport('course-legacy-1', { includeModules: true });
+
+      expect(result.course.courseId).toBe('course-legacy-1');
+      expect(result.course.courseCode).toBe('CRS101');
+      expect(result.course.courseName).toBe('Legacy Course Report');
+      expect(result.learners[0].moduleProgress[0].moduleId).toBe('lu-1');
+      expect(result.learners[0].moduleProgress[0].moduleName).toBe('Learning Unit Intro');
+      expect(result.moduleAnalytics[0].moduleId).toBe('lu-1');
+      expect(result.moduleAnalytics[0].moduleOrder).toBe(2);
+    });
+  });
+
+  describe('getProgramReport', () => {
+    it('should normalize program coursePerformance course fields', async () => {
+      const mockResponse: ProgramReportResponse = {
+        program: { id: 'program-1' },
+        summary: {},
+        coursePerformance: [
+          {
+            id: 'course-legacy-1',
+            code: 'PRG101',
+            title: 'Legacy Program Course',
+          },
+        ],
+      };
+
+      server.use(
+        http.get(`${baseUrl}/reports/program/program-1`, () => {
+          return HttpResponse.json({
+            success: true,
+            data: mockResponse,
+          });
+        })
+      );
+
+      const result = await getProgramReport('program-1');
+
+      expect(result.coursePerformance[0].courseId).toBe('course-legacy-1');
+      expect(result.coursePerformance[0].courseCode).toBe('PRG101');
+      expect(result.coursePerformance[0].courseName).toBe('Legacy Program Course');
+    });
+  });
+
+  describe('getDepartmentReport', () => {
+    it('should normalize department coursePerformance rows', async () => {
+      const mockResponse: DepartmentReportResponse = {
+        department: { id: 'dept-1' },
+        summary: {},
+        coursePerformance: [
+          {
+            courseId: 'course-1',
+            courseCode: 'DPT101',
+            courseName: 'Department Course',
+          },
+        ],
+      };
+
+      server.use(
+        http.get(`${baseUrl}/reports/department/dept-1`, () => {
+          return HttpResponse.json({
+            success: true,
+            data: mockResponse,
+          });
+        })
+      );
+
+      const result = await getDepartmentReport('dept-1');
+
+      expect(result.coursePerformance[0].courseId).toBe('course-1');
+      expect(result.coursePerformance[0].courseCode).toBe('DPT101');
+      expect(result.coursePerformance[0].courseName).toBe('Department Course');
+    });
+  });
+
+  describe('exportReport', () => {
+    it('should request export and normalize url aliases', async () => {
+      let capturedParams: URLSearchParams | null = null;
+
+      const mockResponse: ReportExportResponse = {
+        reportType: 'completion',
+        format: 'xlsx',
+        fileUrl: '',
+        fileName: '',
+        downloadUrl: 'https://cdn.example.com/exports/completion.xlsx',
+        name: 'completion.xlsx',
+      };
+
+      server.use(
+        http.get(`${baseUrl}/reports/export`, ({ request }) => {
+          capturedParams = new URL(request.url).searchParams;
+          return HttpResponse.json({
+            success: true,
+            data: mockResponse,
+          });
+        })
+      );
+
+      const result = await exportReport({
+        reportType: 'completion',
+        format: 'xlsx',
+        includeDetails: true,
+      });
+
+      expect(capturedParams!.get('reportType')).toBe('completion');
+      expect(capturedParams!.get('format')).toBe('xlsx');
+      expect(capturedParams!.get('includeDetails')).toBe('true');
+      expect(result.fileUrl).toBe('https://cdn.example.com/exports/completion.xlsx');
+      expect(result.fileName).toBe('completion.xlsx');
     });
   });
 
